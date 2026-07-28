@@ -1,0 +1,30 @@
+{
+  "name": "tennis-explore-v2",
+  "version": "1.0.0",
+  "description": "Clean rebuild of the TennisExplore backend platform",
+  "type": "module",
+  "main": "src/server.js",
+  "scripts": {
+    "dev": "nodemon src/server.js",
+    "start": "node src/server.js",
+    "test": "node --test"
+  },
+  "keywords": [
+    "tennis",
+    "ai",
+    "rag",
+    "player-intelligence"
+  ],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^17.0.0",
+    "express": "^5.0.0",
+    "mongoose": "^9.0.0",
+    "multer": "^2.2.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.0"
+  }
+}

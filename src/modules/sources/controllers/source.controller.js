@@ -1,0 +1,66 @@
+import {
+  archiveSource,
+  createSource,
+  getAllSources,
+  getSourceById,
+} from "../services/source.service.js";
+
+export async function createSourceController(req, res) {
+  const source = await createSource(req.body);
+
+  return res.status(201).json({
+    success: true,
+    data: source,
+  });
+}
+
+export async function getAllSourcesController(req, res) {
+  const sources = await getAllSources();
+
+  return res.status(200).json({
+    success: true,
+    data: sources,
+    meta: {
+      count: sources.length,
+    },
+  });
+}
+
+export async function getSourceByIdController(req, res) {
+  const source = await getSourceById(req.params.sourceId);
+
+  if (!source) {
+    return res.status(404).json({
+      success: false,
+      error: {
+        code: "SOURCE_NOT_FOUND",
+        message: "Source not found.",
+      },
+    });
+  }
+
+  return res.status(200).json({
+    success: true,
+    data: source,
+  });
+}
+
+export async function archiveSourceController(req, res) {
+  const source = await archiveSource(req.params.sourceId);
+
+  if (!source) {
+    return res.status(404).json({
+      success: false,
+      error: {
+        code: "SOURCE_NOT_FOUND",
+        message: "Source not found.",
+      },
+    });
+  }
+
+  return res.status(200).json({
+    success: true,
+    message: "Source archived successfully.",
+    data: source,
+  });
+}
