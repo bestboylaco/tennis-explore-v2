@@ -5,7 +5,9 @@ import { env } from "./config/env.js";
 import { getMongoDBStatus } from "./infrastructure/database/mongodb.service.js";
 import { notFoundHandler } from "./middleware/notFoundHandler.js";
 import { errorHandler } from "./middleware/errorHandler.js";
+import { telemetryMiddleware } from "./middleware/telemetry.middleware.js";
 import { sourceRoutes } from "./modules/sources/index.js";
+import { telemetryRoutes } from "./modules/telemetry/index.js";
 
 const app = express();
 
@@ -14,6 +16,7 @@ app.disable("x-powered-by");
 // Global middleware
 app.use(cors());
 app.use(express.json());
+app.use(telemetryMiddleware);
 
 // Health route
 app.get("/api/health", (req, res) => {
@@ -36,6 +39,7 @@ app.get("/api/health", (req, res) => {
 
 // Application routes
 app.use("/api/sources", sourceRoutes);
+app.use("/api/telemetry", telemetryRoutes);
 
 // Error handling must come last
 app.use(notFoundHandler);
