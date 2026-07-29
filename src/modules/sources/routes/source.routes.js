@@ -5,6 +5,7 @@ import {
   createSourceController,
   getAllSourcesController,
   getSourceByIdController,
+  ingestSourceController,
 } from "../controllers/source.controller.js";
 
 import { validateCreateSource } from "../validators/source.validation.js";
@@ -20,6 +21,11 @@ router.post(
   "/",
   validateCreateSource,
   asyncHandler(createSourceController)
+);
+
+router.post(
+  "/:sourceId/ingest",
+  asyncHandler(ingestSourceController)
 );
 
 router.delete(
