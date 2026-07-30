@@ -8,6 +8,7 @@ import { errorHandler } from "./middleware/errorHandler.js";
 import { telemetryMiddleware } from "./middleware/telemetry.middleware.js";
 import { sourceRoutes } from "./modules/sources/index.js";
 import { telemetryRoutes } from "./modules/telemetry/index.js";
+import { chatRoutes } from "./modules/chat/index.js";
 
 const app = express();
 
@@ -38,6 +39,7 @@ app.get("/api/health", (req, res) => {
 });
 
 // Application routes
+app.use("/api/chat", chatRoutes);
 app.use("/api/sources", sourceRoutes);
 app.use("/api/telemetry", telemetryRoutes);
 

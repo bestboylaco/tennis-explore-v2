@@ -1,0 +1,1 @@
+export { default as chatRoutes } from "./routes/chat.routes.js";
