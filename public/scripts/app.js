@@ -1,70 +1,272 @@
-import path from "node:path";
-import { fileURLToPath } from "node:url";
+import { submitChatQuestion } from "./api/chatApi.js";
+import { createCitationDialog } from "./ui/citationDialog.js";
+import {
+    appendAssistantMessage,
+    appendUserMessage,
+} from "./ui/messageRenderer.js";
+import { createProcessingStatus } from "./ui/processingStatus.js";
 
-import cors from "cors";
-import express from "express";
-
-import { env } from "./config/env.js";
-import { getMongoDBStatus } from "./infrastructure/database/mongodb.service.js";
-import { errorHandler } from "./middleware/errorHandler.js";
-import { notFoundHandler } from "./middleware/notFoundHandler.js";
-import { telemetryMiddleware } from "./middleware/telemetry.middleware.js";
-import { chatRoutes } from "./modules/chat/index.js";
-import { sourceRoutes } from "./modules/sources/index.js";
-import { telemetryRoutes } from "./modules/telemetry/index.js";
-
-const app = express();
-
-const currentFilePath = fileURLToPath(import.meta.url);
-const currentDirectory = path.dirname(currentFilePath);
-
-/*
- * The public folder is outside src.
- * Using an absolute path ensures Express can find it regardless of
- * the directory from which the npm command is executed.
+/**
+ * Returns a required page element or throws a clear startup error.
  */
-const publicDirectory = path.resolve(currentDirectory, "../public");
+function getRequiredElement(selector) {
+    const element = document.querySelector(selector);
 
-app.disable("x-powered-by");
+    if (!element) {
+        throw new Error(
+            `Required interface element was not found: ${selector}`,
+        );
+    }
 
-// Global middleware
-app.use(cors());
-app.use(express.json());
+    return element;
+}
 
-/*
- * Serve index.html, CSS files and browser JavaScript files
- * from the public directory.
- */
-app.use(express.static(publicDirectory));
+const chatForm = getRequiredElement("#chat-form");
+const questionInput = getRequiredElement("#question");
+const sendButton = getRequiredElement("#send-button");
+const conversation = getRequiredElement("#conversation");
 
-app.use(telemetryMiddleware);
+const statusIndicator = getRequiredElement(
+    "#processing-status",
+);
 
-// Health route
-app.get("/api/health", (req, res) => {
-    const mongodbStatus = getMongoDBStatus();
-    const healthy = mongodbStatus === "connected";
+const statusText = getRequiredElement("#status-text");
 
-    return res.status(healthy ? 200 : 503).json({
-        success: healthy,
-        data: {
-            service: "TennisExplore V2 API",
-            status: healthy ? "healthy" : "degraded",
-            environment: env.nodeEnv,
-            dependencies: {
-                mongodb: mongodbStatus,
-            },
-            timestamp: new Date().toISOString(),
-        },
-    });
+const processingMessage = getRequiredElement(
+    "#processing-message",
+);
+
+const errorBanner = getRequiredElement("#error-banner");
+const errorMessage = getRequiredElement("#error-message");
+
+const dismissErrorButton = getRequiredElement(
+    "#dismiss-error-button",
+);
+
+const citationDialogElement = getRequiredElement(
+    "#citation-dialog",
+);
+
+const citationTitle = getRequiredElement(
+    "#citation-title",
+);
+
+const citationExcerpt = getRequiredElement(
+    "#citation-excerpt",
+);
+
+const citationLink = getRequiredElement(
+    "#citation-link",
+);
+
+const citationCloseButton = getRequiredElement(
+    "#citation-close-button",
+);
+
+const citationDoneButton = getRequiredElement(
+    "#citation-done-button",
+);
+
+const welcomeCard =
+    document.querySelector(".welcome-card");
+
+const exploreButtons = document.querySelectorAll(
+    "[data-suggested-question]",
+);
+
+const processingStatus = createProcessingStatus({
+    statusIndicator,
+    statusText,
+    processingMessage,
+    conversation,
 });
 
-// Application routes
-app.use("/api/chat", chatRoutes);
-app.use("/api/sources", sourceRoutes);
-app.use("/api/telemetry", telemetryRoutes);
+const citationDialog = createCitationDialog({
+    dialog: citationDialogElement,
+    title: citationTitle,
+    excerpt: citationExcerpt,
+    link: citationLink,
+    closeButton: citationCloseButton,
+    doneButton: citationDoneButton,
+});
 
-// Error handling must remain after all normal routes
-app.use(notFoundHandler);
-app.use(errorHandler);
+function resizeQuestionInput() {
+    questionInput.style.height = "auto";
 
-export default app;
+    questionInput.style.height =
+        `${questionInput.scrollHeight}px`;
+}
+
+function resetQuestionInputHeight() {
+    questionInput.style.height = "auto";
+}
+
+function setBusy(isBusy) {
+    questionInput.disabled = isBusy;
+    sendButton.disabled = isBusy;
+
+    sendButton.textContent = isBusy
+        ? "Sending..."
+        : "Send";
+}
+
+function showError(message) {
+    errorMessage.textContent = message;
+    errorBanner.hidden = false;
+}
+
+function clearError() {
+    errorMessage.textContent = "";
+    errorBanner.hidden = true;
+}
+
+/**
+ * Extracts display content from the current backend envelope.
+ *
+ * The backend may return:
+ * data.response
+ * data.answer
+ * data.content
+ * or an entirely different data structure.
+ *
+ * No four-section answer template is enforced here.
+ */
+function extractDisplayData(responseBody) {
+    const data =
+        responseBody?.data ??
+        responseBody;
+
+    let content = data;
+    let citations = [];
+
+    if (
+        data !== null &&
+        typeof data === "object" &&
+        !Array.isArray(data)
+    ) {
+        if (Array.isArray(data.citations)) {
+            citations = data.citations;
+        }
+
+        if (
+            Object.prototype.hasOwnProperty.call(
+                data,
+                "response",
+            )
+        ) {
+            content = data.response;
+        } else if (
+            Object.prototype.hasOwnProperty.call(
+                data,
+                "answer",
+            )
+        ) {
+            content = data.answer;
+        } else if (
+            Object.prototype.hasOwnProperty.call(
+                data,
+                "content",
+            )
+        ) {
+            content = data.content;
+        }
+    }
+
+    return {
+        content,
+        citations,
+    };
+}
+
+/**
+ * Suggested question cards only fill the natural-language input.
+ * They never select a backend route, mode, source or command.
+ */
+for (const button of exploreButtons) {
+    button.addEventListener("click", () => {
+        questionInput.value =
+            button.dataset.suggestedQuestion ?? "";
+
+        resizeQuestionInput();
+        questionInput.focus();
+    });
+}
+
+questionInput.addEventListener(
+    "input",
+    resizeQuestionInput,
+);
+
+dismissErrorButton.addEventListener("click", () => {
+    clearError();
+
+    if (statusText.textContent === "Failed") {
+        processingStatus.ready();
+    }
+});
+
+chatForm.addEventListener("submit", async (event) => {
+    event.preventDefault();
+
+    const question = questionInput.value.trim();
+
+    if (!question) {
+        showError(
+            "Enter a question before submitting.",
+        );
+
+        processingStatus.fail();
+        questionInput.focus();
+
+        return;
+    }
+
+    clearError();
+
+    if (welcomeCard) {
+        welcomeCard.hidden = true;
+    }
+
+    appendUserMessage({
+        conversation,
+        question,
+    });
+
+    questionInput.value = "";
+    resetQuestionInputHeight();
+
+    setBusy(true);
+    processingStatus.start();
+
+    try {
+        const responseBody =
+            await submitChatQuestion(question);
+
+        const {
+            content,
+            citations,
+        } = extractDisplayData(responseBody);
+
+        processingStatus.complete();
+
+        appendAssistantMessage({
+            conversation,
+            content,
+            citations,
+            openCitation:
+                citationDialog.openCitation,
+        });
+    } catch (error) {
+        processingStatus.fail();
+
+        showError(
+            error.message ??
+            "An unexpected error occurred.",
+        );
+    } finally {
+        setBusy(false);
+        questionInput.focus();
+    }
+});
+
+processingStatus.ready();
