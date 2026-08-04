@@ -22,6 +22,7 @@ function emptyApiUsage() {
     pages: 0,
     assets: 0,
     bytes: 0,
+    chunks: 0,
     tokensIn: 0,
     tokensOut: 0,
     failures: 0,
@@ -301,6 +302,7 @@ export function startTelemetryRun({
       current.pages += toPositiveNumber(usage.pages);
       current.assets += toPositiveNumber(usage.assets);
       current.bytes += toPositiveNumber(usage.bytes);
+      current.chunks += toPositiveNumber(usage.chunks);
       current.tokensIn += toPositiveNumber(usage.tokensIn);
       current.tokensOut += toPositiveNumber(usage.tokensOut);
       current.failures += toPositiveNumber(usage.failures);
@@ -388,9 +390,47 @@ export function startTelemetryRun({
   return recorder;
 }
 
+// Same surface as a real recorder, measuring nothing. Handed to callers when
+// telemetry is switched off so that code written against req.telemetry keeps
+// working instead of throwing on undefined.
+export function createNoopTelemetryRun() {
+  const recorder = {
+    recordId: null,
+
+    setQueryClass: () => recorder,
+    setCorrelationId: () => recorder,
+    setSource: () => recorder,
+    setHttp: () => recorder,
+    note: () => recorder,
+    startStage: () => recorder,
+    endStage: () => recorder,
+    skipStage: () => recorder,
+    failStage: () => recorder,
+    recordApiUsage: () => recorder,
+    flagColdStart: () => recorder,
+    fail: () => recorder,
+    snapshot: () => null,
+
+    // Still runs fn: the work is real even when the measurement is discarded.
+    async measureStage(name, fn) {
+      return fn();
+    },
+
+    async finish() {
+      return null;
+    },
+  };
+
+  return recorder;
+}
+
 // Wraps a call that can pay a cold start. Anything slower than the resource
 // threshold is flagged on the record rather than left to distort the latency
 // distribution. OpenSearch Serverless NextGen recovery is roughly 10 seconds.
+//
+// Only a call that succeeded can have recovered. A slow call that threw is a
+// timeout or an error, and counting it would inflate coldRuns and pull
+// avgRecoveryMs towards the client timeout instead of the real recovery time.
 export async function withColdStartDetection(
   recorder,
   { resource, stage = null, thresholdMs = null },
@@ -399,18 +439,18 @@ export async function withColdStartDetection(
   const threshold = thresholdMs ?? getColdStartThresholdMs(resource);
   const startMs = Date.now();
 
-  try {
-    return await fn();
-  } finally {
-    const elapsedMs = Date.now() - startMs;
+  const result = await fn();
 
-    if (elapsedMs >= threshold && recorder) {
-      recorder.flagColdStart({
-        resource,
-        stage,
-        recoveryMs: elapsedMs,
-        thresholdMs: threshold,
-      });
-    }
+  const elapsedMs = Date.now() - startMs;
+
+  if (elapsedMs >= threshold && recorder) {
+    recorder.flagColdStart({
+      resource,
+      stage,
+      recoveryMs: elapsedMs,
+      thresholdMs: threshold,
+    });
   }
+
+  return result;
 }

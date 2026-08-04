@@ -37,6 +37,11 @@ export const telemetryConfig = Object.freeze({
   serviceVersion: process.env.SERVICE_VERSION || "sprint-1",
   defaultColdStartThresholdMs,
   queryLimit: readInteger(process.env.TELEMETRY_QUERY_LIMIT, 100),
+
+  // One record per HTTP request with no expiry fills a free tier cluster.
+  // Records older than this are removed by a TTL index; see the note on that
+  // index before changing the value on a deployed database.
+  retentionDays: readInteger(process.env.TELEMETRY_RETENTION_DAYS, 30),
 });
 
 export function getColdStartThresholdMs(resource) {

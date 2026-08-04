@@ -42,19 +42,26 @@ function stageUnwindStages(filter, { excludeColdStart }) {
   return stages;
 }
 
-// Per-stage latency. Cold start affected runs can be excluded so the roughly
+// Per-stage latency. Cold start affected stages can be excluded so the roughly
 // 10 second OpenSearch recovery does not sit inside the warm distribution.
+//
+// Grouped by run type as well as stage name: a stage name is only unique within
+// a pipeline, and the same key would otherwise merge a startup's mongodb_connect
+// with an ingestion's, or hide either behind the api_request records that
+// outnumber both.
 export async function aggregateStageLatency(options = {}) {
   const { excludeColdStart = true } = options;
-  const filter = buildTelemetryFilter({
-    ...options,
-    coldStart: excludeColdStart ? false : options.coldStart,
-  });
+
+  // Exclusion is per stage, not per record. A run that paid a cold start in one
+  // stage still holds usable warm samples in the others, and dropping the whole
+  // record would discard them — which for startup runs means discarding all of
+  // them, since a first connection is almost always over the threshold.
+  const filter = buildTelemetryFilter(options);
 
   const base = stageUnwindStages(filter, { excludeColdStart });
 
   const groupCommon = {
-    _id: "$stageEntries.k",
+    _id: { runType: "$runType", stage: "$stageEntries.k" },
     samples: { $sum: 1 },
     avgMs: { $avg: "$stageEntries.v.durationMs" },
     minMs: { $min: "$stageEntries.v.durationMs" },
@@ -98,7 +105,8 @@ export async function aggregateStageLatency(options = {}) {
     percentilesSupported,
     excludeColdStart,
     stages: results.map((row) => ({
-      stage: row._id,
+      runType: row._id.runType,
+      stage: row._id.stage,
       samples: row.samples,
       avgMs: row.avgMs,
       minMs: row.minMs,
@@ -152,13 +160,45 @@ export async function aggregateRunLatencyByQueryClass(options = {}) {
   }));
 }
 
+const EMPTY_INGESTION_TOTALS = Object.freeze({
+  runs: 0,
+  documents: 0,
+  pages: 0,
+  assets: 0,
+  bytes: 0,
+  chunks: 0,
+  totalMs: 0,
+});
+
 // Volume split by API type: the input to cost per page and cost per document.
+//
+// Only ingestion runs carry these numbers — byApi and the volume counters are
+// written by the ingestion pipeline and by nothing else. So the run type is
+// pinned, in both directions:
+//
+//   undefined runType  -> narrowed to ingestion, never widened to every run
+//   runType=ingestion  -> the same query
+//   any other runType  -> intersects to nothing, so an empty report
+//
+// The last case is the one that matters. Letting a caller's runType through
+// here redirected the aggregation onto other records and returned them under
+// an "ingestion" label: asking the summary for api_request reported the
+// api_request count as ingestion.totals.runs. Honouring the filter and
+// returning zero is the honest answer; silently ignoring it would repeat the
+// dropped-filter bug fixed in buildTelemetryFilter.
 export async function aggregateIngestionVolume(options = {}) {
-  // runType is forced last: an undefined runType in options must not widen this
-  // to every run type.
+  const { runType } = options;
+
+  if (runType !== undefined && runType !== TELEMETRY_RUN_TYPES.INGESTION) {
+    return {
+      totals: { ...EMPTY_INGESTION_TOTALS, msPerPage: null, msPerDocument: null },
+      byApi: [],
+    };
+  }
+
   const filter = buildTelemetryFilter({
     ...options,
-    runType: options.runType || TELEMETRY_RUN_TYPES.INGESTION,
+    runType: TELEMETRY_RUN_TYPES.INGESTION,
   });
 
   const [byApi, totals] = await Promise.all([
@@ -174,9 +214,11 @@ export async function aggregateIngestionVolume(options = {}) {
           pages: { $sum: "$apiEntries.v.pages" },
           assets: { $sum: "$apiEntries.v.assets" },
           bytes: { $sum: "$apiEntries.v.bytes" },
+          chunks: { $sum: "$apiEntries.v.chunks" },
           tokensIn: { $sum: "$apiEntries.v.tokensIn" },
           tokensOut: { $sum: "$apiEntries.v.tokensOut" },
           failures: { $sum: "$apiEntries.v.failures" },
+          durationMs: { $sum: "$apiEntries.v.durationMs" },
         },
       },
       { $sort: { pages: -1 } },
@@ -198,15 +240,7 @@ export async function aggregateIngestionVolume(options = {}) {
     ]),
   ]);
 
-  const total = totals[0] || {
-    runs: 0,
-    documents: 0,
-    pages: 0,
-    assets: 0,
-    bytes: 0,
-    chunks: 0,
-    totalMs: 0,
-  };
+  const total = totals[0] || EMPTY_INGESTION_TOTALS;
 
   return {
     totals: {
@@ -227,29 +261,39 @@ export async function aggregateIngestionVolume(options = {}) {
       pages: row.pages,
       assets: row.assets,
       bytes: row.bytes,
+      chunks: row.chunks,
       tokensIn: row.tokensIn,
       tokensOut: row.tokensOut,
       failures: row.failures,
+      durationMs: row.durationMs,
+      // Per-API rate, unlike totals.msPerPage which divides whole-run time by
+      // pages and so charges S3 and embedding time to the page count.
+      msPerPage: row.pages > 0 ? row.durationMs / row.pages : null,
     })),
   };
 }
 
 // How often a cold start happened and what it cost, kept apart from the warm
 // numbers so both stay honest.
+//
+// The rate is reported per run type and never blended. Every HTTP request
+// produces a record and almost none are cold, while a startup connection almost
+// always is; a single rate over both answers no question anyone asks.
 export async function aggregateColdStarts(options = {}) {
   const filter = buildTelemetryFilter(options);
 
-  const [overall, byResource] = await Promise.all([
+  const [byRunType, byResource] = await Promise.all([
     TelemetryRecord.aggregate([
       { $match: filter },
       {
         $group: {
-          _id: null,
+          _id: "$runType",
           runs: { $sum: 1 },
           coldRuns: { $sum: { $cond: ["$coldStart.detected", 1, 0] } },
           totalRecoveryMs: { $sum: "$coldStart.totalRecoveryMs" },
         },
       },
+      { $sort: { runs: -1 } },
     ]),
     TelemetryRecord.aggregate([
       { $match: { ...filter, "coldStart.detected": true } },
@@ -266,14 +310,29 @@ export async function aggregateColdStarts(options = {}) {
     ]),
   ]);
 
-  const summary = overall[0] || { runs: 0, coldRuns: 0, totalRecoveryMs: 0 };
+  const runTypes = byRunType.map((row) => ({
+    runType: row._id,
+    runs: row.runs,
+    coldRuns: row.coldRuns,
+    warmRuns: row.runs - row.coldRuns,
+    coldStartRate: row.runs > 0 ? row.coldRuns / row.runs : null,
+    totalRecoveryMs: row.totalRecoveryMs,
+  }));
+
+  // Totals carry counts but deliberately no rate: see the note above.
+  const totals = runTypes.reduce(
+    (accumulator, row) => ({
+      runs: accumulator.runs + row.runs,
+      coldRuns: accumulator.coldRuns + row.coldRuns,
+      warmRuns: accumulator.warmRuns + row.warmRuns,
+      totalRecoveryMs: accumulator.totalRecoveryMs + row.totalRecoveryMs,
+    }),
+    { runs: 0, coldRuns: 0, warmRuns: 0, totalRecoveryMs: 0 },
+  );
 
   return {
-    runs: summary.runs,
-    coldRuns: summary.coldRuns,
-    warmRuns: summary.runs - summary.coldRuns,
-    coldStartRate: summary.runs > 0 ? summary.coldRuns / summary.runs : null,
-    totalRecoveryMs: summary.totalRecoveryMs,
+    totals,
+    byRunType: runTypes,
     byResource: byResource.map((row) => ({
       resource: row._id,
       events: row.events,
@@ -285,6 +344,11 @@ export async function aggregateColdStarts(options = {}) {
 
 // Which stages have started reporting. Makes the gap between "structure exists"
 // and "stage is instrumented" visible without reading code.
+//
+// Split by run type. Every record carries the four pipeline stages from day one
+// (E6-20a), so without the split the api_request records — one per HTTP call —
+// would keep every stage reading not_implemented long after ingestion had
+// instrumented it. The record shape is right; the grouping was wrong.
 export async function aggregateStageCoverage(options = {}) {
   const filter = buildTelemetryFilter(options);
 
@@ -294,22 +358,27 @@ export async function aggregateStageCoverage(options = {}) {
     { $unwind: "$stageEntries" },
     {
       $group: {
-        _id: { stage: "$stageEntries.k", status: "$stageEntries.v.status" },
+        _id: {
+          runType: "$runType",
+          stage: "$stageEntries.k",
+          status: "$stageEntries.v.status",
+        },
         count: { $sum: 1 },
       },
     },
     {
       $group: {
-        _id: "$_id.stage",
+        _id: { runType: "$_id.runType", stage: "$_id.stage" },
         byStatus: { $push: { status: "$_id.status", count: "$count" } },
         total: { $sum: "$count" },
       },
     },
-    { $sort: { _id: 1 } },
+    { $sort: { "_id.runType": 1, "_id.stage": 1 } },
   ]);
 
   return results.map((row) => ({
-    stage: row._id,
+    runType: row._id.runType,
+    stage: row._id.stage,
     total: row.total,
     byStatus: row.byStatus,
     // A stage counts as instrumented only once it has actually run. Skipped

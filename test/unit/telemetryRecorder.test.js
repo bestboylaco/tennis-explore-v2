@@ -2,9 +2,11 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 
 import {
+  createNoopTelemetryRun,
   startTelemetryRun,
   withColdStartDetection,
 } from "../../src/modules/telemetry/services/telemetryRecorder.service.js";
+import { buildTelemetryFilter } from "../../src/modules/telemetry/services/telemetryStore.service.js";
 import {
   API_TYPES,
   COLD_START_RESOURCES,
@@ -95,6 +97,34 @@ test("ingestion volume is split by API type and rolled up", () => {
   assert.equal(record.ingestion.documentCount, 2);
 });
 
+test("chunk volume is split by API type as well as rolled up", () => {
+  const run = startTelemetryRun({ runType: TELEMETRY_RUN_TYPES.INGESTION });
+
+  run.recordApiUsage(API_TYPES.BEDROCK_EMBEDDING, { chunks: 40, apiCalls: 2 });
+  run.recordApiUsage(API_TYPES.BEDROCK_EMBEDDING, { chunks: 10, apiCalls: 1 });
+
+  const record = run.snapshot();
+
+  // Without the per-API split, cost per chunk cannot be attributed to the API
+  // that was billed for it.
+  assert.equal(record.ingestion.byApi.bedrock_embedding.chunks, 50);
+  assert.equal(record.ingestion.chunkCount, 50);
+});
+
+test("time is attributed to the billed API, not only to the stage", () => {
+  const run = startTelemetryRun({ runType: TELEMETRY_RUN_TYPES.INGESTION });
+
+  run.recordApiUsage(API_TYPES.TEXTRACT, { pages: 10, durationMs: 400 });
+  run.recordApiUsage(API_TYPES.TEXTRACT, { pages: 10, durationMs: 200 });
+
+  // Cost per page and seconds per page have to come off the same key, which
+  // needs volume and time on the same API entry.
+  const record = run.snapshot();
+
+  assert.equal(record.ingestion.byApi.textract.durationMs, 600);
+  assert.equal(record.ingestion.byApi.textract.pages, 20);
+});
+
 test("cold starts are flagged distinctly, not folded into latency", async () => {
   const run = startTelemetryRun({ runType: TELEMETRY_RUN_TYPES.QUERY });
 
@@ -126,6 +156,65 @@ test("a fast call is not flagged as a cold start", async () => {
   );
 
   assert.equal(run.snapshot().coldStart.detected, false);
+});
+
+test("a slow call that failed is not a cold start", async () => {
+  const run = startTelemetryRun({ runType: TELEMETRY_RUN_TYPES.QUERY });
+
+  await assert.rejects(
+    withColdStartDetection(
+      run,
+      {
+        resource: COLD_START_RESOURCES.OPENSEARCH,
+        stage: "retrieval",
+        thresholdMs: 0,
+      },
+      async () => {
+        throw new Error("timeout");
+      },
+    ),
+    /timeout/,
+  );
+
+  // A timeout is not a recovery. Counting it would pull avgRecoveryMs towards
+  // the client timeout instead of the real cold start cost.
+  const record = run.snapshot();
+
+  assert.equal(record.coldStart.detected, false);
+  assert.equal(record.coldStart.count, 0);
+});
+
+test("a disabled run keeps the recorder surface and still runs the work", async () => {
+  const run = createNoopTelemetryRun();
+  let ran = false;
+
+  run.setQueryClass(QUERY_CLASSES.DOCUMENT).note("chunkCount", 3);
+  run.startStage("retrieval");
+  run.recordApiUsage(API_TYPES.OPENSEARCH, { apiCalls: 1 });
+  run.endStage("retrieval");
+
+  const result = await run.measureStage("generation", async () => {
+    ran = true;
+    return "answer";
+  });
+
+  assert.equal(ran, true);
+  assert.equal(result, "answer");
+  assert.equal(await run.finish(RUN_STATUSES.SUCCESS), null);
+});
+
+test("a malformed sourceId is rejected, not dropped from the filter", () => {
+  assert.throws(() => buildTelemetryFilter({ sourceId: "not-an-objectid" }), {
+    code: "INVALID_SOURCE_ID",
+    statusCode: 400,
+  });
+
+  // Silently ignoring it would answer a per-source question with every record.
+  const filter = buildTelemetryFilter({
+    sourceId: "507f1f77bcf86cd799439011",
+  });
+
+  assert.equal(filter["ingestion.sourceId"], "507f1f77bcf86cd799439011");
 });
 
 test("attributes cannot carry raw content", () => {

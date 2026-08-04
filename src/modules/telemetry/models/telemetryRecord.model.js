@@ -7,6 +7,7 @@ import {
   STAGE_STATUSES,
   TELEMETRY_SCHEMA_VERSION,
 } from "../../../shared/constants/telemetry.js";
+import { telemetryConfig } from "../telemetry.config.js";
 
 // One measured stage. The same shape is used by every stage, so adding a new
 // measured stage means writing a new key into the stage map, never editing this
@@ -105,6 +106,7 @@ const apiUsageSchema = new mongoose.Schema(
     pages: { type: Number, default: 0 },
     assets: { type: Number, default: 0 },
     bytes: { type: Number, default: 0 },
+    chunks: { type: Number, default: 0 },
     tokensIn: { type: Number, default: 0 },
     tokensOut: { type: Number, default: 0 },
     failures: { type: Number, default: 0 },
@@ -285,6 +287,19 @@ telemetryRecordSchema.index({ queryClass: 1, startedAt: -1 });
 telemetryRecordSchema.index({ "coldStart.detected": 1, startedAt: -1 });
 telemetryRecordSchema.index({ correlationId: 1 });
 telemetryRecordSchema.index({ "ingestion.sourceId": 1, startedAt: -1 });
+
+// Retention. Telemetry is operational data with a useful life measured in
+// weeks, and the api_request run type writes a record per request, so the
+// collection has to expire or it grows without bound.
+//
+// MongoDB will not change expireAfterSeconds on an existing index: raising or
+// lowering TELEMETRY_RETENTION_DAYS on a deployed database means dropping
+// startedAt_1 first, otherwise index creation fails with IndexOptionsConflict
+// and the old window silently stays in force.
+telemetryRecordSchema.index(
+  { startedAt: 1 },
+  { expireAfterSeconds: telemetryConfig.retentionDays * 24 * 60 * 60 },
+);
 
 const TelemetryRecord =
   mongoose.models.TelemetryRecord ||
