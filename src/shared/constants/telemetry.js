@@ -68,6 +68,9 @@ export const API_TYPES = Object.freeze({
   BEDROCK_RERANK: "bedrock_rerank",
   NOVA_PRO: "nova_pro",
   OPENSEARCH: "opensearch",
+  // Local generation via Ollama, standing in for Bedrock/Nova Pro (TENISE-19)
+  // now that the project runs without AWS access.
+  OLLAMA_GENERATION: "ollama_generation",
 });
 
 // Resources that can cold start. OpenSearch Serverless NextGen is the one that
@@ -78,6 +81,10 @@ export const COLD_START_RESOURCES = Object.freeze({
   BEDROCK_AGENT: "bedrock_agent",
   BEDROCK_RUNTIME: "bedrock_runtime",
   MONGODB: "mongodb",
+  // A local Ollama model that has not been called recently gets unloaded from
+  // memory and must be reloaded, observed to take up to ~30s on this project's
+  // hardware for an 8B model. Same distortion risk as OpenSearch NextGen.
+  OLLAMA: "ollama",
 });
 
 export const DEFAULT_COLD_START_THRESHOLD_MS = 5000;
@@ -89,6 +96,7 @@ export const COLD_START_THRESHOLDS_MS = Object.freeze({
   [COLD_START_RESOURCES.BEDROCK_AGENT]: 4000,
   [COLD_START_RESOURCES.BEDROCK_RUNTIME]: 4000,
   [COLD_START_RESOURCES.MONGODB]: 2000,
+  [COLD_START_RESOURCES.OLLAMA]: 8000,
 });
 
 // Attribute values are capped so no raw document or query content can reach the

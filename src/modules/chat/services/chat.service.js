@@ -1,55 +1,54 @@
-const DEMO_PROCESSING_DELAY_MS = 600;
-
-/**
- * Creates a small delay so the frontend processing state is visible
- * during the Sprint 2 demonstration.
- */
-function wait(milliseconds) {
-    return new Promise((resolve) => {
-        setTimeout(resolve, milliseconds);
-    });
-}
+import {
+    QUERY_CLASSES,
+    RUN_STATUSES,
+    TELEMETRY_RUN_TYPES,
+} from "../../../shared/constants/telemetry.js";
+import { startTelemetryRun } from "../../telemetry/services/telemetryRecorder.service.js";
+import { generateAnswer } from "./generation.service.js";
 
 /**
  * Handles one natural-language coaching question.
  *
- * This is currently a deterministic demo implementation. A future story
- * can replace this section with the real routing, retrieval, and AI pipeline
- * without changing the controller or the chat interface.
+ * Generation (TENISE-19) is real: it calls a local Ollama model grounded in
+ * `evidence`. Real retrieval (TENISE-15/17) is not wired in yet, so evidence
+ * defaults to empty until that lands -- the response is deliberately not
+ * forced into the TENISE-22 four-section template; the frontend renders
+ * whatever structure the backend returns.
  */
-export async function submitChatQuestion(question) {
-    await wait(DEMO_PROCESSING_DELAY_MS);
+export async function submitChatQuestion(question, { evidence = [] } = {}) {
+    const run = startTelemetryRun({
+        runType: TELEMETRY_RUN_TYPES.QUERY,
+        queryClass: QUERY_CLASSES.DOCUMENT,
+    });
 
-    return {
-        status: "completed",
+    try {
+        const generation = await generateAnswer({
+            question,
+            evidence,
+            recorder: run,
+        });
 
-        /*
-         * This response is deliberately not forced into the TENISE-22
-         * four-section template. The frontend must render the structure
-         * returned by the backend.
-         */
-        response: {
-            message: "Your coaching question was accepted.",
-            receivedQuestion: question,
-            coachingSuggestions: [
-                "Review the player's current performance evidence.",
-                "Identify one measurable priority for the next training session.",
-                "Monitor the result and adjust the plan when new evidence is available.",
-            ],
-            demoInformation: {
-                responseType: "general_coaching_demo",
-                generatedAt: new Date().toISOString(),
+        await run.finish(RUN_STATUSES.SUCCESS);
+
+        return {
+            status: "completed",
+            response: {
+                answer: generation.answer,
+                receivedQuestion: question,
+                evidenceCount: evidence.length,
+                generation: {
+                    model: generation.model,
+                    promptVersion: generation.promptVersion,
+                },
             },
-        },
 
-        citations: [
-            {
-                id: "demo-coaching-reference",
-                title: "Demo coaching reference",
-                excerpt:
-                    "This reference demonstrates that supporting evidence can be opened from the unified chat interface.",
-                url: "/citations/demo-reference.html",
-            },
-        ],
-    };
+            // Citation binding to source chunks is TENISE-21; empty until
+            // retrieval supplies real evidence with resolvable citations.
+            citations: [],
+        };
+    } catch (error) {
+        run.fail(error);
+        await run.finish(RUN_STATUSES.FAILED);
+        throw error;
+    }
 }

@@ -5,7 +5,9 @@ import { submitChatQuestion } from "../services/chat.service.js";
  * structure produced by the chat service.
  */
 export async function submitChatQuestionController(req, res) {
-    const result = await submitChatQuestion(req.body.question);
+    const result = await submitChatQuestion(req.body.question, {
+        evidence: req.body.evidence,
+    });
 
     return res.status(200).json({
         success: true,
