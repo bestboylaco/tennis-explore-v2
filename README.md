@@ -12,6 +12,7 @@ TennisExplore V2 is a modular AI-powered platform for tennis intelligence, coach
 - Source validation
 - Create and read source APIs
 - Soft-delete source API
+- Telemetry scaffolding and record structure
 
 ### In Progress
 
@@ -40,7 +41,8 @@ src/
 │   ├── assistant/
 │   ├── ingestion/
 │   ├── retrieval/
-│   └── sources/
+│   ├── sources/
+│   └── telemetry/
 └── shared/
 ```
 
@@ -94,7 +96,19 @@ npm run dev
 | POST | `/api/sources` | Create a source |
 | GET | `/api/sources` | List active sources |
 | GET | `/api/sources/:sourceId` | Get one active source |
+| POST | `/api/sources/:sourceId/ingest` | Run an instrumented ingestion run |
 | DELETE | `/api/sources/:sourceId` | Archive a source |
+| GET | `/api/telemetry` | List telemetry records |
+| GET | `/api/telemetry/summary` | Aggregated latency, volume and cold start figures |
+| GET | `/api/telemetry/:recordId` | Get one telemetry record |
+
+## Telemetry
+
+Every run — startup, API request and ingestion — writes a record to the
+`telemetry_records` collection. See
+[telemetry-record-design.md](docs/telemetry-record-design.md) for the record
+structure, the cold start handling and the optional `TELEMETRY_*` environment
+variables.
 
 ## Development Workflow
 

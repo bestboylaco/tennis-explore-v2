@@ -1,0 +1,108 @@
+@media (max-width: 75rem) {
+    :root {
+        --left-sidebar-width: 4.5rem;
+        --right-sidebar-width: 14rem;
+    }
+
+    .navigation__item {
+        justify-content: center;
+        padding: 0;
+    }
+
+        .navigation__item span:last-child,
+        .sidebar__heading,
+        .sidebar__footer {
+            display: none;
+        }
+
+    .navigation__icon {
+        width: auto;
+    }
+}
+
+@media (max-width: 59rem) {
+    .application {
+        padding-inline: var(--space-4);
+    }
+
+    .workspace {
+        height: auto;
+        min-height: calc(100vh - var(--topbar-height) - var(--space-6));
+        grid-template-columns: 4rem minmax(0, 1fr);
+    }
+
+    .sidebar--right {
+        display: none;
+    }
+
+    .chat-panel {
+        min-height: calc(100vh - var(--topbar-height) - var(--space-6));
+    }
+}
+
+@media (max-width: 42rem) {
+    .application {
+        padding: 0;
+    }
+
+    .topbar {
+        padding-inline: var(--space-4);
+    }
+
+    .environment-badge {
+        display: none;
+    }
+
+    .workspace {
+        display: block;
+        min-height: calc(100vh - var(--topbar-height));
+    }
+
+    .sidebar--left {
+        display: none;
+    }
+
+    .chat-panel {
+        min-height: calc(100vh - var(--topbar-height));
+        border-right: 0;
+        border-bottom: 0;
+        border-left: 0;
+        border-radius: var(--radius-large) var(--radius-large) 0 0;
+    }
+
+    .chat-header {
+        padding-inline: var(--space-4);
+    }
+
+    .conversation {
+        padding: var(--space-4);
+    }
+
+    .welcome-card {
+        margin: var(--space-8) auto;
+        grid-template-columns: 1fr;
+    }
+
+    .composer {
+        margin-inline: var(--space-3);
+    }
+
+    .composer-hint {
+        padding-bottom: var(--space-3);
+    }
+
+    .status-indicator {
+        padding-inline: var(--space-2);
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        scroll-behavior: auto !important;
+        animation-duration: 1ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 1ms !important;
+    }
+}
