@@ -8,3 +8,6 @@ coverage/
 Thumbs.db
 npm-debug.log*
 .claudeignore
+.vs/
+*.user
+*.suo
