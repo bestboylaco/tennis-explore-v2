@@ -11,7 +11,7 @@ import { notFoundHandler } from "./middleware/notFoundHandler.js";
 import { errorHandler } from "./middleware/errorHandler.js";
 import { telemetryMiddleware } from "./middleware/telemetry.middleware.js";
 
-import { sourceRoutes } from "./modules/sources/index.js";
+import sourceRoutes from "./modules/sources/index.js";
 import { telemetryRoutes } from "./modules/telemetry/index.js";
 import { chatRoutes } from "./modules/chat/index.js";
 
