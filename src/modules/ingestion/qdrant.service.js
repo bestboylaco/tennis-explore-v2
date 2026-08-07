@@ -1,0 +1,1 @@
+import { qdrantClient } from "../../config/qdrant.client.js";

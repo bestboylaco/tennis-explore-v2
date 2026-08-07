@@ -41,3 +41,47 @@ export async function archiveSource(sourceId) {
     }
   );
 }
+
+export async function attachFileToSource(sourceId, fileData) {
+  if (!mongoose.isValidObjectId(sourceId)) {
+    return null;
+  }
+
+  return Source.findOneAndUpdate(
+    {
+      _id: sourceId,
+      isActive: true,
+    },
+    {
+      file: fileData,
+      processingStatus: "uploaded",
+    },
+    {
+      new: true,
+      runValidators: true,
+    }
+  );
+}
+
+export async function updateSourceProcessingStatus(
+  sourceId,
+  processingStatus
+) {
+  if (!mongoose.isValidObjectId(sourceId)) {
+    return null;
+  }
+
+  return Source.findOneAndUpdate(
+    {
+      _id: sourceId,
+      isActive: true,
+    },
+    {
+      processingStatus,
+    },
+    {
+      new: true,
+      runValidators: true,
+    }
+  );
+}

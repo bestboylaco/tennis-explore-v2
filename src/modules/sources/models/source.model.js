@@ -1,43 +1,97 @@
 import mongoose from "mongoose";
-import { SOURCE_TYPES } from "../../../shared/constants/sourceTypes.js";
-import { PROCESSING_STATUSES } from "../../../shared/constants/processingStatuses.js";
 
-const sourceSchema = new mongoose.Schema(
-  {
-    title: {
-      type: String,
-      required: true,
-      trim: true,
-    },
+import {
+  PROCESSING_STATUSES,
+} from "../../../shared/constants/processingStatuses.js";
 
-    description: {
-      type: String,
-      default: "",
-      trim: true,
-    },
+import {
+  SOURCE_TYPES,
+} from "../../../shared/constants/sourceTypes.js";
 
-    sourceType: {
-      type: String,
-      required: true,
-      enum: SOURCE_TYPES,
-    },
+const sourceSchema =
+  new mongoose.Schema(
+    {
+      title: {
+        type: String,
+        required: true,
+        trim: true,
+      },
 
-    processingStatus: {
-      type: String,
-      enum: PROCESSING_STATUSES,
-      default: "pending",
-    },
+      description: {
+        type: String,
+        trim: true,
+        default: "",
+      },
 
-    isActive: {
+      sourceType: {
+        type: String,
+        enum: SOURCE_TYPES,
+        required: true,
+      },
+
+      processingStatus: {
+        type: String,
+        enum: Object.values(
+          PROCESSING_STATUSES
+        ),
+        default:
+          PROCESSING_STATUSES.PENDING ||
+          "pending",
+      },
+
+      file: {
+        originalName: {
+          type: String,
+          trim: true,
+        },
+
+        mimeType: {
+          type: String,
+          trim: true,
+        },
+
+        size: {
+          type: Number,
+          min: 0,
+        },
+
+        uploadedAt: {
+          type: Date,
+        },
+
+        storageProvider: {
+          type: String,
+          enum: ["s3"],
+          default: "s3",
+        },
+
+        bucket: {
+          type: String,
+          trim: true,
+        },
+
+        key: {
+          type: String,
+          trim: true,
+        },
+
+        etag: {
+          type: String,
+          trim: true,
+        },
+      },
+
+      isActive: {
         type: Boolean,
         default: true,
+      },
     },
-  },
-  {
-    timestamps: true,
-  }
+    {
+      timestamps: true,
+    }
+  );
+
+export default mongoose.model(
+  "Source",
+  sourceSchema
 );
-
-const Source = mongoose.model("Source", sourceSchema);
-
-export default Source;
