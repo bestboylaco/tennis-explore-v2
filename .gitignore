@@ -11,3 +11,19 @@ npm-debug.log*
 .vs/
 *.user
 *.suo
+# the built search index is COMMITTED on purpose.
+#
+# it is the whole point of this story: a teammate clones the repo, runs one
+# command, and queries the same corpus that was evaluated -- rather than
+# rebuilding their own index from their own machine and comparing two different
+# things. ~30 mb at bge-m3 dimensions is well within what git handles.
+#
+# if it ever passes ~200 mb, move vectors.bin to a github release asset and put
+# the download url in data/index/manifest.json instead. do not switch to
+# "everyone builds their own".
+!data/index/
+!data/index/*
+
+# raw source documents are NOT committed. they are partner data, some of it
+# classified internal or above, and the repo is not the right place for it.
+data/raw/
