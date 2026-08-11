@@ -14,7 +14,8 @@
     "search": "node bin/search.js",
     "ask": "node bin/ask.js",
     "eval": "node bin/eval.js",
-    "check:models": "node bin/check-models.js"
+    "check:models": "node bin/check-models.js",
+    "eval:answers": "node bin/eval-answers.js"
   },
   "keywords": [
     "tennis",
@@ -25,6 +26,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "adm-zip": "^0.5.16",
     "cors": "^2.8.5",
     "dotenv": "^17.0.0",
     "express": "^5.0.0",

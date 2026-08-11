@@ -1,27 +1,30 @@
 #!/usr/bin/env node
-// the whole thing: retrieve, answer, cite. runs without the web server, without
-// mongodb, without anything but ollama and a built index.
+// ask a question and get an answer with its sources.
 //
 //   npm run ask -- "how does serve load differ between training and tournaments?"
-//   npm run ask -- --role physiotherapist "what does the evidence say about injury risk?"
+//   npm run ask -- --role physiotherapist "what does the research say about injury risk?"
+//   npm run ask -- "how many matches were played on each surface?"
+//
+// runs the full path: classify the question, route it to documents or tables,
+// gather evidence, answer, then check the answer against what was retrieved.
+// no web server and no mongodb -- just ollama and a built index.
 
 import process from "node:process";
 
 import { ROLE_IDS } from "../src/shared/constants/accessControl.js";
-import { retrieve } from "../src/modules/retrieval/retrieval.service.js";
-import { buildContext } from "../src/modules/retrieval/contextBuilder.service.js";
-import { bindCitations, findUnsupportedNumbers } from "../src/modules/retrieval/citation.service.js";
-import { retrievalConfig } from "../src/config/retrieval.config.js";
-import { buildGenerationMessages } from "../src/modules/chat/prompts/generationPrompt.js";
+import { answerQuestion } from "../src/modules/chat/services/answer.service.js";
 
 const args = process.argv.slice(2);
 let roleId = "analyst";
+let showJson = false;
 const words = [];
 
 for (let i = 0; i < args.length; i += 1) {
   if (args[i] === "--role") {
     roleId = args[i + 1];
     i += 1;
+  } else if (args[i] === "--json") {
+    showJson = true;
   } else {
     words.push(args[i]);
   }
@@ -30,87 +33,62 @@ for (let i = 0; i < args.length; i += 1) {
 const question = words.join(" ").trim();
 
 if (question === "") {
-  console.error('usage: npm run ask -- [--role <role>] "your question"');
+  console.error('usage: npm run ask -- [--role <role>] [--json] "your question"');
   console.error(`roles: ${ROLE_IDS.join(", ")}`);
   process.exit(1);
 }
 
-// talks to ollama directly rather than through the express service, so this
-// script has no dependency on mongodb being up. same prompt, same model.
-async function generate(messages) {
-  const response = await fetch(`${retrievalConfig.generation.baseUrl}/api/chat`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      model: retrievalConfig.generation.model,
-      messages,
-      stream: false,
-      options: { temperature: 0 },
-    }),
-  });
-
-  if (!response.ok) {
-    throw new Error(
-      `ollama returned ${response.status}. is it running, and is ` +
-        `"${retrievalConfig.generation.model}" pulled?`,
-    );
-  }
-
-  const payload = await response.json();
-
-  return String(payload.message?.content ?? "");
-}
-
 try {
-  const retrieval = await retrieve(question, { roleId });
+  const result = await answerQuestion(question, { roleId });
 
-  if (retrieval.evidence.length === 0) {
-    console.log(`\nnothing in the index is visible to role "${roleId}" for that question.\n`);
+  if (showJson) {
+    console.log(JSON.stringify(result, null, 2));
     process.exit(0);
   }
 
-  const context = buildContext(retrieval.evidence);
-
-  process.stdout.write(
-    `\nretrieved ${retrieval.evidence.length} chunks ` +
-      `(${retrieval.plan.kind}, ${retrieval.telemetry.durationMs}ms). thinking...\n\n`,
+  console.log(
+    `\n${result.intent} · ${result.route} · role ${roleId} · ${result.telemetry.durationMs}ms\n`,
   );
 
-  const answer = await generate(
-    buildGenerationMessages({ question, evidence: retrieval.evidence }),
-  );
+  console.log(result.answer);
 
-  const bound = bindCitations(answer, retrieval.evidence);
-  const unsupported = findUnsupportedNumbers(answer, retrieval.evidence);
+  // the table, when the question earned one.
+  if (result.table?.markdown) console.log(`\n${result.table.markdown}`);
 
-  console.log(answer.trim());
-  console.log(`\n${"-".repeat(70)}\nsources`);
+  if (result.sql) console.log(`\nquery run:\n${result.sql}`);
 
-  for (const citation of bound.citations) {
-    const where = [citation.title, citation.page ? `p${citation.page}` : null, citation.date]
-      .filter(Boolean)
-      .join(" · ");
+  if (result.citations.length > 0) {
+    console.log(`\n${"-".repeat(70)}\nsources`);
 
-    console.log(`  [${citation.number}] ${where}`);
+    for (const citation of result.citations) {
+      console.log(`  [${citation.number}] ${citation.link?.label ?? citation.title}`);
 
-    if (citation.authors.length > 0) console.log(`       ${citation.authors.join(", ")}`);
+      if (citation.link) console.log(`       ${citation.link.href}`);
+      if (citation.authors?.length) console.log(`       ${citation.authors.join(", ")}`);
+      if (citation.basis) {
+        console.log(
+          `       computed over ${citation.basis.rowsMatched} of ${citation.basis.rowsScanned} rows`,
+        );
+      }
+    }
   }
 
-  // the honest part. an answer that cites nothing looks exactly like one that
+  // the honest part. an answer that cites nothing reads exactly like one that
   // cites everything correctly, so we say which it was.
-  if (bound.citations.length === 0) {
-    console.log("  (none -- the model did not cite anything, so this answer is not grounded)");
+  if (!result.answered) {
+    console.log(`\n  (no answer given${result.reason ? `: ${result.reason}` : ""})`);
+  } else if (result.citations.length === 0) {
+    console.log("\n  warning: the model cited nothing, so this answer is not grounded");
   }
 
-  if (bound.dangling.length > 0) {
-    console.log(`\n  warning: cited [${bound.dangling.join("], [")}] which was never supplied`);
+  if (result.grounding.danglingCitations?.length > 0) {
+    console.log(`  warning: cited [${result.grounding.danglingCitations.join("], [")}] which was never supplied`);
   }
 
-  if (unsupported.length > 0) {
-    console.log(`  warning: these figures appear in no source: ${unsupported.join(", ")}`);
+  if (result.grounding.unsupportedNumbers?.length > 0) {
+    console.log(`  warning: figures appearing in no source: ${result.grounding.unsupportedNumbers.join(", ")}`);
   }
 
-  console.log(`\n  context used: ${context.chars} chars${context.droppedCount > 0 ? `, ${context.droppedCount} chunk(s) dropped to fit` : ""}`);
   console.log();
 } catch (error) {
   console.error(`\n${error.message}\n`);

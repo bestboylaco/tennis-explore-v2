@@ -242,6 +242,18 @@ export function classifyDocument({ sourceType, fileName = "", text = "" }) {
     return { domain: "research", sensitivity: "public", program: NO_PROGRAM };
   }
 
+  // a presentation given internally is internal by default. the catapult deck
+  // literally carries "Confidential | July 2023" on its footer, and treating a
+  // deck as public because it is not a csv would be exactly the sort of quiet
+  // mistake the classification axis exists to prevent.
+  if (sourceType === "presentation") {
+    return {
+      domain: /injur|lumbar|bone stress|medical/.test(haystack) ? "physiological" : "performance",
+      sensitivity: /confidential/.test(haystack) ? "confidential" : "internal",
+      program: "national-academy",
+    };
+  }
+
   if (sourceType === "policy" || /policy|acceptable usage|information security/.test(haystack)) {
     return { domain: "administrative", sensitivity: "internal", program: NO_PROGRAM };
   }

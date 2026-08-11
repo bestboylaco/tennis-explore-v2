@@ -327,3 +327,79 @@ export function chunkRecords(extracted, { label = "Record", eventDateColumns = [
     };
   });
 }
+
+/**
+ * chunks a slide deck: one chunk per slide.
+ *
+ * slides are not split further even when wordy. a slide is already the author's
+ * own unit of meaning -- they decided what belongs together -- and cutting one
+ * in half produces two fragments that each make less sense than the whole. it
+ * also keeps the slide number exact, which is what a citation needs.
+ */
+export function chunkSlides(extracted, { authors = [], eventDate = null } = {}) {
+  const { minChars } = retrievalConfig.chunking;
+
+  return extracted.slides
+    // a slide holding only a number or a stray label is a section divider.
+    .filter((slide) => slide.text.length >= Math.min(minChars, 40))
+    .map((slide) => {
+      const contextHeader = buildContextHeader({
+        title: extracted.title,
+        section: `slide ${slide.number}`,
+        authors,
+        eventDate,
+        sourceType: extracted.sourceType,
+      });
+
+      return {
+        chunk_id: `${extracted.docId}#s${String(slide.number).padStart(3, "0")}`,
+        doc_id: extracted.docId,
+        modality: "document",
+        title: extracted.title,
+        section: `slide ${slide.number}`,
+        page: slide.number,
+        slide: slide.number,
+        text: slide.text,
+        context_header: contextHeader,
+        embedding_text: contextHeader ? `${contextHeader}\n${slide.text}` : slide.text,
+      };
+    });
+}
+
+/**
+ * chunks a video manifest: one chunk per described segment.
+ *
+ * we are indexing the description of what happens, not the footage. that is an
+ * honest limitation and worth stating plainly rather than implying the system
+ * watches video -- but it is also the thing that makes a clip findable at all,
+ * and the timestamp means the citation opens at the right second rather than at
+ * the start.
+ */
+export function chunkVideo(extracted) {
+  return extracted.segments.map((segment) => {
+    const where = segment.start ? `${segment.start}-${segment.end ?? ""}` : null;
+
+    const contextHeader = buildContextHeader({
+      title: extracted.title,
+      section: where ? `segment ${where}` : null,
+      authors: [],
+      eventDate: null,
+      sourceType: "video",
+    });
+
+    return {
+      chunk_id: `${extracted.docId}#v${String(segment.index).padStart(3, "0")}`,
+      doc_id: extracted.docId,
+      modality: "media",
+      title: segment.title ?? extracted.title,
+      section: where ? `segment ${where}` : null,
+      page: null,
+      start_time: segment.start,
+      end_time: segment.end,
+      external_url: segment.url,
+      text: segment.text,
+      context_header: contextHeader,
+      embedding_text: contextHeader ? `${contextHeader}\n${segment.text}` : segment.text,
+    };
+  });
+}

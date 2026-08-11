@@ -189,6 +189,15 @@ export const retrievalConfig = Object.freeze({
     // flag so the eval harness can show that on our corpus too.
     hydeEnabled: bool(process.env.HYDE_ENABLED, false),
     hydeModel: process.env.HYDE_MODEL || "llama3.1:8b",
+
+    // the intent planner. fills in a schema-constrained form describing what the
+    // question is asking for. see modules/query/queryPlanner.service.js for why
+    // this is a form and not tool calling.
+    plannerEnabled: bool(process.env.PLANNER_ENABLED, true),
+    plannerModel: process.env.PLANNER_MODEL || "llama3.1:8b",
+    // below this rule-confidence we pay for a model call. above it the rules are
+    // trusted and the call is skipped, which saves about a second per query.
+    plannerConfidenceFloor: Number(process.env.PLANNER_CONFIDENCE_FLOOR ?? 0.8),
   }),
 
   // ---------------------------------------------------------------------

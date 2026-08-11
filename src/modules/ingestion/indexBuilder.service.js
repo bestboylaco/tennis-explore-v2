@@ -12,8 +12,8 @@ import path from "node:path";
 
 import { retrievalConfig } from "../../config/retrieval.config.js";
 import { VectorStoreWriter } from "../../infrastructure/vector/vectorStore.service.js";
-import { grantsForDocument } from "../../shared/constants/accessControl.js";
-import { chunkDocument, chunkRecords } from "./chunking.service.js";
+import { NO_PROGRAM, grantsForDocument } from "../../shared/constants/accessControl.js";
+import { chunkDocument, chunkRecords, chunkSlides, chunkVideo } from "./chunking.service.js";
 import { embedTexts } from "./embedding.service.js";
 import { extractFile, listIngestableFiles } from "./extraction.service.js";
 import {
@@ -104,6 +104,63 @@ async function prepareFile(filePath, { onWarn }) {
         onWarn,
       );
     });
+  }
+
+  if (extracted.kind === "video") {
+    const classification = { domain: "performance", sensitivity: "internal", program: NO_PROGRAM };
+
+    return chunkVideo(extracted).map((chunk) =>
+      finalise(
+        {
+          ...chunk,
+          source_type: "video",
+          provenance: "partner",
+          authors: [],
+          event_date: null,
+          publication_year: null,
+          entity_ids: [],
+          source_uri: filePath,
+          ingested_at: ingestedAt,
+        },
+        classification,
+        onWarn,
+      ),
+    );
+  }
+
+  if (extracted.kind === "slides") {
+    // a deck's title slide is its front matter: presenter name and date live
+    // there, exactly like a paper's first page.
+    const titleSlide = extracted.slides[0]?.text ?? "";
+    const authors = extractAuthors(titleSlide);
+    const publicationYear = guessPublicationYear(titleSlide);
+
+    const classification = classifyDocument({
+      sourceType: extracted.sourceType,
+      fileName: path.basename(filePath),
+      text: extracted.slides.map((slide) => slide.text).join(" ").slice(0, 4000),
+    });
+
+    return chunkSlides(extracted, {
+      authors,
+      eventDate: publicationYear ? `${publicationYear}-01-01` : null,
+    }).map((chunk) =>
+      finalise(
+        {
+          ...chunk,
+          source_type: extracted.sourceType,
+          provenance: "partner",
+          authors,
+          event_date: publicationYear ? `${publicationYear}-01-01` : null,
+          publication_year: publicationYear,
+          entity_ids: [],
+          source_uri: filePath,
+          ingested_at: ingestedAt,
+        },
+        classification,
+        onWarn,
+      ),
+    );
   }
 
   // a document. the first page carries the front matter, which is where the

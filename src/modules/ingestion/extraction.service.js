@@ -133,6 +133,94 @@ async function extractXlsx(filePath) {
   return sheets;
 }
 
+async function extractPptx(filePath) {
+  // a pptx is a zip of xml. we read the slide parts directly rather than adding
+  // a presentation library, because all we want is the words -- and a library
+  // that understands animations and themes is a lot of dependency for that.
+  const AdmZip = (await import("adm-zip")).default;
+
+  const zip = new AdmZip(filePath);
+
+  const slideEntries = zip
+    .getEntries()
+    .map((entry) => entry.entryName)
+    .filter((name) => /^ppt\/slides\/slide\d+\.xml$/.test(name))
+    // "slide10" sorts before "slide2" as a string, which silently reorders the
+    // whole deck and puts the wrong number on every citation.
+    .sort((a, b) => slideNumber(a) - slideNumber(b));
+
+  const slides = [];
+
+  for (const entryName of slideEntries) {
+    const xml = zip.readAsText(entryName);
+
+    // <a:t> holds every run of visible text, in reading order, including inside
+    // tables and grouped shapes.
+    const runs = [...xml.matchAll(/<a:t>([^<]*)<\/a:t>/g)].map((match) => decodeXml(match[1]));
+
+    // a paragraph break in the source is a real boundary -- headings sit in
+    // their own paragraph -- so joining runs with a space and paragraphs with a
+    // newline keeps the structure the chunker uses.
+    const text = runs.join(" ").replace(/\s+/g, " ").trim();
+
+    if (text !== "") slides.push({ number: slideNumber(entryName), text });
+  }
+
+  return slides;
+}
+
+function slideNumber(entryName) {
+  return Number(entryName.match(/slide(\d+)\.xml$/)?.[1] ?? 0);
+}
+
+function decodeXml(text) {
+  return text
+    .replace(/&amp;/g, "&")
+    .replace(/&lt;/g, "<")
+    .replace(/&gt;/g, ">")
+    .replace(/&quot;/g, '"')
+    .replace(/&apos;/g, "'");
+}
+
+/**
+ * reads a video manifest: one json file describing clips and their segments.
+ *
+ * video is the third unstructured type the partner named, and we cannot embed
+ * pixels here -- so what gets indexed is the human description of each segment
+ * plus its timestamp. that is enough to answer "find the footage of a defensive
+ * to offensive transition" and to link straight to the right second of the clip,
+ * which is what a coach actually wants from video search.
+ */
+async function extractVideoManifest(filePath) {
+  const raw = JSON.parse(await fsp.readFile(filePath, "utf8"));
+  const videos = Array.isArray(raw) ? raw : (raw.videos ?? []);
+
+  const segments = [];
+
+  for (const video of videos) {
+    for (const [index, segment] of (video.segments ?? []).entries()) {
+      const description = String(segment.description ?? "").trim();
+
+      if (description === "") continue;
+
+      segments.push({
+        index,
+        videoId: video.video_id ?? video.id ?? null,
+        url: video.url ?? null,
+        title: video.title ?? video.source ?? "Video clip",
+        start: segment.start ?? null,
+        end: segment.end ?? null,
+        // the tags carry real search value -- "baseline", "power", "defensive"
+        // are exactly the words a coach types -- so they go into the indexed
+        // text rather than sitting in metadata nothing searches.
+        text: [description, (segment.tags ?? video.tags ?? []).join(", ")].filter(Boolean).join(". "),
+      });
+    }
+  }
+
+  return { videos, segments };
+}
+
 function titleFromFileName(filePath) {
   return path
     .basename(filePath, path.extname(filePath))
@@ -161,6 +249,7 @@ export function guessSourceType(filePath) {
   if (/policy|acceptable usage|information security/.test(name)) return "policy";
   if (/ranking/.test(name) || parent === "rankings") return "ranking_data";
   if (/match/.test(name) || parent === "match_data") return "match_report";
+  if (/\.pptx$/.test(name)) return "presentation";
   if (/\.(pdf)$/.test(name)) return "research_paper";
 
   return "internal_note";
@@ -200,6 +289,21 @@ export async function extractFile(filePath) {
     return { ...base, kind: "records", tableId: docId, headers, records };
   }
 
+  if (extension === ".pptx") {
+    const slides = await extractPptx(filePath);
+
+    return { ...base, kind: "slides", sourceType: "presentation", slides };
+  }
+
+  if (extension === ".json") {
+    const manifest = await extractVideoManifest(filePath);
+
+    // a json file that holds no video segments is configuration, not content.
+    if (manifest.segments.length === 0) return null;
+
+    return { ...base, kind: "video", sourceType: "video", ...manifest };
+  }
+
   if (extension === ".txt" || extension === ".md") {
     const text = await fsp.readFile(filePath, "utf8");
     return { ...base, kind: "document", pages: [text], rawInfo: {} };
@@ -211,9 +315,25 @@ export async function extractFile(filePath) {
 /**
  * walks a folder tree and returns every file we can actually read.
  */
-export async function listIngestableFiles(directory) {
-  const supported = new Set([".pdf", ".csv", ".xlsx", ".xls", ".txt", ".md"]);
+export async function listIngestableFiles(target) {
+  const supported = new Set([".pdf", ".csv", ".xlsx", ".xls", ".txt", ".md", ".pptx", ".json"]);
   const found = [];
+
+  // a single file is a perfectly reasonable thing to point the pipeline at, and
+  // an earlier version silently returned nothing for one -- readdir fails on a
+  // file, the error was swallowed, and the file just never appeared in the
+  // index with no message saying so. accept both.
+  try {
+    const stats = await fsp.stat(target);
+
+    if (stats.isFile()) {
+      return supported.has(path.extname(target).toLowerCase()) ? [target] : [];
+    }
+  } catch {
+    return [];
+  }
+
+  const directory = target;
 
   async function walk(current) {
     let entries;

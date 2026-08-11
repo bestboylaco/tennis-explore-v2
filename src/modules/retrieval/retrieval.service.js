@@ -92,7 +92,7 @@ async function runArms(queryText, { index, filter, plan, queryVector = null, sig
  * get is whichever one we picked -- that is how access control quietly stops
  * working.
  */
-export async function retrieve(query, { roleId, topN = retrievalConfig.retrieval.topN, signal = null } = {}) {
+export async function retrieve(query, { roleId, topN = retrievalConfig.retrieval.topN, signal = null, subQueries = null } = {}) {
   if (typeof query !== "string" || query.trim() === "") {
     throw new Error("retrieve requires a non-empty query.");
   }
@@ -114,7 +114,12 @@ export async function retrieve(query, { roleId, topN = retrievalConfig.retrieval
   // ---- query expansion ---------------------------------------------------
   let queries = [query];
 
-  if (plan.decompose) {
+  // the intent planner may already have split this question. reuse its split
+  // rather than paying for a second model call to make the same decision.
+  if (Array.isArray(subQueries) && subQueries.length > 0) {
+    queries = [query, ...subQueries.filter((sub) => sub !== query)];
+    notes.push(`using ${subQueries.length} sub-questions from the planner`);
+  } else if (plan.decompose) {
     queries = await decomposeQuery(query, { signal });
 
     if (queries.length > 1) {

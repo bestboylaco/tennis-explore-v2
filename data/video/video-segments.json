@@ -1,0 +1,32 @@
+{
+  "_comment": "Video segment index. We index the human description of each segment plus its timestamp, not the pixels -- so a coach can find footage by describing it and the citation opens at the right second. Source: video_data.pdf supplied by the partner.",
+  "videos": [
+    {
+      "video_id": "VID001",
+      "url": "https://www.youtube.com/watch?v=793jVdalOI0",
+      "title": "ATP Tour rally footage",
+      "source": "ATP Tour",
+      "court_surface": "Hard",
+      "tags": ["highlight", "rally", "baseline", "power"],
+      "segments": [
+        { "start": "0:15", "end": "0:30", "description": "Fast-paced baseline rally ending in a winner, power hitting from both players", "tags": ["baseline", "power", "rally"] },
+        { "start": "0:45", "end": "1:05", "description": "Net play approach finishing with a volley winner", "tags": ["net", "volley", "approach"] },
+        { "start": "1:20", "end": "1:40", "description": "Defensive to offensive transition, player recovers court position and takes control of the point", "tags": ["defensive", "transition", "movement"] },
+        { "start": "2:10", "end": "2:30", "description": "Long rally testing endurance, extended baseline exchange", "tags": ["endurance", "rally", "baseline"] }
+      ]
+    },
+    {
+      "video_id": "VID005",
+      "url": "https://www.youtube.com/watch?v=DkPQlHIWEno",
+      "title": "US Open rally footage",
+      "source": "US Open",
+      "court_surface": "Hard",
+      "tags": ["rally", "angle", "defence"],
+      "segments": [
+        { "start": "0:10", "end": "0:25", "description": "Cross-court rally using angle play to open the court", "tags": ["crosscourt", "angle", "rally"] },
+        { "start": "0:50", "end": "1:10", "description": "Defensive scrambling under pressure, player retrieves from wide positions", "tags": ["defensive", "scrambling", "movement"] },
+        { "start": "1:30", "end": "1:50", "description": "Winner struck from a difficult defensive position", "tags": ["winner", "defensive", "recovery"] }
+      ]
+    }
+  ]
+}

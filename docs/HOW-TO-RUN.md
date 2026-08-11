@@ -106,6 +106,10 @@ you get is confusing.
 Use forward slashes in paths even on Windows, and put quotes around any path with
 a space in it.
 
+**What it can read:** PDF, PPTX (one chunk per slide), CSV, XLSX, TXT, MD, and a
+video segment manifest (`data/video/video-segments.json`). You can pass single
+files as well as folders.
+
 You will see:
 
 ```
@@ -159,15 +163,34 @@ Try the same question as `admin` and then as `analyst` — the analyst is denied
 physiological data, so you should see fewer results. That is the access control
 working, and it is worth demonstrating in a review.
 
+**Ask a question about the tables** — these get computed, not retrieved:
+
+```bash
+npm run ask -- "how many matches were played on each surface?"
+npm run ask -- "what is Carlos Alcaraz's best ranking?"
+```
+
+You get the sentence, the table, and the query that produced it. See
+[`docs/QUERY-HANDLING.md`](QUERY-HANDLING.md) for why these take a different
+path from document questions.
+
+**See the full response payload** the frontend receives:
+
+```bash
+npm run ask -- --json "compare wins on hard versus clay"
+```
+
 **Measure it:**
 
 ```bash
-npm run eval
+npm run eval          # retrieval only: seven configurations compared
+npm run eval:answers  # the whole assistant against the gold question set
 ```
 
-Runs the question set through seven different retrieval configurations and prints
-a table of which one actually performed best. Writes
-`evidence/strategy_comparison.json`.
+`npm run eval` writes `evidence/strategy_comparison.json`.
+`npm run eval:answers` runs the gold set in `queries/gold_set.json` and checks
+routing, sources, grounding and — most importantly — that the assistant refuses
+the questions it cannot answer. It writes `evidence/answer_evaluation.json`.
 
 ---
 
@@ -270,6 +293,17 @@ A build was interrupted partway. Delete `data/index/` and rebuild.
 **`retrieve requires a roleId`**
 Something called retrieval without saying who is asking. There is no default role
 on purpose — a default would mean forgetting to pass one still returns documents.
+
+**The assistant says the knowledge base has no answer, but I know it does**
+Run `npm run search` with the same question. If the chunk is not in that list,
+retrieval missed it — try rebuilding with a real embedding model rather than the
+hash stand-in. If it *is* in the list, the model abstained when it should not
+have; that is a generation problem, not a retrieval one.
+
+**A table question returns "no table holds this information"**
+The spec planner could not map your wording onto a column. `npm run ask --json`
+shows the reason. Column names come from the file headers, so ask using words
+that appear in them.
 
 **Everything runs but the answers are vague and generic**
 Run `npm run search` with the same question first. If the right chunk is not in

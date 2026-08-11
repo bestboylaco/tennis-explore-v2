@@ -18,8 +18,12 @@ TennisExplore V2 is a modular AI-powered platform for tennis intelligence, coach
 - Index schema v2 with enforced access control, dates and authors
 - Hybrid retrieval: BM25 + dense vectors fused with RRF, cross-encoder reranking
 - Query routing and multi-hop decomposition
-- Citation binding back to source chunks
-- Retrieval evaluation harness
+- Citation binding back to source chunks, with deep links to page, slide or timestamp
+- Query intent routing: single-hop, multi-hop, summarisation, analytical, comparative, aggregation
+- Structured query engine over CSV/XLSX with validated specs and rendered SQL
+- Explicit abstention when the knowledge base has no answer
+- Slide deck and video segment ingestion
+- Retrieval and end-to-end evaluation harnesses
 
 ### In Progress
 
@@ -48,8 +52,12 @@ npm run search -- "accelerometer load during tournaments"
 # full answer with citations
 npm run ask -- "how does serve load differ between training and tournaments?"
 
-# compare retrieval strategies on the question set
+# questions about the tables are computed, not retrieved
+npm run ask -- "how many matches were played on each surface?"
+
+# compare retrieval strategies, and score the whole assistant
 npm run eval
+npm run eval:answers
 ```
 
 The built index is committed in `data/index/`, so if someone has already built
@@ -72,6 +80,8 @@ The analyst has no physiological access, so the second returns less. Roles are
 |---|---|
 | [`docs/HOW-TO-RUN.md`](docs/HOW-TO-RUN.md) | Step-by-step setup, using a larger embedding model, sharing the index |
 | [`docs/RETRIEVAL-DESIGN.md`](docs/RETRIEVAL-DESIGN.md) | Why each technique is on or off, with sources |
+| [`docs/QUERY-HANDLING.md`](docs/QUERY-HANDLING.md) | How questions are classified and routed, and why not function calling |
+| [`docs/ASSET-GAP-REPORT.md`](docs/ASSET-GAP-REPORT.md) | Which partner test questions we cannot yet answer, and what is needed |
 | [`docs/GIT-PUSH.md`](docs/GIT-PUSH.md) | Git workflow for this repo |
 | [`schema/index-schema.json`](schema/index-schema.json) | The retrieval contract — every indexed field |
 
