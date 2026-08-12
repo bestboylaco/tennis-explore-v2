@@ -43,8 +43,8 @@ npm install
 ollama pull bge-m3 && ollama pull llama3.1:8b
 npm run check:models
 
-# build the index from folders of source documents
-npm run build:index -- "path/to/DOCUMENTS" "path/to/MATCH_DATA"
+# build the index (the full partner library takes 2-4 hours; it checkpoints)
+node --max-old-space-size=6144 bin/build-index.js "path/to/TA_S2/document-resources"
 
 # see what retrieval returns, with no model writing an answer
 npm run search -- "accelerometer load during tournaments"
@@ -81,7 +81,7 @@ The analyst has no physiological access, so the second returns less. Roles are
 | [`docs/HOW-TO-RUN.md`](docs/HOW-TO-RUN.md) | Step-by-step setup, using a larger embedding model, sharing the index |
 | [`docs/RETRIEVAL-DESIGN.md`](docs/RETRIEVAL-DESIGN.md) | Why each technique is on or off, with sources |
 | [`docs/QUERY-HANDLING.md`](docs/QUERY-HANDLING.md) | How questions are classified and routed, and why not function calling |
-| [`docs/ASSET-GAP-REPORT.md`](docs/ASSET-GAP-REPORT.md) | Which partner test questions we cannot yet answer, and what is needed |
+| [`docs/CORPUS-AND-COVERAGE.md`](docs/CORPUS-AND-COVERAGE.md) | What the 17 GB library holds, and which partner questions it can answer |
 | [`docs/GIT-PUSH.md`](docs/GIT-PUSH.md) | Git workflow for this repo |
 | [`schema/index-schema.json`](schema/index-schema.json) | The retrieval contract — every indexed field |
 

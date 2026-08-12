@@ -13,7 +13,7 @@
 import { retrievalConfig } from "../../config/retrieval.config.js";
 import { VectorStore } from "../../infrastructure/vector/vectorStore.service.js";
 import { embedQuery } from "../ingestion/embedding.service.js";
-import { BM25Index } from "./bm25.service.js";
+import { BM25Index, buildBm25 } from "./bm25.service.js";
 import { assertAccessInvariant, buildAccessFilter } from "./accessControl.service.js";
 import {
   hydrateFusedCandidates,
@@ -35,19 +35,29 @@ export async function loadIndex({ directory = retrievalConfig.index.dir, force =
 
   const store = await VectorStore.load(directory);
 
-  // bm25 is built in memory from the same chunk list, in the same order, so a
-  // positional index means the same thing to both arms. it takes about a second
-  // for 7k chunks, which is not worth persisting to disk.
+  // bm25 is loaded from disk, not rebuilt. tokenising 283k chunks takes about a
+  // minute and allocates a lot; paying that on every process start -- including
+  // every eval subprocess -- is not acceptable. the build writes it once.
   //
-  // note it indexes `embedding_text`, not `text`: the contextual header has to
-  // be searchable by the keyword arm too, or half the benefit of contextual
-  // retrieval is thrown away on exactly the queries bm25 is best at.
-  const bm25 = new BM25Index(
-    store.chunks.map((chunk) => ({
-      id: chunk.chunk_id,
-      text: chunk.embedding_text ?? chunk.text,
-    })),
-  );
+  // an older index without the bm25 files still works: we build it in memory
+  // and say so, rather than refusing to start.
+  let bm25;
+
+  if (BM25Index.exists(directory)) {
+    bm25 = await BM25Index.load(
+      directory,
+      store.chunks.map((chunk) => chunk.chunk_id),
+    );
+  } else {
+    bm25 = await buildBm25(async function* documents() {
+      // indexes embedding_text, not text: the contextual header must be
+      // searchable by the keyword arm too, or half the value of contextual
+      // retrieval is lost on exactly the queries bm25 is best at.
+      for (const chunk of store.chunks) {
+        yield { id: chunk.chunk_id, text: chunk.embedding_text ?? chunk.text };
+      }
+    });
+  }
 
   cached = { directory, store, bm25, manifest: store.manifest };
 

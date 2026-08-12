@@ -83,24 +83,177 @@ async function extractPdf(filePath) {
   const buffer = await fsp.readFile(filePath);
   const parser = new PDFParse({ data: buffer });
 
-  let parsed;
+  let parsed = null;
 
   try {
     parsed = await parser.getText();
+  } catch {
+    // swallowed on purpose: a malformed pdf is a normal event in a corpus of
+    // 2,300 files scraped together over a decade, and the fallback below reads
+    // some of them. if it cannot, the caller records the file as skipped.
+    parsed = null;
   } finally {
     // the parser holds a worker open. without this the build finishes and the
-    // process just sits there instead of exiting.
-    await parser.destroy();
+    // process sits there instead of exiting.
+    await parser.destroy().catch(() => {});
   }
 
-  // we keep the per-page split rather than mashing the document into one string,
-  // because citations need page numbers -- "page 4 of the periodisation paper"
-  // is a claim a coach can check, "somewhere in the periodisation paper" is not.
-  const pages = (parsed.pages ?? [])
+  // we keep the per-page split rather than mashing the document into one
+  // string, because citations need page numbers -- "page 4 of the periodisation
+  // paper" is a claim a coach can check, "somewhere in it" is not.
+  let pages = (parsed?.pages ?? [])
     .map((page) => String(page.text ?? "").replace(/[ \t]+/g, " ").trim())
     .filter((page) => page !== "");
 
+  if (pages.length === 0) {
+    pages = await extractPdfWithPoppler(filePath);
+  }
+
   return { pages, rawInfo: {} };
+}
+
+/**
+ * fallback for pdfs the javascript parser cannot open.
+ *
+ * poppler's pdftotext is far more tolerant of damaged cross-reference tables
+ * than pdf.js is, and across the partner corpus it recovers roughly one in ten
+ * of the files that otherwise produce nothing -- including several conference
+ * handouts that questions are being asked about.
+ *
+ * it is optional. if poppler is not installed we return nothing and the file is
+ * recorded as skipped, rather than the build failing because a system package
+ * is missing.
+ */
+async function extractPdfWithPoppler(filePath) {
+  try {
+    const { execFile } = await import("node:child_process");
+    const { promisify } = await import("node:util");
+    const run = promisify(execFile);
+
+    // -layout keeps columns roughly intact, which matters for tables. \f is
+    // pdftotext's page separator, same as the page split above.
+    const { stdout } = await run("pdftotext", ["-layout", filePath, "-"], {
+      maxBuffer: 200 * 1024 * 1024,
+      timeout: 120_000,
+    });
+
+    return stdout
+      .split("\f")
+      .map((page) => page.replace(/[ \t]+/g, " ").trim())
+      .filter((page) => page !== "");
+  } catch {
+    return [];
+  }
+}
+
+// ---------------------------------------------------------------------------
+// titles
+// ---------------------------------------------------------------------------
+
+// journal furniture, download banners and copyright lines. none of these is
+// ever the title, and all of them sit above it on page one.
+const NOT_A_TITLE =
+  /^(https?:|www\.|doi:|downloaded (from|by)|this article was|\d+$|©|copyright|issn|isbn|vol\.|volume \d|page \d|received:|accepted:|published:|original (research|article)|research article|review article|abstract|editorial|chapter \d+$|c\d+\.indd|first edition|edited by|john wiley|wiley|elsevier|springer|taylor & francis|routledge|lippincott|human kinetics|sage publications|international olympic)/i;
+
+// titles that are technically extracted but say nothing. a citation reading
+// "Lecture Presentation, page 3" is no more useful than no title at all, so
+// these fall back to the filename, which at least names the speaker.
+const TOO_GENERIC =
+  /^(lecture (presentation|handout|notes)|presentation|handout|slides?|agenda|introduction|untitled|title|contents|overview|notes)$/i;
+
+/**
+ * repairs letter-spaced small caps.
+ *
+ * journals typeset titles as "T ENNIS FOR P HYSICAL H EALTH", where the large
+ * first letter is a separate text run. extracted literally it produces tokens
+ * like "t" and "ennis", which are useless to search and unreadable in a
+ * citation. joining a lone capital onto the uppercase run that follows it
+ * restores the word.
+ */
+export function repairSpacedCaps(text) {
+  return String(text)
+    .replace(/\b([A-Z]) ([A-Z]{2,})/g, "$1$2")
+    .replace(/\s{2,}/g, " ")
+    .trim();
+}
+
+/**
+ * works out a document's real title.
+ *
+ * filenames in this corpus are things like "1118862198-1.pdf" and
+ * "c01.indd.pdf" -- doi fragments and typesetter artefacts. a citation reading
+ * "1118862198 1, page 4" tells a coach nothing, so we read the title off the
+ * first page instead and keep the filename only as a last resort.
+ */
+export function deriveTitle(pages, filePath) {
+  const fallback = titleFromFileName(filePath);
+  const firstPage = pages[0] ?? "";
+
+  if (firstPage === "") return fallback;
+
+  const lines = firstPage
+    .split("\n")
+    .map((line) => repairSpacedCaps(line))
+    .filter((line) => line !== "");
+
+  const candidates = [];
+
+  // only the top of the page. past ~12 lines we are into the abstract, and an
+  // abstract's first sentence is a plausible-looking but wrong title.
+  for (const line of lines.slice(0, 12)) {
+    if (NOT_A_TITLE.test(line)) continue;
+
+    // too short is a header fragment, too long is a paragraph.
+    if (line.length < 15 || line.length > 220) continue;
+
+    // must be mostly letters. rejects tables of numbers and reference strings.
+    const letters = (line.match(/[A-Za-z]/g) ?? []).length;
+
+    if (letters / line.length < 0.65) continue;
+
+    candidates.push(line);
+
+    // three lines is enough for any real title and stops us swallowing the
+    // author list and affiliation block underneath it.
+    if (candidates.length >= 3) break;
+  }
+
+  if (candidates.length === 0) return fallback;
+
+  let title = candidates[0];
+
+  // journal titles wrap across two or three lines. keep joining while the line
+  // so far is clearly unfinished -- no terminal punctuation, still short, and
+  // the next line is not an author list.
+  for (let next = 1; next < candidates.length; next += 1) {
+    const continuation = candidates[next];
+
+    if (/[.!?]$/.test(title)) break;
+    if (title.length > 120) break;
+    // an author list is initials and surnames separated by commas. once we hit
+    // one, the title is finished.
+    if (/^[A-Z][a-z]*\.?\s*[A-Z]?\.?\s*[A-Z][a-z]+,/.test(continuation)) break;
+
+    title = `${title} ${continuation}`;
+  }
+
+  // ALL CAPS TITLES ARE SHOUTING. convert to sentence case, but leave acronyms
+  // and mixed-case titles alone.
+  if (title === title.toUpperCase()) {
+    title = title
+      .toLowerCase()
+      .replace(/(^|[.:!?]\s+)([a-z])/g, (match, prefix, letter) => prefix + letter.toUpperCase());
+  }
+
+  title = title
+    .replace(/\s*[,:;-]\s*$/, "")
+    .replace(/\s+([:;,])/g, "$1")
+    .trim();
+
+  // a title that turned out to be boilerplate is worse than the filename.
+  if (TOO_GENERIC.test(title) || title.length < 15) return fallback;
+
+  return title;
 }
 
 async function extractXlsx(filePath) {
@@ -267,13 +420,19 @@ export async function extractFile(filePath) {
   const base = {
     docId,
     title: titleFromFileName(filePath),
+    // kept alongside the derived title. title extraction from arbitrary pdfs is
+    // a best effort and will sometimes be wrong; the filename always identifies
+    // the document exactly, so a citation can show both and stay verifiable.
+    fileName: path.basename(filePath),
     sourceType: guessSourceType(filePath),
     sourceUri: filePath,
   };
 
   if (extension === ".pdf") {
     const { pages, rawInfo } = await extractPdf(filePath);
-    return { ...base, kind: "document", pages, rawInfo };
+
+    // the title comes from the page, not the filename -- see deriveTitle.
+    return { ...base, kind: "document", title: deriveTitle(pages, filePath), pages, rawInfo };
   }
 
   if (extension === ".csv") {
@@ -292,7 +451,16 @@ export async function extractFile(filePath) {
   if (extension === ".pptx") {
     const slides = await extractPptx(filePath);
 
-    return { ...base, kind: "slides", sourceType: "presentation", slides };
+    // a deck's first slide is its title slide, so the same logic applies.
+    const titleSlideLines = (slides[0]?.text ?? "").split(/\s{2,}|\n/);
+
+    return {
+      ...base,
+      kind: "slides",
+      sourceType: "presentation",
+      title: deriveTitle([titleSlideLines.join("\n")], filePath),
+      slides,
+    };
   }
 
   if (extension === ".json") {

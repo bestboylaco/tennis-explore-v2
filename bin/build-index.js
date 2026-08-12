@@ -43,45 +43,79 @@ console.log(`contextual headers: ${retrievalConfig.contextual.enabled ? retrieva
 console.log(`chunk size: ${retrievalConfig.chunking.targetChars} chars, overlap ${retrievalConfig.chunking.overlapChars}\n`);
 
 const startedAt = Date.now();
-let lastPercent = -1;
+let lastFilePercent = -1;
 
 try {
   const result = await buildIndex({
     sourceDirs,
     onProgress: (event) => {
-      if (event.phase === "scan") {
-        console.log(`found ${event.files} readable files`);
-      } else if (event.phase === "extract") {
-        process.stdout.write(`\rextracting ${event.done}/${event.total}  ${event.file.slice(0, 50)}`.padEnd(90));
-      } else if (event.phase === "chunked") {
-        process.stdout.write("\r".padEnd(90));
-        console.log(`\r${event.chunks} chunks ready, all passed schema v2`);
-      } else if (event.phase === "embed") {
-        // only redraw on a whole percent, or the progress line itself becomes
-        // the slowest part of the loop on a fast machine.
+      if (event.phase === "resume") {
+        console.log(
+          `resuming an interrupted build: ${event.filesDone} files and ${event.chunks} chunks already done\n`,
+        );
+      } else if (event.phase === "scan") {
+        console.log(
+          `${event.files} readable files found` +
+            (event.pending < event.files ? `, ${event.pending} still to do` : ""),
+        );
+      } else if (event.phase === "file") {
         const percent = Math.floor((event.done / event.total) * 100);
 
-        if (percent !== lastPercent) {
-          lastPercent = percent;
+        if (percent !== lastFilePercent || event.done === event.total) {
+          lastFilePercent = percent;
+
           const elapsed = (Date.now() - startedAt) / 1000;
           const rate = event.done / Math.max(elapsed, 0.1);
-          const remaining = Math.round((event.total - event.done) / Math.max(rate, 0.01));
+          const remaining = Math.round((event.total - event.done) / Math.max(rate, 0.001));
 
           process.stdout.write(
-            `\rembedding ${event.done}/${event.total} (${percent}%)  ~${remaining}s left`.padEnd(60),
+            `\r${event.done}/${event.total} files (${percent}%)  ` +
+              `${event.chunks.toLocaleString()} chunks  ` +
+              `~${formatDuration(remaining)} left`.padEnd(24),
           );
         }
+      } else if (event.phase === "bm25") {
+        if (event.done === undefined) {
+          process.stdout.write(`\r${"".padEnd(78)}\rbuilding keyword index over ${event.chunks.toLocaleString()} chunks...`);
+        }
+      } else if (event.phase === "done") {
+        process.stdout.write(`\r${"".padEnd(78)}\r`);
       }
     },
   });
 
-  const seconds = ((Date.now() - startedAt) / 1000).toFixed(1);
+  const seconds = (Date.now() - startedAt) / 1000;
 
-  console.log(`\n\nindex built in ${seconds}s`);
-  console.log(`  ${result.chunkCount} chunks from ${result.fileCount} files`);
-  console.log(`  written to ${retrievalConfig.index.dir}/`);
+  console.log(`\nindex built in ${formatDuration(seconds)}`);
+  console.log(`  ${result.chunkCount.toLocaleString()} chunks from ${result.fileCount} files`);
+  console.log(`  ${result.manifest.shards.length} shard(s), int8 quantised`);
+  console.log(`  keyword index: ${result.manifest.bm25.vocabSize.toLocaleString()} terms, ${result.manifest.bm25.postings.toLocaleString()} postings`);
+
+  if (result.skipped.length > 0) {
+    console.log(`\n  ${result.skipped.length} file(s) skipped -- see ${retrievalConfig.index.dir}/build-report.json`);
+
+    for (const item of result.skipped.slice(0, 5)) {
+      console.log(`    ${item.file}: ${item.reason}`);
+    }
+
+    if (result.skipped.length > 5) console.log(`    ...and ${result.skipped.length - 5} more`);
+  }
+
+  if (result.problems.length > 0) {
+    console.log(`\n  ${result.problems.length} chunk(s) failed schema v2 and were left out.`);
+  }
+
+  console.log(`\n  written to ${retrievalConfig.index.dir}/`);
   console.log(`\nnow try:  npm run search -- "serve load during tournaments"`);
 } catch (error) {
   console.error(`\n\nbuild failed:\n${error.message}\n`);
+  console.error("progress was checkpointed -- re-running this command resumes rather than starting over.\n");
   process.exit(1);
+}
+
+function formatDuration(seconds) {
+  if (seconds < 90) return `${Math.round(seconds)}s`;
+  if (seconds < 5400) return `${Math.round(seconds / 60)}m`;
+
+  return `${(seconds / 3600).toFixed(1)}h`;
 }

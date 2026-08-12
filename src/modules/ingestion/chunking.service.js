@@ -279,6 +279,48 @@ export function chunkDocument(extracted, { authors = [], eventDate = null } = {}
     });
   });
 
+  // a document whose pages are all shorter than minChars produces nothing at
+  // all above, and would be dropped entirely. that is wrong: conference
+  // handouts and slide printouts routinely carry ~90 characters a page, and
+  // "Lecture Presentation: Darren Roberts, 'Action sports athletes'" is exactly
+  // the sort of line someone will search for.
+  //
+  // so if per-page chunking found nothing, join the pages and chunk that
+  // instead. the page number is lost -- the content is spread across all of
+  // them -- and saying so with page: null is more honest than claiming page 1.
+  if (chunks.length === 0) {
+    const joined = extracted.pages.join("\n\n").replace(/\s+/g, " ").trim();
+
+    if (joined.length >= 40) {
+      const pieces = splitText(joined, { targetChars, overlapChars, minChars: 40 });
+
+      pieces.forEach((text, index) => {
+        const contextHeader = buildContextHeader({
+          title: extracted.title,
+          section: null,
+          authors,
+          eventDate,
+          sourceType: extracted.sourceType,
+        });
+
+        chunks.push({
+          chunk_id: `${extracted.docId}#w${String(index).padStart(4, "0")}`,
+          doc_id: extracted.docId,
+          modality: "document",
+          title: extracted.title,
+          section: null,
+          page: null,
+          text,
+          context_header: contextHeader,
+          embedding_text: contextHeader ? `${contextHeader}\n${text}` : text,
+          // records that this document was too sparse to keep page numbers, so
+          // a missing page in a citation is explainable rather than a bug.
+          whole_document: true,
+        });
+      });
+    }
+  }
+
   return chunks;
 }
 

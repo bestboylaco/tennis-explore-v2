@@ -122,6 +122,11 @@ function buildLabel(chunk, kind, locator) {
   return [chunk.title, where].filter(Boolean).join(", ");
 }
 
+/** the filename, for showing under a citation label. */
+export function sourceFileLabel(chunk) {
+  return chunk.file_name ?? null;
+}
+
 function formatTime(seconds) {
   const minutes = Math.floor(seconds / 60);
 

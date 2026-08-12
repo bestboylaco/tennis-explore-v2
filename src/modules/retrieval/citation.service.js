@@ -54,6 +54,11 @@ export function bindCitations(answer, evidence) {
       chunkId: chunk.chunk_id,
       docId: chunk.doc_id,
       title: chunk.title,
+      // the filename is shown next to the title because title extraction from a
+      // pdf is a best effort -- across 2,300 partner files plenty have no usable
+      // title page at all. the filename always identifies the document exactly,
+      // so a citation stays verifiable even when the title guess is poor.
+      fileName: chunk.file_name ?? null,
       // everything a reader needs to go and check the claim themselves.
       section: chunk.section ?? null,
       page: chunk.page ?? null,

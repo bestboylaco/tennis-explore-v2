@@ -122,12 +122,48 @@ index built in 412.8s
   written to data/index/
 ```
 
-Expect **15–25 minutes** for the full sample corpus on an 8 GB card. It writes
-three files into `data/index/`:
+### How long this takes on the real corpus
 
-- `chunks.jsonl` — the text and metadata of every chunk, one JSON object per line
-- `vectors.bin` — the embeddings, raw float32
+The partner library in `TA_S2/document-resources` is 17 GB — 2,301 PDFs and 340
+presentations. Measured, not guessed:
+
+| | |
+|---|---|
+| Chunks produced | **~128,000** (43.5 per PDF, from a 400-file sample) |
+| Text extraction | ~20 minutes |
+| Embedding with bge-m3 | **2–4 hours** on an 8 GB card |
+| Peak memory | ~1.5 GB (flat — the build streams) |
+| Index on disk | ~400 MB, int8 quantised, sharded |
+
+Run it overnight:
+
+```bash
+node --max-old-space-size=6144 bin/build-index.js "C:/Users/User/Desktop/TA_S2/document-resources"
+```
+
+**It checkpoints.** If it crashes, you close the laptop, or you hit Ctrl-C,
+re-running the exact same command picks up where it stopped instead of starting
+again. Progress is saved every 25 files.
+
+If you change the embedding model or chunk size, it will **refuse** to resume and
+tell you why — mixing vectors from two models into one index produces a file that
+loads fine, searches fine, and returns nonsense.
+
+It writes into `data/index/`:
+
+- `chunks-NNN.jsonl` — text and metadata, one JSON object per line
+- `vectors-NNN.i8` — the embeddings, int8 quantised
+- `bm25-*` — the keyword index, prebuilt so startup does not re-tokenise it
 - `manifest.json` — which model built it, when, with what settings
+- `build-report.json` — every file that was skipped, and why
+
+**Why int8?** Full-precision vectors for this corpus would be 1.1 GB. Quantising
+to one byte per dimension makes it ~270 MB, which fits in normal git, and makes
+the search about four times faster. The measured cost is a 0.27% cosine error —
+far below anything that changes the ranking.
+
+**Why sharded?** GitHub rejects files over 100 MB. Shards are capped below that,
+so the index commits to an ordinary repo with no Git LFS and no release assets.
 
 **If the build fails on a schema error, nothing is written.** That is deliberate.
 The message names every chunk that failed and why, so you can fix them all in one
@@ -314,6 +350,26 @@ problem.
 **`Missing required environment variable: MONGODB_URI`**
 Only `npm start` needs MongoDB. The pipeline scripts do not touch it — use
 `npm run ask` instead.
+
+**Some files were skipped**
+Normal — about 5% of the corpus is scanned images with no text layer. Every one
+is named in `data/index/build-report.json`. To recover them you would need OCR
+(`ocrmypdf`), which is not built in: it is a heavy dependency for a 5% tail, and
+it is better to see which files first.
+
+**The 48 `.ppt` files are ignored**
+`.ppt` is a binary format unrelated to the zip-based `.pptx`. Convert them first:
+
+```bash
+soffice --headless --convert-to pptx --outdir converted/ *.ppt
+```
+
+**The build says it will not resume**
+You changed the model, the dimension or the chunk size since the last run.
+Either put the old setting back, or delete `data/index/` and start fresh.
+
+**JavaScript heap out of memory**
+Pass more heap: `node --max-old-space-size=6144 bin/build-index.js ...`
 
 **I want to test without downloading any models**
 
