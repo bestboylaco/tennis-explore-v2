@@ -13,7 +13,39 @@ import {
   grantsForDocument,
 } from "../../shared/constants/accessControl.js";
 
-export const SCHEMA_VERSION = 2;
+export const SCHEMA_VERSION = 3;
+
+/**
+ * a stable fingerprint of a chunk's text, for spotting duplicates.
+ *
+ * this corpus holds the same deck several times over ("...al-murphy.pptx",
+ * "-2.pptx", "-3.pptx") and papers filed twice under different names.
+ * retrieval correctly ranks every copy highly, and the model then reads the
+ * same paragraph four times -- which wastes most of a small model's context and
+ * makes one claim look like four corroborating sources.
+ *
+ * normalised before hashing so that differences in whitespace and punctuation
+ * from two different pdf extractions of the same page still collide.
+ *
+ * fnv-1a: small, fast, stable across runs and machines. not cryptographic, and
+ * it does not need to be -- an accidental collision costs one deduplicated
+ * chunk, not a security property.
+ */
+export function contentHash(text) {
+  const normalised = String(text)
+    .toLowerCase()
+    .replace(/[^\p{L}\p{N}]+/gu, " ")
+    .trim();
+
+  let hash = 0x811c9dc5;
+
+  for (let i = 0; i < normalised.length; i += 1) {
+    hash ^= normalised.charCodeAt(i);
+    hash = Math.imul(hash, 0x01000193) >>> 0;
+  }
+
+  return hash.toString(16).padStart(8, "0");
+}
 
 // keys every chunk must carry. `event_date` and `authors` must be PRESENT even
 // when we could not work out a value -- null and [] are fine, missing is not.
@@ -33,6 +65,7 @@ const REQUIRED_KEYS = [
   "authors",
   "event_date",
   "ingested_at",
+  "content_hash",
 ];
 
 const MODALITIES = ["document", "record", "media"];

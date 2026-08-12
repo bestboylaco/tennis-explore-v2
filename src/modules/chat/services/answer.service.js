@@ -25,6 +25,10 @@ import {
   renderMarkdownTable,
 } from "../../retrieval/answerContract.service.js";
 import { getTables, visibleTables } from "../../structured/tableStore.service.js";
+import { GRADES, gradeEvidence } from "../../generation/evidenceGrader.service.js";
+import { prepareEvidence } from "../../generation/contextOrdering.service.js";
+import { fewShotMessages } from "../../generation/fewShot.service.js";
+import { verifyAnswer } from "../../generation/verifier.service.js";
 import { buildQuerySpec } from "../../structured/specPlanner.service.js";
 import { runQuery } from "../../structured/queryEngine.service.js";
 
@@ -39,7 +43,7 @@ export class ModelUnavailableError extends Error {
   }
 }
 
-async function generate(systemPrompt, userContent, { signal }) {
+async function generate(systemPrompt, userContent, { signal, examples = [] }) {
   let response;
 
   try {
@@ -52,6 +56,10 @@ async function generate(systemPrompt, userContent, { signal }) {
         options: { temperature: 0 },
         messages: [
           { role: "system", content: systemPrompt },
+          // worked examples sit between the instructions and the real question.
+          // a demonstrated pattern is followed far more reliably than a
+          // described one, especially for citation format and for refusing.
+          ...examples,
           { role: "user", content: userContent },
         ],
       }),
@@ -115,11 +123,10 @@ function abstain({ plan, roleId, reason, cause = "not_found", startedAt }) {
 async function answerFromDocuments(plan, { roleId, signal, startedAt }) {
   const retrieval = await retrieve(plan.question, {
     roleId,
-    topN: plan.topN,
+    // retrieve wider than we will show. grading and deduplication both remove
+    // material, and starting at exactly topN means ending up below it.
+    topN: Math.ceil(plan.topN * 1.8),
     signal,
-    // the planner already split multi-hop questions, so retrieval does not need
-    // to do it again. passing them through avoids a second model call for the
-    // same decision.
     subQueries: plan.subQuestions,
   });
 
@@ -132,31 +139,79 @@ async function answerFromDocuments(plan, { roleId, signal, startedAt }) {
     });
   }
 
-  const context = buildContext(retrieval.evidence);
+  // ---- grade before generating (corrective rag) ---------------------------
+  //
+  // retrieval always returns something. asked about a document we do not hold,
+  // it returns ten irrelevant chunks, and a model handed ten irrelevant
+  // passages writes a confident wrong answer rather than refusing -- because
+  // from where it sits, ten real passages about tennis look like grounds to
+  // answer. so we check first.
+  const graded = await gradeEvidence(plan.question, retrieval.evidence, { signal });
+
+  if (graded.grade === GRADES.INSUFFICIENT) {
+    return {
+      ...abstain({
+        plan,
+        roleId,
+        reason: `the retrieved material does not address this question (${graded.reason})`,
+        startedAt,
+      }),
+      grading: graded,
+    };
+  }
+
+  // ---- shape what the model reads -----------------------------------------
+  const prepared = prepareEvidence(graded.kept, plan.question, {
+    maxChars: retrievalConfig.generation.maxContextChars,
+    topN: plan.topN,
+  });
+
+  const evidence = prepared.evidence;
+
+  const context = evidence
+    .map((chunk) => {
+      const source = [
+        chunk.title,
+        chunk.file_name,
+        chunk.section ? `section: ${chunk.section.replace(/_/g, " ")}` : null,
+        chunk.page ? `page ${chunk.page}` : null,
+        chunk.authors?.length ? chunk.authors.slice(0, 3).join(", ") : null,
+        chunk.event_date ?? null,
+      ]
+        .filter(Boolean)
+        .join(" | ");
+
+      return `[${chunk.citationNumber}] (${source})\n${chunk.text}`;
+    })
+    .join("\n\n");
 
   const answer = await generate(
     buildSystemPrompt(plan),
-    `Evidence:\n${context.text}\n\nQuestion: ${plan.question}`,
-    { signal },
+    `Evidence:\n${context}\n\nQuestion: ${plan.question}`,
+    {
+      signal,
+      examples: retrievalConfig.generation.fewShotEnabled ? fewShotMessages(plan.intent) : [],
+    },
   );
 
+  // ---- check what came back ------------------------------------------------
   const abstained = isAbstention(answer);
-  const bound = bindCitations(answer, retrieval.evidence);
-  const unsupportedNumbers = findUnsupportedNumbers(answer, retrieval.evidence);
+  const verification = verifyAnswer(answer, evidence);
 
-  // attach a deep link to each citation so the frontend can open the source at
-  // the right page, slide or timestamp.
-  const citations = bound.citations.map((citation) => {
-    const chunk = retrieval.evidence.find((candidate) => candidate.chunk_id === citation.chunkId);
+  const citations = verification.citations.map((citation) => {
+    const chunk = evidence.find((candidate) => candidate.chunk_id === citation.chunkId);
 
-    return { ...citation, link: chunk ? buildAssetLink(chunk) : null };
+    return {
+      ...citation,
+      link: chunk ? buildAssetLink(chunk) : null,
+      // when the corpus holds several copies of a document, say so. it is the
+      // difference between one source and four, and it looks like corroboration
+      // if you do not mention it.
+      alsoAppearsIn: chunk?.duplicateOf?.length ? chunk.duplicateOf : undefined,
+    };
   });
 
-  const payload = buildContractPayload({
-    contracts: plan.contracts,
-    answer,
-    citations,
-  });
+  const payload = buildContractPayload({ contracts: plan.contracts, answer, citations });
 
   return {
     answered: !abstained,
@@ -164,11 +219,14 @@ async function answerFromDocuments(plan, { roleId, signal, startedAt }) {
     citations,
     intent: plan.intent,
     route: plan.route,
+    grading: { grade: graded.grade, reason: graded.reason, droppedAsIrrelevant: graded.dropped ?? 0 },
     grounding: {
-      grounded: bound.grounded && !abstained,
-      danglingCitations: bound.dangling,
-      unusedEvidence: bound.unusedEvidence,
-      unsupportedNumbers,
+      grounded: verification.grounded && !abstained,
+      citedFraction: verification.citedFraction,
+      danglingCitations: verification.danglingCitations,
+      unusedEvidence: verification.unusedEvidence,
+      unsupportedNumbers: verification.unsupportedNumbers,
+      warnings: verification.warnings,
       abstained,
     },
     telemetry: {
@@ -177,7 +235,12 @@ async function answerFromDocuments(plan, { roleId, signal, startedAt }) {
       route: plan.route,
       planSource: plan.planSource,
       ...retrieval.telemetry,
-      contextChars: context.chars,
+      evidenceGrade: graded.grade,
+      duplicatesRemoved: prepared.duplicatesRemoved,
+      compressedChunks: prepared.compressedCount,
+      droppedForLength: prepared.droppedForLength,
+      contextChars: prepared.chars,
+      itemsOut: evidence.length,
       durationMs: Date.now() - startedAt,
     },
   };
@@ -266,7 +329,10 @@ async function answerFromTables(plan, { roleId, signal, startedAt }) {
       `${renderMarkdownTable(result.columns, result.rows)}\n\n` +
       `Rows scanned: ${result.rowsScanned}. Rows matched: ${result.rowsMatched}.\n` +
       `Source table: ${result.tableTitle}\n\nQuestion: ${plan.question}`,
-    { signal },
+    {
+      signal,
+      examples: retrievalConfig.generation.fewShotEnabled ? fewShotMessages(plan.intent) : [],
+    },
   );
 
   const citation = tableCitation(result, built);

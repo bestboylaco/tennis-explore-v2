@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import { describe, it } from "node:test";
 
 import {
+  contentHash,
   enforceSchema,
   extractAuthors,
   normaliseDate,
@@ -83,6 +84,7 @@ describe("the schema gate", () => {
     authors: ["Thomas Perri"],
     event_date: "2022-01-01",
     ingested_at: new Date().toISOString(),
+    content_hash: contentHash("some text"),
   };
 
   it("passes a well formed chunk", () => {
@@ -112,5 +114,22 @@ describe("the schema gate", () => {
 
   it("accepts a null event_date, because absent is different from forgotten", () => {
     assert.doesNotThrow(() => enforceSchema({ ...valid, event_date: null, authors: [] }));
+  });
+});
+
+describe("content hashing", () => {
+  it("collides for the same text extracted slightly differently", () => {
+    // the corpus holds the same deck several times over, and two pdf
+    // extractions of one page differ in whitespace and punctuation. if those
+    // did not collide, deduplication would never fire on the duplicates that
+    // actually exist.
+    assert.equal(
+      contentHash("Serve load rose 24% during tournaments."),
+      contentHash("serve  load rose 24%   during tournaments"),
+    );
+  });
+
+  it("differs for different text", () => {
+    assert.notEqual(contentHash("serve load rose"), contentHash("serve load fell"));
   });
 });

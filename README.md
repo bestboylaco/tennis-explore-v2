@@ -23,6 +23,8 @@ TennisExplore V2 is a modular AI-powered platform for tennis intelligence, coach
 - Structured query engine over CSV/XLSX with validated specs and rendered SQL
 - Explicit abstention when the knowledge base has no answer
 - Slide deck and video segment ingestion
+- Generation layer: evidence grading, few-shot prompting, deduplication, attention ordering, citation verification
+- OCR for scanned documents (optional, GPU)
 - Retrieval and end-to-end evaluation harnesses
 
 ### In Progress
@@ -80,7 +82,9 @@ The analyst has no physiological access, so the second returns less. Roles are
 |---|---|
 | [`docs/HOW-TO-RUN.md`](docs/HOW-TO-RUN.md) | Step-by-step setup, using a larger embedding model, sharing the index |
 | [`docs/RETRIEVAL-DESIGN.md`](docs/RETRIEVAL-DESIGN.md) | Why each technique is on or off, with sources |
+| [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) | System diagram, the two gates, and how it maps onto real connectors |
 | [`docs/QUERY-HANDLING.md`](docs/QUERY-HANDLING.md) | How questions are classified and routed, and why not function calling |
+| [`docs/SHARING-THE-INDEX.md`](docs/SHARING-THE-INDEX.md) | Publishing the index so teammates run without embedding |
 | [`docs/CORPUS-AND-COVERAGE.md`](docs/CORPUS-AND-COVERAGE.md) | What the 17 GB library holds, and which partner questions it can answer |
 | [`docs/GIT-PUSH.md`](docs/GIT-PUSH.md) | Git workflow for this repo |
 | [`schema/index-schema.json`](schema/index-schema.json) | The retrieval contract — every indexed field |

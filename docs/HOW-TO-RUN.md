@@ -353,9 +353,19 @@ Only `npm start` needs MongoDB. The pipeline scripts do not touch it — use
 
 **Some files were skipped**
 Normal — about 5% of the corpus is scanned images with no text layer. Every one
-is named in `data/index/build-report.json`. To recover them you would need OCR
-(`ocrmypdf`), which is not built in: it is a heavy dependency for a 5% tail, and
-it is better to see which files first.
+is named in `data/index/build-report.json`. To read them, run OCR:
+
+```bash
+pip install surya-ocr pypdfium2          # GPU, best accuracy
+# or: pip install pytesseract pypdfium2  # CPU fallback
+
+python tools/ocr/ocr_scanned.py --from-report data/index/build-report.json \
+  --source-dir "C:/Users/User/Desktop/TA_S2/document-resources"
+```
+
+It writes text sidecars into `data/ocr-cache/`. Re-run the index build and it
+picks them up automatically — and because the build resumes, only the newly
+readable documents get embedded. Add `--dry-run` first to see what it would do.
 
 **The 48 `.ppt` files are ignored**
 `.ppt` is a binary format unrelated to the zip-based `.pptx`. Convert them first:

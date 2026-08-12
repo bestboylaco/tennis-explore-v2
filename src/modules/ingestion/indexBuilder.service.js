@@ -30,6 +30,7 @@ import { extractFile, listIngestableFiles } from "./extraction.service.js";
 import {
   SCHEMA_VERSION,
   classifyDocument,
+  contentHash,
   enforceSchema,
   extractAuthors,
   normaliseDate,
@@ -86,6 +87,9 @@ function guessPublicationYear(text) {
 function finalise(chunk, classification, problems) {
   const complete = {
     ...chunk,
+    // used by the generation layer to drop near-duplicate passages before they
+    // reach the model. see generation/contextOrdering.service.js.
+    content_hash: contentHash(chunk.text),
     data_domain: classification.domain,
     sensitivity: classification.sensitivity,
     program: classification.program,

@@ -206,6 +206,33 @@ export const retrievalConfig = Object.freeze({
   generation: Object.freeze({
     model: process.env.OLLAMA_GENERATION_MODEL || "llama3.1:8b",
     baseUrl: stripTrailingSlash(process.env.OLLAMA_BASE_URL || "http://localhost:11434"),
+
+    // corrective-rag evidence grading. judges whether the retrieved passages
+    // actually address the question BEFORE writing an answer, and refuses
+    // rather than generating from irrelevant material. the highest-value part
+    // of the generation layer -- see modules/generation/evidenceGrader.
+    gradingEnabled: bool(process.env.GRADING_ENABLED, true),
+    // how many passages get an individual relevance judgement. one small model
+    // call each, run concurrently.
+    gradeLimit: num(process.env.GRADE_LIMIT, 8),
+
+    // worked examples in the prompt. cheapest quality lever there is: it fixes
+    // citation formatting and, more importantly, teaches the model what a
+    // refusal looks like.
+    fewShotEnabled: bool(process.env.FEW_SHOT_ENABLED, true),
+
+    // drop sentences within a chunk that have nothing to do with the question.
+    // on an 8b model this is the difference between fitting twelve passages
+    // and fitting six.
+    compressionEnabled: bool(process.env.COMPRESSION_ENABLED, true),
+
+    // put the strongest evidence at both ends of the context, weakest in the
+    // middle, where models demonstrably lose material.
+    attentionOrdering: bool(process.env.ATTENTION_ORDERING, true),
+
+    // how much context the model is given. 12000 chars is ~3000 tokens, which
+    // leaves room in an 8k window for the few-shot examples and the answer.
+    maxContextChars: num(process.env.MAX_CONTEXT_CHARS, 12000),
   }),
 });
 

@@ -1,9 +1,9 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "tennisexplore/index-schema/v2",
+  "$id": "tennisexplore/index-schema/v3",
   "title": "TennisExplore chunk record",
-  "description": "The retrieval contract (TENISE-15 / E3-09). One object per indexed chunk. Version 2 makes acl_groups, event_date and authors mandatory and enforced at ingest, because adding an indexed field after the corpus is embedded means re-embedding all of it.",
-  "schemaVersion": 2,
+  "description": "The retrieval contract (TENISE-15 / E3-09). One object per indexed chunk. v2 made acl_groups, event_date and authors mandatory and enforced at ingest, because adding an indexed field after the corpus is embedded means re-embedding all of it. v3 adds content_hash for near-duplicate detection and file_name so a citation stays verifiable when title extraction is imperfect.",
+  "schemaVersion": 3,
   "type": "object",
   "required": [
     "chunk_id",
@@ -18,7 +18,8 @@
     "program",
     "authors",
     "event_date",
-    "ingested_at"
+    "ingested_at",
+    "content_hash"
   ],
   "additionalProperties": true,
   "properties": {
@@ -32,7 +33,11 @@
     },
     "modality": {
       "type": "string",
-      "enum": ["document", "record", "media"],
+      "enum": [
+        "document",
+        "record",
+        "media"
+      ],
       "description": "document = prose, record = a verbalised row of structured data, media = a transcript or frame description. One index holds all three; this field is what lets a single query rank a research passage and a match row together."
     },
     "source_type": {
@@ -41,15 +46,27 @@
     },
     "provenance": {
       "type": "string",
-      "enum": ["partner", "public", "synthetic", "internal"],
+      "enum": [
+        "partner",
+        "public",
+        "synthetic",
+        "internal"
+      ],
       "description": "Where the file came from. Needed to keep synthetic demo data out of any evaluation that claims to measure real performance."
     },
-    "title": { "type": "string" },
+    "title": {
+      "type": "string"
+    },
     "section": {
       "type": "string",
       "description": "Heading the chunk sits under, when we could detect one. Feeds the contextual header."
     },
-    "page": { "type": ["integer", "null"] },
+    "page": {
+      "type": [
+        "integer",
+        "null"
+      ]
+    },
     "text": {
       "type": "string",
       "minLength": 1,
@@ -66,16 +83,31 @@
     "acl_groups": {
       "type": "array",
       "minItems": 1,
-      "items": { "type": "string", "pattern": "^[a-z_]+:[a-z]+:[a-z0-9*-]+$" },
+      "items": {
+        "type": "string",
+        "pattern": "^[a-z_]+:[a-z]+:[a-z0-9*-]+$"
+      },
       "description": "MANDATORY. Flattened domain:sensitivity:program grant strings. Enforced before fusion on both retrieval arms. A chunk with an empty list is treated as unreachable, never as public."
     },
     "data_domain": {
       "type": "string",
-      "enum": ["performance", "physiological", "clinical", "personal", "research", "administrative"]
+      "enum": [
+        "performance",
+        "physiological",
+        "clinical",
+        "personal",
+        "research",
+        "administrative"
+      ]
     },
     "sensitivity": {
       "type": "string",
-      "enum": ["public", "internal", "confidential", "restricted"]
+      "enum": [
+        "public",
+        "internal",
+        "confidential",
+        "restricted"
+      ]
     },
     "program": {
       "type": "string",
@@ -83,15 +115,25 @@
     },
     "authors": {
       "type": "array",
-      "items": { "type": "string" },
+      "items": {
+        "type": "string"
+      },
       "description": "MANDATORY (may be empty). Who wrote it. Present so an answer can say who claimed something, and so the corpus can be filtered to a named researcher."
     },
     "event_date": {
-      "type": ["string", "null"],
+      "type": [
+        "string",
+        "null"
+      ],
       "format": "date",
       "description": "MANDATORY key (value may be null). ISO yyyy-mm-dd. The date the content is ABOUT -- publication date for a paper, match date for a record. Not the ingest date. Recency filtering and 'what happened in November' questions both need this."
     },
-    "publication_year": { "type": ["integer", "null"] },
+    "publication_year": {
+      "type": [
+        "integer",
+        "null"
+      ]
+    },
     "ingested_at": {
       "type": "string",
       "format": "date-time",
@@ -101,12 +143,67 @@
       "type": "string",
       "description": "Absolute path or URI of the originating file. Not searchable, used to open the source from a citation."
     },
-    "table_id": { "type": ["string", "null"] },
-    "row_id": { "type": ["string", "null"] },
+    "table_id": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "row_id": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
     "entity_ids": {
       "type": "array",
-      "items": { "type": "string" },
+      "items": {
+        "type": "string"
+      },
       "description": "Player ids, tournament ids and other exact handles pulled out of the text. BM25 already matches these, but keeping them explicit lets the router detect an entity lookup."
+    },
+    "content_hash": {
+      "type": "string",
+      "description": "Normalised FNV-1a fingerprint of the chunk text. The corpus holds the same deck several times over; without this the model reads one paragraph four times and it looks like four corroborating sources."
+    },
+    "file_name": {
+      "type": "string",
+      "description": "Original filename. Shown beside the title in citations because title extraction from arbitrary PDFs is a best effort, while the filename always identifies the document exactly."
+    },
+    "slide": {
+      "type": [
+        "integer",
+        "null"
+      ],
+      "description": "Slide number for presentation chunks. Citations deep-link to it."
+    },
+    "start_time": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "description": "Segment start for video chunks, e.g. 1:20. Citations deep-link to the second."
+    },
+    "end_time": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "external_url": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "description": "For video, the source URL the citation opens."
+    },
+    "whole_document": {
+      "type": "boolean",
+      "description": "Set when a document was too sparse for per-page chunking (conference handouts carry ~90 chars a page). Explains why page is null rather than it being a bug."
+    },
+    "ocr": {
+      "type": "boolean",
+      "description": "Text came from OCR rather than an embedded text layer, so it may contain recognition errors. Worth surfacing next to a quote."
     }
   }
 }

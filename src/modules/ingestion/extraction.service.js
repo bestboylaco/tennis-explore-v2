@@ -109,7 +109,16 @@ async function extractPdf(filePath) {
     pages = await extractPdfWithPoppler(filePath);
   }
 
-  return { pages, rawInfo: {} };
+  // last resort: a text sidecar produced by tools/ocr/ocr_scanned.py. about 5%
+  // of this corpus is scanned images with no text layer, and ocr is the only
+  // way to read them. it lives outside the node pipeline because it needs
+  // pytorch and a gpu, and everything else here needs neither -- so this checks
+  // for its output rather than depending on it.
+  if (pages.length === 0) {
+    pages = await readOcrSidecar(filePath);
+  }
+
+  return { pages, rawInfo: {}, ocr: pages.length > 0 && (await hasOcrSidecar(filePath)) };
 }
 
 /**
@@ -138,6 +147,41 @@ async function extractPdfWithPoppler(filePath) {
     });
 
     return stdout
+      .split("\f")
+      .map((page) => page.replace(/[ \t]+/g, " ").trim())
+      .filter((page) => page !== "");
+  } catch {
+    return [];
+  }
+}
+
+const OCR_CACHE_DIR = process.env.OCR_CACHE_DIR || "data/ocr-cache";
+
+function ocrSidecarPath(filePath) {
+  // must match doc_id_for() in the python tool exactly, or the sidecar written
+  // by ocr is never found by the build that needs it.
+  const stem = path.basename(filePath, path.extname(filePath)).replace(/[^A-Za-z0-9._-]+/g, "_");
+
+  return path.join(OCR_CACHE_DIR, `${stem}.txt`);
+}
+
+async function hasOcrSidecar(filePath) {
+  try {
+    await fsp.access(ocrSidecarPath(filePath));
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+async function readOcrSidecar(filePath) {
+  try {
+    const text = await fsp.readFile(ocrSidecarPath(filePath), "utf8");
+
+    // \f is the page separator the ocr tool writes, matching what pdftotext
+    // uses, so ocr'd documents keep real page numbers and their citations stay
+    // as precise as any other document's.
+    return text
       .split("\f")
       .map((page) => page.replace(/[ \t]+/g, " ").trim())
       .filter((page) => page !== "");
