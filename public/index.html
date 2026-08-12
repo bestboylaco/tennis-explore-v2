@@ -305,6 +305,35 @@
     </div>
 
     <!-- Citation content opens without leaving the chat screen -->
+    <!--
+        Sources open here, beside the conversation, instead of navigating away.
+        The chat stays mounted and scrolled where it was.
+    -->
+    <aside id="source-panel"
+           class="source-panel"
+           role="complementary"
+           aria-labelledby="source-panel-title"
+           hidden>
+        <header class="source-panel__header">
+            <div>
+                <p class="source-panel__eyebrow">Source</p>
+                <h2 id="source-panel-title">Source</h2>
+                <p id="source-panel-meta" class="source-panel__meta" hidden></p>
+            </div>
+            <button id="source-panel-close"
+                    class="source-panel__close"
+                    type="button"
+                    aria-label="Close source">&times;</button>
+        </header>
+        <div id="source-panel-body" class="source-panel__body"></div>
+        <footer class="source-panel__footer">
+            <a id="source-panel-download"
+               class="source-panel__download"
+               target="_blank"
+               rel="noopener noreferrer">Open in a new tab</a>
+        </footer>
+    </aside>
+
     <dialog id="citation-dialog" class="citation-dialog">
         <div class="citation-dialog__header">
             <div>

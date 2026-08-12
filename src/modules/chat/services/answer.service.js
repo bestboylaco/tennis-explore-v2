@@ -201,9 +201,13 @@ async function answerFromDocuments(plan, { roleId, signal, startedAt }) {
   const citations = verification.citations.map((citation) => {
     const chunk = evidence.find((candidate) => candidate.chunk_id === citation.chunkId);
 
+    const link = chunk ? buildAssetLink(chunk) : null;
+
     return {
       ...citation,
-      link: chunk ? buildAssetLink(chunk) : null,
+      link,
+      // alias, for the same reason as `excerpt` in citation.service.
+      url: link?.href ?? null,
       // when the corpus holds several copies of a document, say so. it is the
       // difference between one source and four, and it looks like corroboration
       // if you do not mention it.

@@ -1,5 +1,6 @@
 import { submitChatQuestion } from "./api/chatApi.js";
 import { createCitationDialog } from "./ui/citationDialog.js";
+import { createSourcePanel } from "./ui/sourcePanel.js";
 import {
     appendAssistantMessage,
     appendUserMessage,
@@ -88,6 +89,20 @@ const citationDialog = createCitationDialog({
     link: citationLink,
     closeButton: citationCloseButton,
     doneButton: citationDoneButton,
+});
+
+/*
+ * Sources open in a panel beside the conversation rather than in a dialog with
+ * a link that navigates away. Losing the conversation to read a citation is
+ * exactly what the partner asked us to avoid.
+ */
+const sourcePanel = createSourcePanel({
+    panel: getRequiredElement("#source-panel"),
+    titleNode: getRequiredElement("#source-panel-title"),
+    metaNode: getRequiredElement("#source-panel-meta"),
+    bodyNode: getRequiredElement("#source-panel-body"),
+    closeButton: getRequiredElement("#source-panel-close"),
+    downloadLink: getRequiredElement("#source-panel-download"),
 });
 
 function resizeQuestionInput() {
@@ -254,7 +269,7 @@ chatForm.addEventListener("submit", async (event) => {
             content,
             citations,
             openCitation:
-                citationDialog.openCitation,
+                sourcePanel.open,
         });
     } catch (error) {
         processingStatus.fail();

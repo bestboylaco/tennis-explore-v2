@@ -673,3 +673,168 @@
         border-color: rgba(116, 195, 255, 0.7);
         background: rgba(51, 118, 187, 0.3);
     }
+
+/* ---------------------------------------------------------------------------
+   Source panel
+
+   Opens beside the conversation rather than over it, so the chat stays visible,
+   scrolled where it was, and usable while a source is open. That is the
+   partner's requirement: inspect the trail without losing your place.
+   --------------------------------------------------------------------------- */
+
+.source-panel {
+    position: fixed;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    width: min(46vw, 620px);
+    display: flex;
+    flex-direction: column;
+    background: var(--colour-purple-900);
+    border-left: 1px solid var(--border-glass-strong);
+    box-shadow: -18px 0 48px rgba(0, 0, 0, 0.45);
+    z-index: 40;
+    transform: translateX(100%);
+    transition: transform 180ms ease-out;
+}
+
+.source-panel--open {
+    transform: translateX(0);
+}
+
+/* the workspace gives up the width rather than sitting underneath, so nothing
+   in the conversation is hidden behind the panel. */
+body.has-source-panel .workspace {
+    margin-right: min(46vw, 620px);
+    transition: margin-right 180ms ease-out;
+}
+
+.source-panel__header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: var(--space-4);
+    padding: var(--space-5) var(--space-5) var(--space-4);
+    border-bottom: 1px solid var(--border-glass);
+}
+
+.source-panel__eyebrow {
+    margin: 0 0 var(--space-1);
+    font-size: 0.7rem;
+    letter-spacing: 0.09em;
+    text-transform: uppercase;
+    color: var(--colour-text-muted);
+}
+
+.source-panel__header h2 {
+    margin: 0;
+    font-size: 1rem;
+    line-height: 1.35;
+    color: var(--colour-text-primary);
+}
+
+.source-panel__meta {
+    margin: var(--space-2) 0 0;
+    font-size: 0.78rem;
+    line-height: 1.45;
+    color: var(--colour-text-secondary);
+}
+
+.source-panel__close {
+    flex: none;
+    width: 2rem;
+    height: 2rem;
+    border: 1px solid var(--border-glass);
+    border-radius: 50%;
+    background: var(--surface-glass-soft);
+    color: var(--colour-text-primary);
+    font-size: 1.2rem;
+    line-height: 1;
+    cursor: pointer;
+}
+
+.source-panel__close:hover {
+    background: var(--surface-glass-hover);
+}
+
+.source-panel__body {
+    flex: 1;
+    overflow: auto;
+    padding: var(--space-4) var(--space-5);
+}
+
+/* the embedded document fills the panel. white background because a PDF
+   rendered on a dark surface looks broken while it loads. */
+.source-panel__frame {
+    width: 100%;
+    height: 100%;
+    min-height: 60vh;
+    border: 1px solid var(--border-glass);
+    border-radius: 8px;
+    background: #ffffff;
+}
+
+.source-panel__frame--video {
+    min-height: 0;
+    aspect-ratio: 16 / 9;
+    height: auto;
+    background: #000000;
+}
+
+.source-panel__quote {
+    margin: 0;
+    padding: var(--space-4);
+    border-left: 3px solid var(--colour-purple-500);
+    border-radius: 0 8px 8px 0;
+    background: var(--surface-glass-soft);
+    color: var(--colour-text-primary);
+    font-size: 0.9rem;
+    line-height: 1.6;
+}
+
+.source-panel__note {
+    margin: var(--space-4) 0 0;
+    font-size: 0.82rem;
+    line-height: 1.5;
+    color: var(--colour-text-secondary);
+}
+
+.source-panel__sql {
+    margin: var(--space-2) 0 0;
+    padding: var(--space-4);
+    overflow-x: auto;
+    border: 1px solid var(--border-glass);
+    border-radius: 8px;
+    background: var(--surface-dark);
+    color: var(--colour-blue-500);
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-size: 0.78rem;
+    line-height: 1.5;
+}
+
+.source-panel__footer {
+    padding: var(--space-4) var(--space-5);
+    border-top: 1px solid var(--border-glass);
+}
+
+.source-panel__download {
+    display: inline-block;
+    font-size: 0.82rem;
+    color: var(--colour-blue-500);
+}
+
+.source-panel__download[hidden] {
+    display: none;
+}
+
+/* on a narrow screen there is no room to sit beside anything, so it covers
+   instead -- but the chat is still mounted underneath and returns intact. */
+@media (max-width: 900px) {
+    .source-panel {
+        width: 100%;
+    }
+
+    body.has-source-panel .workspace {
+        margin-right: 0;
+    }
+}

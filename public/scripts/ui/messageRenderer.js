@@ -184,7 +184,7 @@ function createCitationList({
             `${index + 1}. ${getCitationTitle(citation, index)}`;
 
         button.addEventListener("click", () => {
-            openCitation(citation);
+            openCitation(citation, button);
         });
 
         buttons.append(button);

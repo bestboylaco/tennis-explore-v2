@@ -70,6 +70,12 @@ export function bindCitations(answer, evidence) {
       // the exact text the claim was drawn from. trimmed, because a citation
       // panel showing 1600 characters is a citation panel nobody reads.
       quote: buildQuote(chunk.text),
+      // `excerpt` and `url` are aliases of `quote` and `link.href`. they exist
+      // because the frontend was written against an earlier citation shape and
+      // reads those names -- without them the citation buttons render but the
+      // preview and the link are silently empty, which is a failure that looks
+      // exactly like "no source available".
+      excerpt: buildQuote(chunk.text),
       // which arms found it, carried through from ranking. useful in a review:
       // "this came from the vector arm only" explains a lot about a wrong answer.
       foundBy: chunk.foundBy ?? [],
