@@ -54,17 +54,29 @@ npm install
 ```bash
 ollama pull bge-m3
 ollama pull llama3.1:8b
-ollama pull bge-reranker-v2-m3
 ```
 
-About 8 GB in total, downloaded once. What each one does:
+About 7 GB in total, downloaded once.
 
 - **bge-m3** turns text into vectors so we can search by meaning. 1024 numbers
   per chunk, ~2.3 GB of video memory.
-- **llama3.1:8b** writes the answers. ~4.7 GB.
-- **bge-reranker-v2-m3** re-orders search results by reading the question and the
-  passage together. ~1.1 GB, and optional — everything works without it, just
-  slightly less well.
+- **llama3.1:8b** writes the answers, and also scores passages for reranking. ~4.7 GB.
+
+**Do not try `ollama pull bge-reranker-v2-m3`.** It fails — that model is not in
+Ollama's library, and Ollama has no rerank endpoint anyway: it serves a
+reranker's embedding layer but not its classification head, so there would be
+nothing to call. Reranking runs through the chat model instead, in batches, and
+needs nothing extra.
+
+If you want a *real* cross-encoder (better, ~1.1 GB more VRAM):
+
+```bash
+pip install fastapi uvicorn sentence-transformers
+python tools/rerank/rerank_server.py
+```
+
+then set `RERANK_STRATEGY=service` and `RERANK_API_URL=http://localhost:8787/rerank`
+in `.env`.
 
 Check they are all there:
 

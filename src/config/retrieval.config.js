@@ -156,10 +156,36 @@ export const retrievalConfig = Object.freeze({
   // order and say so in the response, rather than failing the request.
   // ---------------------------------------------------------------------
   rerank: Object.freeze({
+    // a cross-encoder reads the query and the passage together, so unlike the
+    // embedding model it can tell that a chunk shares a keyword with the query
+    // for an irrelevant reason. it is the largest precision gain in the
+    // pipeline after hybrid itself.
     enabled: bool(process.env.RERANK_ENABLED, true),
-    strategy: process.env.RERANK_STRATEGY || "rerank-api",
-    model: process.env.RERANK_MODEL || "bge-reranker-v2-m3",
+
+    // two strategies.
+    //
+    //   "llm"      score passages in batches with the ordinary chat model.
+    //              works on a stock ollama install with nothing extra. this is
+    //              the default because it is the only option that always works.
+    //
+    //   "service"  call a real cross-encoder over http. better, and needs a
+    //              separate process: tools/rerank/rerank_server.py, or
+    //              huggingface text-embeddings-inference, or infinity. set
+    //              RERANK_API_URL to point at it.
+    //
+    // NOTE for anyone reaching for ollama here: ollama has NO /api/rerank.
+    // it serves a reranker model's embedding layer but not its classification
+    // head, so `ollama pull bge-reranker-v2-m3` both fails (it is not in the
+    // library) and would not help if it succeeded.
+    strategy: process.env.RERANK_STRATEGY || "llm",
+
+    apiUrl: process.env.RERANK_API_URL || "",
+    model: process.env.RERANK_MODEL || "BAAI/bge-reranker-v2-m3",
     llmModel: process.env.RERANK_LLM_MODEL || "llama3.1:8b",
+    // how many passages go into one scoring call. one call per passage meant 50
+    // sequential round trips and about 90 seconds; ten per call is five calls,
+    // run concurrently.
+    batchSize: num(process.env.RERANK_BATCH_SIZE, 10),
     baseUrl: stripTrailingSlash(process.env.OLLAMA_BASE_URL || "http://localhost:11434"),
   }),
 

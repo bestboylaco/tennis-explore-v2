@@ -164,32 +164,42 @@ export function hydrateFusedCandidates(fusedEntries, rankedLists, armNames = [])
  * because an optional model was not pulled.
  */
 async function rerankViaRerankApi(query, candidates, { signal }) {
-  const { baseUrl, model } = retrievalConfig.rerank;
+  const { baseUrl, model, apiUrl } = retrievalConfig.rerank;
 
-  const response = await fetch(`${baseUrl}/api/rerank`, {
+  // NOTE: ollama does NOT have /api/rerank. this was verified the hard way --
+  // the endpoint was assumed to exist, and it does not; ollama exposes a
+  // reranker model's embedding layer but not its classification head, so there
+  // is nothing to call. the pull request adding it has been open since 2024.
+  //
+  // this path therefore targets a SEPARATE rerank service that speaks the
+  // now-standard {query, documents} -> {results:[{index, relevance_score}]}
+  // shape. huggingface's text-embeddings-inference, infinity, and the small
+  // python sidecar in tools/rerank/ all speak it. point RERANK_API_URL at one.
+  const url = apiUrl || `${baseUrl}/rerank`;
+
+  const response = await fetch(url, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
       model,
       query,
-      documents: candidates.map((candidate) => candidate.text ?? ""),
+      documents: candidates.map((candidate) => (candidate.text ?? "").slice(0, 2000)),
     }),
     signal,
   });
 
-  if (!response.ok) {
-    throw new Error(`rerank endpoint returned ${response.status}`);
-  }
+  if (!response.ok) throw new Error(`rerank service at ${url} returned ${response.status}`);
 
   const payload = await response.json();
-  const results = payload.results ?? payload.data ?? [];
+  const results = payload.results ?? payload.data ?? payload;
 
   if (!Array.isArray(results) || results.length === 0) {
-    throw new Error("rerank endpoint returned no scores");
+    throw new Error("rerank service returned no scores");
   }
 
-  // the endpoint returns {index, relevance_score} pairs, not necessarily in
-  // input order, so map back by index rather than assuming alignment.
+  // map back by index rather than assuming input order -- every one of these
+  // services sorts its output, so trusting position silently scrambles the
+  // scores onto the wrong passages.
   const scores = new Array(candidates.length).fill(Number.NEGATIVE_INFINITY);
 
   for (const result of results) {
@@ -202,37 +212,83 @@ async function rerankViaRerankApi(query, candidates, { signal }) {
   return scores;
 }
 
+// the schema the batched llm reranker is constrained to. asking for a bare
+// array of numbers gets prose about half the time; constraining the decode
+// makes it structurally impossible.
+const SCORE_SCHEMA = {
+  type: "object",
+  properties: {
+    scores: {
+      type: "array",
+      items: {
+        type: "object",
+        properties: {
+          id: { type: "integer" },
+          score: { type: "integer" },
+        },
+        required: ["id", "score"],
+      },
+    },
+  },
+  required: ["scores"],
+};
+
 /**
- * fallback reranker: ask the local chat model how relevant each passage is.
+ * reranking with the ordinary chat model, in batches.
  *
- * slower than a real cross-encoder and less accurate, but it works on every
- * ollama build, which the /api/rerank endpoint does not. one call per passage,
- * so it is capped to a small window by rerankInput.
+ * this is the default, because it is the only option that works on a stock
+ * ollama install with no extra service. it is not as good as a real
+ * cross-encoder -- a cross-encoder reads query and passage together through
+ * full attention, which is exactly what makes it better than the bi-encoder
+ * that retrieved them -- but it is well above no reranking at all.
+ *
+ * the batching matters. the first version sent one request per passage, so a
+ * 50-candidate window was 50 sequential round trips: about 90 seconds on a
+ * local 8b model, which is unusable. scoring ten passages per call brings that
+ * to five calls, and they run concurrently.
+ *
+ * passages are truncated hard. a reranker decides relevance from the opening of
+ * a passage in almost every case, and sending 50 x 1600 characters through an
+ * 8k context window does not fit anyway.
  */
 async function rerankViaLlm(query, candidates, { signal }) {
-  const { baseUrl, llmModel } = retrievalConfig.rerank;
+  const { baseUrl, llmModel, batchSize } = retrievalConfig.rerank;
 
-  const scoreOne = async (candidate) => {
+  const batches = [];
+
+  for (let start = 0; start < candidates.length; start += batchSize) {
+    batches.push({ start, items: candidates.slice(start, start + batchSize) });
+  }
+
+  const scoreBatch = async ({ start, items }) => {
+    const listing = items
+      .map((candidate, index) => `[${index}] ${(candidate.text ?? "").replace(/\s+/g, " ").slice(0, 500)}`)
+      .join("\n\n");
+
     const response = await fetch(`${baseUrl}/api/chat`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         model: llmModel,
         stream: false,
-        // temperature 0 because we want the same passage to get the same score
-        // every run. a reranker that is not reproducible cannot be evaluated.
-        options: { temperature: 0, num_predict: 4 },
+        format: SCORE_SCHEMA,
+        // temperature 0 so the same passage scores the same every run. a
+        // reranker that is not reproducible cannot be evaluated.
+        options: { temperature: 0, num_predict: 400 },
         messages: [
           {
             role: "system",
             content:
-              "You rate how well a passage answers a question. " +
-              "Reply with a single integer from 0 to 10 and nothing else.",
+              "You rate how well each passage answers the question, from 0 to 10. " +
+              "10 means the passage directly answers it. 0 means it is unrelated. " +
+              "Being on the same general topic is worth about 3. " +
+              "Return a score for every passage id you are given.",
           },
-          {
-            role: "user",
-            content: `Question: ${query}\n\nPassage: ${(candidate.text ?? "").slice(0, 1200)}\n\nScore:`,
-          },
+          // blank line before the first passage, so every block is separated
+          // identically. without it "Passages:" and "[0] ..." share a block and
+          // anything parsing the prompt back sees one fewer passage than there
+          // are ids -- which shifts every score onto its neighbour.
+          { role: "user", content: `Question: ${query}\n\nPassages:\n\n${listing}` },
         ],
       }),
       signal,
@@ -241,12 +297,29 @@ async function rerankViaLlm(query, candidates, { signal }) {
     if (!response.ok) throw new Error(`llm rerank returned ${response.status}`);
 
     const payload = await response.json();
-    const match = String(payload.message?.content ?? "").match(/\d+/);
+    const parsed = JSON.parse(payload.message?.content ?? "{}");
 
-    return match ? Number(match[0]) : 0;
+    const scores = new Array(items.length).fill(0);
+
+    for (const entry of parsed.scores ?? []) {
+      if (Number.isInteger(entry.id) && entry.id >= 0 && entry.id < items.length) {
+        scores[entry.id] = Number(entry.score) || 0;
+      }
+    }
+
+    return { start, scores };
   };
 
-  return Promise.all(candidates.map(scoreOne));
+  const results = await Promise.all(batches.map(scoreBatch));
+  const all = new Array(candidates.length).fill(0);
+
+  for (const { start, scores } of results) {
+    scores.forEach((score, index) => {
+      all[start + index] = score;
+    });
+  }
+
+  return all;
 }
 
 export async function rerankCandidates(query, candidates, { signal } = {}) {
@@ -263,9 +336,9 @@ export async function rerankCandidates(query, candidates, { signal } = {}) {
 
   try {
     scores =
-      strategy === "llm"
-        ? await rerankViaLlm(query, window, { signal })
-        : await rerankViaRerankApi(query, window, { signal });
+      strategy === "service"
+        ? await rerankViaRerankApi(query, window, { signal })
+        : await rerankViaLlm(query, window, { signal });
   } catch (error) {
     return { candidates, reranked: false, reason: `reranker_unavailable: ${error.message}` };
   }
