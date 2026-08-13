@@ -30,13 +30,13 @@ const VIDEO_ID = /(?:v=|youtu\.be\/|embed\/)([A-Za-z0-9_-]{6,})/;
  * Citation links are built from indexed metadata, which ultimately comes from
  * partner files. Treating that as trusted input would be a mistake.
  */
-function safeUrl(value) {
+function safeUrl(value, origin) {
     if (typeof value !== "string" || value.trim() === "") {
         return null;
     }
 
     try {
-        const parsed = new URL(value, window.location.origin);
+        const parsed = new URL(value, origin);
 
         return parsed.protocol === "http:" || parsed.protocol === "https:"
             ? parsed
@@ -83,8 +83,8 @@ function normalise(citation) {
     };
 }
 
-function element(tag, className, text) {
-    const node = document.createElement(tag);
+function element(doc, tag, className, text) {
+    const node = doc.createElement(tag);
 
     if (className) node.className = className;
     if (text !== undefined) node.textContent = text;
@@ -93,28 +93,46 @@ function element(tag, className, text) {
 }
 
 export function createSourcePanel({ panel, titleNode, metaNode, bodyNode, closeButton, downloadLink }) {
+    /*
+     * Everything is derived from the panel's own document rather than from the
+     * `document` and `window` globals.
+     *
+     * That is not tidiness. Reaching for globals made this module impossible to
+     * test without assigning `global.document`, which is fragile across
+     * environments and was silently failing on Windows -- the whole test file
+     * errored on load and took its nine tests with it, so the suite reported
+     * 104 passing instead of 112 and looked healthy.
+     *
+     * Deriving from ownerDocument also means this works unchanged inside an
+     * iframe or a shadow root, which globals would not.
+     */
+    const doc = panel.ownerDocument;
+    const view = doc.defaultView;
+    const origin = view?.location?.origin ?? "http://localhost";
+    const el = (tag, className, text) => element(doc, tag, className, text);
+
     let lastFocused = null;
 
     function close() {
         panel.hidden = true;
         panel.classList.remove("source-panel--open");
-        document.body.classList.remove("has-source-panel");
+        doc.body.classList.remove("has-source-panel");
         bodyNode.replaceChildren();
 
         // send focus back where it came from, so keyboard users are not dumped
         // at the top of the document after closing.
-        if (lastFocused && document.contains(lastFocused)) {
+        if (lastFocused && doc.contains(lastFocused)) {
             lastFocused.focus();
         }
     }
 
     function renderUnavailable(message) {
-        const note = element("p", "source-panel__note", message);
+        const note = el("p", "source-panel__note", message);
         bodyNode.replaceChildren(note);
     }
 
     function renderPdf(source, url) {
-        const frame = element("iframe", "source-panel__frame");
+        const frame = el("iframe", "source-panel__frame");
 
         frame.src = url.href;
         frame.title = `${source.title} — cited page`;
@@ -137,7 +155,7 @@ export function createSourcePanel({ panel, titleNode, metaNode, bodyNode, closeB
         }
 
         const start = source.locator?.startSeconds ?? 0;
-        const frame = element("iframe", "source-panel__frame source-panel__frame--video");
+        const frame = el("iframe", "source-panel__frame source-panel__frame--video");
 
         // start= is what makes the citation land on the cited moment rather
         // than at the beginning of the clip.
@@ -153,13 +171,13 @@ export function createSourcePanel({ panel, titleNode, metaNode, bodyNode, closeB
         const parts = [];
 
         if (source.quote) {
-            const block = element("blockquote", "source-panel__quote", source.quote);
+            const block = el("blockquote", "source-panel__quote", source.quote);
             parts.push(block);
         }
 
         if (source.kind === "slide") {
             parts.push(
-                element(
+                el(
                     "p",
                     "source-panel__note",
                     "PowerPoint files cannot be displayed in a browser. The text of the cited slide is shown above; use Download to open the deck.",
@@ -168,7 +186,7 @@ export function createSourcePanel({ panel, titleNode, metaNode, bodyNode, closeB
         }
 
         if (parts.length === 0) {
-            parts.push(element("p", "source-panel__note", "No preview is available for this source."));
+            parts.push(el("p", "source-panel__note", "No preview is available for this source."));
         }
 
         bodyNode.replaceChildren(...parts);
@@ -178,15 +196,15 @@ export function createSourcePanel({ panel, titleNode, metaNode, bodyNode, closeB
         const parts = [];
 
         if (source.sql) {
-            const heading = element("p", "source-panel__note", "The query that produced this answer:");
-            const code = element("pre", "source-panel__sql", source.sql);
+            const heading = el("p", "source-panel__note", "The query that produced this answer:");
+            const code = el("pre", "source-panel__sql", source.sql);
 
             parts.push(heading, code);
         }
 
         if (source.basis) {
             parts.push(
-                element(
+                el(
                     "p",
                     "source-panel__note",
                     `Computed over ${source.basis.rowsMatched} of ${source.basis.rowsScanned} rows.`,
@@ -194,13 +212,13 @@ export function createSourcePanel({ panel, titleNode, metaNode, bodyNode, closeB
             );
         }
 
-        bodyNode.replaceChildren(...(parts.length > 0 ? parts : [element("p", "source-panel__note", "No query detail available.")]));
+        bodyNode.replaceChildren(...(parts.length > 0 ? parts : [el("p", "source-panel__note", "No query detail available.")]));
     }
 
     function open(citation, trigger) {
         const source = normalise(citation);
 
-        lastFocused = trigger ?? document.activeElement;
+        lastFocused = trigger ?? doc.activeElement;
 
         titleNode.textContent = source.label ?? source.title;
 
@@ -218,7 +236,7 @@ export function createSourcePanel({ panel, titleNode, metaNode, bodyNode, closeB
         metaNode.textContent = meta.join(" · ");
         metaNode.hidden = meta.length === 0;
 
-        const url = safeUrl(source.href);
+        const url = safeUrl(source.href, origin);
 
         if (source.kind === "table") {
             renderTable(source);
@@ -255,14 +273,14 @@ export function createSourcePanel({ panel, titleNode, metaNode, bodyNode, closeB
         panel.classList.add("source-panel--open");
         // the chat shrinks rather than being covered, so it stays readable and
         // usable with a source open -- which is the whole requirement.
-        document.body.classList.add("has-source-panel");
+        doc.body.classList.add("has-source-panel");
 
         closeButton.focus();
     }
 
     closeButton.addEventListener("click", close);
 
-    document.addEventListener("keydown", (event) => {
+    doc.addEventListener("keydown", (event) => {
         if (event.key === "Escape" && !panel.hidden) close();
     });
 
