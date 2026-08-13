@@ -128,6 +128,7 @@ they live in the index.
 | `Missing required environment variable: MONGODB_URI` | Only `npm start` needs Mongo. Use `npm run ask` |
 | `ASSET_NOT_LOCAL` when opening a citation | Expected. You do not have the source PDFs; everything else works |
 | Answers are slow (20–60s) | Normal on consumer hardware. It is doing retrieval, grading, reranking and generation locally |
+| Keyword search finds nothing that clearly exists | Your clone converted the index line endings. `.gitattributes` prevents this, but if you cloned before it existed: `git rm --cached -r data/index` then `git checkout data/index` |
 
 ---
 

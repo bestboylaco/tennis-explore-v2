@@ -307,7 +307,14 @@ export class BM25Index {
     const vocabText = await fsp.readFile(path.join(directory, "bm25-vocab.txt"), "utf8");
 
     return new BM25Index({
-      vocab: vocabText === "" ? [] : vocabText.split("\n"),
+      // split on either line ending, and drop a trailing blank.
+      //
+      // .gitattributes stops Git converting this file, and this is the second
+      // line of defence: a stray "\r" on every term means no query term ever
+      // matches, so the keyword arm returns nothing while throwing nothing and
+      // logging nothing. A silent half-failure is worse than a loud one, and
+      // one character of tolerance costs nothing.
+      vocab: vocabText === "" ? [] : vocabText.split(/\r?\n/).filter((term) => term !== ""),
       offsets: await read("bm25-offsets.i32", Int32Array),
       postingDocs: await read("bm25-docs.i32", Int32Array),
       postingFreqs: await read("bm25-freqs.u8", Uint8Array),
