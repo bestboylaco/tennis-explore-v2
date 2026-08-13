@@ -82,7 +82,19 @@ export function buildTelemetryFilter({
     filter.correlationId = correlationId;
   }
 
-  if (sourceId && mongoose.isValidObjectId(sourceId)) {
+  // A filter that cannot be applied is rejected, never dropped. Silently
+  // ignoring a malformed sourceId would answer a narrow question with every
+  // record in the collection.
+  if (sourceId) {
+    if (!mongoose.isValidObjectId(sourceId)) {
+      const error = new Error("sourceId must be a valid ObjectId.");
+
+      error.code = "INVALID_SOURCE_ID";
+      error.statusCode = 400;
+
+      throw error;
+    }
+
     filter["ingestion.sourceId"] = sourceId;
   }
 

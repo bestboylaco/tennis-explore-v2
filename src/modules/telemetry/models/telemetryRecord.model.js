@@ -2,11 +2,13 @@ import mongoose from "mongoose";
 
 import {
   DEFAULT_QUERY_CLASS,
+  OCU_BASES,
   PIPELINE_STAGE_NAMES,
   RUN_STATUSES,
   STAGE_STATUSES,
   TELEMETRY_SCHEMA_VERSION,
 } from "../../../shared/constants/telemetry.js";
+import { telemetryConfig } from "../telemetry.config.js";
 
 // One measured stage. The same shape is used by every stage, so adding a new
 // measured stage means writing a new key into the stage map, never editing this
@@ -105,10 +107,24 @@ const apiUsageSchema = new mongoose.Schema(
     pages: { type: Number, default: 0 },
     assets: { type: Number, default: 0 },
     bytes: { type: Number, default: 0 },
+    chunks: { type: Number, default: 0 },
     tokensIn: { type: Number, default: 0 },
     tokensOut: { type: Number, default: 0 },
     failures: { type: Number, default: 0 },
     durationMs: { type: Number, default: 0 },
+  },
+  { _id: false },
+);
+
+// Compute consumed by one resource during a run, in OCU-seconds (TENISE-30).
+// `ocu` is stored alongside the product rather than only the result, so a
+// record stays interpretable after the configured rate changes.
+const computeUsageSchema = new mongoose.Schema(
+  {
+    seconds: { type: Number, default: 0 },
+    ocu: { type: Number, default: 0 },
+    ocuSeconds: { type: Number, default: 0 },
+    calls: { type: Number, default: 0 },
   },
   { _id: false },
 );
@@ -239,6 +255,23 @@ const telemetryRecordSchema = new mongoose.Schema(
       output: { type: Number, default: 0 },
     },
 
+    // OCU-seconds consumed by the run (TENISE-30). byResource is a Map for the
+    // same reason as stages and ingestion.byApi: a resource that starts being
+    // billed later is a new key, not a schema edit.
+    //
+    // basis says how the figure was produced. "estimated" is measured seconds
+    // times a configured OCU rate, which is what this project can produce
+    // without a provider invoice; see the constants for why.
+    compute: {
+      ocuSeconds: { type: Number, default: 0 },
+      basis: { type: String, default: OCU_BASES.ESTIMATED },
+      byResource: {
+        type: Map,
+        of: computeUsageSchema,
+        default: () => new Map(),
+      },
+    },
+
     // Written by TENISE-27's cost calculation, which reads the volume fields
     // above and writes its result back onto the same record.
     cost: {
@@ -285,6 +318,19 @@ telemetryRecordSchema.index({ queryClass: 1, startedAt: -1 });
 telemetryRecordSchema.index({ "coldStart.detected": 1, startedAt: -1 });
 telemetryRecordSchema.index({ correlationId: 1 });
 telemetryRecordSchema.index({ "ingestion.sourceId": 1, startedAt: -1 });
+
+// Retention. Telemetry is operational data with a useful life measured in
+// weeks, and the api_request run type writes a record per request, so the
+// collection has to expire or it grows without bound.
+//
+// MongoDB will not change expireAfterSeconds on an existing index: raising or
+// lowering TELEMETRY_RETENTION_DAYS on a deployed database means dropping
+// startedAt_1 first, otherwise index creation fails with IndexOptionsConflict
+// and the old window silently stays in force.
+telemetryRecordSchema.index(
+  { startedAt: 1 },
+  { expireAfterSeconds: telemetryConfig.retentionDays * 24 * 60 * 60 },
+);
 
 const TelemetryRecord =
   mongoose.models.TelemetryRecord ||
