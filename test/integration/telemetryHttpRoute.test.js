@@ -4,7 +4,6 @@ import assert from "node:assert/strict";
 import dotenv from "dotenv";
 import mongoose from "mongoose";
 
-import app from "../../src/app.js";
 import Source from "../../src/modules/sources/models/source.model.js";
 import TelemetryRecord from "../../src/modules/telemetry/models/telemetryRecord.model.js";
 
@@ -56,6 +55,11 @@ describe(
 
     before(async () => {
       await mongoose.connect(mongoUri, { serverSelectionTimeoutMS: 15000 });
+
+      // Imported here, not at module scope: src/app.js pulls in config/env.js,
+      // which throws on a missing PORT while the module graph is still loading
+      // — that kills the whole file before the skip above can apply.
+      const { default: app } = await import("../../src/app.js");
 
       await new Promise((resolve) => {
         server = app.listen(0, resolve);
