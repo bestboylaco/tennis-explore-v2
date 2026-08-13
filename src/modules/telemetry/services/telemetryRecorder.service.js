@@ -8,7 +8,11 @@ import {
   STAGE_STATUSES,
   TELEMETRY_SCHEMA_VERSION,
 } from "../../../shared/constants/telemetry.js";
-import { getColdStartThresholdMs, telemetryConfig } from "../telemetry.config.js";
+import {
+  getColdStartThresholdMs,
+  getOcuRate,
+  telemetryConfig,
+} from "../telemetry.config.js";
 import { persistTelemetryRecord } from "./telemetryStore.service.js";
 
 // The recorder is the only thing other modules touch. It builds one telemetry
@@ -27,6 +31,15 @@ function emptyApiUsage() {
     tokensOut: 0,
     failures: 0,
     durationMs: 0,
+  };
+}
+
+function emptyComputeUsage() {
+  return {
+    seconds: 0,
+    ocu: 0,
+    ocuSeconds: 0,
+    calls: 0,
   };
 }
 
@@ -71,6 +84,13 @@ function sanitizeAttributeValue(value) {
   return String(value).slice(0, MAX_ATTRIBUTE_LENGTH);
 }
 
+// Durations are measured on the monotonic clock, not Date.now().
+
+
+function monotonicNowMs() {
+  return performance.now();
+}
+
 function toPositiveNumber(value) {
   const parsed = Number(value);
 
@@ -91,7 +111,7 @@ export function startTelemetryRun({
   }
 
   const startedAt = new Date();
-  const startedAtMs = Date.now();
+  const startedAtMs = monotonicNowMs();
 
   const record = {
     schemaVersion: TELEMETRY_SCHEMA_VERSION,
@@ -123,6 +143,11 @@ export function startTelemetryRun({
       events: [],
     },
     tokens: { input: 0, output: 0 },
+    compute: {
+      ocuSeconds: 0,
+      basis: telemetryConfig.ocuBasis,
+      byResource: {},
+    },
     cost: {
       estimatedUsd: null,
       currency: "USD",
@@ -215,7 +240,7 @@ export function startTelemetryRun({
         stage.apiType = apiType;
       }
 
-      stageStartMs.set(name, Date.now());
+      stageStartMs.set(name, monotonicNowMs());
 
       return recorder;
     },
@@ -227,7 +252,8 @@ export function startTelemetryRun({
       stage.status = metrics.status || STAGE_STATUSES.SUCCESS;
       stage.completedAt = new Date();
       stage.durationMs =
-        metrics.durationMs ?? (startMs === undefined ? null : Date.now() - startMs);
+        metrics.durationMs ??
+        (startMs === undefined ? null : monotonicNowMs() - startMs);
 
       stage.apiType = metrics.apiType ?? stage.apiType;
       stage.apiCalls += toPositiveNumber(metrics.apiCalls);
@@ -238,6 +264,17 @@ export function startTelemetryRun({
 
       record.tokens.input += toPositiveNumber(metrics.tokensIn);
       record.tokens.output += toPositiveNumber(metrics.tokensOut);
+
+      // Compute is attributed from the stage's own measured duration, so a
+      // stage that names its resource cannot forget to report OCU-seconds and
+      // the two figures can never disagree. A failed stage still counts: the
+      // resource was busy and still consumed compute.
+      if (metrics.ocuResource && stage.durationMs !== null) {
+        recorder.recordCompute(metrics.ocuResource, {
+          durationMs: stage.durationMs,
+          calls: toPositiveNumber(metrics.apiCalls) || 1,
+        });
+      }
 
       if (metrics.coldStart) {
         stage.coldStart = true;
@@ -278,8 +315,16 @@ export function startTelemetryRun({
 
       try {
         const result = await fn();
+        const emitted = result?.telemetry || {};
 
-        recorder.endStage(name, { ...metrics, ...(result?.telemetry || {}) });
+        recorder.endStage(name, {
+          ...metrics,
+          ...emitted,
+          // Merged explicitly. The spread above is shallow, so a stage that
+          // emits attributes would otherwise replace the caller's static ones
+          // wholesale rather than adding to them.
+          attributes: { ...metrics.attributes, ...emitted.attributes },
+        });
 
         return result;
       } catch (error) {
@@ -315,6 +360,35 @@ export function startTelemetryRun({
       record.ingestion.assetCount += toPositiveNumber(usage.assets);
       record.ingestion.byteCount += toPositiveNumber(usage.bytes);
       record.ingestion.chunkCount += toPositiveNumber(usage.chunks);
+
+      return recorder;
+    },
+
+    // Compute consumed by one resource, in OCU-seconds (TENISE-30). Split by
+    // resource for the same reason ingestion volume is split by API: retrieval
+    // and generation sit on different services and are charged differently, so
+    // a single run-level number could not attribute the cost.
+ 
+    recordCompute(resource, { durationMs = 0, seconds = null, calls = 1 } = {}) {
+      if (!resource) {
+        return recorder;
+      }
+
+      const elapsedSeconds =
+        seconds === null ? toPositiveNumber(durationMs) / 1000 : toPositiveNumber(seconds);
+      const ocu = getOcuRate(resource);
+      const current = record.compute.byResource[resource] || emptyComputeUsage();
+
+      current.seconds += elapsedSeconds;
+      current.ocu = ocu;
+      current.ocuSeconds += elapsedSeconds * ocu;
+      current.calls += toPositiveNumber(calls);
+
+      record.compute.byResource[resource] = current;
+
+      // Kept consistent with the split, like recordApiUsage does for volume, so
+      // a report can read either without recomputing.
+      record.compute.ocuSeconds += elapsedSeconds * ocu;
 
       return recorder;
     },
@@ -367,7 +441,7 @@ export function startTelemetryRun({
       finished = true;
 
       record.completedAt = new Date();
-      record.totalDurationMs = Date.now() - startedAtMs;
+      record.totalDurationMs = monotonicNowMs() - startedAtMs;
 
       if (status) {
         record.status = status;
@@ -407,6 +481,7 @@ export function createNoopTelemetryRun() {
     skipStage: () => recorder,
     failStage: () => recorder,
     recordApiUsage: () => recorder,
+    recordCompute: () => recorder,
     flagColdStart: () => recorder,
     fail: () => recorder,
     snapshot: () => null,
@@ -427,21 +502,18 @@ export function createNoopTelemetryRun() {
 // Wraps a call that can pay a cold start. Anything slower than the resource
 // threshold is flagged on the record rather than left to distort the latency
 // distribution. OpenSearch Serverless NextGen recovery is roughly 10 seconds.
-//
-// Only a call that succeeded can have recovered. A slow call that threw is a
-// timeout or an error, and counting it would inflate coldRuns and pull
-// avgRecoveryMs towards the client timeout instead of the real recovery time.
+
 export async function withColdStartDetection(
   recorder,
   { resource, stage = null, thresholdMs = null },
   fn,
 ) {
   const threshold = thresholdMs ?? getColdStartThresholdMs(resource);
-  const startMs = Date.now();
+  const startMs = monotonicNowMs();
 
   const result = await fn();
 
-  const elapsedMs = Date.now() - startMs;
+  const elapsedMs = monotonicNowMs() - startMs;
 
   if (elapsedMs >= threshold && recorder) {
     recorder.flagColdStart({

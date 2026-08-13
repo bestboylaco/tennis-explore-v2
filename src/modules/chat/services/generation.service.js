@@ -6,6 +6,7 @@ import {
 import {
   API_TYPES,
   COLD_START_RESOURCES,
+  COMPUTE_RESOURCES,
   PIPELINE_STAGES,
 } from "../../../shared/constants/telemetry.js";
 import { withColdStartDetection } from "../../telemetry/services/telemetryRecorder.service.js";
@@ -77,7 +78,18 @@ async function runGeneration(messages) {
     // Picked up by telemetryRecorder's measureStage, which merges a result's
     // `telemetry` object into the stage record -- token counts are only known
     // once the call returns, so they cannot be passed as static metrics.
-    telemetry: { tokensIn, tokensOut },
+    //
+    // The model and prompt version travel with the counts so a token figure
+    // says which call produced it: comparing two weeks of token counts is
+    // meaningless if the model changed in between.
+    telemetry: {
+      tokensIn,
+      tokensOut,
+      attributes: {
+        model: chatConfig.generationModel,
+        promptVersion: GENERATION_PROMPT_VERSION,
+      },
+    },
   };
 }
 
@@ -108,6 +120,9 @@ export async function generateAnswer({ question, evidence = [], recorder = null 
         apiType: API_TYPES.OLLAMA_GENERATION,
         itemsIn: evidence.length,
         apiCalls: 1,
+        // Charges this stage's measured duration to the model host, giving the
+        // OCU-seconds figure TENISE-27 needs per query.
+        ocuResource: COMPUTE_RESOURCES.OLLAMA,
       }),
   );
 }

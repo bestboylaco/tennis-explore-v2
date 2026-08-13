@@ -10,6 +10,7 @@ import { buildTelemetryFilter } from "../../src/modules/telemetry/services/telem
 import {
   API_TYPES,
   COLD_START_RESOURCES,
+  COMPUTE_RESOURCES,
   PIPELINE_STAGE_NAMES,
   QUERY_CLASSES,
   RUN_STATUSES,
@@ -268,4 +269,93 @@ test("measureStage records a failure and rethrows", async () => {
 
   assert.equal(record.stages.generation.status, STAGE_STATUSES.FAILED);
   assert.equal(record.stages.generation.errorCode, "MODEL_UNAVAILABLE");
+});
+
+test("measureStage keeps the caller's attributes and the stage's own", async () => {
+  const run = startTelemetryRun({ runType: TELEMETRY_RUN_TYPES.QUERY });
+
+  await run.measureStage(
+    "generation",
+    async () => ({ telemetry: { attributes: { model: "llama3.1:8b" } } }),
+    { attributes: { branch: "grounded" } },
+  );
+
+  const stage = run.snapshot().stages.generation;
+
+  // A shallow spread would have dropped one of these.
+  assert.equal(stage.attributes.branch, "grounded");
+  assert.equal(stage.attributes.model, "llama3.1:8b");
+});
+
+test("recordCompute accumulates OCU-seconds per resource and keeps the total consistent", () => {
+  const run = startTelemetryRun({ runType: TELEMETRY_RUN_TYPES.QUERY });
+
+  run.recordCompute(COMPUTE_RESOURCES.OLLAMA, { durationMs: 2000 });
+  run.recordCompute(COMPUTE_RESOURCES.OLLAMA, { durationMs: 500 });
+  run.recordCompute(COMPUTE_RESOURCES.QDRANT, { durationMs: 250 });
+
+  const { compute } = run.snapshot();
+  const ollama = compute.byResource[COMPUTE_RESOURCES.OLLAMA];
+
+  assert.equal(ollama.seconds, 2.5);
+  assert.equal(ollama.calls, 2);
+  assert.equal(ollama.ocuSeconds, 2.5 * ollama.ocu);
+
+  assert.equal(compute.byResource[COMPUTE_RESOURCES.QDRANT].seconds, 0.25);
+
+  // The run level figure agrees with the split, so a report can read either.
+  const summed = Object.values(compute.byResource).reduce(
+    (total, usage) => total + usage.ocuSeconds,
+    0,
+  );
+
+  assert.equal(compute.ocuSeconds, summed);
+  assert.equal(compute.basis, "estimated");
+});
+
+test("a stage that names an OCU resource is charged from its own duration", async () => {
+  const run = startTelemetryRun({ runType: TELEMETRY_RUN_TYPES.QUERY });
+
+  await run.measureStage("generation", async () => ({}), {
+    ocuResource: COMPUTE_RESOURCES.OLLAMA,
+    apiCalls: 1,
+  });
+
+  const record = run.snapshot();
+  const charged = record.compute.byResource[COMPUTE_RESOURCES.OLLAMA];
+
+  assert.ok(charged, "the stage's resource was charged");
+  assert.equal(charged.calls, 1);
+  assert.equal(charged.seconds, record.stages.generation.durationMs / 1000);
+});
+
+test("a stage with no OCU resource records no compute", async () => {
+  const run = startTelemetryRun({ runType: TELEMETRY_RUN_TYPES.QUERY });
+
+  await run.measureStage("routing", async () => ({}), { apiType: API_TYPES.LOCAL });
+
+  const { compute } = run.snapshot();
+
+  assert.equal(compute.ocuSeconds, 0);
+  assert.deepEqual(compute.byResource, {});
+});
+
+test("the noop recorder accepts recordCompute like every other method", () => {
+  const noop = createNoopTelemetryRun();
+
+  assert.equal(noop.recordCompute(COMPUTE_RESOURCES.OLLAMA, { durationMs: 10 }), noop);
+});
+
+test("stage durations use a monotonic clock, so a sub-millisecond stage is measurable", async () => {
+  const run = startTelemetryRun({ runType: TELEMETRY_RUN_TYPES.QUERY });
+
+  // Date.now() resolution would report 0 here and make routing incomparable
+  // against the stages it is supposed to be weighed against.
+  await run.measureStage("routing", async () => ({}));
+
+  const { durationMs } = run.snapshot().stages.routing;
+
+  assert.equal(typeof durationMs, "number");
+  assert.ok(durationMs >= 0);
+  assert.ok(Number.isFinite(durationMs));
 });

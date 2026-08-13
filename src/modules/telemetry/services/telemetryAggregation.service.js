@@ -44,13 +44,9 @@ function stageUnwindStages(filter, { excludeColdStart }) {
 
 // Per-stage latency. Cold start affected stages can be excluded so the roughly
 // 10 second OpenSearch recovery does not sit inside the warm distribution.
-//
-// Grouped by run type as well as stage name: a stage name is only unique within
-// a pipeline, and the same key would otherwise merge a startup's mongodb_connect
-// with an ingestion's, or hide either behind the api_request records that
-// outnumber both.
+
 export async function aggregateStageLatency(options = {}) {
-  const { excludeColdStart = true } = options;
+  const { excludeColdStart = true, byQueryClass = false } = options;
 
   // Exclusion is per stage, not per record. A run that paid a cold start in one
   // stage still holds usable warm samples in the others, and dropping the whole
@@ -61,7 +57,11 @@ export async function aggregateStageLatency(options = {}) {
   const base = stageUnwindStages(filter, { excludeColdStart });
 
   const groupCommon = {
-    _id: { runType: "$runType", stage: "$stageEntries.k" },
+    _id: {
+      runType: "$runType",
+      stage: "$stageEntries.k",
+      ...(byQueryClass ? { queryClass: "$queryClass" } : {}),
+    },
     samples: { $sum: 1 },
     avgMs: { $avg: "$stageEntries.v.durationMs" },
     minMs: { $min: "$stageEntries.v.durationMs" },
@@ -104,9 +104,11 @@ export async function aggregateStageLatency(options = {}) {
   return {
     percentilesSupported,
     excludeColdStart,
+    byQueryClass,
     stages: results.map((row) => ({
       runType: row._id.runType,
       stage: row._id.stage,
+      ...(byQueryClass ? { queryClass: row._id.queryClass } : {}),
       samples: row.samples,
       avgMs: row.avgMs,
       minMs: row.minMs,
@@ -124,7 +126,10 @@ export async function aggregateStageLatency(options = {}) {
 }
 
 // End to end latency per query class, which is what a "how long does a question
-// take" figure is built from.
+// take" figure is built from. Carries the per-class token and OCU-second totals
+// alongside it, so cost per query and latency per query come from the same
+// grouping rather than two reports that can disagree.
+
 export async function aggregateRunLatencyByQueryClass(options = {}) {
   const { excludeColdStart = true } = options;
   const filter = buildTelemetryFilter({
@@ -141,6 +146,9 @@ export async function aggregateRunLatencyByQueryClass(options = {}) {
         avgMs: { $avg: "$totalDurationMs" },
         minMs: { $min: "$totalDurationMs" },
         maxMs: { $max: "$totalDurationMs" },
+        tokensIn: { $sum: { $ifNull: ["$tokens.input", 0] } },
+        tokensOut: { $sum: { $ifNull: ["$tokens.output", 0] } },
+        ocuSeconds: { $sum: { $ifNull: ["$compute.ocuSeconds", 0] } },
         failures: {
           $sum: { $cond: [{ $eq: ["$status", RUN_STATUSES.FAILED] }, 1, 0] },
         },
@@ -156,7 +164,47 @@ export async function aggregateRunLatencyByQueryClass(options = {}) {
     avgMs: row.avgMs,
     minMs: row.minMs,
     maxMs: row.maxMs,
+    tokensIn: row.tokensIn,
+    tokensOut: row.tokensOut,
+    ocuSeconds: row.ocuSeconds,
+    // Per-query rates: the form a cost model divides a price into.
+    avgOcuSeconds: row.runs > 0 ? row.ocuSeconds / row.runs : null,
+    avgTokensIn: row.runs > 0 ? row.tokensIn / row.runs : null,
+    avgTokensOut: row.runs > 0 ? row.tokensOut / row.runs : null,
     failures: row.failures,
+  }));
+}
+
+// OCU-seconds split by the resource that consumed them, so a query's compute
+// cost can be attributed to retrieval or generation rather than only totalled.
+// The counterpart to aggregateIngestionVolume's byApi split, for the query side.
+export async function aggregateComputeByResource(options = {}) {
+  const filter = buildTelemetryFilter(options);
+
+  const results = await TelemetryRecord.aggregate([
+    { $match: filter },
+    { $addFields: { computeEntries: { $objectToArray: { $ifNull: ["$compute.byResource", {}] } } } },
+    { $unwind: "$computeEntries" },
+    {
+      $group: {
+        _id: { resource: "$computeEntries.k", queryClass: "$queryClass" },
+        runs: { $sum: 1 },
+        seconds: { $sum: "$computeEntries.v.seconds" },
+        ocuSeconds: { $sum: "$computeEntries.v.ocuSeconds" },
+        calls: { $sum: "$computeEntries.v.calls" },
+      },
+    },
+    { $sort: { ocuSeconds: -1 } },
+  ]);
+
+  return results.map((row) => ({
+    resource: row._id.resource,
+    queryClass: row._id.queryClass,
+    runs: row.runs,
+    seconds: row.seconds,
+    ocuSeconds: row.ocuSeconds,
+    calls: row.calls,
+    ocuSecondsPerRun: row.runs > 0 ? row.ocuSeconds / row.runs : null,
   }));
 }
 
@@ -179,13 +227,7 @@ const EMPTY_INGESTION_TOTALS = Object.freeze({
 //   undefined runType  -> narrowed to ingestion, never widened to every run
 //   runType=ingestion  -> the same query
 //   any other runType  -> intersects to nothing, so an empty report
-//
-// The last case is the one that matters. Letting a caller's runType through
-// here redirected the aggregation onto other records and returned them under
-// an "ingestion" label: asking the summary for api_request reported the
-// api_request count as ingestion.totals.runs. Honouring the filter and
-// returning zero is the honest answer; silently ignoring it would repeat the
-// dropped-filter bug fixed in buildTelemetryFilter.
+
 export async function aggregateIngestionVolume(options = {}) {
   const { runType } = options;
 
@@ -344,11 +386,7 @@ export async function aggregateColdStarts(options = {}) {
 
 // Which stages have started reporting. Makes the gap between "structure exists"
 // and "stage is instrumented" visible without reading code.
-//
-// Split by run type. Every record carries the four pipeline stages from day one
-// (E6-20a), so without the split the api_request records — one per HTTP call —
-// would keep every stage reading not_implemented long after ingestion had
-// instrumented it. The record shape is right; the grouping was wrong.
+
 export async function aggregateStageCoverage(options = {}) {
   const filter = buildTelemetryFilter(options);
 
@@ -394,19 +432,33 @@ export async function aggregateStageCoverage(options = {}) {
 }
 
 export async function getTelemetrySummary(options = {}) {
-  const [stageLatency, runLatency, ingestion, coldStarts, coverage] =
-    await Promise.all([
-      aggregateStageLatency(options),
-      aggregateRunLatencyByQueryClass(options),
-      aggregateIngestionVolume(options),
-      aggregateColdStarts(options),
-      aggregateStageCoverage(options),
-    ]);
+  const [
+    stageLatency,
+    stageLatencyByQueryClass,
+    runLatency,
+    compute,
+    ingestion,
+    coldStarts,
+    coverage,
+  ] = await Promise.all([
+    aggregateStageLatency(options),
+    // The bottleneck-within-a-class figure. Reported alongside the coarser
+    // split rather than replacing it: the class-blind rows stay the right
+    // answer for runTypes that have no meaningful class (startup, ingestion).
+    aggregateStageLatency({ ...options, byQueryClass: true }),
+    aggregateRunLatencyByQueryClass(options),
+    aggregateComputeByResource(options),
+    aggregateIngestionVolume(options),
+    aggregateColdStarts(options),
+    aggregateStageCoverage(options),
+  ]);
 
   return {
     window: { from: options.from || null, to: options.to || null },
     stageLatency,
+    stageLatencyByQueryClass,
     runLatency,
+    compute,
     ingestion,
     coldStarts,
     coverage,

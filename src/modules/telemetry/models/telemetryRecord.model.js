@@ -2,6 +2,7 @@ import mongoose from "mongoose";
 
 import {
   DEFAULT_QUERY_CLASS,
+  OCU_BASES,
   PIPELINE_STAGE_NAMES,
   RUN_STATUSES,
   STAGE_STATUSES,
@@ -111,6 +112,19 @@ const apiUsageSchema = new mongoose.Schema(
     tokensOut: { type: Number, default: 0 },
     failures: { type: Number, default: 0 },
     durationMs: { type: Number, default: 0 },
+  },
+  { _id: false },
+);
+
+// Compute consumed by one resource during a run, in OCU-seconds (TENISE-30).
+// `ocu` is stored alongside the product rather than only the result, so a
+// record stays interpretable after the configured rate changes.
+const computeUsageSchema = new mongoose.Schema(
+  {
+    seconds: { type: Number, default: 0 },
+    ocu: { type: Number, default: 0 },
+    ocuSeconds: { type: Number, default: 0 },
+    calls: { type: Number, default: 0 },
   },
   { _id: false },
 );
@@ -239,6 +253,23 @@ const telemetryRecordSchema = new mongoose.Schema(
     tokens: {
       input: { type: Number, default: 0 },
       output: { type: Number, default: 0 },
+    },
+
+    // OCU-seconds consumed by the run (TENISE-30). byResource is a Map for the
+    // same reason as stages and ingestion.byApi: a resource that starts being
+    // billed later is a new key, not a schema edit.
+    //
+    // basis says how the figure was produced. "estimated" is measured seconds
+    // times a configured OCU rate, which is what this project can produce
+    // without a provider invoice; see the constants for why.
+    compute: {
+      ocuSeconds: { type: Number, default: 0 },
+      basis: { type: String, default: OCU_BASES.ESTIMATED },
+      byResource: {
+        type: Map,
+        of: computeUsageSchema,
+        default: () => new Map(),
+      },
     },
 
     // Written by TENISE-27's cost calculation, which reads the volume fields

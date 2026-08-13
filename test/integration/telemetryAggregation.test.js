@@ -8,6 +8,7 @@ import mongoose from "mongoose";
 import TelemetryRecord from "../../src/modules/telemetry/models/telemetryRecord.model.js";
 import {
   aggregateColdStarts,
+  aggregateComputeByResource,
   aggregateIngestionVolume,
   aggregateRunLatencyByQueryClass,
   aggregateStageCoverage,
@@ -474,21 +475,291 @@ describe(
       );
     });
 
-    it("assembles the summary from all five aggregations", async () => {
+    it("assembles the summary from every aggregation", async () => {
       const summary = await getTelemetrySummary({ correlationId });
 
       assert.deepEqual(Object.keys(summary).sort(), [
         "coldStarts",
+        "compute",
         "coverage",
         "ingestion",
         "runLatency",
         "stageLatency",
+        "stageLatencyByQueryClass",
         "window",
       ]);
 
       assert.equal(summary.coldStarts.totals.runs, 7);
       assert.ok(summary.stageLatency.stages.every((row) => row.runType));
       assert.ok(summary.coverage.every((row) => row.runType));
+    });
+  },
+);
+
+// TENISE-30 acceptance criterion 6: aggregation across a set of queries produces
+// per-class latency figures.
+//
+// Seeded under its own correlationId so the counts above stay untouched.
+const queryCorrelationId = `itest:telemetry-per-class:${randomUUID()}`;
+
+function queryRecord({
+  queryClass,
+  routingMs,
+  generationMs,
+  totalDurationMs,
+  compute,
+}) {
+  return {
+    recordId: randomUUID(),
+    runType: TELEMETRY_RUN_TYPES.QUERY,
+    correlationId: queryCorrelationId,
+    queryClass,
+    status: RUN_STATUSES.SUCCESS,
+    startedAt,
+    completedAt: startedAt,
+    totalDurationMs,
+    stages: pipelineStages({
+      routing: {
+        status: STAGE_STATUSES.SUCCESS,
+        durationMs: routingMs,
+        apiType: API_TYPES.LOCAL,
+      },
+      retrieval: { status: STAGE_STATUSES.SKIPPED, reason: "not_implemented" },
+      generation: {
+        status: STAGE_STATUSES.SUCCESS,
+        durationMs: generationMs,
+        apiType: API_TYPES.OLLAMA_GENERATION,
+        apiCalls: 1,
+        tokensIn: 100,
+        tokensOut: 50,
+      },
+    }),
+    tokens: { input: 100, output: 50 },
+    compute,
+  };
+}
+
+// Seconds are chosen to sum exactly in binary, so the assertions test the
+// aggregation rather than floating point.
+function seedQueryRecords() {
+  return [
+    queryRecord({
+      queryClass: QUERY_CLASSES.STATISTICS,
+      routingMs: 1,
+      generationMs: 1000,
+      totalDurationMs: 1010,
+      compute: {
+        ocuSeconds: 1.5,
+        basis: "estimated",
+        byResource: {
+          ollama: { seconds: 1, ocu: 1, ocuSeconds: 1, calls: 1 },
+          // Stands in for the retrieval compute TENISE-15/17 will report. The
+          // split has to work before that lands, or the first real retrieval
+          // figures arrive with nowhere to be attributed.
+          qdrant: { seconds: 0.5, ocu: 1, ocuSeconds: 0.5, calls: 1 },
+        },
+      },
+    }),
+    queryRecord({
+      queryClass: QUERY_CLASSES.STATISTICS,
+      routingMs: 1,
+      generationMs: 2000,
+      totalDurationMs: 2010,
+      compute: {
+        ocuSeconds: 2.5,
+        basis: "estimated",
+        byResource: {
+          ollama: { seconds: 2, ocu: 1, ocuSeconds: 2, calls: 1 },
+          qdrant: { seconds: 0.5, ocu: 1, ocuSeconds: 0.5, calls: 1 },
+        },
+      },
+    }),
+    queryRecord({
+      queryClass: QUERY_CLASSES.DOCUMENT,
+      routingMs: 1,
+      generationMs: 200,
+      totalDurationMs: 210,
+      compute: {
+        ocuSeconds: 0.25,
+        basis: "estimated",
+        byResource: { ollama: { seconds: 0.25, ocu: 1, ocuSeconds: 0.25, calls: 1 } },
+      },
+    }),
+    queryRecord({
+      queryClass: QUERY_CLASSES.DOCUMENT,
+      routingMs: 1,
+      generationMs: 400,
+      totalDurationMs: 410,
+      compute: {
+        ocuSeconds: 0.75,
+        basis: "estimated",
+        byResource: { ollama: { seconds: 0.75, ocu: 1, ocuSeconds: 0.75, calls: 1 } },
+      },
+    }),
+  ];
+}
+
+// A Sprint 1 record: schemaVersion 1, written before the compute block existed.
+// Inserted through the driver rather than the model so Mongoose does not helpfully
+// apply the new defaults and turn it into a record that cannot reproduce the bug.
+function legacyQueryRecord() {
+  return {
+    schemaVersion: 1,
+    recordId: randomUUID(),
+    runType: TELEMETRY_RUN_TYPES.QUERY,
+    correlationId: queryCorrelationId,
+    queryClass: QUERY_CLASSES.DOCUMENT,
+    status: RUN_STATUSES.SUCCESS,
+    startedAt,
+    completedAt: startedAt,
+    totalDurationMs: 460,
+    stages: {
+      routing: { status: STAGE_STATUSES.NOT_IMPLEMENTED },
+      retrieval: { status: STAGE_STATUSES.NOT_IMPLEMENTED },
+      rerank: { status: STAGE_STATUSES.NOT_IMPLEMENTED },
+      generation: {
+        status: STAGE_STATUSES.SUCCESS,
+        durationMs: 450,
+        apiType: API_TYPES.OLLAMA_GENERATION,
+        apiCalls: 1,
+        tokensIn: 100,
+        tokensOut: 50,
+      },
+    },
+    tokens: { input: 100, output: 50 },
+    coldStart: { detected: false, count: 0, totalRecoveryMs: 0, events: [] },
+  };
+}
+
+function findClassStage(rows, queryClass, stage) {
+  return rows.find((row) => row.queryClass === queryClass && row.stage === stage);
+}
+
+describe(
+  "per class query telemetry",
+  { skip: mongoUri ? false : "MONGODB_URI is not set" },
+  () => {
+    before(async () => {
+      await mongoose.connect(mongoUri, { serverSelectionTimeoutMS: 15000 });
+      await TelemetryRecord.insertMany(seedQueryRecords());
+      await TelemetryRecord.collection.insertOne(legacyQueryRecord());
+    });
+
+    after(async () => {
+      await TelemetryRecord.deleteMany({ correlationId: queryCorrelationId });
+      await mongoose.disconnect();
+    });
+
+    it("reports stage latency per class, so a bottleneck can be named within a class", async () => {
+      const result = await aggregateStageLatency({
+        correlationId: queryCorrelationId,
+        byQueryClass: true,
+      });
+
+      assert.equal(result.byQueryClass, true);
+
+      const statistics = findClassStage(
+        result.stages,
+        QUERY_CLASSES.STATISTICS,
+        "generation",
+      );
+      const document = findClassStage(
+        result.stages,
+        QUERY_CLASSES.DOCUMENT,
+        "generation",
+      );
+
+      assert.equal(statistics.samples, 2);
+      assert.equal(statistics.avgMs, 1500);
+
+      // Three: the two current records plus the schemaVersion 1 one.
+      assert.equal(document.samples, 3);
+      assert.equal(document.avgMs, 350);
+
+      // Routing is measured separately and is nowhere near the bottleneck —
+      // which is the statement a single end to end figure cannot make.
+      const routing = findClassStage(result.stages, QUERY_CLASSES.STATISTICS, "routing");
+
+      assert.equal(routing.samples, 2);
+      assert.ok(routing.avgMs < statistics.avgMs);
+    });
+
+    it("blends the classes without the dimension, which is why it exists", async () => {
+      const blended = await aggregateStageLatency({
+        correlationId: queryCorrelationId,
+      });
+
+      const generation = findStage(
+        blended.stages,
+        TELEMETRY_RUN_TYPES.QUERY,
+        "generation",
+      );
+
+      assert.equal(blended.byQueryClass, false);
+      assert.equal(generation.samples, 5);
+
+      // 810ms describes neither class.
+      assert.equal(generation.avgMs, 810);
+    });
+
+    it("reports OCU-seconds and tokens per class alongside latency", async () => {
+      const rows = await aggregateRunLatencyByQueryClass({
+        correlationId: queryCorrelationId,
+      });
+      const byClass = Object.fromEntries(rows.map((row) => [row.queryClass, row]));
+
+      assert.equal(byClass.statistics.runs, 2);
+      assert.equal(byClass.statistics.ocuSeconds, 4);
+      assert.equal(byClass.statistics.avgOcuSeconds, 2);
+      assert.equal(byClass.statistics.tokensIn, 200);
+
+      // The schemaVersion 1 record has no compute block. It must contribute
+      // zero and still count as a run — without $ifNull it contributes null,
+      // which blanks the whole group's sum and silently wipes the figure for
+      // any window reaching back into Sprint 1.
+      assert.equal(byClass.document.runs, 3);
+      assert.equal(byClass.document.ocuSeconds, 1);
+      assert.equal(byClass.document.tokensIn, 300);
+    });
+
+    it("splits OCU-seconds by the resource that consumed them", async () => {
+      const rows = await aggregateComputeByResource({
+        correlationId: queryCorrelationId,
+      });
+
+      const ollamaStatistics = rows.find(
+        (row) => row.resource === "ollama" && row.queryClass === QUERY_CLASSES.STATISTICS,
+      );
+      const qdrantStatistics = rows.find(
+        (row) => row.resource === "qdrant" && row.queryClass === QUERY_CLASSES.STATISTICS,
+      );
+
+      assert.equal(ollamaStatistics.ocuSeconds, 3);
+      assert.equal(ollamaStatistics.runs, 2);
+      assert.equal(ollamaStatistics.ocuSecondsPerRun, 1.5);
+
+      // Generation dominates compute for this class. That attribution is the
+      // point: a single per-query total could not make it.
+      assert.equal(qdrantStatistics.ocuSeconds, 1);
+      assert.ok(qdrantStatistics.ocuSeconds < ollamaStatistics.ocuSeconds);
+
+      // The record with no compute block contributes no rows and breaks nothing.
+      assert.equal(
+        rows.some((row) => row.resource === undefined || row.resource === null),
+        false,
+      );
+    });
+
+    it("carries the per class stage figures through the summary", async () => {
+      const summary = await getTelemetrySummary({
+        correlationId: queryCorrelationId,
+      });
+
+      assert.equal(summary.stageLatencyByQueryClass.byQueryClass, true);
+      assert.ok(
+        summary.stageLatencyByQueryClass.stages.every((row) => row.queryClass),
+      );
+      assert.ok(summary.compute.length > 0);
     });
   },
 );
