@@ -24,7 +24,11 @@ import { generateAnswer } from "./generation.service.js";
  * control tests use (forced-empty evidence, deliberately incorrect evidence),
  * and it stays supported so those tests keep working without an index.
  */
-export async function submitChatQuestion(question, { evidence = null, roleId = "analyst" } = {}) {
+export async function submitChatQuestion(question, { evidence = null, roleId } = {}) {
+    // an absent or empty role falls back rather than throwing. `?? "analyst"`
+    // alone would not catch the empty string a form submits.
+    const role = roleId && String(roleId).trim() !== "" ? roleId : "analyst";
+
     const run = startTelemetryRun({
         runType: TELEMETRY_RUN_TYPES.QUERY,
         queryClass: QUERY_CLASSES.DOCUMENT,

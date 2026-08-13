@@ -1,22 +1,19 @@
 import { submitChatQuestion } from "./api/chatApi.js";
-import { createCitationDialog } from "./ui/citationDialog.js";
-import { createSourcePanel } from "./ui/sourcePanel.js";
-import {
-    appendAssistantMessage,
-    appendUserMessage,
-} from "./ui/messageRenderer.js";
+import { appendAssistantMessage, appendUserMessage } from "./ui/messageRenderer.js";
 import { createProcessingStatus } from "./ui/processingStatus.js";
+import { createSourcePanel } from "./ui/sourcePanel.js";
 
 /**
- * Returns a required page element or throws a clear startup error.
+ * Returns a required page element, or throws a clear startup error.
+ *
+ * Failing loudly here beats a null reference three interactions later, when the
+ * cause is much harder to see.
  */
 function getRequiredElement(selector) {
     const element = document.querySelector(selector);
 
     if (!element) {
-        throw new Error(
-            `Required interface element was not found: ${selector}`,
-        );
+        throw new Error(`Required interface element was not found: ${selector}`);
     }
 
     return element;
@@ -26,75 +23,22 @@ const chatForm = getRequiredElement("#chat-form");
 const questionInput = getRequiredElement("#question");
 const sendButton = getRequiredElement("#send-button");
 const conversation = getRequiredElement("#conversation");
-
-const statusIndicator = getRequiredElement(
-    "#processing-status",
-);
-
-const statusText = getRequiredElement("#status-text");
-
-const processingMessage = getRequiredElement(
-    "#processing-message",
-);
-
+const roleSelect = getRequiredElement("#role");
 const errorBanner = getRequiredElement("#error-banner");
 const errorMessage = getRequiredElement("#error-message");
+const dismissErrorButton = getRequiredElement("#dismiss-error-button");
 
-const dismissErrorButton = getRequiredElement(
-    "#dismiss-error-button",
-);
-
-const citationDialogElement = getRequiredElement(
-    "#citation-dialog",
-);
-
-const citationTitle = getRequiredElement(
-    "#citation-title",
-);
-
-const citationExcerpt = getRequiredElement(
-    "#citation-excerpt",
-);
-
-const citationLink = getRequiredElement(
-    "#citation-link",
-);
-
-const citationCloseButton = getRequiredElement(
-    "#citation-close-button",
-);
-
-const citationDoneButton = getRequiredElement(
-    "#citation-done-button",
-);
-
-const welcomeCard =
-    document.querySelector(".welcome-card");
-
-const exploreButtons = document.querySelectorAll(
-    "[data-suggested-question]",
-);
-
-const processingStatus = createProcessingStatus({
-    statusIndicator,
-    statusText,
-    processingMessage,
+const status = createProcessingStatus({
+    statusIndicator: getRequiredElement("#processing-status"),
+    statusText: getRequiredElement("#status-text"),
+    processingMessage: getRequiredElement("#processing-message"),
     conversation,
 });
 
-const citationDialog = createCitationDialog({
-    dialog: citationDialogElement,
-    title: citationTitle,
-    excerpt: citationExcerpt,
-    link: citationLink,
-    closeButton: citationCloseButton,
-    doneButton: citationDoneButton,
-});
-
 /*
- * Sources open in a panel beside the conversation rather than in a dialog with
- * a link that navigates away. Losing the conversation to read a citation is
- * exactly what the partner asked us to avoid.
+ * Cited sources open in a panel beside the conversation rather than in a new
+ * tab. Losing your place in the conversation to read a citation is exactly what
+ * the partner asked us to avoid.
  */
 const sourcePanel = createSourcePanel({
     panel: getRequiredElement("#source-panel"),
@@ -105,183 +49,79 @@ const sourcePanel = createSourcePanel({
     downloadLink: getRequiredElement("#source-panel-download"),
 });
 
-function resizeQuestionInput() {
-    questionInput.style.height = "auto";
-
-    questionInput.style.height =
-        `${questionInput.scrollHeight}px`;
-}
-
-function resetQuestionInputHeight() {
-    questionInput.style.height = "auto";
-}
-
-function setBusy(isBusy) {
-    questionInput.disabled = isBusy;
-    sendButton.disabled = isBusy;
-
-    sendButton.textContent = isBusy
-        ? "Sending..."
-        : "Send";
-}
-
 function showError(message) {
     errorMessage.textContent = message;
     errorBanner.hidden = false;
 }
 
 function clearError() {
-    errorMessage.textContent = "";
     errorBanner.hidden = true;
+    errorMessage.textContent = "";
 }
+
+dismissErrorButton.addEventListener("click", clearError);
 
 /**
- * Extracts display content from the current backend envelope.
- *
- * The backend may return:
- * data.response
- * data.answer
- * data.content
- * or an entirely different data structure.
- *
- * No four-section answer template is enforced here.
+ * Grows the textarea with its content, up to the CSS max-height.
  */
-function extractDisplayData(responseBody) {
-    const data =
-        responseBody?.data ??
-        responseBody;
-
-    let content = data;
-    let citations = [];
-
-    if (
-        data !== null &&
-        typeof data === "object" &&
-        !Array.isArray(data)
-    ) {
-        if (Array.isArray(data.citations)) {
-            citations = data.citations;
-        }
-
-        if (
-            Object.prototype.hasOwnProperty.call(
-                data,
-                "response",
-            )
-        ) {
-            content = data.response;
-        } else if (
-            Object.prototype.hasOwnProperty.call(
-                data,
-                "answer",
-            )
-        ) {
-            content = data.answer;
-        } else if (
-            Object.prototype.hasOwnProperty.call(
-                data,
-                "content",
-            )
-        ) {
-            content = data.content;
-        }
-    }
-
-    return {
-        content,
-        citations,
-    };
+function resizeInput() {
+    questionInput.style.height = "auto";
+    questionInput.style.height = `${questionInput.scrollHeight}px`;
 }
 
-/**
- * Suggested question cards only fill the natural-language input.
- * They never select a backend route, mode, source or command.
- */
-for (const button of exploreButtons) {
-    button.addEventListener("click", () => {
-        questionInput.value =
-            button.dataset.suggestedQuestion ?? "";
+questionInput.addEventListener("input", resizeInput);
 
-        resizeQuestionInput();
-        questionInput.focus();
-    });
-}
-
-questionInput.addEventListener(
-    "input",
-    resizeQuestionInput,
-);
-
-dismissErrorButton.addEventListener("click", () => {
-    clearError();
-
-    if (statusText.textContent === "Failed") {
-        processingStatus.ready();
+// Enter sends, Shift+Enter starts a new line -- the convention every chat
+// interface uses, and the one people try first.
+questionInput.addEventListener("keydown", (event) => {
+    if (event.key === "Enter" && !event.shiftKey) {
+        event.preventDefault();
+        chatForm.requestSubmit();
     }
 });
+
+function setBusy(busy) {
+    sendButton.disabled = busy;
+    questionInput.disabled = busy;
+}
 
 chatForm.addEventListener("submit", async (event) => {
     event.preventDefault();
+    clearError();
 
     const question = questionInput.value.trim();
 
-    if (!question) {
-        showError(
-            "Enter a question before submitting.",
-        );
+    if (question === "") return;
 
-        processingStatus.fail();
-        questionInput.focus();
-
-        return;
-    }
-
-    clearError();
-
-    if (welcomeCard) {
-        welcomeCard.hidden = true;
-    }
-
-    appendUserMessage({
-        conversation,
-        question,
-    });
+    appendUserMessage({ conversation, content: question });
 
     questionInput.value = "";
-    resetQuestionInputHeight();
-
+    resizeInput();
     setBusy(true);
-    processingStatus.start();
+    status.start();
 
     try {
-        const responseBody =
-            await submitChatQuestion(question);
-
-        const {
-            content,
-            citations,
-        } = extractDisplayData(responseBody);
-
-        processingStatus.complete();
+        const result = await submitChatQuestion(question, roleSelect.value);
+        const response = result?.response ?? {};
 
         appendAssistantMessage({
             conversation,
-            content,
-            citations,
-            openCitation:
-                sourcePanel.open,
+            content: response.answer ?? "No answer was returned.",
+            citations: result?.citations ?? [],
+            // present only when the question was answered from the tables. the
+            // renderer ignores them when absent, so one code path covers both.
+            table: response.table ?? null,
+            sql: response.sql ?? null,
+            grounding: response.grounding ?? null,
+            openCitation: sourcePanel.open,
         });
     } catch (error) {
-        processingStatus.fail();
-
-        showError(
-            error.message ??
-            "An unexpected error occurred.",
-        );
+        showError(error?.message ?? "The request could not be completed.");
     } finally {
         setBusy(false);
+        status.ready();
         questionInput.focus();
     }
 });
 
-processingStatus.ready();
+questionInput.focus();
