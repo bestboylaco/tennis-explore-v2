@@ -266,7 +266,15 @@ export function renderSql(spec, table) {
     return `${AGGREGATES[metric.fn].label}(${metric.column}) AS ${alias}`;
   });
 
-  const projection = [...groupExpressions, ...metricExpressions, ...select];
+  // a column that is grouped AND selected must appear once, not twice. the
+  // planner routinely emits both, and the rendered sql came out as
+  // "SELECT surface_c, COUNT(*) AS count_all, surface_c" -- not valid sql, and
+  // since this string is the audit trail shown to the user it made a correct
+  // answer look untrustworthy.
+  const grouped = new Set(groupBy);
+  const selectOnly = select.filter((column) => !grouped.has(column));
+
+  const projection = [...groupExpressions, ...metricExpressions, ...selectOnly];
 
   const where = (spec.filters ?? []).map((filter) => {
     if (filter.op === "is_not_null") return `${filter.column} IS NOT NULL`;

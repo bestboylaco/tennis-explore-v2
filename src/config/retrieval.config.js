@@ -131,7 +131,12 @@ export const retrievalConfig = Object.freeze({
     // tuning it, so it is not exposed as a tuning target.
     rrfK: num(process.env.RRF_K, 60),
     // how many fused candidates the reranker actually scores.
-    rerankInput: num(process.env.RERANK_INPUT, 50),
+    // dropped from 50 to 24. with llm scoring that was 5 batched calls, and
+    // ollama runs one request at a time unless OLLAMA_NUM_PARALLEL is set, so
+    // "concurrent" batches queued and a search took 20-56 seconds. 24 is two
+    // batches. raise it when running the cross-encoder service, where scoring
+    // is a single fast forward pass.
+    rerankInput: num(process.env.RERANK_INPUT, 24),
     // how many chunks reach the language model. the research is consistent
     // that ~20 beats 5 or 10 for answer quality, but 20 chunks of 1600 chars
     // is ~8k tokens of prompt, which is slow on a local 8b model. 10 is the
@@ -185,7 +190,7 @@ export const retrievalConfig = Object.freeze({
     // how many passages go into one scoring call. one call per passage meant 50
     // sequential round trips and about 90 seconds; ten per call is five calls,
     // run concurrently.
-    batchSize: num(process.env.RERANK_BATCH_SIZE, 10),
+    batchSize: num(process.env.RERANK_BATCH_SIZE, 12),
     baseUrl: stripTrailingSlash(process.env.OLLAMA_BASE_URL || "http://localhost:11434"),
   }),
 

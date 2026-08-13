@@ -34,7 +34,7 @@ async function startServer() {
     );
 
     server = app.listen(env.port, () => {
-      console.log(`🎾 TennisExplore V2 server running on port ${env.port}`);
+      console.log(`TennisExplore V2 server running on port ${env.port}`);
     });
 
     // Written after the connection is up, which is the first moment the
@@ -44,7 +44,7 @@ async function startServer() {
     run.fail(error);
     await run.finish(RUN_STATUSES.FAILED);
 
-    console.error("❌ TennisExplore V2 failed to start.");
+    console.error("TennisExplore V2 failed to start.");
     process.exit(1);
   }
 }

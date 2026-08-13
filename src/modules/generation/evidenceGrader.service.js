@@ -82,10 +82,45 @@ export function cheapGrade(question, evidence) {
   const covered = terms.filter((term) => haystack.includes(term)).length;
   const termCoverage = terms.length === 0 ? 1 : covered / terms.length;
 
+  // the anchors: proper nouns and years. these carry almost all of a question's
+  // identity, and plain term coverage drowns them out on a single-subject
+  // corpus.
+  //
+  // "what was Djokovic's serve speed at the 2019 Australian Open final" scores
+  // well on plain coverage against ANY tennis corpus -- serve, speed, open and
+  // final are everywhere -- so the grader passed it and the model answered a
+  // question it could not answer. but "djokovic" and "2019" appear nowhere, and
+  // that is the whole signal.
+  const anchors = [
+    ...new Set(
+      [
+        ...String(question).matchAll(/\b(?:19|20)\d{2}\b/g),
+        // capitalised words, ignoring the sentence's first word
+        ...String(question).slice(1).matchAll(/\b[A-Z][a-z]{2,}\b/g),
+      ].map((match) => match[0].toLowerCase()),
+    ),
+  ];
+
+  const anchorsFound = anchors.filter((anchor) => haystack.includes(anchor)).length;
+  const anchorCoverage = anchors.length === 0 ? 1 : anchorsFound / anchors.length;
+
   // thresholds are deliberately lopsided. calling good evidence insufficient
   // costs a refusal the user can retry; calling bad evidence sufficient costs a
   // confident falsehood, which nobody catches. so we only refuse outright when
   // the signal is unambiguous.
+  // a named subject the evidence has never heard of. the strongest refusal
+  // signal there is, so it fires before anything else.
+  if (anchors.length > 0 && anchorCoverage === 0) {
+    return {
+      grade: GRADES.INSUFFICIENT,
+      confidence: 0.95,
+      reason: `the evidence never mentions ${anchors.slice(0, 3).join(", ")}`,
+      termCoverage,
+      anchorCoverage,
+      armAgreement,
+    };
+  }
+
   if (termCoverage < 0.25 && armAgreement < 0.2) {
     return {
       grade: GRADES.INSUFFICIENT,

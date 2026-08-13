@@ -53,6 +53,19 @@ app.get("/api/health", (req, res) => {
   });
 });
 
+/*
+ * Page routes. express.static already serves index.html at "/", but
+ * extension-less URLs read better in a demo and in a report than
+ * "/explore.html", and the nav links point at them.
+ */
+app.get("/explore", (req, res) => {
+  res.sendFile(path.join(publicDirectory, "explore.html"));
+});
+
+app.get("/platforms", (req, res) => {
+  res.sendFile(path.join(publicDirectory, "platforms.html"));
+});
+
 // Application routes
 app.use("/api/chat", chatRoutes);
 app.use("/api/sources", sourceRoutes);

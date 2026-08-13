@@ -197,7 +197,7 @@ async function readOcrSidecar(filePath) {
 // journal furniture, download banners and copyright lines. none of these is
 // ever the title, and all of them sit above it on page one.
 const NOT_A_TITLE =
-  /^(https?:|www\.|doi:|downloaded (from|by)|this article was|\d+$|©|copyright|issn|isbn|vol\.|volume \d|page \d|received:|accepted:|published:|original (research|article)|research article|review article|abstract|editorial|chapter \d+$|c\d+\.indd|first edition|edited by|john wiley|wiley|elsevier|springer|taylor & francis|routledge|lippincott|human kinetics|sage publications|international olympic)/i;
+  /^(https?:|www\.|doi:|downloaded (from|by)|this article was|full terms|terms (&|and) conditions|journal homepage|access and use|(international )?journal of|sports? medicine|medicine (and|&) science|\d+$|©|copyright|issn|isbn|vol\.|volume \d|page \d|received:|accepted:|published:|original (research|article)|research article|review article|abstract|editorial|chapter \d+$|c\d+\.indd|first edition|edited by|john wiley|wiley|elsevier|springer|taylor & francis|routledge|lippincott|human kinetics|sage publications|international olympic)/i;
 
 // titles that are technically extracted but say nothing. a citation reading
 // "Lecture Presentation, page 3" is no more useful than no title at all, so
