@@ -132,15 +132,32 @@ export function createSourcePanel({ panel, titleNode, metaNode, bodyNode, closeB
     }
 
     function renderPdf(source, url) {
+        /*
+         * No `sandbox` attribute, and that is deliberate rather than an
+         * oversight.
+         *
+         * Chrome renders PDFs with an internal plugin, and a sandboxed iframe
+         * blocks plugins outright -- the panel showed an empty grey box with a
+         * broken-document icon and no error, which reads as "the file is
+         * missing" rather than "the browser refused to draw it".
+         *
+         * Dropping the sandbox is acceptable here specifically because these
+         * are same-origin responses from our own /api/assets route, which
+         * serves only files present in the index and re-checks access on every
+         * request. If this ever serves third-party or user-uploaded content,
+         * the sandbox has to come back and the viewer has to change with it --
+         * PDF.js rendered to a canvas would be the way, since that is script,
+         * not a plugin.
+         */
         const frame = el("iframe", "source-panel__frame");
 
         frame.src = url.href;
         frame.title = `${source.title} — cited page`;
-        // the asset route is same-origin; the sandbox stops an unexpected
-        // document doing anything beyond rendering itself.
-        frame.setAttribute("sandbox", "allow-same-origin allow-scripts");
+        frame.setAttribute("referrerpolicy", "no-referrer");
         frame.addEventListener("error", () =>
-            renderUnavailable("This document could not be displayed. Use Download to open it."),
+            renderUnavailable(
+                "This document could not be displayed here. Use the link below to open it in a new tab.",
+            ),
         );
 
         bodyNode.replaceChildren(frame);

@@ -82,6 +82,8 @@ The analyst has no physiological access, so the second returns less. Roles are
 |---|---|
 | [`docs/HOW-TO-RUN.md`](docs/HOW-TO-RUN.md) | Step-by-step setup, using a larger embedding model, sharing the index |
 | [`docs/RETRIEVAL-DESIGN.md`](docs/RETRIEVAL-DESIGN.md) | Why each technique is on or off, with sources |
+| [`TEAM-SETUP.md`](TEAM-SETUP.md) | For teammates: clone, two models, ask. No index build, no AWS |
+| [`docs/HOW-IT-WORKS.md`](docs/HOW-IT-WORKS.md) | Ranking explained, what reaches the model, what industry would replace |
 | [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) | System diagram, the two gates, and how it maps onto real connectors |
 | [`docs/QUERY-HANDLING.md`](docs/QUERY-HANDLING.md) | How questions are classified and routed, and why not function calling |
 | [`docs/SHARING-THE-INDEX.md`](docs/SHARING-THE-INDEX.md) | Publishing the index so teammates run without embedding |
