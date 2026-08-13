@@ -1,0 +1,677 @@
+{
+  "skipped": [
+    {
+      "file": "00005768-199109000-00013.pdf",
+      "reason": "no usable text extracted"
+    },
+    {
+      "file": "00005768-199405000-00022.pdf",
+      "reason": "no usable text extracted"
+    },
+    {
+      "file": "00124278-199205000-00006.pdf",
+      "reason": "no usable text extracted"
+    },
+    {
+      "file": "25-10-04-to-31-12-04.pdf",
+      "reason": "no usable text extracted"
+    },
+    {
+      "file": "acing-mental-health-coach-parent-intro-2-11-16.pdf",
+      "reason": "no usable text extracted"
+    },
+    {
+      "file": "ainsworth-et-al-1993-compendium-of-ohysical-activities-classification-of-energy-costs-of-human-physical-activities.pdf",
+      "reason": "no usable text extracted"
+    },
+    {
+      "file": "all-blacks-case-study-coach-emotional-intelligence.pdf",
+      "reason": "no usable text extracted"
+    },
+    {
+      "file": "am-9762-chandler.pdf",
+      "reason": "no usable text extracted"
+    },
+    {
+      "file": "am-bruin.pdf",
+      "reason": "no usable text extracted"
+    },
+    {
+      "file": "am-busso.pdf",
+      "reason": "no usable text extracted"
+    },
+    {
+      "file": "am-calvert.pdf",
+      "reason": "no usable text extracted"
+    },
+    {
+      "file": "am-foster.pdf",
+      "reason": "no usable text extracted"
+    },
+    {
+      "file": "am-lambert.pdf",
+      "reason": "no usable text extracted"
+    },
+    {
+      "file": "am-robertson.pdf",
+      "reason": "no usable text extracted"
+    },
+    {
+      "file": "am-viru.pdf",
+      "reason": "no usable text extracted"
+    },
+    {
+      "file": "anti-jet-lag-diet-military-medicine-june-2002.pdf",
+      "reason": "no usable text extracted"
+    },
+    {
+      "file": "applied-research-warm-up-timeline-copy.pdf",
+      "reason": "no usable text extracted"
+    },
+    {
+      "file": "april-2018.pdf",
+      "reason": "no usable text extracted"
+    },
+    {
+      "file": "article1.pdf",
+      "reason": "no usable text extracted"
+    },
+    {
+      "file": "athlete-bio-architecture.pdf",
+      "reason": "no usable text extracted"
+    },
+    {
+      "file": "borg-1978-subjective-aspects-of-physical-and-mental-load.pdf",
+      "reason": "no usable text extracted"
+    },
+    {
+      "file": "borg-1982-psychophysical-bases-of-percieved-exertion.pdf",
+      "reason": "no usable text extracted"
+    },
+    {
+      "file": "catapult-r-code-serve-examples90.pdf",
+      "reason": "no usable text extracted"
+    },
+    {
+      "file": "coaches-roundtable-speed-development-2.pdf",
+      "reason": "no usable text extracted"
+    },
+    {
+      "file": "coachs-code-of-ethics.pdf",
+      "reason": "no usable text extracted"
+    },
+    {
+      "file": "costill-et-al-1985-effects-of-reduced-training-on-muscular-power-in-swimmers.pdf",
+      "reason": "no usable text extracted"
+    },
+    {
+      "file": "costill-et-al-1991-adaptations-to-swimming-training-inflcuence-of-training-volume.pdf",
+      "reason": "no usable text extracted"
+    },
+    {
+      "file": "coyle-1990-detraining-and-retention-of-training-induced-adaptations.pdf",
+      "reason": "no usable text extracted"
+    },
+    {
+      "file": "data-scientist-article-havard-review-october-2012.pdf",
+      "reason": "no usable text extracted"
+    },
+    {
+      "file": "david-bailey-old-school-footwork-drills.pdf",
+      "reason": "no usable text extracted"
+    },
+    {
+      "file": "derenne-et-al-1996-training-frequency-on-strength-maintenance-in-pubescent-baseball.pdf",
+      "reason": "no usable text extracted"
+    },
+    {
+      "file": "dirk-spits-shoulder-injury-prevention.pdf",
+      "reason": "no usable text extracted"
+    },
+    {
+      "file": "discovery-phase-ta-applied-science-2022.pdf",
+      "reason": "no usable text extracted"
+    },
+    {
+      "file": "dr-chris-seton-teen-sleep-problems-and-solutions.pdf",
+      "reason": "no usable text extracted"
+    },
+    {
+      "file": "drill-load-signatures-for-elite-tennis-dragged.pdf",
+      "reason": "no usable text extracted"
+    },
+    {
+      "file": "drill-load-signatures-for-elite-tennis.pdf",
+      "reason": "no usable text extracted"
+    },
+    {
+      "file": "effect-of-exercise-modality-on-ratings-of-perceived-exertion-at-various-lactate-concentrations-hetzler-et-al-1991.pdf",
+      "reason": "no usable text extracted"
+    },
+    {
+      "file": "elite-habits-in-profes-sional-sports-women.pdf",
+      "reason": "no usable text extracted"
+    },
+    {
+      "file": "fads-overview-sept-24.pdf",
+      "reason": "no usable text extracted"
+    },
+    {
+      "file": "faigenbaum-et-al-1996-the-effects-of-strength-training-and-detraining-on-children.pdf",
+      "reason": "no usable text extracted"
+    },
+    {
+      "file": "female-tennis-biomechanics-2.pdf",
+      "reason": "no usable text extracted"
+    },
+    {
+      "file": "fixed-vs-growth-mindset.pdf",
+      "reason": "no usable text extracted"
+    },
+    {
+      "file": "fleck-1994-detraining-its-effects-on-endurance-and-strength.pdf",
+      "reason": "no usable text extracted"
+    },
+    {
+      "file": "force-plate-decision-architecture.pdf",
+      "reason": "no usable text extracted"
+    },
+    {
+      "file": "frs-screenshots.pdf",
+      "reason": "no usable text extracted"
+    },
+    {
+      "file": "gescheit-et-al-2015.pdf",
+      "reason": "no usable text extracted"
+    },
+    {
+      "file": "ghosh-et-al-1987-effects-of-4-weeks-detraining-on-aerobic-and-anaerobic-capacit-of-basketball-players-and-their-restoration.pdf",
+      "reason": "no usable text extracted"
+    },
+    {
+      "file": "gomes-et-al-2014-muscle-damage-after-a-tennnis-match-in-young-players.pdf",
+      "reason": "no usable text extracted"
+    },
+    {
+      "file": "groppel-1992-applied-physiology-of-tennis.pdf",
+      "reason": "no usable text extracted"
+    },
+    {
+      "file": "growth-and-development-book.pdf",
+      "reason": "no usable text extracted"
+    },
+    {
+      "file": "hakkinen-1988-effects-of-the-competitive-season-on-physical-fitness-profile-in-elite-basketball-players.pdf",
+      "reason": "no usable text extracted"
+    },
+    {
+      "file": "hakkinen-1993-changes-in-physical-fitness-profile-in-female-basketball-players-during-the-competitive-season-including-explosive-type-strength-training.pdf",
+      "reason": "no usable text extracted"
+    },
+    {
+      "file": "hakkinen-1993-changes-in-physical-fitness-profile-in-female-volleyball-players-during-the-competitive-season.pdf",
+      "reason": "no usable text extracted"
+    },
+    {
+      "file": "halep-dexa-23-12-2016-pdf.pdf",
+      "reason": "no usable text extracted"
+    },
+    {
+      "file": "healthy-recipes-for-the-travelling-athlete.pdf",
+      "reason": "no usable text extracted"
+    },
+    {
+      "file": "height-revised.pdf",
+      "reason": "no usable text extracted"
+    },
+    {
+      "file": "hickson-rosenkoetter-1981-reduced-training-frequencies-and-maintenance-of-increased-aerobic-power.pdf",
+      "reason": "no usable text extracted"
+    },
+    {
+      "file": "hoffman-et-al-1991-strength-speed-and-endurance-changes-during-the-course-of-a-division-1-basketball-season.pdf",
+      "reason": "no usable text extracted"
+    },
+    {
+      "file": "hortobagyi-et-al-1993-the-effects-of-detraining-on-power-athletes.pdf",
+      "reason": "no usable text extracted"
+    },
+    {
+      "file": "ido-portal-the-corset.pdf",
+      "reason": "no usable text extracted"
+    },
+    {
+      "file": "imamura-et-al-1997-heart-rate-blood-lactate-responses-and-ratings-of-perceeved-exertion-to-1000-punches-and-1000-kicks-in-collegiate-karate-practitioners.pdf",
+      "reason": "no usable text extracted"
+    },
+    {
+      "file": "incorportating-gymnastics.pdf",
+      "reason": "no usable text extracted"
+    },
+    {
+      "file": "inner-range-the-golden-12.pdf",
+      "reason": "no usable text extracted"
+    },
+    {
+      "file": "joseph-coyne-asca-2020.pdf",
+      "reason": "85 MB, over the size limit"
+    },
+    {
+      "file": "june-dec.pdf",
+      "reason": "no usable text extracted"
+    },
+    {
+      "file": "kinetic-blueprint-transforming-measurement-to-action.pdf",
+      "reason": "no usable text extracted"
+    },
+    {
+      "file": "knudson-elliot-biomechanics-of-tennis-strokes.pdf",
+      "reason": "no usable text extracted"
+    },
+    {
+      "file": "lacour-denis-1984-detraining-effects-on-aerobic-capacity.pdf",
+      "reason": "no usable text extracted"
+    },
+    {
+      "file": "lehmann-et-al-1993-overtraining-in-endurance-athlete-a-brief-review.pdf",
+      "reason": "no usable text extracted"
+    },
+    {
+      "file": "margo-jennings-training.pdf",
+      "reason": "no usable text extracted"
+    },
+    {
+      "file": "monitoring-and-managing-training-load-and-fatigue-in-elite-team-sport-athletes.pdf",
+      "reason": "no usable text extracted"
+    },
+    {
+      "file": "mujika-1998-the-influence-of-training-characteristics-and-tapering.pdf",
+      "reason": "no usable text extracted"
+    },
+    {
+      "file": "musculoskeletal-screening-assessment.pdf",
+      "reason": "no usable text extracted"
+    },
+    {
+      "file": "ncaa-usoc-joint-task-force-report.pdf",
+      "reason": "no usable text extracted"
+    },
+    {
+      "file": "ndp-females.pdf",
+      "reason": "no usable text extracted"
+    },
+    {
+      "file": "ndp-males.pdf",
+      "reason": "no usable text extracted"
+    },
+    {
+      "file": "neufer-et-al-1987-effect-of-reduced-training-on-strength-and-endurance-in-competitive-swimmers.pdf",
+      "reason": "no usable text extracted"
+    },
+    {
+      "file": "nimphius-et-al-2016-jscr-cod-deficit.pdf",
+      "reason": "no usable text extracted"
+    },
+    {
+      "file": "pdfcoffee-com-anatomy-of-agility-frans-bosch-pdf-free.pdf",
+      "reason": "no usable text extracted"
+    },
+    {
+      "file": "physical-meets-mental-load.pdf",
+      "reason": "no usable text extracted"
+    },
+    {
+      "file": "pillars-at-workshop.pdf",
+      "reason": "no usable text extracted"
+    },
+    {
+      "file": "poliquin-1988-five-steps-to-increasing-the-effectiveness-of-your-strength-training-program.pdf",
+      "reason": "no usable text extracted"
+    },
+    {
+      "file": "presentation4.pdf",
+      "reason": "no usable text extracted"
+    },
+    {
+      "file": "rafter.pdf",
+      "reason": "no usable text extracted"
+    },
+    {
+      "file": "relationships-between-static-load-acceptability-ratings-or-percieved-exertion-and-biomechanical-demands-nussbaum-lang-2005.pdf",
+      "reason": "no usable text extracted"
+    },
+    {
+      "file": "return-intercept-blueprint.pdf",
+      "reason": "no usable text extracted"
+    },
+    {
+      "file": "roberts-papaioannou-agt-reading-copy.pdf",
+      "reason": "no usable text extracted"
+    },
+    {
+      "file": "sandc-at-man-utd.pdf",
+      "reason": "no usable text extracted"
+    },
+    {
+      "file": "schneider-et-al-1998-detraining-effects-in-college-football-players-during-competitive-season.pdf",
+      "reason": "no usable text extracted"
+    },
+    {
+      "file": "singles-01-07-02-to-12-08-02.pdf",
+      "reason": "no usable text extracted"
+    },
+    {
+      "file": "singles-06-10-03-to-22-12-03.pdf",
+      "reason": "no usable text extracted"
+    },
+    {
+      "file": "singles-07-07-03-to-29-09-03.pdf",
+      "reason": "no usable text extracted"
+    },
+    {
+      "file": "singles-10-07-00-to-17-07-00.pdf",
+      "reason": "no usable text extracted"
+    },
+    {
+      "file": "singles-11-03-02-to-24-06-02.pdf",
+      "reason": "no usable text extracted"
+    },
+    {
+      "file": "singles-19-08-02-to-02-12-02.pdf",
+      "reason": "no usable text extracted"
+    },
+    {
+      "file": "singles-20-01-03-to-21-04-03.pdf",
+      "reason": "no usable text extracted"
+    },
+    {
+      "file": "singles-24-07-00-to-07-08-00.pdf",
+      "reason": "no usable text extracted"
+    },
+    {
+      "file": "singles-28-04-03-to-30-06-03.pdf",
+      "reason": "no usable text extracted"
+    },
+    {
+      "file": "singles-numeric-1975.pdf",
+      "reason": "no usable text extracted"
+    },
+    {
+      "file": "singles-numeric-1976.pdf",
+      "reason": "no usable text extracted"
+    },
+    {
+      "file": "singles-numeric-1977.pdf",
+      "reason": "no usable text extracted"
+    },
+    {
+      "file": "singles-numeric-1978.pdf",
+      "reason": "no usable text extracted"
+    },
+    {
+      "file": "singles-numeric-1979.pdf",
+      "reason": "no usable text extracted"
+    },
+    {
+      "file": "singles-numeric-1980.pdf",
+      "reason": "no usable text extracted"
+    },
+    {
+      "file": "singles-numeric-1981.pdf",
+      "reason": "no usable text extracted"
+    },
+    {
+      "file": "singles-numeric-1982.pdf",
+      "reason": "no usable text extracted"
+    },
+    {
+      "file": "singles-numeric-1983.pdf",
+      "reason": "no usable text extracted"
+    },
+    {
+      "file": "singles-numeric-1984.pdf",
+      "reason": "no usable text extracted"
+    },
+    {
+      "file": "singles-numeric-1985.pdf",
+      "reason": "no usable text extracted"
+    },
+    {
+      "file": "singles-numeric-1986.pdf",
+      "reason": "no usable text extracted"
+    },
+    {
+      "file": "singles-numeric-1987.pdf",
+      "reason": "no usable text extracted"
+    },
+    {
+      "file": "singles-numeric-1988.pdf",
+      "reason": "no usable text extracted"
+    },
+    {
+      "file": "smith-reliability-of-power-indoor.pdf",
+      "reason": "no usable text extracted"
+    },
+    {
+      "file": "stars-2019-mentimeter-qas-002.pdf",
+      "reason": "no usable text extracted"
+    },
+    {
+      "file": "stature-preditors.pdf",
+      "reason": "no usable text extracted"
+    },
+    {
+      "file": "sysler-stull-1970-muscular-endurance-retention-as-a-function-of-length-of-detraining.pdf",
+      "reason": "no usable text extracted"
+    },
+    {
+      "file": "ta-strategy-2021-growing-the-game.pdf",
+      "reason": "no usable text extracted"
+    },
+    {
+      "file": "tennis-acceleration-archetypes.pdf",
+      "reason": "no usable text extracted"
+    },
+    {
+      "file": "tennis-material-engineering.pdf",
+      "reason": "no usable text extracted"
+    },
+    {
+      "file": "the-anatomy-of-elite-agility.pdf",
+      "reason": "no usable text extracted"
+    },
+    {
+      "file": "the-biomechanical-blueprint-for-return-excellence.pdf",
+      "reason": "no usable text extracted"
+    },
+    {
+      "file": "the-national-racquet-sport-movement-performance-lab.pdf",
+      "reason": "no usable text extracted"
+    },
+    {
+      "file": "the-physics-of-snow-and-speed.pdf",
+      "reason": "no usable text extracted"
+    },
+    {
+      "file": "the-tennis-chassis-2.pdf",
+      "reason": "no usable text extracted"
+    },
+    {
+      "file": "todd-graphs-all.pdf",
+      "reason": "no usable text extracted"
+    },
+    {
+      "file": "training-tennis-intensity-and-pressure.pdf",
+      "reason": "no usable text extracted"
+    },
+    {
+      "file": "ufc-pi-crosssectionalanalysis-volume2-2021-2.pdf",
+      "reason": "306 MB, over the size limit"
+    },
+    {
+      "file": "utr-benchmarks-plot.pdf",
+      "reason": "no usable text extracted"
+    },
+    {
+      "file": "wilber-moffatt-1994-physiological-and-biological-consequences-of-detraining-in-aerobically-trained-individuals.pdf",
+      "reason": "no usable text extracted"
+    },
+    {
+      "file": "wilson-newton-murpy-humphries-1993-the-optimal-training-load-for-the-development-of-dynamic-athletic-performance.pdf",
+      "reason": "no usable text extracted"
+    },
+    {
+      "file": "wimbledon-player-report-2021wimbledon-qs112-playerreport.pdf",
+      "reason": "no usable text extracted"
+    },
+    {
+      "file": "zones.pdf",
+      "reason": "no usable text extracted"
+    },
+    {
+      "file": "2024-performance-team-forum-presentation-al-murphy-2.pptx",
+      "reason": "533 MB, over the size limit"
+    },
+    {
+      "file": "2024-performance-team-forum-presentation-al-murphy.pptx",
+      "reason": "533 MB, over the size limit"
+    },
+    {
+      "file": "2024-summit-presentation-al-murphy-2.pptx",
+      "reason": "554 MB, over the size limit"
+    },
+    {
+      "file": "2024-summit-presentation-al-murphy-3.pptx",
+      "reason": "554 MB, over the size limit"
+    },
+    {
+      "file": "2024-summit-presentation-al-murphy.pptx",
+      "reason": "554 MB, over the size limit"
+    },
+    {
+      "file": "2025-nin-strength-and-conditioning-network-day-al-murphy-2.pptx",
+      "reason": "1056 MB, over the size limit"
+    },
+    {
+      "file": "2025-nin-strength-and-conditioning-network-day-al-murphy-3.pptx",
+      "reason": "1055 MB, over the size limit"
+    },
+    {
+      "file": "accountability-matrix-presentation.pptx",
+      "reason": "no usable text extracted"
+    },
+    {
+      "file": "ams-update-2024-11-04.pptx",
+      "reason": "no usable text extracted"
+    },
+    {
+      "file": "essendon-fc-x-1080-motion.pptx",
+      "reason": "545 MB, over the size limit"
+    },
+    {
+      "file": "figure-1-2.pptx",
+      "reason": "no usable text extracted"
+    },
+    {
+      "file": "figure-1-3.pptx",
+      "reason": "no usable text extracted"
+    },
+    {
+      "file": "figure-1.pptx",
+      "reason": "no usable text extracted"
+    },
+    {
+      "file": "figure-2.pptx",
+      "reason": "no usable text extracted"
+    },
+    {
+      "file": "final-2024-summit-presentation-al-murphy.pptx",
+      "reason": "556 MB, over the size limit"
+    },
+    {
+      "file": "final-tennisstats-coding-a-match.pptx",
+      "reason": "241 MB, over the size limit"
+    },
+    {
+      "file": "kimberly-birrell-serve.pptx",
+      "reason": "no usable text extracted"
+    },
+    {
+      "file": "na-induction-ams-userguide.pptx",
+      "reason": "87 MB, over the size limit"
+    },
+    {
+      "file": "positions-transitions-elbow-knee-wrist-ankle.pptx",
+      "reason": "no usable text extracted"
+    },
+    {
+      "file": "positions-transitions-gh-scap-hip.pptx",
+      "reason": "no usable text extracted"
+    },
+    {
+      "file": "positions-transitions-neck-spine.pptx",
+      "reason": "no usable text extracted"
+    },
+    {
+      "file": "pre-summit-version-2024-summit-presentation-al-murphy.pptx",
+      "reason": "554 MB, over the size limit"
+    },
+    {
+      "file": "recovery-handout.pptx",
+      "reason": "no usable text extracted"
+    },
+    {
+      "file": "short-slide-show.pptx",
+      "reason": "no usable text extracted"
+    },
+    {
+      "file": "swingvision-lesson.pptx",
+      "reason": "281 MB, over the size limit"
+    },
+    {
+      "file": "swingvision-presentation.pptx",
+      "reason": "88 MB, over the size limit"
+    },
+    {
+      "file": "template-dg1.pptx",
+      "reason": "no usable text extracted"
+    },
+    {
+      "file": "tennis-drill-preso-pdf-version.pptx",
+      "reason": "117 MB, over the size limit"
+    },
+    {
+      "file": "tennis-drill-preso.pptx",
+      "reason": "117 MB, over the size limit"
+    },
+    {
+      "file": "the-backhand.pptx",
+      "reason": "84 MB, over the size limit"
+    },
+    {
+      "file": "the-serve1.pptx",
+      "reason": "ADM-ZIP: Invalid or unsupported zip format. No END header found"
+    },
+    {
+      "file": "the-tennis-tips-vault-national-project-3.pptx",
+      "reason": "917 MB, over the size limit"
+    },
+    {
+      "file": "the-tennis-tips-vault-national-project.pptx",
+      "reason": "917 MB, over the size limit"
+    },
+    {
+      "file": "vue-motion-tennis-australia-training-nov-12th-2025.pptx",
+      "reason": "165 MB, over the size limit"
+    },
+    {
+      "file": "wellness.pptx",
+      "reason": "no usable text extracted"
+    },
+    {
+      "file": "womens-tennis-key-priorities-oct20151.pptx",
+      "reason": "195 MB, over the size limit"
+    }
+  ],
+  "schemaProblems": []
+}
