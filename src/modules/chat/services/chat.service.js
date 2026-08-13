@@ -23,7 +23,11 @@ import { bindCitations } from "../../retrieval/citation.service.js";
  * client-supplied: a caller who picks their own role has every role.
  */
 export async function submitChatQuestion(question, { evidence = null, roleId } = {}) {
-    const role = roleId && String(roleId).trim() !== "" ? roleId : "analyst";
+    // DEMO DEFAULT. admin sees everything, which is what you want while
+    // building and testing. it is the wrong default for anything real: the
+    // role must come off the authenticated session, and a caller who picks
+    // their own role has every role. change this before the partner sees it.
+    const role = roleId && String(roleId).trim() !== "" ? roleId : "admin";
 
     // the explicit-evidence path stays, because TENISE-19's control tests use
     // it -- forced-empty evidence, and evidence carrying a deliberately

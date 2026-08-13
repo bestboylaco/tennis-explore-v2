@@ -90,7 +90,14 @@ export async function submitChatQuestion(question, role) {
             });
         }
 
-        return responseBody;
+        /*
+         * The API wraps every success in { success, data }. Returning the
+         * envelope made `result.response` undefined in the caller, so every
+         * answer rendered as "No answer was returned." while the backend was
+         * producing a perfectly good one -- a failure that looks like the model
+         * had nothing to say.
+         */
+        return responseBody?.data ?? responseBody;
     } catch (error) {
         if (error.name === "AbortError") {
             throw new ChatApiError(

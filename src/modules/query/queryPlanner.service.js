@@ -100,7 +100,7 @@ const MULTI_HOP_SIGNALS = [
 // without them and silently failed to match "serve speeds", which sent the
 // partner's own example question down the document route.
 const STRUCTURED_VOCABULARY =
-  /\b(rankings?|matches|match|scores?|opponents?|tournaments?|rounds?|surfaces?|seeds?|draws?|win rate|aces?|double faults?|serve speeds?|beep test|results?|player \w+'?s?)\b/i;
+  /\b(rankings?|matches|match|scores?|opponents?|tournaments?|rounds?|surfaces?|seeds?|draws?|win rate|aces?|double faults?|serve speeds?|beep test|results?|player \w+'?s?|wins?|losses|won|lost|clay|grass|hard court)\b/i;
 
 // vocabulary that only exists in the documents.
 const UNSTRUCTURED_VOCABULARY =
@@ -220,7 +220,8 @@ Choose exactly one intent:
 
 Rules:
 - If the question needs a calculation over many records, it is aggregation or comparative, never single_hop.
-- If the question asks what a paper, author, presentation or video says, it is single_hop, multi_hop or summarisation.
+- If the question asks what a paper, author, presentation or video says, it is single_hop, multi_hop or summarisation -- EVEN IF it contains counting words like "how many", "percentage" or "average". A number reported in a study is a fact stated in that study, not a calculation over the tables.
+- Only choose analytical, comparative or aggregation when the answer must be computed from rows of match, ranking or test data.
 - Extract entities and metrics exactly as the user wrote them. Do not invent any.
 - Leave a field empty rather than guessing.`;
 
@@ -330,6 +331,29 @@ export async function planQuery(question, { signal = null } = {}) {
       // classifier was down is worse than one that occasionally over-retrieves.
       source = "rules_after_planner_error";
     }
+  }
+
+  // ---- guard the route -----------------------------------------------
+  //
+  // the planner over-triggers on counting words. "how many strokes were
+  // manually coded in the PhD study" and "what percentage of a year is
+  // disrupted by a stress fracture" both contain aggregation wording, and both
+  // are facts STATED IN A PAPER -- not calculations over records. sent to the
+  // structured route they find no matching column and abstain, so a question we
+  // can answer comes back as "the knowledge base does not contain an answer".
+  //
+  // the test is vocabulary, not phrasing: if a question talks about papers,
+  // studies, authors or presentations and mentions nothing that lives in a
+  // table, no table can answer it whatever the counting words say.
+  const structuredWords = STRUCTURED_VOCABULARY.test(question);
+  const documentWords = UNSTRUCTURED_VOCABULARY.test(question);
+
+  if (documentWords && !structuredWords && ROUTE_FOR_INTENT[plan.intent] === ROUTES.STRUCTURED) {
+    plan.intent = MULTI_HOP_SIGNALS.some((pattern) => pattern.test(question))
+      ? INTENTS.MULTI_HOP
+      : INTENTS.SINGLE_HOP;
+
+    source = `${source}+document_vocabulary_override`;
   }
 
   const route = ROUTE_FOR_INTENT[plan.intent];
