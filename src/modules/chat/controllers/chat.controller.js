@@ -18,13 +18,13 @@ export async function submitChatQuestionController(req, res) {
 
     const result = await submitChatQuestion(req.body.question, {
         evidence: req.body.evidence,
-<<<<<<< HEAD
-        // demo only. see the note in chat.service -- this must come off an
-        // authenticated session before anything the partner can reach.
+
+        // Demo only. This should eventually come from the authenticated
+        // user session rather than directly from the request body.
         roleId: req.body.role,
-=======
+
+        // Links chat-stage telemetry to the HTTP request telemetry.
         correlationId,
->>>>>>> origin/main
     });
 
     return res.status(200).json({
