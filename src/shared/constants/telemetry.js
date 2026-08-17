@@ -1,7 +1,7 @@
 // These lists are conventions, not database constraints. The telemetry record
 // deliberately does not enum-validate stage names, query classes or API types.
 
-export const TELEMETRY_SCHEMA_VERSION = 1;
+export const TELEMETRY_SCHEMA_VERSION = 2;
 
 
 export const TELEMETRY_RUN_TYPES = Object.freeze({
@@ -97,6 +97,34 @@ export const COLD_START_THRESHOLDS_MS = Object.freeze({
   [COLD_START_RESOURCES.BEDROCK_RUNTIME]: 4000,
   [COLD_START_RESOURCES.MONGODB]: 2000,
   [COLD_START_RESOURCES.OLLAMA]: 8000,
+});
+
+// Resources whose compute time is charged, for the OCU-seconds figure TENISE-27
+// needs. Free strings like API_TYPES: a new billed resource is a new key.
+export const COMPUTE_RESOURCES = Object.freeze({
+  OLLAMA: "ollama",
+  QDRANT: "qdrant",
+  OPENSEARCH: "opensearch",
+  MONGODB: "mongodb",
+});
+
+// OCU-equivalents held by each resource while it serves a request. Multiplied
+// by the measured seconds to give OCU-seconds.
+
+export const DEFAULT_OCU_RATES = Object.freeze({
+  [COMPUTE_RESOURCES.OLLAMA]: 1,
+  [COMPUTE_RESOURCES.QDRANT]: 1,
+  [COMPUTE_RESOURCES.OPENSEARCH]: 1,
+  [COMPUTE_RESOURCES.MONGODB]: 1,
+});
+
+export const DEFAULT_OCU_RATE = 1;
+
+// How the OCU figure was arrived at. "estimated" is seconds x a configured
+// rate; "billing" would be a figure taken from a provider invoice.
+export const OCU_BASES = Object.freeze({
+  ESTIMATED: "estimated",
+  BILLING: "billing",
 });
 
 // Attribute values are capped so no raw document or query content can reach the

@@ -1,3 +1,5 @@
+import { randomUUID } from "node:crypto";
+
 import { submitChatQuestion } from "../services/chat.service.js";
 
 /**
@@ -5,11 +7,24 @@ import { submitChatQuestion } from "../services/chat.service.js";
  * structure produced by the chat service.
  */
 export async function submitChatQuestionController(req, res) {
+    // One request writes two telemetry records: the api_request record opened
+    // by the middleware and the query record opened by the chat service. They
+    // are stamped with the same correlation id so TENISE-27 can join the HTTP
+    // view of a query to its per-stage view; without it the two are unrelated
+    // rows and the stage figures cannot be tied to a status code.
+    const correlationId = `query:${randomUUID()}`;
+
+    req.telemetry?.setCorrelationId(correlationId);
+
     const result = await submitChatQuestion(req.body.question, {
         evidence: req.body.evidence,
+<<<<<<< HEAD
         // demo only. see the note in chat.service -- this must come off an
         // authenticated session before anything the partner can reach.
         roleId: req.body.role,
+=======
+        correlationId,
+>>>>>>> origin/main
     });
 
     return res.status(200).json({

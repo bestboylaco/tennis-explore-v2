@@ -11,11 +11,12 @@ export {
 } from "./services/telemetryStore.service.js";
 export {
   aggregateColdStarts,
+  aggregateComputeByResource,
   aggregateIngestionVolume,
   aggregateRunLatencyByQueryClass,
   aggregateStageCoverage,
   aggregateStageLatency,
   getTelemetrySummary,
 } from "./services/telemetryAggregation.service.js";
-export { telemetryConfig } from "./telemetry.config.js";
+export { getOcuRate, telemetryConfig } from "./telemetry.config.js";
 export { default as TelemetryRecord } from "./models/telemetryRecord.model.js";

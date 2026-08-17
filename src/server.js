@@ -42,7 +42,25 @@ async function startServer() {
     await run.finish(RUN_STATUSES.SUCCESS);
   } catch (error) {
     run.fail(error);
-    await run.finish(RUN_STATUSES.FAILED);
+
+    const record = await run.finish(RUN_STATUSES.FAILED);
+
+    // The telemetry store is the database that just failed to connect, so this
+    // record cannot be written: persistTelemetryRecord skips on readyState !== 1
+    // and returns null. Structured stderr is the only channel left, and a failed
+    // startup is exactly the run worth keeping.
+    console.error(
+      "TELEMETRY_UNPERSISTED",
+      JSON.stringify({
+        recordId: record.recordId,
+        runType: record.runType,
+        status: record.status,
+        startedAt: record.startedAt,
+        totalDurationMs: record.totalDurationMs,
+        coldStart: record.coldStart,
+        error: record.error,
+      }),
+    );
 
     console.error("TennisExplore V2 failed to start.");
     process.exit(1);

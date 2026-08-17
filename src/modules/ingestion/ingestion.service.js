@@ -121,6 +121,7 @@ export async function runIngestion(sourceId, { handlers = {} } = {}) {
       }
 
       const coldStartResource = COLD_START_RESOURCE_BY_STAGE[stage];
+      const stageStartMs = Date.now();
 
       const result = await withColdStartDetection(
         run,
@@ -129,7 +130,12 @@ export async function runIngestion(sourceId, { handlers = {} } = {}) {
           run.measureStage(stage, () => handler({ source, run }), { apiType }),
       );
 
-      run.recordApiUsage(apiType, toUsage(result));
+      // Time is attributed to the billed API alongside its volume, so cost per
+      // page and seconds per page come off the same key.
+      run.recordApiUsage(apiType, {
+        ...toUsage(result),
+        durationMs: Date.now() - stageStartMs,
+      });
     }
 
     const ranAnyStage = PIPELINE.some(
