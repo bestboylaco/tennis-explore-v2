@@ -13,7 +13,10 @@
     min-height: 100vh;
     display: flex;
     flex-direction: column;
-    background: var(--colour-background-deep);
+    background:
+        radial-gradient(circle at 50% -10%, rgba(131, 55, 224, 0.58), transparent 34rem),
+        radial-gradient(circle at 92% 74%, rgba(98, 28, 153, 0.48), transparent 30rem),
+        linear-gradient(145deg, var(--colour-background-deep), var(--colour-background) 58%, #160427);
     color: var(--colour-text-primary);
     font-family: var(--font-sans);
 }
@@ -27,7 +30,7 @@
     justify-content: space-between;
     gap: var(--space-6);
     padding: var(--space-5) var(--space-8);
-    background: rgba(0, 0, 0, 0.85);
+    background: rgba(28, 7, 48, 0.82);
     backdrop-filter: blur(10px);
     border-bottom: 1px solid var(--border-glass);
 }
@@ -87,7 +90,7 @@
     border: none;
     border-radius: var(--radius-pill);
     background: var(--colour-green);
-    color: #000000;
+    color: #ffffff;
     font-family: inherit;
     font-size: 0.88rem;
     font-weight: 600;
@@ -96,7 +99,7 @@
 }
 
 .button-green:hover {
-    background: #6bff10;
+    background: var(--colour-blue-600);
 }
 
 .button-ghost {

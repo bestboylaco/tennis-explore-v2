@@ -54,12 +54,11 @@ app.get("/api/health", (req, res) => {
 });
 
 /*
- * Page routes. express.static already serves index.html at "/", but
- * extension-less URLs read better in a demo and in a report than
- * "/explore.html", and the nav links point at them.
+ * The unified AI Coach is now the root page served by express.static.
+ * Keep /explore only as a compatibility redirect for old bookmarks.
  */
 app.get("/explore", (req, res) => {
-  res.sendFile(path.join(publicDirectory, "explore.html"));
+  res.redirect(302, "/");
 });
 
 app.get("/platforms", (req, res) => {

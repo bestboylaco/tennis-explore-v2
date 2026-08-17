@@ -1,51 +1,50 @@
 /*
- * TennisExplore palette.
+ * TennisExplore shared design tokens.
  *
- * Black surfaces, one bright green accent, white text. The green is taken from
- * the Tennis Australia mark; everything else is neutral so the green only ever
- * appears where something is interactive or important. Restraint is the point —
- * an accent used everywhere stops being an accent.
- *
- * The variable NAMES are unchanged from the previous purple theme on purpose:
- * every existing component stylesheet reads them, so re-skinning the whole app
- * is a change to this file alone.
+ * The current application keeps the existing variable names because the
+ * frontend components already depend on them, but restores the purple/blue
+ * visual language used by the earlier unified Coach Chat interface.
  */
 :root {
-    /* surfaces, darkest to lightest */
-    --colour-background-deep: #000000;
-    --colour-background: #0a0a0a;
-    --colour-background-light: #141414;
+    /* Purple application surfaces */
+    --colour-background-deep: #120322;
+    --colour-background: #21063c;
+    --colour-background-light: #35105a;
 
-    /* neutral steps. named "purple" for compatibility with the component
-       stylesheets that already reference them. */
-    --colour-purple-900: #0d0d0d;
-    --colour-purple-800: #141414;
-    --colour-purple-700: #1c1c1c;
-    --colour-purple-600: #262626;
-    --colour-purple-500: #5ce600;
+    --colour-purple-900: #260943;
+    --colour-purple-800: #35105a;
+    --colour-purple-700: #4d1b78;
+    --colour-purple-600: #6932a3;
+    --colour-purple-500: #8751d4;
 
-    /* the accent. one green, two weights. */
-    --colour-blue-500: #5ce600;
-    --colour-blue-600: #4ac200;
-    --colour-green: #5ce600;
-    --colour-green-dim: #3d9900;
+    /* Primary interactive accent */
+    --colour-blue-500: #4db8ff;
+    --colour-blue-600: #397cff;
+
+    /* Legacy name retained for shared site styles. */
+    --colour-green: #4db8ff;
+    --colour-green-dim: #397cff;
 
     --colour-text-primary: #ffffff;
-    --colour-text-secondary: rgba(255, 255, 255, 0.66);
-    --colour-text-muted: rgba(255, 255, 255, 0.42);
+    --colour-text-secondary: rgba(255, 255, 255, 0.72);
+    --colour-text-muted: rgba(255, 255, 255, 0.5);
 
-    --colour-success: #5ce600;
-    --colour-warning: #ffc857;
-    --colour-error: #ff6b6b;
+    --colour-success: #4ee69c;
+    --colour-warning: #ffd166;
+    --colour-error: #ff7d91;
 
-    /* flat, not glassy. the previous theme used translucent gradients over a
-       purple field; on black those read as smudges rather than surfaces. */
-    --surface-glass: #141414;
-    --surface-glass-soft: #141414;
-    --surface-glass-hover: #1f1f1f;
-    --surface-dark: #000000;
-    --border-glass: rgba(255, 255, 255, 0.1);
-    --border-glass-strong: rgba(255, 255, 255, 0.18);
+    /* Glass surfaces used throughout the earlier interface. */
+    --surface-glass: linear-gradient(
+        145deg,
+        rgba(92, 38, 133, 0.58),
+        rgba(48, 16, 77, 0.42)
+    );
+    --surface-glass-soft: rgba(255, 255, 255, 0.065);
+    --surface-glass-hover: rgba(255, 255, 255, 0.11);
+    --surface-dark: rgba(10, 6, 18, 0.82);
+
+    --border-glass: rgba(255, 255, 255, 0.13);
+    --border-glass-strong: rgba(255, 255, 255, 0.22);
 
     --space-1: 0.25rem;
     --space-2: 0.5rem;
@@ -58,12 +57,17 @@
     --space-12: 3rem;
     --space-16: 4rem;
 
-    --radius-sm: 6px;
-    --radius-md: 10px;
-    --radius-lg: 16px;
+    --radius-sm: 0.625rem;
+    --radius-md: 1rem;
+    --radius-lg: 1.5rem;
     --radius-pill: 999px;
 
     --font-sans: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
         Helvetica, Arial, sans-serif;
     --font-mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+
+    --shadow-panel:
+        0 24px 80px rgba(4, 0, 12, 0.42),
+        inset 0 1px 0 rgba(255, 255, 255, 0.08);
+    --shadow-button: 0 10px 30px rgba(48, 117, 255, 0.3);
 }
