@@ -50,7 +50,7 @@ export async function submitChatQuestion(
         });
     }
 
-    const result = await answerQuestion(question, { roleId: role });
+    const result = await answerQuestion(question, { roleId: role, correlationId });
 
     return {
         status: "completed",
