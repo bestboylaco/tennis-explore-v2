@@ -260,8 +260,11 @@ test("a failed query still records the stages that ran before the failure", asyn
   const run = startTelemetryRun({ runType: TELEMETRY_RUN_TYPES.QUERY });
 
   try {
+    // Evidence must be explicit ([], not omitted) to take this instrumented
+    // path at all -- omitted evidence now means "run real retrieval"
+    // (answerQuestion, E5-17), which this test is not exercising.
     await assert.rejects(() =>
-      submitChatQuestion("How many titles has she won?", { telemetryRun: run }),
+      submitChatQuestion("How many titles has she won?", { evidence: [], telemetryRun: run }),
     );
 
     const record = run.snapshot();
