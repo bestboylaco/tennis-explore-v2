@@ -11,8 +11,10 @@ export function createProcessingStatus({
     conversation,
 }) {
     function setState(state, label) {
-        statusIndicator.className =
-            `status-indicator status-indicator--${state}`;
+        // data attribute rather than a class: the stylesheet no longer defines
+        // status-indicator--* and overwriting className here would wipe the
+        // element's own layout class.
+        statusIndicator.dataset.state = state;
 
         statusText.textContent = label;
     }
