@@ -187,7 +187,11 @@ async function answerFromDocuments(plan, { roleId, signal, startedAt, correlatio
         .filter(Boolean)
         .join(" | ");
 
-      return `[${chunk.citationNumber}] (${source})\n${chunk.text}`;
+      // The BEGIN/END markers give the system prompt's anti-injection rule
+      // (buildSystemPrompt, T-03) something concrete to point at -- everything
+      // between them is ingested document text, never an instruction, no
+      // matter how it's phrased.
+      return `[${chunk.citationNumber}] (${source})\n<<<BEGIN EVIDENCE>>>\n${chunk.text}\n<<<END EVIDENCE>>>`;
     })
     .join("\n\n");
 

@@ -57,7 +57,7 @@ async function runTestQuery({ question, evidence = ["Grand slam titles: 23."] } 
   });
 
   try {
-    const result = await submitChatQuestion(question, { evidence, telemetryRun: run });
+    const result = await submitChatQuestion(question, { evidence, roleId: "admin", telemetryRun: run });
 
     return { result, record: run.snapshot() };
   } finally {
@@ -264,7 +264,11 @@ test("a failed query still records the stages that ran before the failure", asyn
     // path at all -- omitted evidence now means "run real retrieval"
     // (answerQuestion, E5-17), which this test is not exercising.
     await assert.rejects(() =>
-      submitChatQuestion("How many titles has she won?", { evidence: [], telemetryRun: run }),
+      submitChatQuestion("How many titles has she won?", {
+        evidence: [],
+        roleId: "admin",
+        telemetryRun: run,
+      }),
     );
 
     const record = run.snapshot();

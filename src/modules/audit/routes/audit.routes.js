@@ -9,10 +9,8 @@ import asyncHandler from "../../../middleware/asyncHandler.js";
 const router = express.Router();
 
 // Access audit records are themselves Sensitive-adjacent (they say who saw
-// what) and these routes are unauthenticated today, like every other route
-// (threat model T-01). They must go behind auth with the rest of the API,
-// restricted to an administrator role, before any non-synthetic data is
-// loaded (§7 Data Gate).
+// what). Gated behind requireAuth + requireRole("admin") in app.js
+// (threat model T-01) -- only the admin role can reach these routes.
 
 router.get("/", asyncHandler(getAccessAuditRecordsController));
 
