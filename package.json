@@ -9,7 +9,13 @@
     "start": "node src/server.js",
     "test": "npm run test:unit",
     "test:unit": "node --test \"test/unit/**/*.test.js\"",
-    "test:integration": "node --test \"test/integration/**/*.test.js\""
+    "test:integration": "node --test \"test/integration/**/*.test.js\"",
+    "build:index": "node bin/build-index.js",
+    "search": "node bin/search.js",
+    "ask": "node bin/ask.js",
+    "eval": "node bin/eval.js",
+    "check:models": "node bin/check-models.js",
+    "eval:answers": "node bin/eval-answers.js"
   },
   "keywords": [
     "tennis",
@@ -20,13 +26,17 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "adm-zip": "^0.5.16",
     "cors": "^2.8.5",
     "dotenv": "^17.0.0",
     "express": "^5.0.0",
     "mongoose": "^9.0.0",
-    "multer": "^2.2.0"
+    "multer": "^2.2.0",
+    "pdf-parse": "^2.4.5",
+    "xlsx": "^0.18.5"
   },
   "devDependencies": {
+    "jsdom": "^30.0.1",
     "nodemon": "^3.0.0"
   }
 }

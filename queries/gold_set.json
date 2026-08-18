@@ -1,0 +1,205 @@
+{
+  "_comment": "Gold question set. Every entry names what the system should DO (intent, route) as well as what it should find, because a right answer reached by the wrong route is luck. expectAbstention entries are the most important: they are the questions the assistant must refuse. NOTE: several entries were previously marked expectAbstention against the sample-only corpus and have been corrected now the full TA_S2 library is available -- see docs/CORPUS-AND-COVERAGE.md.",
+  "questions": [
+    {
+      "id": "MS-01",
+      "query": "What does the research say about accelerometer load in matches compared with training, and how does the Catapult programme apply that?",
+      "intent": "multi_hop",
+      "route": "unstructured",
+      "expectedDocIds": [
+        "Tennis_serve_volume__distribution_and_accelerometer_load_during_training_and_tournaments_from_wearable_microtechnology",
+        "catapult-ndp"
+      ],
+      "minSources": 2,
+      "tag": "multi-source"
+    },
+    {
+      "id": "MS-02",
+      "query": "How was the wearable stroke detection algorithm validated, and what was it then used to measure in match play?",
+      "intent": "multi_hop",
+      "route": "unstructured",
+      "expectedDocIds": [
+        "sensors-22-08868",
+        "Determining_Stroke_and_Movement_Profiles_in.43"
+      ],
+      "minSources": 2,
+      "tag": "multi-source"
+    },
+    {
+      "id": "MS-03",
+      "query": "What are the risk factors for lumbar bone stress injuries and what planning controls are recommended to reduce them?",
+      "intent": "multi_hop",
+      "route": "unstructured",
+      "expectedDocIds": [
+        "catapult-ndp"
+      ],
+      "minSources": 2,
+      "tag": "multi-source",
+      "note": "answer should draw on several slides of the deck, not one"
+    },
+    {
+      "id": "SUM-01",
+      "query": "Summarise what we know about lumbar stress injuries in junior players and how they are prevented.",
+      "intent": "summarisation",
+      "route": "unstructured",
+      "expectedDocIds": [
+        "catapult-ndp"
+      ],
+      "minSources": 3,
+      "tag": "summarisation"
+    },
+    {
+      "id": "SUM-02",
+      "query": "Give me an executive summary of the wearable technology research in this knowledge base.",
+      "intent": "summarisation",
+      "route": "unstructured",
+      "expectedDocIds": [
+        "sensors-22-08868",
+        "Determining_Stroke_and_Movement_Profiles_in.43",
+        "Differentiating_Stroke_and_Movement_Accelerometer"
+      ],
+      "minSources": 3,
+      "tag": "summarisation"
+    },
+    {
+      "id": "SH-01",
+      "query": "What percentage of a year's training and competition is disrupted by a lumbar stress fracture?",
+      "intent": "single_hop",
+      "route": "unstructured",
+      "expectedDocIds": [
+        "catapult-ndp"
+      ],
+      "expectedAnswerContains": [
+        "47"
+      ],
+      "tag": "single-hop"
+    },
+    {
+      "id": "SH-02",
+      "query": "How many strokes were manually coded and categorised in the PhD study?",
+      "intent": "single_hop",
+      "route": "unstructured",
+      "expectedDocIds": [
+        "TP_Performance_Presentation"
+      ],
+      "expectedAnswerContains": [
+        "5349"
+      ],
+      "tag": "single-hop"
+    },
+    {
+      "id": "AGG-01",
+      "query": "How many matches were played on each surface, and what was the average player ranking on each?",
+      "intent": "aggregation",
+      "route": "structured",
+      "expectedTable": "match-data-example",
+      "tag": "aggregation"
+    },
+    {
+      "id": "AGG-02",
+      "query": "What is the median singles ranking per month across the ranking data?",
+      "intent": "aggregation",
+      "route": "structured",
+      "expectedTable": "rankings",
+      "tag": "aggregation"
+    },
+    {
+      "id": "CMP-01",
+      "query": "Compare the number of wins and losses on hard courts versus clay courts.",
+      "intent": "comparative",
+      "route": "structured",
+      "expectedTable": "match-data-example",
+      "tag": "comparative"
+    },
+    {
+      "id": "ANA-01",
+      "query": "What is Carlos Alcaraz's best ranking in the match data?",
+      "intent": "analytical",
+      "route": "structured",
+      "expectedTable": "TennisExplore_matchdata_1_",
+      "tag": "analytical"
+    },
+    {
+      "id": "VID-01",
+      "query": "Find footage of a defensive to offensive transition.",
+      "intent": "single_hop",
+      "route": "unstructured",
+      "expectedDocIds": [
+        "video-segments"
+      ],
+      "tag": "video"
+    },
+    {
+      "id": "ABS-01",
+      "query": "What does Mark Kovacs say about the tournament round a player needs to reach?",
+      "intent": "single_hop",
+      "route": "unstructured",
+      "tag": "single-hop",
+      "note": "Al's Q1. 18 Kovacs files are in the corpus, so this should now be ANSWERED. It was previously marked as an abstention against the sample-only corpus, which was wrong."
+    },
+    {
+      "id": "ABS-02",
+      "query": "According to Beni Linder, what percentages of speed should players vary between?",
+      "intent": "single_hop",
+      "route": "unstructured",
+      "expectedDocIds": [
+        "beni-linder-presentation-notes-january-2013"
+      ],
+      "tag": "single-hop",
+      "note": "Al's Q5. Source confirmed present and extractable."
+    },
+    {
+      "id": "ABS-03",
+      "query": "Who had the highest beep test result in the strength and conditioning national data up to 26/08/2014?",
+      "expectAbstention": true,
+      "tag": "abstention",
+      "note": "Al's question 10. Sounds structured and routes to the tables, which do not hold beep test data. Tests that a failed structured lookup abstains instead of substituting a different column."
+    },
+    {
+      "id": "ABS-04",
+      "query": "What was Novak Djokovic's serve speed at the 2019 Australian Open final?",
+      "expectAbstention": true,
+      "tag": "abstention",
+      "note": "Plausible, specific, and absent. The classic hallucination trap: the model knows this from training data and must not use it."
+    },
+    {
+      "id": "ABS-05",
+      "query": "What was the highest beep test result in the strength and conditioning national data up to 26/08/2014?",
+      "expectAbstention": true,
+      "tag": "abstention",
+      "note": "Al's Q10. The physical testing data has not been supplied and is table data anyway. Must refuse."
+    },
+    {
+      "id": "ABS-06",
+      "query": "What does Allistair McCaw list as the E.Q. skills in coaching?",
+      "expectAbstention": true,
+      "tag": "abstention",
+      "note": "Al's Q4. No McCaw file found by name. If the full index surfaces one, this expectation should flip."
+    },
+    {
+      "id": "SRC-01",
+      "query": "Who were the authors of the first Cardio Tennis publication and in what year was it published?",
+      "intent": "single_hop",
+      "route": "unstructured",
+      "expectedDocIds": [
+        "cardio-tennis-paper"
+      ],
+      "expectedAnswerContains": [
+        "Murphy"
+      ],
+      "tag": "single-hop",
+      "note": "Al's Q7. Murphy, Duffield and Reid confirmed present in the extracted text."
+    },
+    {
+      "id": "SRC-02",
+      "query": "How many female tennis players were recruited for the Whiteside 2013 serve kinematics study?",
+      "intent": "single_hop",
+      "route": "unstructured",
+      "expectedDocIds": [
+        "whiteside-et-al-2013-a-kinematic-comparison-of-successful-and-unsuccessful-tennis-serves-across-the-elite-development-pathway"
+      ],
+      "tag": "single-hop",
+      "note": "Al's Q12."
+    }
+  ]
+}

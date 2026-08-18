@@ -7,7 +7,11 @@ export const DEFAULT_CHAT_ENDPOINT = "/api/chat";
  * Stops the interface from displaying an endless processing state
  * when the backend does not respond.
  */
-export const REQUEST_TIMEOUT_MS = 15_000;
+// A local 8b model doing retrieval, grading, reranking and generation takes
+// tens of seconds on consumer hardware -- measured at 20-56s on an 8 GB card.
+// The old 15s ceiling aborted every real request, which surfaced as "failed to
+// complete request" and looked like a backend fault when the backend was fine.
+export const REQUEST_TIMEOUT_MS = 180_000;
 
 /**
  * A query-string override is provided only for acceptance testing.

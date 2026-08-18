@@ -45,10 +45,11 @@ async function readResponseBody(response) {
 /**
  * Sends one natural-language question to the backend.
  *
- * The request body deliberately contains only "question".
- * No mode, source, command, model, agent or route is submitted.
+ * The body carries the question and the role it runs as. No mode, source,
+ * command, model or route is submitted -- those are decided server-side from
+ * the question itself.
  */
-export async function submitChatQuestion(question) {
+export async function submitChatQuestion(question, role) {
     const abortController = new AbortController();
 
     const timeoutId = window.setTimeout(() => {
@@ -65,6 +66,11 @@ export async function submitChatQuestion(question) {
 
             body: JSON.stringify({
                 question,
+                // the demo lets you pick a role so the access filter can be
+                // shown working. in a real deployment this comes off the
+                // authenticated session and is not client-supplied -- a caller
+                // who picks their own role has every role.
+                role,
             }),
 
             signal: abortController.signal,
@@ -84,7 +90,14 @@ export async function submitChatQuestion(question) {
             });
         }
 
-        return responseBody;
+        /*
+         * The API wraps every success in { success, data }. Returning the
+         * envelope made `result.response` undefined in the caller, so every
+         * answer rendered as "No answer was returned." while the backend was
+         * producing a perfectly good one -- a failure that looks like the model
+         * had nothing to say.
+         */
+        return responseBody?.data ?? responseBody;
     } catch (error) {
         if (error.name === "AbortError") {
             throw new ChatApiError(

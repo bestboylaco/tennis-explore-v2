@@ -1,0 +1,485 @@
+/*
+ * The explore (chat) page, and the source panel.
+ *
+ * Replaces the previous component stylesheets, which were written for a
+ * different layout and carried a lot of purple-era decoration that had nothing
+ * left to style.
+ */
+
+.workspace {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    padding: var(--space-6) var(--space-4) var(--space-8);
+    transition: margin-right 180ms ease-out;
+}
+
+.chat-panel {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    max-width: 860px;
+    min-height: 0;
+}
+
+/* ---------------------------------------------------------------------------
+   conversation
+   --------------------------------------------------------------------------- */
+
+.conversation {
+    flex: 1;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-5);
+    padding-bottom: var(--space-6);
+}
+
+.conversation__empty {
+    margin: auto 0;
+    padding: var(--space-10) 0;
+}
+
+.conversation__empty h1 {
+    margin: 0 0 var(--space-3);
+    font-size: clamp(1.9rem, 4vw, 2.8rem);
+    font-weight: 800;
+    letter-spacing: -0.02em;
+}
+
+.conversation__empty p {
+    margin: 0;
+    max-width: 46ch;
+    color: var(--colour-text-secondary);
+    line-height: 1.6;
+}
+
+/* the empty state disappears the moment there is a real message, so it never
+   competes with the conversation for attention. */
+.conversation:not(:has(.message)) .conversation__empty {
+    display: block;
+}
+
+.conversation:has(.message) .conversation__empty {
+    display: none;
+}
+
+.message {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+}
+
+.message--user {
+    align-items: flex-end;
+}
+
+.message__bubble {
+    max-width: 78%;
+    padding: var(--space-4) var(--space-5);
+    border-radius: var(--radius-md);
+    line-height: 1.65;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+}
+
+.message--user .message__bubble {
+    background: var(--colour-green);
+    color: #000000;
+    font-weight: 500;
+}
+
+.message--assistant .message__bubble {
+    max-width: 100%;
+    padding: 0;
+    background: none;
+    color: var(--colour-text-primary);
+}
+
+/* ---------------------------------------------------------------------------
+   citations
+   --------------------------------------------------------------------------- */
+
+.citation-list {
+    margin-top: var(--space-3);
+    padding-top: var(--space-3);
+    border-top: 1px solid var(--border-glass);
+}
+
+.citation-list__heading {
+    margin: 0 0 var(--space-3);
+    font-size: 0.7rem;
+    letter-spacing: 0.09em;
+    text-transform: uppercase;
+    color: var(--colour-text-muted);
+}
+
+.citation-list__buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+}
+
+.citation-button {
+    padding: var(--space-2) var(--space-4);
+    border: 1px solid var(--border-glass);
+    border-radius: var(--radius-pill);
+    background: var(--colour-background-light);
+    color: var(--colour-text-secondary);
+    font-family: inherit;
+    font-size: 0.8rem;
+    text-align: left;
+    cursor: pointer;
+}
+
+.citation-button:hover {
+    border-color: var(--colour-green);
+    color: var(--colour-green);
+}
+
+/* ---------------------------------------------------------------------------
+   composer
+   --------------------------------------------------------------------------- */
+
+.composer {
+    display: flex;
+    align-items: flex-end;
+    gap: var(--space-3);
+    padding: var(--space-3);
+    border: 1px solid var(--border-glass-strong);
+    border-radius: var(--radius-lg);
+    background: var(--colour-background-light);
+}
+
+.composer:focus-within {
+    border-color: var(--colour-green);
+}
+
+.composer textarea {
+    flex: 1;
+    max-height: 180px;
+    padding: var(--space-2) var(--space-3);
+    border: none;
+    background: transparent;
+    color: var(--colour-text-primary);
+    font-family: inherit;
+    font-size: 0.95rem;
+    line-height: 1.55;
+    resize: none;
+}
+
+.composer textarea:focus {
+    outline: none;
+}
+
+.composer textarea::placeholder {
+    color: var(--colour-text-muted);
+}
+
+.send-button {
+    flex: none;
+    padding: var(--space-3) var(--space-6);
+    border: none;
+    border-radius: var(--radius-pill);
+    background: var(--colour-green);
+    color: #000000;
+    font-family: inherit;
+    font-size: 0.88rem;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.send-button:hover:not(:disabled) {
+    background: #6bff10;
+}
+
+.send-button:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+}
+
+.composer-status {
+    margin: var(--space-3) 0 0;
+    font-size: 0.75rem;
+    color: var(--colour-text-muted);
+    text-align: right;
+}
+
+.role-picker select {
+    padding: var(--space-2) var(--space-3);
+    border: 1px solid var(--border-glass);
+    border-radius: var(--radius-pill);
+    background: var(--colour-background-light);
+    color: var(--colour-text-secondary);
+    font-family: inherit;
+    font-size: 0.82rem;
+    cursor: pointer;
+}
+
+.role-picker select:focus {
+    outline: none;
+    border-color: var(--colour-green);
+}
+
+/* ---------------------------------------------------------------------------
+   status and errors
+   --------------------------------------------------------------------------- */
+
+.processing-message {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    margin-bottom: var(--space-4);
+    color: var(--colour-text-secondary);
+    font-size: 0.86rem;
+}
+
+.processing-message[hidden] {
+    display: none;
+}
+
+.processing-message__dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--colour-green);
+    animation: pulse 1.1s ease-in-out infinite;
+}
+
+@keyframes pulse {
+    0%, 100% { opacity: 0.3; }
+    50% { opacity: 1; }
+}
+
+/* a local model takes tens of seconds; without motion the page looks frozen
+   and people press send again. */
+@media (prefers-reduced-motion: reduce) {
+    .processing-message__dot { animation: none; opacity: 1; }
+}
+
+.error-banner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-4);
+    margin-bottom: var(--space-4);
+    padding: var(--space-4);
+    border: 1px solid var(--colour-error);
+    border-radius: var(--radius-md);
+    background: rgba(255, 107, 107, 0.08);
+}
+
+.error-banner[hidden] {
+    display: none;
+}
+
+.error-banner p {
+    margin: 0;
+    color: var(--colour-error);
+    font-size: 0.88rem;
+}
+
+.error-banner__dismiss {
+    flex: none;
+    padding: var(--space-1) var(--space-3);
+    border: 1px solid var(--colour-error);
+    border-radius: var(--radius-pill);
+    background: transparent;
+    color: var(--colour-error);
+    font-family: inherit;
+    font-size: 0.78rem;
+    cursor: pointer;
+}
+
+/* ---------------------------------------------------------------------------
+   answer content: tables, sql, markdown
+   --------------------------------------------------------------------------- */
+
+.answer-table {
+    width: 100%;
+    margin-top: var(--space-4);
+    border-collapse: collapse;
+    font-size: 0.85rem;
+}
+
+.answer-table th,
+.answer-table td {
+    padding: var(--space-2) var(--space-3);
+    border-bottom: 1px solid var(--border-glass);
+    text-align: left;
+}
+
+.answer-table th {
+    color: var(--colour-text-muted);
+    font-weight: 600;
+    font-size: 0.72rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+}
+
+.answer-sql {
+    margin-top: var(--space-3);
+    padding: var(--space-4);
+    overflow-x: auto;
+    border: 1px solid var(--border-glass);
+    border-radius: var(--radius-sm);
+    background: #000000;
+    color: var(--colour-green);
+    font-family: var(--font-mono);
+    font-size: 0.76rem;
+    line-height: 1.55;
+}
+
+/* ---------------------------------------------------------------------------
+   source panel
+
+   Opens beside the conversation rather than over it, so the chat stays visible
+   and scrolled where it was.
+   --------------------------------------------------------------------------- */
+
+.source-panel {
+    position: fixed;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    width: min(46vw, 620px);
+    display: flex;
+    flex-direction: column;
+    background: var(--colour-background);
+    border-left: 1px solid var(--border-glass-strong);
+    z-index: 40;
+    transform: translateX(100%);
+    transition: transform 180ms ease-out;
+}
+
+.source-panel--open {
+    transform: translateX(0);
+}
+
+body.has-source-panel .workspace {
+    margin-right: min(46vw, 620px);
+}
+
+.source-panel__header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: var(--space-4);
+    padding: var(--space-5);
+    border-bottom: 1px solid var(--border-glass);
+}
+
+.source-panel__eyebrow {
+    margin: 0 0 var(--space-1);
+    font-size: 0.68rem;
+    letter-spacing: 0.09em;
+    text-transform: uppercase;
+    color: var(--colour-green);
+}
+
+.source-panel__header h2 {
+    margin: 0;
+    font-size: 0.98rem;
+    line-height: 1.35;
+}
+
+.source-panel__meta {
+    margin: var(--space-2) 0 0;
+    font-size: 0.76rem;
+    line-height: 1.45;
+    color: var(--colour-text-secondary);
+}
+
+.source-panel__close {
+    flex: none;
+    width: 2rem;
+    height: 2rem;
+    border: 1px solid var(--border-glass);
+    border-radius: 50%;
+    background: transparent;
+    color: var(--colour-text-primary);
+    font-size: 1.2rem;
+    line-height: 1;
+    cursor: pointer;
+}
+
+.source-panel__close:hover {
+    border-color: var(--colour-green);
+    color: var(--colour-green);
+}
+
+.source-panel__body {
+    flex: 1;
+    overflow: auto;
+    padding: var(--space-4) var(--space-5);
+}
+
+/* white, because a PDF rendered on a dark surface looks broken while loading. */
+.source-panel__frame {
+    width: 100%;
+    height: 100%;
+    min-height: 60vh;
+    border: 1px solid var(--border-glass);
+    border-radius: var(--radius-sm);
+    background: #ffffff;
+}
+
+.source-panel__frame--video {
+    min-height: 0;
+    aspect-ratio: 16 / 9;
+    height: auto;
+    background: #000000;
+}
+
+.source-panel__quote {
+    margin: 0;
+    padding: var(--space-4);
+    border-left: 3px solid var(--colour-green);
+    background: var(--colour-background-light);
+    font-size: 0.88rem;
+    line-height: 1.6;
+}
+
+.source-panel__note {
+    margin: var(--space-4) 0 0;
+    font-size: 0.8rem;
+    line-height: 1.5;
+    color: var(--colour-text-secondary);
+}
+
+.source-panel__sql {
+    margin: var(--space-2) 0 0;
+    padding: var(--space-4);
+    overflow-x: auto;
+    border: 1px solid var(--border-glass);
+    border-radius: var(--radius-sm);
+    background: #000000;
+    color: var(--colour-green);
+    font-family: var(--font-mono);
+    font-size: 0.76rem;
+    line-height: 1.5;
+}
+
+.source-panel__footer {
+    padding: var(--space-4) var(--space-5);
+    border-top: 1px solid var(--border-glass);
+}
+
+.source-panel__download {
+    font-size: 0.8rem;
+    color: var(--colour-green);
+}
+
+.source-panel__download[hidden] {
+    display: none;
+}
+
+@media (max-width: 900px) {
+    .source-panel {
+        width: 100%;
+    }
+
+    body.has-source-panel .workspace {
+        margin-right: 0;
+    }
+}
