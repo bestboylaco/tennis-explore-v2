@@ -13,6 +13,7 @@ import { sourceRoutes } from "./modules/sources/index.js";
 import { telemetryRoutes } from "./modules/telemetry/index.js";
 import { chatRoutes } from "./modules/chat/index.js";
 import assetRoutes from "./modules/assets/asset.routes.js";
+import auditRoutes from "./modules/audit/routes/audit.routes.js";
 
 const app = express();
 
@@ -72,6 +73,7 @@ app.use("/api/sources", sourceRoutes);
 app.use("/api/telemetry", telemetryRoutes);
 // serves the original file behind a citation, with its own access check
 app.use("/api/assets", assetRoutes);
+app.use("/api/audit", auditRoutes);
 
 // Error handling must come last
 app.use(notFoundHandler);

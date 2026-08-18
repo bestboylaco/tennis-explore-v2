@@ -49,6 +49,12 @@ jobs:
 
       - name: Run integration tests
         env:
+          # src/config/env.js requires PORT at import time; the value itself
+          # is unused here (telemetryHttpRoute.test.js binds its server to
+          # port 0), but a missing PORT throws before the test's own
+          # MONGODB_URI skip guard can apply, which hangs the whole file
+          # until the runner times it out rather than failing fast.
+          PORT: 3000
           MONGODB_URI: ${{ secrets.MONGODB_URI }}
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
