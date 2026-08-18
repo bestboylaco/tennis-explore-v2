@@ -47,37 +47,6 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      # TEMPORARY — remove once the MONGODB_URI secret is confirmed well-formed.
-      # MongoParseError: "Invalid scheme, expected connection string to start
-      # with mongodb:// or mongodb+srv://" has repeated across two secret
-      # edits. This checks shape only (length, prefix, stray whitespace/quotes)
-      # so nothing secret is ever printed, even redacted.
-      - name: Debug MONGODB_URI shape
-        env:
-          MONGODB_URI: ${{ secrets.MONGODB_URI }}
-        run: |
-          node -e '
-            const v = process.env.MONGODB_URI || "";
-            console.log("length:", v.length);
-            console.log("startsWithMongodbSrv:", v.startsWith("mongodb+srv://"));
-            console.log("startsWithMongodb:", v.startsWith("mongodb://"));
-            console.log("startsWithKeyPrefix (MONGODB_URI=):", v.startsWith("MONGODB_URI="));
-            console.log("startsWithQuote:", v.startsWith("\"") || v.startsWith("\x27"));
-            console.log("endsWithQuote:", v.endsWith("\"") || v.endsWith("\x27"));
-            console.log("hasLeadingWhitespace:", /^\s/.test(v));
-            console.log("hasTrailingWhitespace:", /\s$/.test(v));
-            console.log("hasNewline:", v.includes("\n"));
-            console.log("first10CharsRedacted:", v.slice(0, 10).replace(/./g, "*"));
-            // A number here is not secret -- it cannot be reversed into the
-            // credential -- but it catches an invisible character (BOM
-            // U+FEFF, zero-width space U+200B, etc.) that startsWith() and
-            // the \s-based whitespace checks above would both silently miss.
-            console.log("firstCharCode:", v.length > 0 ? v.charCodeAt(0) : null);
-            console.log("lastCharCode:", v.length > 0 ? v.charCodeAt(v.length - 1) : null);
-            console.log("hasNonAsciiPrintable:", /[^\x20-\x7E]/.test(v));
-            console.log("indexOfFirstMongodbSubstring:", v.indexOf("mongodb"));
-          '
-
       - name: Run integration tests
         env:
           # src/config/env.js requires PORT at import time; the value itself
