@@ -68,6 +68,14 @@ jobs:
             console.log("hasTrailingWhitespace:", /\s$/.test(v));
             console.log("hasNewline:", v.includes("\n"));
             console.log("first10CharsRedacted:", v.slice(0, 10).replace(/./g, "*"));
+            // A number here is not secret -- it cannot be reversed into the
+            // credential -- but it catches an invisible character (BOM
+            // U+FEFF, zero-width space U+200B, etc.) that startsWith() and
+            // the \s-based whitespace checks above would both silently miss.
+            console.log("firstCharCode:", v.length > 0 ? v.charCodeAt(0) : null);
+            console.log("lastCharCode:", v.length > 0 ? v.charCodeAt(v.length - 1) : null);
+            console.log("hasNonAsciiPrintable:", /[^\x20-\x7E]/.test(v));
+            console.log("indexOfFirstMongodbSubstring:", v.indexOf("mongodb"));
           '
 
       - name: Run integration tests
