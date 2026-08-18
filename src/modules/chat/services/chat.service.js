@@ -24,10 +24,11 @@ import { bindCitations } from "../../retrieval/citation.service.js";
  *   is also what `npm run ask` uses so the browser and CLI cannot drift
  *   apart. This is the path with role-based access filtering (E5-17).
  *
- * The role is normalised rather than defaulted in the signature, because a
- * form submits an empty string and `?? "analyst"` would not catch it. In a real
- * deployment roleId comes off the authenticated session and is never
- * client-supplied: a caller who picks their own role has every role.
+ * roleId is required and has no default -- the same rule answerQuestion and
+ * retrieve already enforce (E5-17). It comes from req.user.roleId, which
+ * requireAuth (app.js) sets from the session; there is no path from here
+ * back to a client-supplied value. A caller who picks their own role has
+ * every role, which is exactly the T-01 gap this closes.
  *
  * `telemetryRun` is injectable on the explicit-evidence path so a test can
  * hold the recorder and read the finished record back; production passes
@@ -37,20 +38,18 @@ export async function submitChatQuestion(
     question,
     { evidence = null, correlationId = null, roleId, telemetryRun = null } = {},
 ) {
-    // DEMO DEFAULT. admin sees everything, which is what you want while
-    // building and testing. it is the wrong default for anything real: the
-    // role must come off the authenticated session, and a caller who picks
-    // their own role has every role. change this before the partner sees it.
-    const role = roleId && String(roleId).trim() !== "" ? roleId : "admin";
+    if (!roleId || String(roleId).trim() === "") {
+        throw new Error("submitChatQuestion requires a roleId. There is no default role on purpose.");
+    }
 
     if (evidence !== null) {
-        return answerFromSuppliedEvidence(question, evidence, role, {
+        return answerFromSuppliedEvidence(question, evidence, roleId, {
             correlationId,
             telemetryRun,
         });
     }
 
-    const result = await answerQuestion(question, { roleId: role, correlationId });
+    const result = await answerQuestion(question, { roleId, correlationId });
 
     return {
         status: "completed",

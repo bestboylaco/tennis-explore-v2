@@ -19,9 +19,10 @@ export async function submitChatQuestionController(req, res) {
     const result = await submitChatQuestion(req.body.question, {
         evidence: req.body.evidence,
         correlationId,
-        // demo only. see the note in chat.service -- this must come off an
-        // authenticated session before anything the partner can reach.
-        roleId: req.body.role,
+        // req.user is set by requireAuth (app.js) from the session -- never
+        // client-supplied. Closes T-01: a caller can no longer pick their
+        // own role by sending a different value in the request body.
+        roleId: req.user.roleId,
     });
 
     return res.status(200).json({
