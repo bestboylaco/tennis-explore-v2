@@ -64,6 +64,18 @@
                     <button class="navigation__item" type="button" disabled>Reports</button>
                     <button class="navigation__item" type="button" disabled>Training Load</button>
                     <button class="navigation__item" type="button" disabled>AI Tools</button>
+
+                    <!--
+                      ADMIN GATE MOUNT POINT (E5-17).
+
+                      Telemetry is Internal-classified data behind an
+                      unauthenticated route (threat model T-01). Authentication
+                      now exists in src/modules/auth, so this link should be
+                      hidden for a non-admin and the route gated with
+                      requireAuth; see the matching note in telemetry.html and
+                      scripts/telemetry.js.
+                    -->
+                    <a class="navigation__item" href="/telemetry.html">Telemetry</a>
                 </nav>
 
                 <div class="sidebar__footer">
