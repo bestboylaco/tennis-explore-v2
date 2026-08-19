@@ -59,21 +59,19 @@ app.use(
 );
 
 /*
- * Temporary local-development auto login.
- *
- * Production never receives this automatic admin session.
+ * Optional local-development auto login, off unless a developer sets
+ * ENABLE_DEV_AUTO_LOGIN=true in their own .env. Never inferred from
+ * NODE_ENV -- CI runs with NODE_ENV unset too, and this must not turn on
+ * there (see authConfig.devAutoLoginEnabled).
  */
 app.use((req, res, next) => {
-    if (
-        env.nodeEnv !== "production" &&
-        !req.session.user
-    ) {
-        req.session.user = {
-            roleId: "admin",
-        };
-    }
+  if (authConfig.devAutoLoginEnabled && !req.session.user) {
+    req.session.user = {
+      roleId: "admin",
+    };
+  }
 
-    next();
+  next();
 });
 app.use(express.static(publicDirectory));
 app.use(telemetryMiddleware);
