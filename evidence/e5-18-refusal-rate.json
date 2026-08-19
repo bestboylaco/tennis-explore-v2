@@ -1,0 +1,322 @@
+{
+  "summary": {
+    "unanswerableSet": {
+      "total": 10,
+      "falseClaims": 1,
+      "passed": false
+    },
+    "answerableSet": {
+      "total": 20,
+      "falseRefusals": 2,
+      "falseRefusalRatePercent": 10,
+      "passed": true
+    },
+    "avgLatencyMs": 13895
+  },
+  "results": {
+    "unanswerable": [
+      {
+        "id": "U-01",
+        "question": "What was Novak Djokovic's serve speed at the 2019 Australian Open final?",
+        "expectAnswered": false,
+        "answered": false,
+        "correct": true,
+        "durationMs": 13387,
+        "answerPreview": "The knowledge base does not contain an answer to this question.",
+        "evidenceCount": 0
+      },
+      {
+        "id": "U-02",
+        "question": "What does Allistair McCaw list as the E.Q. skills in coaching?",
+        "expectAnswered": false,
+        "answered": false,
+        "correct": true,
+        "durationMs": 10830,
+        "answerPreview": "The knowledge base does not contain an answer to this question.",
+        "evidenceCount": 0
+      },
+      {
+        "id": "U-03",
+        "question": "What was Serena Williams' fastest recorded serve speed in her career?",
+        "expectAnswered": false,
+        "answered": false,
+        "correct": true,
+        "durationMs": 9977,
+        "answerPreview": "The knowledge base does not contain an answer to this question.",
+        "evidenceCount": 0
+      },
+      {
+        "id": "U-04",
+        "question": "What was Rafael Nadal's forehand topspin RPM at the 2022 French Open final?",
+        "expectAnswered": false,
+        "answered": false,
+        "correct": true,
+        "durationMs": 11379,
+        "answerPreview": "The knowledge base does not contain an answer to this question.",
+        "evidenceCount": 0
+      },
+      {
+        "id": "U-05",
+        "question": "What is the median singles ranking per month across the ranking data?",
+        "expectAnswered": false,
+        "answered": false,
+        "correct": true,
+        "durationMs": 14754,
+        "answerPreview": "The knowledge base does not contain an answer to this question.",
+        "evidenceCount": 0
+      },
+      {
+        "id": "U-06",
+        "question": "What is Roger Federer's career win-loss record against Rafael Nadal?",
+        "expectAnswered": false,
+        "answered": false,
+        "correct": true,
+        "durationMs": 10698,
+        "answerPreview": "The knowledge base does not contain an answer to this question.",
+        "evidenceCount": 0
+      },
+      {
+        "id": "U-07",
+        "question": "What is the standard treatment protocol for carpal tunnel syndrome in office workers?",
+        "expectAnswered": false,
+        "answered": false,
+        "correct": true,
+        "durationMs": 10809,
+        "answerPreview": "The knowledge base does not contain an answer to this question.",
+        "evidenceCount": 0
+      },
+      {
+        "id": "U-08",
+        "question": "What is the direct phone number for the head of the National Academy program?",
+        "expectAnswered": false,
+        "answered": false,
+        "correct": true,
+        "durationMs": 12137,
+        "answerPreview": "The knowledge base does not contain an answer to this question.",
+        "evidenceCount": 0
+      },
+      {
+        "id": "U-09",
+        "question": "What does the 2027 National Academy technology roadmap say about AI-based recovery tracking?",
+        "expectAnswered": false,
+        "answered": false,
+        "correct": true,
+        "durationMs": 11679,
+        "answerPreview": "The knowledge base does not contain an answer to this question.",
+        "evidenceCount": 0
+      },
+      {
+        "id": "U-10",
+        "question": "What training philosophy did Rafael Nadal's uncle and coach Toni Nadal describe in his own coaching manual?",
+        "expectAnswered": false,
+        "answered": true,
+        "correct": false,
+        "durationMs": 13919,
+        "answerPreview": "Toni Nadal described that Rafa needs to spend a certain amount of hours on the court each day so that his footwork, movement about the court, and his confidence",
+        "evidenceCount": 1
+      }
+    ],
+    "answerable": [
+      {
+        "id": "A-01",
+        "question": "What does the research say about accelerometer load in matches compared with training, and how does the Catapult programme apply that?",
+        "expectAnswered": true,
+        "answered": true,
+        "correct": true,
+        "durationMs": 18722,
+        "answerPreview": "The research suggests that match play tends to have higher internal loads (RPE) despite similar external loads [1]. In tennis, a study found that 3D body load d",
+        "evidenceCount": 4
+      },
+      {
+        "id": "A-02",
+        "question": "How was the wearable stroke detection algorithm validated, and what was it then used to measure in match play?",
+        "expectAnswered": true,
+        "answered": true,
+        "correct": true,
+        "durationMs": 18389,
+        "answerPreview": "The wearable stroke detection algorithm was validated by comparing its outputs with manually coded ball contacts and shadow swing events from video recordings o",
+        "evidenceCount": 2
+      },
+      {
+        "id": "A-03",
+        "question": "What are the risk factors for lumbar bone stress injuries and what planning controls are recommended to reduce them?",
+        "expectAnswered": true,
+        "answered": true,
+        "correct": true,
+        "durationMs": 14606,
+        "answerPreview": "The proposed universal risk factors for BSIs include training surfaces, type of sport (team or individual), seasonality, footwear, exposure to high or low impac",
+        "evidenceCount": 3
+      },
+      {
+        "id": "A-04",
+        "question": "Summarise what we know about lumbar stress injuries in junior players and how they are prevented.",
+        "expectAnswered": true,
+        "answered": true,
+        "correct": true,
+        "durationMs": 17352,
+        "answerPreview": "**Risk is high, but modifiable.** Junior tennis players have a higher risk of lumbar stress injuries compared to their peers [3], with 38% reporting a lumbar re",
+        "evidenceCount": 5
+      },
+      {
+        "id": "A-05",
+        "question": "Give me an executive summary of the wearable technology research in this knowledge base.",
+        "expectAnswered": true,
+        "answered": true,
+        "correct": true,
+        "durationMs": 17568,
+        "answerPreview": "**Wearable Technology's Role in Performance Monitoring**\n\nThe use of wearable technology in sports has grown significantly, with various devices providing data ",
+        "evidenceCount": 5
+      },
+      {
+        "id": "A-06",
+        "question": "What percentage of a year's training and competition is disrupted by a lumbar stress fracture?",
+        "expectAnswered": true,
+        "answered": true,
+        "correct": true,
+        "durationMs": 12672,
+        "answerPreview": "~47% of the year’s training and competition is disrupted [1][2].",
+        "evidenceCount": 2
+      },
+      {
+        "id": "A-07",
+        "question": "How many strokes were manually coded and categorised in the PhD study?",
+        "expectAnswered": true,
+        "answered": true,
+        "correct": true,
+        "durationMs": 14276,
+        "answerPreview": "5349 strokes were manually coded and categorized [7].",
+        "evidenceCount": 1
+      },
+      {
+        "id": "A-08",
+        "question": "What does Mark Kovacs say about the tournament round a player needs to reach?",
+        "expectAnswered": true,
+        "answered": false,
+        "correct": false,
+        "durationMs": 9211,
+        "answerPreview": "The knowledge base does not contain an answer to this question.",
+        "evidenceCount": 0
+      },
+      {
+        "id": "A-09",
+        "question": "According to Beni Linder, what percentages of speed should players vary between?",
+        "expectAnswered": true,
+        "answered": true,
+        "correct": true,
+        "durationMs": 13674,
+        "answerPreview": "According to Beni Linder [1], players should vary their speed between 60% for inner-range movements and 100% for outer/end range movements.",
+        "evidenceCount": 1
+      },
+      {
+        "id": "A-10",
+        "question": "Who were the authors of the first Cardio Tennis publication and in what year was it published?",
+        "expectAnswered": true,
+        "answered": false,
+        "correct": false,
+        "durationMs": 12352,
+        "answerPreview": "The knowledge base does not contain an answer to this question.",
+        "evidenceCount": 0
+      },
+      {
+        "id": "A-11",
+        "question": "How many female tennis players were recruited for the Whiteside 2013 serve kinematics study?",
+        "expectAnswered": true,
+        "answered": true,
+        "correct": true,
+        "durationMs": 15349,
+        "answerPreview": "Thirty-one elite female tennis players provided informed consent and were arranged into pre-pubescent, pubescent and adult groups [4]. The groups in this study ",
+        "evidenceCount": 1
+      },
+      {
+        "id": "A-12",
+        "question": "Tell me about serve volume distribution and accelerometer load from wearable microtechnology.",
+        "expectAnswered": true,
+        "answered": true,
+        "correct": true,
+        "durationMs": 15082,
+        "answerPreview": "The study found that official matches showed the highest accelerometer load, which may be useful in establishing benchmarks for training design [5]. Serve-focus",
+        "evidenceCount": 3
+      },
+      {
+        "id": "A-13",
+        "question": "What does the research say about macro periodisation of competition in international women's tennis?",
+        "expectAnswered": true,
+        "answered": true,
+        "correct": true,
+        "durationMs": 15198,
+        "answerPreview": "The study reports on the multi-year periodised international competition engagement of elite top 100 and 250 female tennis players during their youth [1]. It hi",
+        "evidenceCount": 3
+      },
+      {
+        "id": "A-14",
+        "question": "How should a season be structured for long term athlete development?",
+        "expectAnswered": true,
+        "answered": true,
+        "correct": true,
+        "durationMs": 18011,
+        "answerPreview": "**A planned and progressive structure is essential.** Long-term athletic development models recommend a structured approach to training, with periods of intense",
+        "evidenceCount": 5
+      },
+      {
+        "id": "A-15",
+        "question": "How is machine learning used to detect tennis strokes from wearable sensors?",
+        "expectAnswered": true,
+        "answered": true,
+        "correct": true,
+        "durationMs": 14207,
+        "answerPreview": "A prototype algorithm was developed and validated for detecting tennis strokes from a commercially available trunk-mounted wearable sensor, using machine learni",
+        "evidenceCount": 3
+      },
+      {
+        "id": "A-16",
+        "question": "Can a sensor tell the difference between a forehand and a backhand?",
+        "expectAnswered": true,
+        "answered": true,
+        "correct": true,
+        "durationMs": 15055,
+        "answerPreview": "Yes [6]. The detection accuracies for forehand and backhand were reported at 94% accuracy.",
+        "evidenceCount": 1
+      },
+      {
+        "id": "A-17",
+        "question": "What does the research say about determining stroke and movement profiles in competitive match play?",
+        "expectAnswered": true,
+        "answered": true,
+        "correct": true,
+        "durationMs": 14888,
+        "answerPreview": "The study reports a novel approach to accelerometry measures in tennis by describing concurrent movement and stroke match-play demands from a single wearable se",
+        "evidenceCount": 1
+      },
+      {
+        "id": "A-18",
+        "question": "What does the research say about differentiating stroke and movement using accelerometer load?",
+        "expectAnswered": true,
+        "answered": true,
+        "correct": true,
+        "durationMs": 14630,
+        "answerPreview": "The study aimed to describe and compare movement- and stroke-related accelerometer profiles between typical tennis training drills [6]. A prototype algorithm wa",
+        "evidenceCount": 1
+      },
+      {
+        "id": "A-19",
+        "question": "What does the research say about conditioning and fitness training for tennis players?",
+        "expectAnswered": true,
+        "answered": true,
+        "correct": true,
+        "durationMs": 13567,
+        "answerPreview": "The main goals of strength training in tennis are to develop power, muscular endurance, and maximum strength [4]. Periodised resistance training models are pref",
+        "evidenceCount": 2
+      },
+      {
+        "id": "A-20",
+        "question": "What new hardware or technology is the National Academy planning to use for measuring athlete movement, recovery, or capacity, such as Prism Neuro, the 1080 Sprint, or VO2 Master?",
+        "expectAnswered": true,
+        "answered": true,
+        "correct": true,
+        "durationMs": 12472,
+        "answerPreview": "The National Academy is planning to use VO2 Master and the 1080 Sprint for measuring athlete movement, recovery, or capacity [3][5].",
+        "evidenceCount": 2
+      }
+    ]
+  }
+}
