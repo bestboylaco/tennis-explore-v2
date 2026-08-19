@@ -45,11 +45,12 @@ async function readResponseBody(response) {
 /**
  * Sends one natural-language question to the backend.
  *
- * The body carries the question and the role it runs as. No mode, source,
- * command, model or route is submitted -- those are decided server-side from
- * the question itself.
+ * The body carries only the question. No mode, source, command, model,
+ * route -- or role -- is submitted; the role the query runs as comes off
+ * the authenticated session server-side (requireAuth, req.user.roleId),
+ * never from anything this client sends.
  */
-export async function submitChatQuestion(question, role) {
+export async function submitChatQuestion(question) {
     const abortController = new AbortController();
 
     const timeoutId = window.setTimeout(() => {
@@ -64,14 +65,9 @@ export async function submitChatQuestion(question, role) {
                 "Content-Type": "application/json",
             },
 
-            body: JSON.stringify({
-                question,
-                // the demo lets you pick a role so the access filter can be
-                // shown working. in a real deployment this comes off the
-                // authenticated session and is not client-supplied -- a caller
-                // who picks their own role has every role.
-                role,
-            }),
+            credentials: "same-origin",
+
+            body: JSON.stringify({ question }),
 
             signal: abortController.signal,
         });
