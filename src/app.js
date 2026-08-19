@@ -58,6 +58,23 @@ app.use(
   }),
 );
 
+/*
+ * Temporary local-development auto login.
+ *
+ * Production never receives this automatic admin session.
+ */
+app.use((req, res, next) => {
+    if (
+        env.nodeEnv !== "production" &&
+        !req.session.user
+    ) {
+        req.session.user = {
+            roleId: "admin",
+        };
+    }
+
+    next();
+});
 app.use(express.static(publicDirectory));
 app.use(telemetryMiddleware);
 
