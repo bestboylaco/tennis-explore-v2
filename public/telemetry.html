@@ -1,0 +1,277 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0" />
+
+    <meta name="description"
+          content="TennisExplore telemetry debugging dashboard" />
+
+    <title>TennisExplore | Telemetry</title>
+
+    <link rel="stylesheet" href="/styles/tokens.css" />
+    <link rel="stylesheet" href="/styles/base.css" />
+    <link rel="stylesheet" href="/styles/layout.css" />
+    <link rel="stylesheet" href="/styles/components.css" />
+    <link rel="stylesheet" href="/styles/telemetry.css" />
+    <link rel="stylesheet" href="/styles/responsive.css" />
+</head>
+
+<!--
+  ADMIN GATE MOUNT POINT (E5-17).
+
+  This page and the telemetry API behind it are unauthenticated, like every
+  other route today (threat model T-01). Telemetry is Internal-classified data,
+  so when accounts and roles land in E5-17 this page must go behind an admin
+  role check, in two places:
+
+    1. here, at the page entry point, and in /scripts/telemetry.js
+    2. on the navigation link in index.html, which must be hidden for a
+       non-admin rather than only failing when followed
+
+  The records themselves are content-free by design (threat model T-04): no
+  document text and no question text is stored, and nothing on this page should
+  ever add a field that would display any.
+-->
+
+<body>
+    <div class="application">
+        <header class="topbar">
+            <a class="brand" href="/" aria-label="TennisExplore home">
+                <span class="brand__mark" aria-hidden="true">
+                    <span class="brand__ball"></span>
+                </span>
+
+                <span class="brand__text">
+                    <strong>Tennis</strong>Explore
+                </span>
+            </a>
+
+            <div class="topbar__actions">
+                <span class="environment-badge">Internal</span>
+
+                <button class="profile-button"
+                        type="button"
+                        aria-label="Open user profile">
+                    C
+                </button>
+            </div>
+        </header>
+
+        <main class="workspace workspace--telemetry">
+            <aside class="sidebar sidebar--left">
+                <div class="sidebar__heading">
+                    Workspace
+                </div>
+
+                <nav class="navigation" aria-label="Product capabilities">
+                    <a class="navigation__item" href="/">
+                        AI Coach
+                    </a>
+
+                    <a class="navigation__item navigation__item--active"
+                       href="/telemetry.html"
+                       aria-current="page">
+                        Telemetry
+                    </a>
+                </nav>
+
+                <div class="sidebar__footer">
+                    <span class="sidebar__footer-label">
+                        Developer tooling
+                    </span>
+
+                    <p>
+                        Pipeline timings, compute and coverage from the
+                        telemetry store.
+                    </p>
+                </div>
+            </aside>
+
+            <section class="telemetry-panel"
+                     aria-labelledby="telemetry-title">
+                <header class="telemetry-header">
+                    <div>
+                        <p class="section-eyebrow">
+                            Observability
+                        </p>
+
+                        <h1 id="telemetry-title">Telemetry</h1>
+                    </div>
+
+                    <div class="telemetry-header__actions">
+                        <div id="telemetry-status"
+                             class="status-indicator status-indicator--ready"
+                             role="status"
+                             aria-live="polite">
+                            <span class="status-indicator__dot"
+                                  aria-hidden="true"></span>
+
+                            <span id="telemetry-status-text">Ready</span>
+                        </div>
+
+                        <!--
+                          Refresh is manual. Nothing on this page polls: the
+                          telemetry middleware already excludes /api/telemetry
+                          so a poll would not pollute the data, but a debugging
+                          page that keeps issuing requests while being read only
+                          makes the server log harder to follow.
+                        -->
+                        <button id="telemetry-refresh"
+                                class="primary-button"
+                                type="button">
+                            Refresh
+                        </button>
+                    </div>
+                </header>
+
+                <!--
+                  Options are filled in by filterBar.js from
+                  /scripts/config.js, so the lists live in one place.
+                -->
+                <form id="telemetry-filters" class="filter-bar">
+                    <div class="filter-bar__field">
+                        <label for="filter-run-type">Run type</label>
+                        <select id="filter-run-type" name="runType"></select>
+                    </div>
+
+                    <div class="filter-bar__field">
+                        <label for="filter-query-class">Query class</label>
+                        <select id="filter-query-class" name="queryClass"></select>
+                    </div>
+
+                    <div class="filter-bar__field">
+                        <label for="filter-status">Status</label>
+                        <select id="filter-status" name="status"></select>
+                    </div>
+
+                    <!--
+                      Text fields rather than datetime-local. The native
+                      control is painted in the browser's locale, not the
+                      page's, so a Chinese browser shows 年/月/日 in year-first
+                      order whatever this page declares. The placeholder, the
+                      calendar and the parsing all live in dateTimeField.js;
+                      the value sent to the API is unchanged.
+                    -->
+                    <div class="filter-bar__field" data-date-field="from">
+                        <label for="filter-from">From</label>
+
+                        <div class="date-field">
+                            <input id="filter-from"
+                                   name="from"
+                                   type="text"
+                                   inputmode="numeric"
+                                   autocomplete="off"
+                                   aria-describedby="filter-from-hint" />
+
+                            <button class="date-field__toggle"
+                                    type="button"
+                                    aria-label="Choose a From date">
+                                <span class="date-field__icon"
+                                      aria-hidden="true"></span>
+                            </button>
+                        </div>
+
+                        <p id="filter-from-hint"
+                           class="date-field__hint"
+                           hidden></p>
+                    </div>
+
+                    <div class="filter-bar__field" data-date-field="to">
+                        <label for="filter-to">To</label>
+
+                        <div class="date-field">
+                            <input id="filter-to"
+                                   name="to"
+                                   type="text"
+                                   inputmode="numeric"
+                                   autocomplete="off"
+                                   aria-describedby="filter-to-hint" />
+
+                            <button class="date-field__toggle"
+                                    type="button"
+                                    aria-label="Choose a To date">
+                                <span class="date-field__icon"
+                                      aria-hidden="true"></span>
+                            </button>
+                        </div>
+
+                        <p id="filter-to-hint"
+                           class="date-field__hint"
+                           hidden></p>
+                    </div>
+
+                    <div class="filter-bar__field">
+                        <label for="filter-correlation-id">Correlation ID</label>
+                        <input id="filter-correlation-id"
+                               name="correlationId"
+                               type="text"
+                               autocomplete="off"
+                               placeholder="Any" />
+                    </div>
+
+                    <div class="filter-bar__field">
+                        <label for="filter-source-id">Source ID</label>
+                        <input id="filter-source-id"
+                               name="sourceId"
+                               type="text"
+                               autocomplete="off"
+                               placeholder="ObjectId" />
+                    </div>
+
+                    <div class="filter-bar__actions">
+                        <button class="primary-button" type="submit">
+                            Apply
+                        </button>
+
+                        <button id="filter-reset"
+                                class="secondary-button"
+                                type="button">
+                            Reset
+                        </button>
+                    </div>
+                </form>
+
+                <div id="telemetry-error"
+                     class="error-banner"
+                     role="alert"
+                     hidden>
+                    <div>
+                        <strong>Unable to load telemetry</strong>
+
+                        <p id="telemetry-error-message">
+                            An unexpected error occurred.
+                        </p>
+                    </div>
+
+                    <button id="telemetry-error-dismiss"
+                            class="secondary-button"
+                            type="button">
+                        Dismiss
+                    </button>
+                </div>
+
+                <div class="telemetry-body">
+                    <!-- Aggregations from GET /api/telemetry/summary -->
+                    <div id="telemetry-summary"
+                         class="telemetry-summary"></div>
+
+                    <!-- Raw records from GET /api/telemetry -->
+                    <section class="telemetry-records">
+                        <div id="telemetry-records-table"
+                             class="telemetry-records__list"></div>
+
+                        <aside id="telemetry-record-detail"
+                               class="telemetry-records__detail"
+                               aria-live="polite"></aside>
+                    </section>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script type="module" src="/scripts/telemetry.js"></script>
+</body>
+</html>

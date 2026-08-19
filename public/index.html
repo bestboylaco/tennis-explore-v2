@@ -106,6 +106,19 @@
                             aria-disabled="true">
                         AI Tools
                     </button>
+
+                    <!--
+                      ADMIN GATE MOUNT POINT (E5-17).
+
+                      Telemetry is Internal-classified data behind an
+                      unauthenticated route (threat model T-01). When accounts
+                      and roles land, this link must be hidden for a non-admin
+                      as well as the page itself being gated; see the matching
+                      note in telemetry.html and scripts/telemetry.js.
+                    -->
+                    <a class="navigation__item" href="/telemetry.html">
+                        Telemetry
+                    </a>
                 </nav>
 
                 <div class="sidebar__footer">
