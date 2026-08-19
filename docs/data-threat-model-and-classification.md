@@ -2,9 +2,70 @@
 
 **Ticket:** TENISE-43 / E5-20
 **Epic:** Epic 5 — Security, Privacy & Governance
-**Status:** Draft v0.3 — under active development
+**Status:** Draft v0.6 — under active development
 
 **Change log**
+- **v0.6 (2026-08-20):** Correction to v0.5: the dead `AWS_ACCESS_KEY_ID` /
+  `AWS_SECRET_ACCESS_KEY` / `QDRANT_*` values removed from this machine's
+  `.env` were put back by the project owner, deliberately, to keep them on
+  hand even though nothing currently reads them. T-05 is **not** partially
+  addressed by that cleanup any more — the live AWS key is confirmed still
+  sitting in plaintext on this machine by choice. This does not change what
+  T-05 actually needs (rotate/deactivate the AWS key, rotate the Mongo Atlas
+  password), only that a local `.env` edit is not the fix and should not be
+  read as progress toward it.
+- **v0.5 (2026-08-20):** Two of E5-20's three open High-risk blockers are now
+  closed in code. **T-04:** `errorHandler.js` no longer does a raw
+  `console.error(error)` — it logs `error.stack`/`error.message` only (never
+  the raw error object, which a custom Error subclass could carry arbitrary
+  extra fields on, and never `req.body`), through a redaction pass that masks
+  any `scheme://user:pass@host` credential shape before it reaches the log,
+  verified with a live test against a fake Mongo-connection-string error.
+  **T-08:** `app.use(cors())` (no origin allow-list at all) is now
+  `app.use(cors({ origin: env.allowedOrigin }))`, defaulting to this app's own
+  origin (`ALLOWED_ORIGIN` env var to override); verified live that a request
+  claiming `Origin: http://evil.example.com` gets back
+  `Access-Control-Allow-Origin: http://localhost:3000`, not a reflected
+  `evil.example.com`. **T-05 partially addressed, not closed:** this machine's
+  `.env` had live `AWS_ACCESS_KEY_ID`/`AWS_SECRET_ACCESS_KEY` and unused
+  `QDRANT_*` values sitting in plaintext, dead since the AWS pivot — confirmed
+  nothing in `src/` reads any of them, and removed. What remains and needs a
+  human with the relevant console access, not an engineering task: rotate or
+  deactivate that AWS key, and rotate the MongoDB Atlas password noted below
+  as shared through a non-secret channel on 2026-07-28. Data Gate (§7) still
+  has three unchecked boxes untouched by this revision — data classification
+  sign-off, retention/deletion policy (T-07), and project owner authorisation
+  — all human decisions, not code.
+- **v0.4 (2026-08-20):** Test A's previously-unproven half — a real authenticated
+  session tied to a real retrieval query, confirming a restricted document is
+  absent from both the response and the audit trail — has now been run, live,
+  through the actual chat UI with a real Ollama and the built index. The same
+  question ("What new hardware or technology is the National Academy planning
+  to use for measuring athlete movement, recovery, or capacity, such as Prism
+  Neuro, the 1080 Sprint, or VO2 Master?", matching content classified
+  `physiological:internal:national-academy`) was asked by three logged-in
+  accounts: `analyst` (no `physiological` domain) and `tour_coach`
+  (`physiological`, but scoped to `pro-tour`) both abstained; `academy_coach`
+  (`physiological`, scoped to `national-academy`) answered correctly with
+  citations. The `access_audit_records` rows for the same question confirm it
+  at the log level, not just the interface: `academy_coach`'s record lists the
+  4 restricted chunks it was shown; `analyst`'s record for the identical
+  question lists none of them. T-01 and T-02 are now fully closed rather than
+  "mitigated", and TENISE-23 (E5-17) has been moved to Done in Jira with this
+  evidence attached. TENISE-25 (E5-19) was already Done; a clarifying comment
+  was added there since its acceptance criteria still name AWS
+  CloudTrail/Bedrock/OpenSearch, which no longer applies literally post-pivot.
+  Separately, a live bug was found and fixed this session: `answerFromTables`
+  reported "access_denied" whenever zero structured tables were visible to a
+  role, without distinguishing that from zero tables being loaded at all
+  (the demo machine's `data/index/manifest.json` records `sourceDirs` from the
+  machine that built the index, which do not exist here — no CSV/XLSX ever
+  shipped with the repo, so every role sees 0 tables). Every role, including
+  `admin`, was getting a misleading "your role does not have access" message
+  for any table-routed question on a machine with no table source files at
+  all. Now reported as "not found" unless tables actually exist and are hidden
+  by the filter. Unrelated to T-01/T-02, noted here because it was found while
+  proving Test A.
 - **v0.3 (2026-08-18):** real authentication landed (session-based, `express-session` + `connect-mongo`, `src/modules/auth`) — T-01 is now **closed** at the backend/API level: role comes from `req.user.roleId` (the session), never from anything a client sends, proven end-to-end by `test/integration/auth.test.js` including the specific case of a client sending `role: "admin"` in the request body and having it ignored. T-03 (prompt injection) moved from no defence to a **prompt-level mitigation**: both system prompts now explicitly instruct the model to treat evidence as data, and every evidence block is wrapped in `<<<BEGIN/END EVIDENCE>>>` markers; an adversarial Test B exists (`generation.test.js`) but has not been empirically run against a live model in any environment used so far (see §6). The login UI itself (frontend) is built locally but **not yet in this repo** — held back by an unrelated local-only `public/` exclude pending a teammate's separate WebUI work, so nothing below should be read as "the demo has a working login screen today."
 - **v0.2 (2026-08-18):** the AWS pipeline this document originally described (OpenSearch, Bedrock Agents/Rerank/KB, Nova Pro, CloudTrail) was dropped by the team on 2026-07-30 (no AWS account access — TENISE-40) in favour of a local stack. §3 and §5 are updated to describe what is actually implemented now, not what Epics 2–5 originally planned against AWS. E5-17 (access filtering) and E5-19 (audit trail) have real implementations as of this revision; see the updated rows below. This revision does **not** check any §7 Data Gate box — implementation existing is not the same as it being reviewed, tested end-to-end, and signed off.
 
@@ -57,7 +118,7 @@ otherwise approved information — see [§7 Data Gate](#7-data-gate-hard-constra
 | C10 | Rerank (`retrieval/ranking.service.js`, batched LLM scoring via `tools/rerank/rerank_server.py` or Ollama) | Processing | **Implemented, replaces Bedrock Rerank** | Degrades to unreranked fused order (with a stated reason) if the rerank service is unavailable, rather than failing the request |
 | C11 | Ollama (local LLM, `llama3.1:8b` by default) | External-to-app model, but **runs on the operator's machine, not AWS** | **Implemented, replaces Amazon Nova Pro** | Receives assembled evidence + prompt; video-frame generation was never implemented, so that sub-threat no longer applies |
 | C12 | Grounding/abstention layer (`retrieval/answerContract.service.js`, `generation/verifier.service.js`, `chat/prompts/generationPrompt.js`) | Control plane | **Implemented, replaces Bedrock Guardrails** | Covers "refuse when evidence is insufficient" (contextual grounding) and, as of v0.3, a prompt-level anti-injection rule plus `<<<BEGIN/END EVIDENCE>>>` isolation (T-03). No dedicated detection/classification layer exists — the mitigation is entirely in how the prompt is written, which is weaker than a purpose-built guardrail |
-| C13 | Application logs / console output | Data store | Implemented | `errorHandler.js` still does `console.error(error)` — full error object, unfiltered; unchanged since v0.1 (T-04 gap) |
+| C13 | Application logs / console output | Data store | Implemented | `errorHandler.js` logs `error.stack`/`error.message` only, redacted for connection-string-shaped credentials — never the raw error object or `req.body` (T-04, closed v0.5) |
 | C14 | Telemetry store (`modules/telemetry`) | Data store | **Implemented** (TENISE-26/30) | Per-stage records; deliberately content-free (`sanitizeAttributeValue` strips objects, truncates strings) |
 | C15 | Access-audit trail (`modules/audit`, Mongo collection `access_audit_records`) | Audit | **Implemented (E5-19), replaces AWS CloudTrail** | Who (role) accessed which document/table, when; one row per document per request, deliberate 400-day retention. Still records `roleId`, not an account id — a per-account audit trail would need `auditRecorder.js` to also take `req.user.id`, which it does not yet |
 | C16 | Temporary files (multer upload buffer/disk) | Data store (transient) | Wired but unused (`upload.middleware.js` present, no route mounts it yet) | Unchanged since v0.1 — needs explicit cleanup policy once wired |
@@ -181,28 +242,35 @@ handling any real (non-synthetic) data, per §7.
 
 | ID | Category | Threat | Affected component(s) | Likelihood | Impact | Risk | Mitigation | Owner | Status |
 |---|---|---|---|---|---|---|---|---|---|
-| T-01 | Unauthorised data access | ~~No *authentication* exists on the API today~~ **Closed for `/api/chat`, `/api/telemetry`, `/api/audit` (v0.3, C18)** — role now comes from `req.user.roleId`, set by `requireAuth` from a server-side session, never from a request field. `test/integration/auth.test.js` proves this end-to-end, including the specific case of a client sending `role: "admin"` in the body and having it ignored. `/api/sources` is a known, deliberate exception — still open, see §8 | C2, C3, C18 | Low (for the gated routes) | High | Medium (was High) | Session-based auth (`express-session` + `connect-mongo`), no self-registration (`bin/seed-users.js` provisions accounts). Combined with E5-17's filter (T-02), a role can no longer be both claimed and trusted by the same untrusted caller | E5-17/C18 owner | **Mitigated for chat/telemetry/audit — `/api/sources` still open, tracked as a new item in §8** |
-| T-02 | Cross-user data leakage | Retrieval returns chunks the requesting role should not see, because ACL filtering happens after retrieval instead of before | C8, C8a, C9 | Low (mitigated) | High | Medium (was High) | **Closed in code**: `acl_groups` is written on every chunk at index time (schema v2, TENISE-15), and `buildAccessFilter`/`isPermitted` filter inside both the BM25 and dense arms before fusion, re-verified by `assertAccessInvariant` after. Unit-tested (`test/unit/accessControl.test.js`, `test/unit/vectorStore.test.js` — "applies the access filter before scoring, not after"). Residual risk is entirely T-01's: filtering is only as trustworthy as the role it's given | E5-17 owner | **Mitigated — Test A now partially runnable, see §6** |
+| T-01 | Unauthorised data access | ~~No *authentication* exists on the API today~~ **Closed for `/api/chat`, `/api/telemetry`, `/api/audit` (v0.3, C18)** — role now comes from `req.user.roleId`, set by `requireAuth` from a server-side session, never from a request field. `test/integration/auth.test.js` proves this end-to-end, including the specific case of a client sending `role: "admin"` in the body and having it ignored. `/api/sources` is a known, deliberate exception — still open, see §8 | C2, C3, C18 | Low (for the gated routes) | High | Medium (was High) | Session-based auth (`express-session` + `connect-mongo`), no self-registration (`bin/seed-users.js` provisions accounts). Combined with E5-17's filter (T-02), a role can no longer be both claimed and trusted by the same untrusted caller | E5-17/C18 owner | **Closed for chat/telemetry/audit (v0.4: Test A's live session run passed, see §6) — `/api/sources` still open, tracked as a new item in §8** |
+| T-02 | Cross-user data leakage | Retrieval returns chunks the requesting role should not see, because ACL filtering happens after retrieval instead of before | C8, C8a, C9 | Low (mitigated) | High | Medium (was High) | **Closed in code**: `acl_groups` is written on every chunk at index time (schema v2, TENISE-15), and `buildAccessFilter`/`isPermitted` filter inside both the BM25 and dense arms before fusion, re-verified by `assertAccessInvariant` after. Unit-tested (`test/unit/accessControl.test.js`, `test/unit/vectorStore.test.js` — "applies the access filter before scoring, not after"). Residual risk is entirely T-01's: filtering is only as trustworthy as the role it's given | E5-17 owner | **Closed — Test A passed live end-to-end (v0.4), see §6** |
 | T-03 | Prompt injection via ingested documents | Instructions embedded in an ingested PDF/DOCX/transcript attempt to override system behaviour once ingested and later cited as evidence | C5, C6, C9, C11, C12 | Medium (mitigated, not eliminated) | High | Medium (was High) | **Prompt-level mitigation added (v0.3)**: both system prompts (`generationPrompt.js`, `answerContract.service.js`) now explicitly instruct the model to treat evidence as data even when phrased as an instruction, and every evidence block is wrapped in `<<<BEGIN/END EVIDENCE>>>` markers the rule points at. Test B (adversarial evidence: forced output, alter-ego, system-prompt exfiltration) is written in `generation.test.js`, but **has not been empirically run against a live model in any environment used on this project so far** — it needs Ollama running to execute, same constraint as the existing TENISE-19 control tests. A prompt-level defence is inherently weaker than a dedicated guardrail/classifier layer; this is risk reduction, not elimination | E4/E5 owners | **Mitigated, unverified — Test B needs a real run before this can be called closed** |
-| T-04 | Sensitive data in prompts/responses/logs | A Sensitive/Personal/Biometric source is quoted verbatim in a generated answer, or the request/response pair is written to logs or telemetry unredacted | C11, C13, C14 | Medium | High | **High** | Citation binding references chunk IDs, not forced verbatim reproduction. Telemetry (TENISE-26) is confirmed content-free (`sanitizeAttributeValue` strips objects, truncates strings). **New**: the access-audit trail (E5-19, C15) stores only identifiers and classification tags, never chunk text, by the same rule. What is still open: `errorHandler.js` still does `console.error(error)` unfiltered — the one place in the codebase that violates this threat's own mitigation | Telemetry + logging owners | **Open — blocker (application logs only; telemetry and audit trail are compliant)** |
-| T-05 | Credential exposure | Secrets (Mongo URI) committed to git, printed to logs, or shared in chat/tickets in plaintext | C17, C13 | Medium | High | **High** | `.env` stays gitignored (already true); never echo full connection strings in logs or commit messages; rotate any credential that was pasted into a non-secret channel | Whole team | **Open — blocker** (see note below) |
+| T-04 | Sensitive data in prompts/responses/logs | A Sensitive/Personal/Biometric source is quoted verbatim in a generated answer, or the request/response pair is written to logs or telemetry unredacted | C11, C13, C14 | Low (mitigated) | High | Medium (was High) | Citation binding references chunk IDs, not forced verbatim reproduction. Telemetry (TENISE-26) is confirmed content-free (`sanitizeAttributeValue` strips objects, truncates strings). The access-audit trail (E5-19, C15) stores only identifiers and classification tags, never chunk text, by the same rule. **Closed (v0.5)**: `errorHandler.js` no longer does a raw `console.error(error)` — logs `stack`/`message` only, through a credential-redaction pass, never `req.body` | Telemetry + logging owners | **Closed (v0.5)** |
+| T-05 | Credential exposure | Secrets (Mongo URI, cloud keys) committed to git, printed to logs, or shared in chat/tickets in plaintext | C17, C13 | Medium | High | **High** | `.env` stays gitignored (already true); logs are now redacted for connection-string-shaped credentials (T-04, v0.5). A live AWS key and unused `QDRANT_*` values, dead since the AWS pivot, are confirmed unread by any code but are kept in `.env` deliberately (project owner's choice, v0.6) rather than removed. **Still open, needs a human with console access, not an engineering task**: rotate/deactivate that AWS key, and rotate the MongoDB Atlas password (see note below) — a local `.env` edit was never going to be the actual fix for either | Whole team | **Open — blocker (unchanged; live credential rotation still needed)** |
 | T-06 | Malicious or corrupt uploads | A corrupt or crafted file (e.g. the deliberately corrupt PDF in TENISE-34's test corpus, or a zip bomb / oversized file) disrupts ingestion or is used as an attack vector | C5, C6, C16 | Medium | Medium | Medium | Ingestion pipeline must isolate per-file failures (already an acceptance criterion of TENISE-11) and cap file size/type at upload; multer middleware (`upload.middleware.js`) needs size/type limits wired before it is mounted — still not mounted on any route | TENISE-11 owner | Open, unchanged since v0.1 |
 | T-07 | Incomplete data deletion | Archiving a source (`archiveSource`) only sets `isActive: false` — the document and its underlying chunks/embeddings/log traces are not actually erased | C4, C8, C13, C14, C15 | High (already true today) | Medium | Medium | Define and document a real deletion/retention path before real data is loaded: what "delete" means across Mongo, the local index, logs, telemetry, and now the audit trail too (audit retention is deliberately long, 400 days — see `audit.config.js` — which makes this more not less important to define) | Data owner (TBD) | Open, unchanged since v0.1 |
-| T-08 | Unrestricted cross-origin access | `app.use(cors())` allows any origin with no allow-list, widening who can call the API from a browser context once C2 is not the only client | C3 | **Medium, risen now that sessions carry real access (v0.3)** | Medium | Medium | Restrict CORS to known origins now that C18 exists and there is a real session cookie worth protecting from a cross-origin page. Not yet done | C18 owner | Open — priority raised by T-01 closing |
+| T-08 | Unrestricted cross-origin access | `app.use(cors())` allowed any origin with no allow-list, widening who could call the API from a browser context once C2 is not the only client | C3 | Low (mitigated) | Medium | Low (was Medium) | **Closed (v0.5)**: `cors({ origin: env.allowedOrigin })`, defaulting to this app's own origin (`ALLOWED_ORIGIN` env var to override). Verified live: a request claiming `Origin: http://evil.example.com` gets back `Access-Control-Allow-Origin: http://localhost:3000`, not a reflected `evil.example.com` | C18 owner | **Closed (v0.5)** |
 
 **Note on T-05:** a real MongoDB Atlas connection string (including
 password) was shared in this chat session on 2026-07-28 to unblock local
 development. It is stored only in the gitignored `.env` file, but per this
 threat's own mitigation it should be **rotated** once no longer needed for
-active development, since it passed through a non-secret channel.
+active development, since it passed through a non-secret channel. (v0.5: a
+second, unrelated live credential was found the same way while working on an
+unrelated bug — a real AWS access key sitting in the same `.env`, dead since
+the AWS pivot. v0.6: the project owner has chosen to keep that key and the
+unused `QDRANT_*` values in `.env` rather than delete them, even though
+nothing reads them — that is a legitimate call for a local dev file, but it
+means the key itself still needs deactivating in AWS directly; deleting it
+from `.env` here was never going to accomplish that on its own.)
 
 ## 6. Required Tests (per acceptance criteria)
 
 | Test | Verifies | Depends on | Status |
 |---|---|---|---|
-| **Test A** — a role without access to a restricted document cannot retrieve it through the chat interface, even indirectly via citation | T-01, T-02 | E5-17 (access-control implementation), E3-09 (ACL field in schema) | **Split into two proven halves and one unproven half.** (1) Role cannot be spoofed: proven end-to-end against a real server, `test/integration/auth.test.js` — a session's real role is used even when the request body claims `role: "admin"`. (2) The filter itself: unit-tested (`accessControl.test.js`, `vectorStore.test.js`), and every denial now lands in the access-audit trail (E5-19) with zero documents attached. (3) **Still not proven**: the single end-to-end run that ties a real authenticated session to a real retrieval query and confirms the restricted document is absent from both the response *and* the audit trail — this needs a live Ollama + built index, unavailable in every environment used on this project so far |
+| **Test A** — a role without access to a restricted document cannot retrieve it through the chat interface, even indirectly via citation | T-01, T-02 | E5-17 (access-control implementation), E3-09 (ACL field in schema) | **Fully passed (v0.4).** (1) Role cannot be spoofed: proven end-to-end against a real server, `test/integration/auth.test.js` — a session's real role is used even when the request body claims `role: "admin"`. (2) The filter itself: unit-tested (`accessControl.test.js`, `vectorStore.test.js`). (3) The end-to-end run: run live through the real chat UI with real sessions for `analyst`, `tour_coach`, `academy_coach` on the identical question against a document classified `physiological:internal:national-academy`. `academy_coach` answered with citations; `analyst`/`tour_coach` abstained. The `access_audit_records` rows for the same question, compared directly, confirm it at the log level: `academy_coach`'s record lists the 4 restricted chunks; `analyst`'s record for the identical question lists none of them. See the change log (v0.4) for the full detail and TENISE-23 for the Jira-side evidence comment |
 | **Test B** — a document containing embedded instructions ("ignore previous instructions...") cannot change system behaviour when ingested and cited | T-03 | E4-16 (prompt template — now written, see T-03), E5-18 (Guardrails — still not built) | **Written, not yet run.** `generation.test.js` has three adversarial cases (forced output, alter-ego, system-prompt exfiltration) that skip cleanly (not fail) when Ollama is unreachable, same as the existing TENISE-19 tests. Nobody has run this against a live model yet — do that before treating T-03 as closed rather than mitigated |
-| **Test C** — application logs and telemetry records, inspected after a full test run, contain no Personal/Biometric/Sensitive content | T-04 | TENISE-26 (telemetry structure), logging conventions | **Mostly runnable now.** Telemetry (C14) and the access-audit trail (C15) are both content-free by construction and unit-tested for it (`accessAuditRecorder.test.js` asserts chunk text is dropped). `errorHandler.js`'s unfiltered `console.error(error)` remains the one confirmed failure |
+| **Test C** — application logs and telemetry records, inspected after a full test run, contain no Personal/Biometric/Sensitive content | T-04 | TENISE-26 (telemetry structure), logging conventions | **Runnable now, and the one known failure is fixed.** Telemetry (C14) and the access-audit trail (C15) are both content-free by construction and unit-tested for it (`accessAuditRecorder.test.js` asserts chunk text is dropped). `errorHandler.js` (v0.5) no longer does an unfiltered `console.error(error)`; verified live with a fake credential-bearing error message. Still needs a full test run inspected end-to-end to formally pass this test, not just the component-level fix |
 
 Test A's remaining gap and Test B both need a machine with Ollama (and, for
 Test A, a built index) to actually execute — write them once such an
@@ -216,19 +284,18 @@ than leaving them permanently aspirational.
 > confirmed:
 
 - [ ] Data classification scheme reviewed and accepted (§4)
-- [ ] Access controls implemented and tested (T-01, T-02 closed — Test A passes) — **T-01 and T-02 both mitigated/closed in code now (v0.3); still unchecked because Test A's end-to-end half (real auth + real retrieval + audit trail, together) has never actually been run — see §6.**
+- [x] Access controls implemented and tested (T-01, T-02 closed — Test A passes) — **closed v0.4, TENISE-23.** Test A's end-to-end half ran live (real session + real retrieval + audit trail together, see §6) and TENISE-23 (E5-17) was moved to Done in Jira with this evidence attached on 2026-08-20.
 - [ ] Retention/deletion requirements defined (T-07 closed)
 - [ ] Project owner authorisation recorded
 
 Until every box is checked, the corpus (TENISE-34) must remain synthetic,
 public, or anonymised, which matches TENISE-34's own acceptance criteria.
 This document is the tracking point for that gate — do not check a box
-here without linking the Jira ticket that closed it. (v0.3 note: this is
-closer than it has ever been — the code-level access control and audit
-work is done and tested at the unit/component level — but "implemented and
-unit-tested" is still not this gate's bar. The gate needs the one
-end-to-end run (§6, Test A) and a human sign-off, neither of which this
-revision can provide by itself.)
+here without linking the Jira ticket that closed it. (v0.4 note: one box
+closed with a linked ticket. The remaining three are unrelated to access
+control — data classification sign-off, retention/deletion policy (T-07),
+and project owner authorisation are still open and still need a human,
+not an engineering task, to close them.)
 
 ## 8. Open Questions / Assumptions
 
@@ -263,4 +330,4 @@ revision can provide by itself.)
 - [x] Threat register covering all eight required categories (§5)
 - [x] Each threat records likelihood, impact, mitigation, owner, status (§5)
 - [x] Every High-risk threat has a mitigation strategy and is recorded as a blocker (§5, T-01–T-05)
-- [ ] Test A, B, C pass against a running system (§6) — **v0.3: closer on every test, none fully closed.** Test A's role-spoofing half is proven end-to-end (`auth.test.js`); its retrieval half still needs a live Ollama + built index to actually run. Test B is written and needs the same live run to move from "should work" to "does work". Test C needs the `errorHandler.js` fix, unchanged
+- [ ] Test A, B, C pass against a running system (§6) — **v0.4: Test A fully passed, live, end-to-end (§6).** Test B is written and still needs a live run to move from "should work" to "does work" — same live Ollama environment now exists, so this is unblocked, just not yet done. Test C needs the `errorHandler.js` fix, unchanged
