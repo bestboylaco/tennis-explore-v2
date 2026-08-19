@@ -1,4 +1,4 @@
-import { renderValue } from "../messageRenderer.js";
+import { renderValue } from "./structuredValue.js";
 import {
     clear,
     createElement,

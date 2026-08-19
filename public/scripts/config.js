@@ -50,8 +50,13 @@ export function getChatEndpoint() {
 export const TELEMETRY_ENDPOINT = "/api/telemetry";
 
 /**
- * The summary endpoint runs seven aggregations, so it is given a wider budget
- * than the 15 second chat request rather than sharing it.
+ * The summary endpoint runs seven aggregations, so it is given its own budget
+ * rather than sharing the chat request's.
+ *
+ * That budget is now much shorter than REQUEST_TIMEOUT_MS, not longer: chat
+ * waits on a local model doing retrieval and generation, while these are
+ * database aggregations. Twenty seconds is generous for them, and a dashboard
+ * that hangs for three minutes on a slow query is worse than one that fails.
  */
 export const TELEMETRY_REQUEST_TIMEOUT_MS = 20_000;
 
