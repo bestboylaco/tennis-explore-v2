@@ -107,22 +107,96 @@ function citationLabel(citation, index) {
 }
 
 function renderCitations(doc, citations, openCitation) {
-    const section = element(doc, "section", "citation-list");
+    const section = element(
+        doc,
+        "section",
+        "citation-list",
+    );
 
-    section.append(element(doc, "p", "citation-list__heading", "Sources"));
+    /*
+     * Only the Sources button is visible initially.
+     * The individual citations are shown in a floating popover.
+     */
+    const toggleButton = element(
+        doc,
+        "button",
+        "citation-list__toggle",
+        `Sources ${citations.length}`,
+    );
 
-    const buttons = element(doc, "div", "citation-list__buttons");
+    toggleButton.type = "button";
+    toggleButton.setAttribute("aria-expanded", "false");
+
+    const popover = element(
+        doc,
+        "div",
+        "citation-popover",
+    );
+
+    popover.hidden = true;
+
+    const popoverHeading = element(
+        doc,
+        "p",
+        "citation-popover__heading",
+        "Sources",
+    );
+
+    const buttons = element(
+        doc,
+        "div",
+        "citation-list__buttons",
+    );
 
     citations.forEach((citation, index) => {
-        const button = element(doc, "button", "citation-button", citationLabel(citation, index));
+        /*
+         * Keep using the existing citationLabel() function.
+         * This means the citation text and numbering behaviour do not change.
+         */
+        const button = element(
+            doc,
+            "button",
+            "citation-button",
+            citationLabel(citation, index),
+        );
 
         button.type = "button";
-        button.addEventListener("click", () => openCitation(citation, button));
+
+        button.addEventListener("click", () => {
+            // Close the small source list before opening the source panel.
+            popover.hidden = true;
+
+            toggleButton.setAttribute(
+                "aria-expanded",
+                "false",
+            );
+
+            openCitation(citation, button);
+        });
 
         buttons.append(button);
     });
 
-    section.append(buttons);
+    popover.append(
+        popoverHeading,
+        buttons,
+    );
+
+    toggleButton.addEventListener("click", () => {
+        const isOpen = !popover.hidden;
+
+        popover.hidden = isOpen;
+
+        toggleButton.setAttribute(
+            "aria-expanded",
+            String(!isOpen),
+        );
+    });
+
+    section.append(
+        toggleButton,
+        popover,
+    );
 
     return section;
 }

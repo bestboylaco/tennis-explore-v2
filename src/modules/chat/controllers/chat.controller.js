@@ -7,23 +7,38 @@ import { submitChatQuestion } from "../services/chat.service.js";
  * structure produced by the chat service.
  */
 export async function submitChatQuestionController(req, res) {
-    // One request writes two telemetry records: the api_request record opened
-    // by the middleware and the query record opened by the chat service. They
-    // are stamped with the same correlation id so TENISE-27 can join the HTTP
-    // view of a query to its per-stage view; without it the two are unrelated
-    // rows and the stage figures cannot be tied to a status code.
+    /*
+     * One request writes two telemetry records:
+     *
+     * - the API request record opened by middleware
+     * - the query record opened by the chat service
+     *
+     * The shared correlation id allows TENISE-27 to connect the
+     * HTTP request with its per-stage pipeline telemetry.
+     */
     const correlationId = `query:${randomUUID()}`;
 
     req.telemetry?.setCorrelationId(correlationId);
 
-    const result = await submitChatQuestion(req.body.question, {
-        evidence: req.body.evidence,
-        correlationId,
-        // req.user is set by requireAuth (app.js) from the session -- never
-        // client-supplied. Closes T-01: a caller can no longer pick their
-        // own role by sending a different value in the request body.
-        roleId: req.user.roleId,
-    });
+    const result = await submitChatQuestion(
+        req.body.question,
+        {
+            evidence: req.body.evidence,
+
+            /*
+             * The role comes from the authenticated session.
+             *
+             * Do not accept a role from req.body because that would
+             * allow a client to choose its own access level.
+             */
+            roleId: req.user.roleId,
+
+            /*
+             * Links query-stage telemetry to the HTTP request.
+             */
+            correlationId,
+        },
+    );
 
     return res.status(200).json({
         success: true,
@@ -34,15 +49,16 @@ export async function submitChatQuestionController(req, res) {
 /**
  * Deliberately returns an error for acceptance testing.
  *
- * The frontend will be pointed at this endpoint to confirm that it
- * displays a visible error instead of a blank screen or endless spinner.
+ * The frontend uses this endpoint to verify that a failed backend
+ * request produces a visible error rather than an indefinite spinner.
  */
 export function deliberatelyFailChatController(req, res) {
     return res.status(503).json({
         success: false,
         error: {
             code: "DEMO_ENDPOINT_FAILURE",
-            message: "The demo chat endpoint is deliberately unavailable.",
+            message:
+                "The demo chat endpoint is deliberately unavailable.",
         },
     });
 }

@@ -71,6 +71,23 @@ function resizeInput() {
 
 questionInput.addEventListener("input", resizeInput);
 
+/*
+ * Quick-start cards only populate the same natural-language input. They do
+ * not select a route, query mode, source or model, so the existing backend
+ * dispatch and access-control behaviour remains unchanged.
+ */
+const suggestedQuestionButtons = document.querySelectorAll(
+    "[data-suggested-question]",
+);
+
+for (const button of suggestedQuestionButtons) {
+    button.addEventListener("click", () => {
+        questionInput.value = button.dataset.suggestedQuestion ?? "";
+        resizeInput();
+        questionInput.focus();
+    });
+}
+
 // Enter sends, Shift+Enter starts a new line -- the convention every chat
 // interface uses, and the one people try first.
 questionInput.addEventListener("keydown", (event) => {
