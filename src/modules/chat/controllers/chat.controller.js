@@ -25,6 +25,10 @@ export async function submitChatQuestionController(req, res) {
 
         // Links chat-stage telemetry to the HTTP request telemetry.
         correlationId,
+        // req.user is set by requireAuth (app.js) from the session -- never
+        // client-supplied. Closes T-01: a caller can no longer pick their
+        // own role by sending a different value in the request body.
+        roleId: req.user.roleId,
     });
 
     return res.status(200).json({

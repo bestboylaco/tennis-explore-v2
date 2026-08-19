@@ -39,6 +39,27 @@ const mongoUri = process.env.MONGODB_URI;
 const correlationId = `itest:telemetry-aggregation:${randomUUID()}`;
 const startedAt = new Date("2026-07-01T00:00:00.000Z");
 
+// Connect once for the whole file, not once per describe block. Each suite
+// used to open its own connection in before() and close it in after() on
+// mongoose's shared default connection -- disconnecting between suites and
+// immediately reconnecting for the next one raced the topology/primary
+// discovery that reconnecting has to redo, which was invisible on a fast
+// local network but showed up as missing seed records under CI's higher
+// round-trip latency to Atlas (writes proceeding against a connection whose
+// topology discovery had not actually settled yet, despite the connect()
+// promise having resolved).
+before(async () => {
+  if (mongoUri) {
+    await mongoose.connect(mongoUri, { serverSelectionTimeoutMS: 15000 });
+  }
+});
+
+after(async () => {
+  if (mongoUri) {
+    await mongoose.disconnect();
+  }
+});
+
 // Every record carries the four pipeline stages from day one (E6-20a), so the
 // fixtures do too. This is exactly what made a single global grouping useless:
 // one HTTP request contributes four not_implemented stages.
@@ -222,13 +243,11 @@ describe(
   { skip: mongoUri ? false : "MONGODB_URI is not set" },
   () => {
     before(async () => {
-      await mongoose.connect(mongoUri, { serverSelectionTimeoutMS: 15000 });
       await TelemetryRecord.insertMany(seedRecords());
     });
 
     after(async () => {
       await TelemetryRecord.deleteMany({ correlationId });
-      await mongoose.disconnect();
     });
 
     it("reports the cold start rate per run type and never blends them", async () => {
@@ -640,14 +659,12 @@ describe(
   { skip: mongoUri ? false : "MONGODB_URI is not set" },
   () => {
     before(async () => {
-      await mongoose.connect(mongoUri, { serverSelectionTimeoutMS: 15000 });
       await TelemetryRecord.insertMany(seedQueryRecords());
       await TelemetryRecord.collection.insertOne(legacyQueryRecord());
     });
 
     after(async () => {
       await TelemetryRecord.deleteMany({ correlationId: queryCorrelationId });
-      await mongoose.disconnect();
     });
 
     it("reports stage latency per class, so a bottleneck can be named within a class", async () => {

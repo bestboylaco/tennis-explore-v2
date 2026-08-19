@@ -31,6 +31,8 @@ import { fewShotMessages } from "../../generation/fewShot.service.js";
 import { verifyAnswer } from "../../generation/verifier.service.js";
 import { buildQuerySpec } from "../../structured/specPlanner.service.js";
 import { runQuery } from "../../structured/queryEngine.service.js";
+import { AUDIT_QUERY_KINDS } from "../../../shared/constants/audit.js";
+import { recordAccess, recordAccessDenial } from "../../audit/services/accessAuditRecorder.service.js";
 
 export class ModelUnavailableError extends Error {
   constructor(message, { cause } = {}) {
@@ -120,7 +122,7 @@ function abstain({ plan, roleId, reason, cause = "not_found", startedAt }) {
 // the unstructured path
 // ---------------------------------------------------------------------------
 
-async function answerFromDocuments(plan, { roleId, signal, startedAt }) {
+async function answerFromDocuments(plan, { roleId, signal, startedAt, correlationId }) {
   const retrieval = await retrieve(plan.question, {
     roleId,
     // retrieve wider than we will show. grading and deduplication both remove
@@ -131,12 +133,16 @@ async function answerFromDocuments(plan, { roleId, signal, startedAt }) {
   });
 
   if (retrieval.evidence.length === 0) {
-    return abstain({
-      plan,
+    const reason = `nothing in the knowledge base is both relevant and visible to the role "${roleId}"`;
+
+    await recordAccessDenial({
+      correlationId,
       roleId,
-      reason: `nothing in the knowledge base is both relevant and visible to the role "${roleId}"`,
-      startedAt,
+      queryKind: AUDIT_QUERY_KINDS.DOCUMENT,
+      reason,
     });
+
+    return abstain({ plan, roleId, reason, startedAt });
   }
 
   // ---- grade before generating (corrective rag) ---------------------------
@@ -181,9 +187,34 @@ async function answerFromDocuments(plan, { roleId, signal, startedAt }) {
         .filter(Boolean)
         .join(" | ");
 
-      return `[${chunk.citationNumber}] (${source})\n${chunk.text}`;
+      // The BEGIN/END markers give the system prompt's anti-injection rule
+      // (buildSystemPrompt, T-03) something concrete to point at -- everything
+      // between them is ingested document text, never an instruction, no
+      // matter how it's phrased.
+      return `[${chunk.citationNumber}] (${source})\n<<<BEGIN EVIDENCE>>>\n${chunk.text}\n<<<END EVIDENCE>>>`;
     })
     .join("\n\n");
+
+  // Audited here, right before the evidence crosses into the prompt -- this
+  // is the exact boundary E5-19's acceptance criterion needs proof against
+  // ("a restricted document was never sent to the model"). A generation
+  // failure after this point does not un-audit the exposure: the role saw
+  // this content regardless of whether the model answered.
+  await recordAccess({
+    correlationId,
+    roleId,
+    queryKind: AUDIT_QUERY_KINDS.DOCUMENT,
+    documents: evidence.map((chunk) => ({
+      docId: chunk.doc_id,
+      chunkId: chunk.chunk_id,
+      title: chunk.title,
+      sourceType: chunk.source_type,
+      dataDomain: chunk.data_domain,
+      sensitivity: chunk.sensitivity,
+      program: chunk.program,
+      citationNumber: chunk.citationNumber,
+    })),
+  });
 
   const answer = await generate(
     buildSystemPrompt(plan),
@@ -254,20 +285,18 @@ async function answerFromDocuments(plan, { roleId, signal, startedAt }) {
 // the structured path
 // ---------------------------------------------------------------------------
 
-async function answerFromTables(plan, { roleId, signal, startedAt }) {
+async function answerFromTables(plan, { roleId, signal, startedAt, correlationId }) {
   const grants = grantsForRole(roleId);
   const allTables = await getTables();
   const tables = visibleTables(allTables, grants);
   const hiddenCount = allTables.length - tables.length;
 
   if (tables.length === 0) {
-    return abstain({
-      plan,
-      roleId,
-      reason: `no tables are visible to the role "${roleId}"`,
-      cause: "access_denied",
-      startedAt,
-    });
+    const reason = `no tables are visible to the role "${roleId}"`;
+
+    await recordAccessDenial({ correlationId, roleId, queryKind: AUDIT_QUERY_KINDS.TABLE, reason });
+
+    return abstain({ plan, roleId, reason, cause: "access_denied", startedAt });
   }
 
   const built = await buildQuerySpec(plan.question, tables, { signal });
@@ -283,16 +312,17 @@ async function answerFromTables(plan, { roleId, signal, startedAt }) {
     // answer anyway. that error is much cheaper than the alternative, which is
     // silently answering a different question from a research paper and leaving
     // the coach with no idea the match data even exists.
-    return abstain({
-      plan,
-      roleId,
-      reason:
-        hiddenCount > 0
-          ? `${built.reason}. ${hiddenCount} table(s) are not visible to the role "${roleId}" and may hold it.`
-          : built.reason,
-      cause: hiddenCount > 0 ? "access_denied" : "not_found",
-      startedAt,
-    });
+    const reason =
+      hiddenCount > 0
+        ? `${built.reason}. ${hiddenCount} table(s) are not visible to the role "${roleId}" and may hold it.`
+        : built.reason;
+    const cause = hiddenCount > 0 ? "access_denied" : "not_found";
+
+    if (cause === "access_denied") {
+      await recordAccessDenial({ correlationId, roleId, queryKind: AUDIT_QUERY_KINDS.TABLE, reason });
+    }
+
+    return abstain({ plan, roleId, reason, cause, startedAt });
   }
 
   let result;
@@ -302,6 +332,17 @@ async function answerFromTables(plan, { roleId, signal, startedAt }) {
   } catch (error) {
     return abstain({ plan, roleId, reason: `the query could not be run: ${error.message}`, startedAt });
   }
+
+  // Audited once here rather than at each return below: both the
+  // zero-rows-matched response and the generated one expose the same table
+  // to the role, and a query that reaches this line has already crossed the
+  // access-control boundary either way.
+  await recordAccess({
+    correlationId,
+    roleId,
+    queryKind: AUDIT_QUERY_KINDS.TABLE,
+    documents: [{ docId: result.table, title: result.tableTitle, sourceType: "table" }],
+  });
 
   if (result.rowsMatched === 0) {
     // an empty result is a real answer -- "there are no matches on grass in this
@@ -416,7 +457,7 @@ function queryTelemetry(result) {
  * roleId is required and has no default, for the same reason as in retrieval:
  * a default means forgetting to pass one still returns data.
  */
-export async function answerQuestion(question, { roleId, signal = null } = {}) {
+export async function answerQuestion(question, { roleId, signal = null, correlationId = null } = {}) {
   if (typeof question !== "string" || question.trim() === "") {
     throw new Error("answerQuestion requires a non-empty question.");
   }
@@ -429,7 +470,7 @@ export async function answerQuestion(question, { roleId, signal = null } = {}) {
   const plan = await planQuery(question, { signal });
 
   if (plan.route === ROUTES.STRUCTURED) {
-    const structured = await answerFromTables(plan, { roleId, signal, startedAt });
+    const structured = await answerFromTables(plan, { roleId, signal, startedAt, correlationId });
 
     if (structured.answered) return structured;
 
@@ -445,7 +486,7 @@ export async function answerQuestion(question, { roleId, signal = null } = {}) {
     // refusal is a real answer and it must survive.
     if (structured.cause === "access_denied") return structured;
 
-    const fallback = await answerFromDocuments(plan, { roleId, signal, startedAt });
+    const fallback = await answerFromDocuments(plan, { roleId, signal, startedAt, correlationId });
 
     if (fallback.answered) {
       fallback.telemetry.fellBackFrom = ROUTES.STRUCTURED;
@@ -456,7 +497,7 @@ export async function answerQuestion(question, { roleId, signal = null } = {}) {
     return structured;
   }
 
-  return answerFromDocuments(plan, { roleId, signal, startedAt });
+  return answerFromDocuments(plan, { roleId, signal, startedAt, correlationId });
 }
 
 export { CONTRACTS, ROUTES };
