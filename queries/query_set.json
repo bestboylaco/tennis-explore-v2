@@ -1,0 +1,14 @@
+[
+  { "query": "accelerometer load during tournaments compared with training", "expectedDocId": "Tennis_serve_volume__distribution_and_accelerometer_load_during_training_and_tournaments_from_wearable_microtechnology", "role": "admin", "tag": "documentary" },
+  { "query": "serve volume distribution wearable microtechnology", "expectedDocId": "Tennis_serve_volume__distribution_and_accelerometer_load_during_training_and_tournaments_from_wearable_microtechnology", "role": "admin", "tag": "exact-match" },
+  { "query": "macro periodisation of competition in international women's tennis", "expectedDocId": "published-perri-et-al-2023-macro-periodisation-of-competition-in-international-women-s-tennis-insights-for-long-term-athlete", "role": "admin", "tag": "exact-match" },
+  { "query": "how should a season be structured for long term athlete development", "expectedDocId": "published-perri-et-al-2023-macro-periodisation-of-competition-in-international-women-s-tennis-insights-for-long-term-athlete", "role": "admin", "tag": "paraphrase" },
+  { "query": "machine learning to detect tennis strokes from wearable sensors", "expectedDocId": "sensors-22-08868", "role": "admin", "tag": "documentary" },
+  { "query": "can a sensor tell the difference between a forehand and a backhand", "expectedDocId": "sensors-22-08868", "role": "admin", "tag": "paraphrase" },
+  { "query": "determining stroke and movement profiles in competitive match play", "expectedDocId": "Determining_Stroke_and_Movement_Profiles_in.43", "role": "admin", "tag": "exact-match" },
+  { "query": "differentiating stroke and movement accelerometer load", "expectedDocId": "Differentiating_Stroke_and_Movement_Accelerometer", "role": "admin", "tag": "exact-match" },
+  { "query": "what is the athlete's singles ranking history", "expectedDocId": "rankings", "role": "admin", "tag": "structured" },
+  { "query": "ATP singles ranking in December 2025", "expectedDocId": "rankings", "role": "admin", "tag": "structured" },
+  { "query": "conditioning and fitness training for tennis players", "expectedDocId": "conditioning-fitness-training", "role": "admin", "tag": "documentary" },
+  { "query": "periodisation paper study 2", "expectedDocId": "Study_2_Periodisation_Paper", "role": "admin", "tag": "exact-match" }
+]

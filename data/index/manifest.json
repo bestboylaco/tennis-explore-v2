@@ -1,0 +1,43 @@
+{
+  "schemaVersion": 3,
+  "embeddingProvider": "ollama",
+  "embeddingModel": "bge-m3",
+  "contextual": "template",
+  "chunking": {
+    "targetChars": 1600,
+    "overlapChars": 200,
+    "minChars": 120
+  },
+  "sourceDirs": [
+    "C:\\Users\\User\\Desktop\\TA_S2\\document-resources\\research-pdfs",
+    "C:\\Users\\User\\Desktop\\TA_S2\\document-resources\\powerpoint-folder",
+    "C:\\Users\\User\\Desktop\\TA_S2\\document-resources\\match-data",
+    "data\\video"
+  ],
+  "chunkCount": 99496,
+  "dimension": 1024,
+  "quantisation": "int8",
+  "quantScale": 127,
+  "shards": [
+    {
+      "index": 0,
+      "count": 40611
+    },
+    {
+      "index": 1,
+      "count": 37921
+    },
+    {
+      "index": 2,
+      "count": 20964
+    }
+  ],
+  "builtAt": "2026-08-13T02:38:51.317Z",
+  "fileCount": 2599,
+  "skippedCount": 168,
+  "schemaFailures": 0,
+  "bm25": {
+    "vocabSize": 359290,
+    "postings": 11930456
+  }
+}

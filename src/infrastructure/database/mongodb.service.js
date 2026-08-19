@@ -12,12 +12,12 @@ export async function connectMongoDB() {
     });
 
     console.log(
-      `✅ MongoDB connected: ${connection.connection.host}/${connection.connection.name}`,
+      `MongoDB connected: ${connection.connection.host}/${connection.connection.name}`,
     );
 
     return connection;
   } catch (error) {
-    console.error("❌ MongoDB connection failed:", error.message);
+    console.error("MongoDB connection failed:", error.message);
     throw error;
   }
 }
