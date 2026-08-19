@@ -122,6 +122,38 @@ function abstain({ plan, roleId, reason, cause = "not_found", startedAt }) {
 // the unstructured path
 // ---------------------------------------------------------------------------
 
+/**
+ * Whether an unrestricted (admin-equivalent) retrieval for the same question
+ * would surface at least one chunk this role's own retrieval did not. Used
+ * only to decide which abstention message and audit outcome to record -- the
+ * extra evidence itself is never read, shown, or logged with its content,
+ * only whether it exists (the same restraint the table path already uses via
+ * `hiddenCount` in `answerFromTables`).
+ *
+ * Runs a second retrieval, only on the abstain path, never on a successful
+ * answer -- doubling retrieval cost here is cheaper than telling a
+ * genuinely-denied caller "we found nothing" when the truth is "you may not
+ * see what we found" (T-01/E5-17's whole point, applied to messaging).
+ */
+async function hasRestrictedEvidence(plan, { roleId, signal, ownEvidence }) {
+  if (roleId === "admin") return false;
+
+  const unrestricted = await retrieve(plan.question, {
+    roleId: "admin",
+    // Same width as the caller's own retrieval (answerFromDocuments), not
+    // derived from ownEvidence.length -- unlocking every domain/program for
+    // this check can shift a lot more competing material into the ranked
+    // list, so a narrow topN here can miss the very chunk that matters.
+    topN: Math.ceil(plan.topN * 1.8),
+    signal,
+    subQueries: plan.subQuestions,
+  });
+
+  const ownIds = new Set(ownEvidence.map((chunk) => chunk.chunk_id));
+
+  return unrestricted.evidence.some((chunk) => !ownIds.has(chunk.chunk_id));
+}
+
 async function answerFromDocuments(plan, { roleId, signal, startedAt, correlationId }) {
   const retrieval = await retrieve(plan.question, {
     roleId,
@@ -133,16 +165,22 @@ async function answerFromDocuments(plan, { roleId, signal, startedAt, correlatio
   });
 
   if (retrieval.evidence.length === 0) {
-    const reason = `nothing in the knowledge base is both relevant and visible to the role "${roleId}"`;
+    const wasFiltered = await hasRestrictedEvidence(plan, { roleId, signal, ownEvidence: [] });
 
-    await recordAccessDenial({
-      correlationId,
+    if (wasFiltered) {
+      const reason = `material exists for this question but is not visible to the role "${roleId}"`;
+
+      await recordAccessDenial({ correlationId, roleId, queryKind: AUDIT_QUERY_KINDS.DOCUMENT, reason });
+
+      return abstain({ plan, roleId, reason, cause: "access_denied", startedAt });
+    }
+
+    return abstain({
+      plan,
       roleId,
-      queryKind: AUDIT_QUERY_KINDS.DOCUMENT,
-      reason,
+      reason: "nothing in the knowledge base is relevant to this question",
+      startedAt,
     });
-
-    return abstain({ plan, roleId, reason, startedAt });
   }
 
   // ---- grade before generating (corrective rag) ---------------------------
@@ -155,13 +193,22 @@ async function answerFromDocuments(plan, { roleId, signal, startedAt, correlatio
   const graded = await gradeEvidence(plan.question, retrieval.evidence, { signal });
 
   if (graded.grade === GRADES.INSUFFICIENT) {
+    const wasFiltered = await hasRestrictedEvidence(plan, {
+      roleId,
+      signal,
+      ownEvidence: retrieval.evidence,
+    });
+
+    const reason = wasFiltered
+      ? `the material visible to the role "${roleId}" does not address this question, though other material this role cannot see might (${graded.reason})`
+      : `the retrieved material does not address this question (${graded.reason})`;
+
+    if (wasFiltered) {
+      await recordAccessDenial({ correlationId, roleId, queryKind: AUDIT_QUERY_KINDS.DOCUMENT, reason });
+    }
+
     return {
-      ...abstain({
-        plan,
-        roleId,
-        reason: `the retrieved material does not address this question (${graded.reason})`,
-        startedAt,
-      }),
+      ...abstain({ plan, roleId, reason, cause: wasFiltered ? "access_denied" : undefined, startedAt }),
       grading: graded,
     };
   }
@@ -229,7 +276,7 @@ async function answerFromDocuments(plan, { roleId, signal, startedAt, correlatio
   const abstained = isAbstention(answer);
   const verification = verifyAnswer(answer, evidence);
 
-  const citations = verification.citations.map((citation) => {
+  let citations = verification.citations.map((citation) => {
     const chunk = evidence.find((candidate) => candidate.chunk_id === citation.chunkId);
 
     const link = chunk ? buildAssetLink(chunk) : null;
@@ -246,11 +293,43 @@ async function answerFromDocuments(plan, { roleId, signal, startedAt, correlatio
     };
   });
 
-  const payload = buildContractPayload({ contracts: plan.contracts, answer, citations });
+  // The grader can pass evidence as "relevant" without it actually containing
+  // the specific fact asked for -- a role scoped away from the chunk that
+  // does have it still gets shown *something* topically close, and the model
+  // correctly declines to answer from it. That refusal reaches here as a
+  // normal `abstained` model answer, not through either hard-abstain branch
+  // above, so it needs the same restricted-evidence check to tell "this role
+  // cannot see it" apart from "nobody can see it" (T-01/E5-17, applied to
+  // messaging, not just access).
+  let finalAnswer = answer;
+  let cause;
+
+  if (abstained) {
+    const wasFiltered = await hasRestrictedEvidence(plan, {
+      roleId,
+      signal,
+      ownEvidence: retrieval.evidence,
+    });
+
+    if (wasFiltered) {
+      const reason =
+        `the model could not answer this from what is visible to the role "${roleId}", ` +
+        `though material this role cannot see might address it`;
+
+      await recordAccessDenial({ correlationId, roleId, queryKind: AUDIT_QUERY_KINDS.DOCUMENT, reason });
+
+      finalAnswer = `Your role ("${roleId}") does not have access to the data needed to answer this.`;
+      cause = "access_denied";
+      citations = [];
+    }
+  }
+
+  const payload = buildContractPayload({ contracts: plan.contracts, answer: finalAnswer, citations });
 
   return {
     answered: !abstained,
     ...payload,
+    cause,
     citations,
     intent: plan.intent,
     route: plan.route,
@@ -291,8 +370,25 @@ async function answerFromTables(plan, { roleId, signal, startedAt, correlationId
   const tables = visibleTables(allTables, grants);
   const hiddenCount = allTables.length - tables.length;
 
+  if (allTables.length === 0) {
+    // Nothing exists to hide from anyone -- this is an environment gap (no
+    // structured tables loaded; e.g. the manifest's sourceDirs do not exist
+    // on this machine), not a role decision, and every role hits it
+    // identically. Reported as "not found", not "access_denied": that audit
+    // trail exists to prove a role WAS denied something that exists, and
+    // nothing here does.
+    return abstain({
+      plan,
+      roleId,
+      reason: "no structured tables are loaded in this environment",
+      startedAt,
+    });
+  }
+
   if (tables.length === 0) {
-    const reason = `no tables are visible to the role "${roleId}"`;
+    const reason =
+      `no tables are visible to the role "${roleId}" ` +
+      `(${allTables.length} table(s) exist; all are hidden by the access filter)`;
 
     await recordAccessDenial({ correlationId, roleId, queryKind: AUDIT_QUERY_KINDS.TABLE, reason });
 
