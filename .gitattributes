@@ -1,0 +1,36 @@
+# Keep line endings out of the search index.
+#
+# Git on Windows converts LF to CRLF on checkout for anything it thinks is text.
+# For this index that is not a cosmetic difference, it is a silent failure:
+#
+#   bm25-vocab.txt is one term per line and is split on "\n" when loaded. After
+#   CRLF conversion every term gains a trailing "\r", so no query term ever
+#   matches one. The keyword arm returns zero results, throws nothing, and logs
+#   nothing -- answers just get quietly worse for everyone who cloned, while
+#   working perfectly on the machine that built the index.
+#
+#   The .i32/.u8/.i8 files are raw typed arrays. A single byte inserted anywhere
+#   shifts every value after it, so a misdetection there corrupts the embeddings
+#   outright rather than degrading them.
+#
+# -text disables all end-of-line conversion. binary also disables diffing, which
+# is what you want for a 40 MB blob of float data.
+
+data/index/**            -text
+data/index/*.i32         binary
+data/index/*.i8          binary
+data/index/*.u8          binary
+data/index/*.jsonl       -text
+data/index/bm25-vocab.txt -text
+
+# The OCR sidecars use \f as a page separator and are read back byte for byte.
+data/ocr-cache/*.txt     -text
+
+# Normal source files: let Git normalise these as usual.
+*.js    text eol=lf
+*.mjs   text eol=lf
+*.json  text eol=lf
+*.md    text eol=lf
+*.css   text eol=lf
+*.html  text eol=lf
+*.py    text eol=lf

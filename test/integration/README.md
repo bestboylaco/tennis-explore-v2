@@ -7,3 +7,13 @@ Generation (TENISE-19) is the exception: it runs against a local Ollama server i
 Required secrets in GitHub (`Settings > Secrets and variables > Actions`): `MONGODB_URI`, plus AWS credentials once TENISE-11/15 land. Never print these in test output or logs (TENISE-43 T-05).
 
 Files matching `*.test.js`, picked up by `node --test test/integration`.
+
+`test:integration` runs with `--test-force-exit`. Tests that dynamically import
+`src/app.js` (auth.test.js, telemetryHttpRoute.test.js) pull in the session
+middleware's `connect-mongo` store, which opens its own MongoDB connection
+separate from the one the test's own `before()`/`after()` opens and closes.
+Nothing in the test file has a handle to close it, so without this flag the
+process hangs after every assertion has already passed -- confirmed by running
+a suite directly and watching it sit at 100% pass with no exit. The flag is a
+deliberate, minimal fix for that specific leak, not a general "ignore hung
+tests" switch.

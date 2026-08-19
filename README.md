@@ -13,22 +13,83 @@ TennisExplore V2 is a modular AI-powered platform for tennis intelligence, coach
 - Create and read source APIs
 - Soft-delete source API
 - Telemetry scaffolding and record structure
+- Document ingestion pipeline (PDF, CSV, XLSX, TXT, MD)
+- Text extraction, contextual chunking, embedding generation
+- Index schema v2 with enforced access control, dates and authors
+- Hybrid retrieval: BM25 + dense vectors fused with RRF, cross-encoder reranking
+- Query routing and multi-hop decomposition
+- Citation binding back to source chunks, with deep links to page, slide or timestamp
+- Query intent routing: single-hop, multi-hop, summarisation, analytical, comparative, aggregation
+- Structured query engine over CSV/XLSX with validated specs and rendered SQL
+- Explicit abstention when the knowledge base has no answer
+- Slide deck and video segment ingestion
+- Generation layer: evidence grading, few-shot prompting, deduplication, attention ordering, citation verification
+- OCR for scanned documents (optional, GPU)
+- Retrieval and end-to-end evaluation harnesses
 
 ### In Progress
 
 - Source file upload
-- Document ingestion pipeline
-
-### Planned
-
-- Text extraction
-- Document chunking
-- Embedding generation
-- Qdrant vector storage
-- Retrieval engine
-- AI assistant
 - Player intelligence
 - Coaching intelligence
+
+---
+
+## Retrieval quick start
+
+The retrieval pipeline runs on its own — no MongoDB, no AWS, no cloud APIs. It
+needs [Ollama](https://ollama.com/download) and Node 20+.
+
+```bash
+npm install
+ollama pull bge-m3 && ollama pull llama3.1:8b
+npm run check:models
+
+# build the index (the full partner library takes 2-4 hours; it checkpoints)
+node --max-old-space-size=6144 bin/build-index.js "path/to/TA_S2/document-resources"
+
+# see what retrieval returns, with no model writing an answer
+npm run search -- "accelerometer load during tournaments"
+
+# full answer with citations
+npm run ask -- "how does serve load differ between training and tournaments?"
+
+# questions about the tables are computed, not retrieved
+npm run ask -- "how many matches were played on each surface?"
+
+# compare retrieval strategies, and score the whole assistant
+npm run eval
+npm run eval:answers
+```
+
+The built index is committed in `data/index/`, so if someone has already built
+it you can skip straight to `npm run ask` after `git pull`.
+
+**Access control is enforced on every query.** Pass `--role` to see it:
+
+```bash
+npm run search -- --role admin   "athlete heart rate monitoring"
+npm run search -- --role analyst "athlete heart rate monitoring"
+```
+
+The analyst has no physiological access, so the second returns less. Roles are
+`admin`, `academy_coach`, `tour_coach`, `analyst`, `strength_conditioning`,
+`physiotherapist`, `member_services`, `athlete`.
+
+### Documentation
+
+| Document | What it covers |
+|---|---|
+| [`docs/HOW-TO-RUN.md`](docs/HOW-TO-RUN.md) | Step-by-step setup, using a larger embedding model, sharing the index |
+| [`docs/RETRIEVAL-DESIGN.md`](docs/RETRIEVAL-DESIGN.md) | Why each technique is on or off, with sources |
+| [`TEAM-SETUP.md`](TEAM-SETUP.md) | For teammates: clone, two models, ask. No index build, no AWS |
+| [`docs/HOW-IT-WORKS.md`](docs/HOW-IT-WORKS.md) | Ranking explained, what reaches the model, what industry would replace |
+| [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) | System diagram, the two gates, and how it maps onto real connectors |
+| [`docs/QUERY-HANDLING.md`](docs/QUERY-HANDLING.md) | How questions are classified and routed, and why not function calling |
+| [`docs/SHARING-THE-INDEX.md`](docs/SHARING-THE-INDEX.md) | Publishing the index so teammates run without embedding |
+| [`docs/CORPUS-AND-COVERAGE.md`](docs/CORPUS-AND-COVERAGE.md) | What the 17 GB library holds, and which partner questions it can answer |
+| [`docs/GIT-PUSH.md`](docs/GIT-PUSH.md) | Git workflow for this repo |
+| [`schema/index-schema.json`](schema/index-schema.json) | The retrieval contract — every indexed field |
 
 ## Project Structure
 

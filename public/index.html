@@ -1,235 +1,147 @@
 <!doctype html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8" />
-
-    <meta name="viewport"
-          content="width=device-width, initial-scale=1.0" />
-
-    <meta name="description"
-          content="TennisExplore unified AI coaching chat interface" />
-
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="TennisExplore unified AI coaching chat interface">
     <title>TennisExplore | AI Coach</title>
 
-    <!--
-      Styles are separated by responsibility so the interface
-      remains easier to maintain as the project grows.
-    -->
-    <link rel="stylesheet" href="/styles/tokens.css" />
-    <link rel="stylesheet" href="/styles/base.css" />
-    <link rel="stylesheet" href="/styles/layout.css" />
-    <link rel="stylesheet" href="/styles/components.css" />
-    <link rel="stylesheet" href="/styles/responsive.css" />
+    <link rel="stylesheet" href="/styles/tokens.css">
+    <link rel="stylesheet" href="/styles/base.css">
+    <link rel="stylesheet" href="/styles/chat.css">
 </head>
-
-<body>
-    <div class="application">
-        <!-- Application header -->
-        <header class="topbar">
-            <a class="brand" href="/" aria-label="TennisExplore home">
-                <span class="brand__mark" aria-hidden="true">
-                    <span class="brand__ball"></span>
+<body class="chat-page">
+    <div class="chat-application">
+        <header class="chat-topbar">
+            <a class="chat-brand" href="/" aria-label="TennisExplore home">
+                <span class="chat-brand__mark" aria-hidden="true">
+                    <span class="chat-brand__ball"></span>
                 </span>
-
-                <span class="brand__text">
-                    <strong>Tennis</strong>Explore
-                </span>
+                <span class="chat-brand__text"><strong>Tennis</strong>Explore</span>
             </a>
 
-            <div class="topbar__actions">
-                <span class="environment-badge">Demo</span>
+            <div class="chat-topbar__actions">
+                <!-- Keep the existing public pages reachable after the UI reskin. -->
+                <nav class="chat-topbar__links" aria-label="Site navigation">
+                    <a href="/platforms">Platforms</a>
+                    <a href="/platforms#about">About</a>
+                </nav>
 
-                <button class="profile-button"
-                        type="button"
-                        aria-label="Open user profile">
-                    C
-                </button>
+                <!--
+                    Role selection is preserved because it demonstrates the
+                    existing access-control behaviour. It does not choose a
+                    backend route, source, query mode or model.
+                -->
+                <div class="role-picker">
+                    <label for="role">Role</label>
+                    <select id="role" name="role">
+                        <option value="analyst">Analyst</option>
+                        <option value="academy_coach">Academy coach</option>
+                        <option value="tour_coach">Tour coach</option>
+                        <option value="strength_conditioning">S&amp;C coach</option>
+                        <option value="physiotherapist">Physiotherapist</option>
+                        <option value="member_services">Member services</option>
+                        <option value="athlete">Athlete</option>
+                        <option value="admin" selected>Admin</option>
+                    </select>
+                </div>
             </div>
         </header>
 
         <main class="workspace">
-            <!-- Left product navigation -->
+            <!-- Product navigation mirrors the earlier three-column interface. -->
             <aside class="sidebar sidebar--left">
-                <div class="sidebar__heading">
-                    Workspace
-                </div>
+                <div class="sidebar__heading">Workspace</div>
 
                 <nav class="navigation" aria-label="Product capabilities">
                     <button class="navigation__item navigation__item--active"
-                            type="button"
-                            aria-current="page">
+                            type="button" aria-current="page">
                         AI Coach
                     </button>
-
-                    <!--
-                      These areas are shown to match the product layout.
-                      They do not select a backend route for the chat question.
-                    -->
-                    <button class="navigation__item"
-                            type="button"
-                            disabled
-                            aria-disabled="true">
-                        Athletes
-                    </button>
-
-                    <button class="navigation__item"
-                            type="button"
-                            disabled
-                            aria-disabled="true">
-                        Match Intelligence
-                    </button>
-
-                    <button class="navigation__item"
-                            type="button"
-                            disabled
-                            aria-disabled="true">
-                        Vision Analysis
-                    </button>
-
-                    <button class="navigation__item"
-                            type="button"
-                            disabled
-                            aria-disabled="true">
-                        Reports
-                    </button>
-
-                    <button class="navigation__item"
-                            type="button"
-                            disabled
-                            aria-disabled="true">
-                        Training Load
-                    </button>
-
-                    <button class="navigation__item"
-                            type="button"
-                            disabled
-                            aria-disabled="true">
-                        AI Tools
-                    </button>
+                    <button class="navigation__item" type="button" disabled>Athletes</button>
+                    <button class="navigation__item" type="button" disabled>Match Intelligence</button>
+                    <button class="navigation__item" type="button" disabled>Vision Analysis</button>
+                    <button class="navigation__item" type="button" disabled>Reports</button>
+                    <button class="navigation__item" type="button" disabled>Training Load</button>
+                    <button class="navigation__item" type="button" disabled>AI Tools</button>
 
                     <!--
                       ADMIN GATE MOUNT POINT (E5-17).
 
                       Telemetry is Internal-classified data behind an
-                      unauthenticated route (threat model T-01). When accounts
-                      and roles land, this link must be hidden for a non-admin
-                      as well as the page itself being gated; see the matching
-                      note in telemetry.html and scripts/telemetry.js.
+                      unauthenticated route (threat model T-01). Authentication
+                      now exists in src/modules/auth, so this link should be
+                      hidden for a non-admin and the route gated with
+                      requireAuth; see the matching note in telemetry.html and
+                      scripts/telemetry.js.
                     -->
-                    <a class="navigation__item" href="/telemetry.html">
-                        Telemetry
-                    </a>
+                    <a class="navigation__item" href="/telemetry.html">Telemetry</a>
                 </nav>
 
                 <div class="sidebar__footer">
-                    <span class="sidebar__footer-label">
-                        Unified coaching
-                    </span>
-
-                    <p>
-                        Ask one question without choosing a tool,
-                        source or processing mode.
-                    </p>
+                    <strong>Unified coaching</strong>
+                    <p>Ask one natural-language question without choosing a mode, source or command.</p>
                 </div>
             </aside>
 
-            <!-- Main unified chat surface -->
-            <section id="coach-chat"
-                     class="chat-panel"
-                     aria-labelledby="chat-title">
-                <header class="chat-header">
+            <section class="chat-panel" aria-label="AI Coach chat">
+                <header class="chat-panel__header">
                     <div>
-                        <p class="chat-header__eyebrow">
-                            TennisExplore intelligence
-                        </p>
-
-                        <h1 id="chat-title">AI Coach</h1>
+                        <p class="chat-panel__eyebrow">TennisExplore intelligence</p>
+                        <h1>AI Coach</h1>
                     </div>
 
                     <div id="processing-status"
-                         class="status-indicator status-indicator--ready"
+                         class="status-indicator"
+                         data-state="ready"
                          role="status"
                          aria-live="polite">
-                        <span class="status-indicator__dot"
-                              aria-hidden="true"></span>
-
+                        <span class="status-indicator__dot" aria-hidden="true"></span>
                         <span id="status-text">Ready</span>
                     </div>
                 </header>
 
-                <!-- Messages will be added to this container later -->
                 <div id="conversation"
                      class="conversation"
+                     role="log"
                      aria-live="polite"
                      aria-relevant="additions">
-                    <section class="welcome-card">
-                        <div class="assistant-avatar" aria-hidden="true">
-                            AI
-                        </div>
-
+                    <section class="conversation__empty">
+                        <div class="welcome-avatar" aria-hidden="true">AI</div>
                         <div>
-                            <p class="welcome-card__label">
-                                AI coaching workspace
-                            </p>
-
+                            <p class="welcome-card__label">AI coaching workspace</p>
                             <h2>What would you like to explore?</h2>
-
                             <p>
-                                Ask a question about a player, match, training
-                                plan or performance insight. TennisExplore will
-                                handle the request without requiring you to
-                                choose a mode, source or command.
+                                Ask a question about a player, match, research document,
+                                training plan, performance record or video insight.
                             </p>
                         </div>
                     </section>
 
-                    <!--
-                      This element becomes visible while a request
-                      is being processed.
-                    -->
-                    <div id="processing-message"
-                         class="processing-message"
-                         hidden>
-                        <span class="processing-message__animation"
-                              aria-hidden="true">
+                    <div id="processing-message" class="processing-message" hidden>
+                        <span class="processing-message__animation" aria-hidden="true">
                             <span></span>
                             <span></span>
                             <span></span>
                         </span>
-
-                        <span>Analysing coaching question...</span>
+                        <span>Analysing your question...</span>
                     </div>
                 </div>
 
-                <!-- Visible request errors appear here -->
-                <div id="error-banner"
-                     class="error-banner"
-                     role="alert"
-                     hidden>
+                <div id="error-banner" class="error-banner" role="alert" hidden>
                     <div>
                         <strong>Unable to complete the request</strong>
-
-                        <p id="error-message">
-                            An unexpected error occurred.
-                        </p>
+                        <p id="error-message"></p>
                     </div>
-
                     <button id="dismiss-error-button"
-                            class="text-button"
-                            type="button">
+                            type="button"
+                            class="text-button">
                         Dismiss
                     </button>
                 </div>
 
-                <!--
-                  This form contains no mode, source, command,
-                  model, agent or route selector.
-                -->
                 <form id="chat-form" class="composer">
-                    <label class="visually-hidden" for="question">
-                        Ask a coaching question
-                    </label>
-
+                    <label class="visually-hidden" for="question">Ask a coaching question</label>
                     <textarea id="question"
                               name="question"
                               rows="1"
@@ -237,79 +149,59 @@
                               placeholder="Ask a question..."
                               autocomplete="off"
                               required></textarea>
-
-                    <button id="send-button"
-                            class="send-button"
-                            type="submit">
-                        Send
-                    </button>
+                    <button id="send-button" class="send-button" type="submit">Send</button>
                 </form>
 
                 <p class="composer-hint">
-                    Ask naturally. No mode, source or command selection
-                    is required.
+                    Ask naturally. TennisExplore decides how to handle the question.
                 </p>
             </section>
 
-            <!-- Right-side suggested questions -->
             <aside class="sidebar sidebar--right">
                 <section class="explore-panel">
                     <div class="explore-panel__heading">
-                        <div>
-                            <p class="section-eyebrow">Quick start</p>
-                            <h2>Explore</h2>
-                        </div>
+                        <p class="section-eyebrow">Quick start</p>
+                        <h2>Explore</h2>
                     </div>
 
                     <p class="explore-panel__description">
-                        Start with a suggested natural-language
-                        coaching question.
+                        Start with a suggested natural-language coaching question.
                     </p>
 
                     <div class="explore-list">
                         <button class="explore-card"
                                 type="button"
                                 data-suggested-question="Show me the latest player performance insights.">
-                            <span>
-                                <strong>Recent insights</strong>
-                                <small>Review key player trends</small>
-                            </span>
+                            <strong>Recent insights</strong>
+                            <small>Review key player trends</small>
                         </button>
 
                         <button class="explore-card"
                                 type="button"
                                 data-suggested-question="Create a coaching plan for the player's next training session.">
-                            <span>
-                                <strong>Create a plan</strong>
-                                <small>Prepare the next session</small>
-                            </span>
+                            <strong>Create a plan</strong>
+                            <small>Prepare the next session</small>
                         </button>
 
                         <button class="explore-card"
                                 type="button"
                                 data-suggested-question="What technical weakness should the player work on first?">
-                            <span>
-                                <strong>Technique analysis</strong>
-                                <small>Identify technical priorities</small>
-                            </span>
+                            <strong>Technique analysis</strong>
+                            <small>Identify technical priorities</small>
                         </button>
 
                         <button class="explore-card"
                                 type="button"
                                 data-suggested-question="Review the player's latest match performance.">
-                            <span>
-                                <strong>Match review</strong>
-                                <small>Analyse recent performance</small>
-                            </span>
+                            <strong>Match review</strong>
+                            <small>Analyse recent performance</small>
                         </button>
 
                         <button class="explore-card"
                                 type="button"
-                                data-suggested-question="How should I manage the player's training load this week?">
-                            <span>
-                                <strong>Training load</strong>
-                                <small>Balance work and recovery</small>
-                            </span>
+                                data-suggested-question="What does the available video evidence show about the player's technique?">
+                            <strong>Video evidence</strong>
+                            <small>Review cited video moments</small>
                         </button>
                     </div>
                 </section>
@@ -317,47 +209,41 @@
         </main>
     </div>
 
-    <!-- Citation content opens without leaving the chat screen -->
-    <dialog id="citation-dialog" class="citation-dialog">
-        <div class="citation-dialog__header">
+    <!--
+        The existing citation viewer is deliberately retained. It still opens
+        PDF pages, video timestamps, slide text, table evidence and SQL without
+        losing the conversation; only its visual treatment has changed.
+    -->
+    <aside id="source-panel"
+           class="source-panel"
+           role="complementary"
+           aria-labelledby="source-panel-title"
+           hidden>
+        <header class="source-panel__header">
             <div>
-                <p class="section-eyebrow">
-                    Supporting evidence
-                </p>
-
-                <h2 id="citation-title">Citation</h2>
+                <p class="source-panel__eyebrow">Supporting evidence</p>
+                <h2 id="source-panel-title">Source</h2>
+                <p id="source-panel-meta" class="source-panel__meta" hidden></p>
             </div>
 
-            <button id="citation-close-button"
-                    class="text-button"
+            <button id="source-panel-close"
+                    class="source-panel__close"
                     type="button">
                 Close
             </button>
-        </div>
+        </header>
 
-        <div class="citation-dialog__body">
-            <p id="citation-excerpt">
-                Citation information will appear here.
-            </p>
-        </div>
+        <div id="source-panel-body" class="source-panel__body"></div>
 
-        <div class="citation-dialog__footer">
-            <a id="citation-link"
-               class="secondary-button"
-               href="#"
+        <footer class="source-panel__footer">
+            <a id="source-panel-download"
+               class="source-panel__download"
                target="_blank"
-               rel="noopener noreferrer"
-               hidden>
-                Open referenced page
+               rel="noopener noreferrer">
+                Open in a new tab
             </a>
-
-            <button id="citation-done-button"
-                    class="primary-button"
-                    type="button">
-                Done
-            </button>
-        </div>
-    </dialog>
+        </footer>
+    </aside>
 
     <script type="module" src="/scripts/app.js"></script>
 </body>

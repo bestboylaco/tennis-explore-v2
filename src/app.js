@@ -3,15 +3,22 @@ import { fileURLToPath } from "node:url";
 
 import express from "express";
 import cors from "cors";
+import session from "express-session";
+import MongoStore from "connect-mongo";
 
 import { env } from "./config/env.js";
+import { authConfig } from "./modules/auth/auth.config.js";
 import { getMongoDBStatus } from "./infrastructure/database/mongodb.service.js";
 import { notFoundHandler } from "./middleware/notFoundHandler.js";
 import { errorHandler } from "./middleware/errorHandler.js";
+import { requireAuth, requireRole } from "./middleware/requireAuth.js";
 import { telemetryMiddleware } from "./middleware/telemetry.middleware.js";
 import { sourceRoutes } from "./modules/sources/index.js";
 import { telemetryRoutes } from "./modules/telemetry/index.js";
 import { chatRoutes } from "./modules/chat/index.js";
+import assetRoutes from "./modules/assets/asset.routes.js";
+import auditRoutes from "./modules/audit/routes/audit.routes.js";
+import authRoutes from "./modules/auth/routes/auth.routes.js";
 
 const app = express();
 
@@ -30,6 +37,44 @@ app.disable("x-powered-by");
 // Global middleware
 app.use(cors());
 app.use(express.json());
+
+// Sessions back onto the same MongoDB Atlas cluster everything else uses, so
+// there is no second datastore to run or fail independently. A session
+// becomes req.session.user only at login (auth.controller.js) -- nothing
+// upstream of that point is trusted with a role (threat model T-01).
+app.use(
+  session({
+    secret: authConfig.sessionSecret,
+    resave: false,
+    saveUninitialized: false,
+    store: MongoStore.create({ mongoUrl: env.mongodbUri }),
+    cookie: {
+      httpOnly: true,
+      maxAge: authConfig.sessionMaxAgeMs,
+      sameSite: "lax",
+      // Secure cookies require HTTPS; the demo runs over plain HTTP locally.
+      secure: env.nodeEnv === "production",
+    },
+  }),
+);
+
+/*
+ * Temporary local-development auto login.
+ *
+ * Production never receives this automatic admin session.
+ */
+app.use((req, res, next) => {
+    if (
+        env.nodeEnv !== "production" &&
+        !req.session.user
+    ) {
+        req.session.user = {
+            roleId: "admin",
+        };
+    }
+
+    next();
+});
 app.use(express.static(publicDirectory));
 app.use(telemetryMiddleware);
 
@@ -52,10 +97,34 @@ app.get("/api/health", (req, res) => {
   });
 });
 
+/*
+ * The unified AI Coach is now the root page served by express.static.
+ * Keep /explore only as a compatibility redirect for old bookmarks.
+ */
+app.get("/explore", (req, res) => {
+  res.redirect(302, "/");
+});
+
+app.get("/platforms", (req, res) => {
+  res.sendFile(path.join(publicDirectory, "platforms.html"));
+});
+
+app.get("/login", (req, res) => {
+  res.sendFile(path.join(publicDirectory, "login.html"));
+});
+
 // Application routes
-app.use("/api/chat", chatRoutes);
+app.use("/api/auth", authRoutes);
+app.use("/api/chat", requireAuth, chatRoutes);
 app.use("/api/sources", sourceRoutes);
-app.use("/api/telemetry", telemetryRoutes);
+// Internal-classified data; not a public route (threat model T-01).
+app.use("/api/telemetry", requireAuth, telemetryRoutes);
+// serves the original file behind a citation, with its own access check
+app.use("/api/assets", assetRoutes);
+// Says who accessed what -- gating this is as important as gating the
+// access itself (threat model T-01). Admin-only, per the route's own
+// original intent (§7 Data Gate).
+app.use("/api/audit", requireAuth, requireRole("admin"), auditRoutes);
 
 // Error handling must come last
 app.use(notFoundHandler);
