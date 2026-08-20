@@ -27,6 +27,7 @@ function getAvailableActionIds() {
 export async function executeSelectedActions({
   question,
   actionIds = [],
+  context = {},
 } = {}) {
   if (!isNonEmptyString(question)) {
     throw new TypeError(
@@ -109,6 +110,8 @@ export async function executeSelectedActions({
           await action.execute({
             question:
               question.trim(),
+
+            context,
           });
 
 

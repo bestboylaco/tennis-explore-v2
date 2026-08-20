@@ -124,6 +124,18 @@ export function validateSpec(spec, table) {
 
   for (const column of select) requireColumn(column, "select");
 
+  if (
+    metrics.length > 0 &&
+    select.some(
+      (column) =>
+        !groupBy.includes(column)
+    )
+  ) {
+    throw new QuerySpecError(
+      "aggregate queries may only place grouped columns in select; calculated columns belong in metrics"
+    );
+  }
+
   if (metrics.length === 0 && select.length === 0) {
     throw new QuerySpecError("spec must ask for either select columns or metrics");
   }

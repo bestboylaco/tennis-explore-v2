@@ -5,14 +5,68 @@ import {
 } from "../action.types.js";
 
 import {
-  planStatisticsQuery,
-  executeStatisticsQuery,
-  getAvailableDatasets,
-} from "../../statistics/index.js";
+  grantsForRole,
+} from "../../../shared/constants/accessControl.js";
+
+import {
+  AUDIT_QUERY_KINDS,
+} from "../../../shared/constants/audit.js";
+
+import {
+  getTables,
+  visibleTables,
+} from "../../structured/tableStore.service.js";
+
+import {
+  buildQuerySpec,
+} from "../../structured/specPlanner.service.js";
+
+import {
+  runQuery,
+} from "../../structured/queryEngine.service.js";
+
+import {
+  recordAccess,
+  recordAccessDenial,
+} from "../../audit/services/accessAuditRecorder.service.js";
+
+
+/*
+ * Runtime capability state.
+ *
+ * The Action Registry currently expects isAvailable()
+ * to be synchronous, while getTables() is asynchronous.
+ *
+ * We therefore load the structured capability once
+ * during application bootstrap and remember whether
+ * structured data exists.
+ */
+let statisticsAvailable = false;
+
+
+export async function initializeStatisticsAction({
+  sourceDirs = null,
+} = {}) {
+  const tables =
+    await getTables({
+      sourceDirs:
+        Array.isArray(sourceDirs) &&
+        sourceDirs.length > 0
+          ? sourceDirs
+          : undefined,
+    });
+
+  statisticsAvailable =
+    Array.isArray(tables) &&
+    tables.length > 0;
+
+  return statisticsAvailable;
+}
 
 
 async function executeStatisticsAction({
   question,
+  context = {},
 } = {}) {
   if (
     typeof question !== "string" ||
@@ -23,35 +77,73 @@ async function executeStatisticsAction({
     );
   }
 
+
+  const roleId =
+    context?.roleId;
+
+  const correlationId =
+    context?.correlationId ?? null;
+
+  const signal =
+    context?.signal ?? null;
+
+
+  if (
+    typeof roleId !== "string" ||
+    roleId.trim().length === 0
+  ) {
+    throw new TypeError(
+      "Statistics action requires an authenticated roleId."
+    );
+  }
+
+
   try {
-    const plan =
-      await planStatisticsQuery({
-        question:
-          question.trim(),
-      });
+    /*
+     * Load the structured datasets.
+     *
+     * getTables() is cached by main, so after startup
+     * this does not repeatedly rebuild all tables.
+     */
+    const allTables =
+      await getTables();
 
 
-    const result =
-      await executeStatisticsQuery(
-        plan.query
+    const grants =
+      grantsForRole(
+        roleId.trim()
       );
 
 
-    const hasRecords =
-      Array.isArray(
-        result.records
-      ) &&
-      result.records.length > 0;
-
-    const hasValue =
-      result.value !== null &&
-      result.value !== undefined;
+    const tables =
+      visibleTables(
+        allTables,
+        grants
+      );
 
 
-    if (
-      !hasRecords &&
-      !hasValue
-    ) {
+    /*
+     * Do not allow the action to query tables that
+     * are outside this user's role.
+     */
+    if (tables.length === 0) {
+      const reason =
+        `No structured tables are visible to role "${roleId}".`;
+
+
+      await recordAccessDenial({
+        correlationId,
+
+        roleId:
+          roleId.trim(),
+
+        queryKind:
+          AUDIT_QUERY_KINDS.TABLE,
+
+        reason,
+      });
+
+
       return createActionResult({
         actionId:
           "statistics",
@@ -59,24 +151,135 @@ async function executeStatisticsAction({
         status:
           ACTION_RESULT_STATUS.NO_RESULT,
 
-        data: result,
+        data: null,
 
         evidence: [],
 
         metadata: {
-          query:
-            plan.query,
+          cause:
+            "access_denied",
 
-          planning:
-            plan.planning,
+          reason,
 
-          dataset:
-            result.metadata
-              ?.datasetId ??
-            null,
+          visibleTableCount:
+            0,
         },
       });
     }
+
+
+    /*
+     * Main's constrained Ollama planner converts
+     * the natural-language question into a validated
+     * query specification.
+     */
+    const built =
+      await buildQuerySpec(
+        question.trim(),
+        tables,
+        {
+          signal,
+        }
+      );
+
+
+    if (built.unanswerable) {
+      const hiddenCount =
+        allTables.length -
+        tables.length;
+
+
+      const cause =
+        hiddenCount > 0
+          ? "access_denied"
+          : "not_found";
+
+
+      const reason =
+        hiddenCount > 0
+          ? `${built.reason}. Some structured tables are not visible to role "${roleId}".`
+          : built.reason;
+
+
+      if (
+        cause ===
+        "access_denied"
+      ) {
+        await recordAccessDenial({
+          correlationId,
+
+          roleId:
+            roleId.trim(),
+
+          queryKind:
+            AUDIT_QUERY_KINDS.TABLE,
+
+          reason,
+        });
+      }
+
+
+      return createActionResult({
+        actionId:
+          "statistics",
+
+        status:
+          ACTION_RESULT_STATUS.NO_RESULT,
+
+        data: null,
+
+        evidence: [],
+
+        metadata: {
+          cause,
+          reason,
+
+          visibleTableCount:
+            tables.length,
+        },
+      });
+    }
+
+
+    /*
+     * runQuery() performs the actual calculation.
+     *
+     * The LLM does NOT calculate averages,
+     * medians, counts, rankings, etc.
+     */
+    const result =
+      runQuery(
+        built.spec,
+        built.table
+      );
+
+
+    /*
+     * Record exactly which structured source crossed
+     * the user's access boundary.
+     */
+    await recordAccess({
+      correlationId,
+
+      roleId:
+        roleId.trim(),
+
+      queryKind:
+        AUDIT_QUERY_KINDS.TABLE,
+
+      documents: [
+        {
+          docId:
+            result.table,
+
+          title:
+            result.tableTitle,
+
+          sourceType:
+            "table",
+        },
+      ],
+    });
 
 
     return createActionResult({
@@ -86,27 +289,58 @@ async function executeStatisticsAction({
       status:
         ACTION_RESULT_STATUS.SUCCESS,
 
-      data:
-        result,
+      data: {
+        columns:
+          result.columns,
+
+        rows:
+          result.rows,
+
+        sql:
+          result.sql,
+
+        table:
+          result.table,
+
+        tableTitle:
+          result.tableTitle,
+
+        sourceUri:
+          result.sourceUri,
+
+        rowsScanned:
+          result.rowsScanned,
+
+        rowsMatched:
+          result.rowsMatched,
+
+        rowsReturned:
+          result.rowsReturned,
+
+        truncated:
+          result.truncated,
+      },
 
       evidence: [],
 
       metadata: {
-        query:
-          plan.query,
+        querySpec:
+          built.spec,
 
-        planning:
-          plan.planning,
+        table:
+          result.table,
 
-        dataset:
-          result.metadata
-            ?.datasetId ??
-          null,
+        tableTitle:
+          result.tableTitle,
 
-        providerName:
-          result.metadata
-            ?.providerName ??
-          null,
+        rowsScanned:
+          result.rowsScanned,
+
+        rowsMatched:
+          result.rowsMatched,
+
+        rowsReturned:
+          result.rowsReturned,
       },
     });
   } catch (error) {
@@ -170,13 +404,17 @@ export const statisticsAction =
     execute:
       executeStatisticsAction,
 
-    // Keep disabled until a real dataset
-    // is registered for the running app.
     isEnabled:
-        true,
+      true,
 
+    /*
+     * Synchronous because that is what the existing
+     * Action Registry expects.
+     *
+     * initializeStatisticsAction() sets this state
+     * during application startup.
+     */
     isAvailable:
       () =>
-        getAvailableDatasets()
-          .length > 0,
+        statisticsAvailable,
   });

@@ -5,12 +5,18 @@ import {
 } from "../action.types.js";
 
 import {
-  orchestrateKnowledgeRetrieval,
-} from "../../orchestration/index.js";
+  retrieve,
+} from "../../retrieval/retrieval.service.js";
+
+import {
+  GRADES,
+  gradeEvidence,
+} from "../../generation/evidenceGrader.service.js";
 
 
 async function executeDocumentsAction({
   question,
+  context = {},
 } = {}) {
   if (
     typeof question !== "string" ||
@@ -21,25 +27,49 @@ async function executeDocumentsAction({
     );
   }
 
+  const roleId =
+    context?.roleId;
+
+  if (
+    typeof roleId !== "string" ||
+    roleId.trim().length === 0
+  ) {
+    throw new TypeError(
+      "Documents action requires an authenticated roleId."
+    );
+  }
+
   try {
-    const orchestration =
-      await orchestrateKnowledgeRetrieval({
-        question: question.trim(),
-      });
+    const retrieval =
+      await retrieve(
+        question.trim(),
+        {
+          roleId:
+            roleId.trim(),
 
-    const mergedEvidence =
-      orchestration?.mergedEvidence;
+          signal:
+            context?.signal ?? null,
 
-    const evidence =
+          subQueries:
+            context?.subQueries ?? null,
+        }
+      );
+
+
+    const retrievedEvidence =
       Array.isArray(
-        mergedEvidence?.evidence
+        retrieval?.evidence
       )
-        ? mergedEvidence.evidence
+        ? retrieval.evidence
         : [];
 
-    if (evidence.length === 0) {
+
+    if (
+      retrievedEvidence.length === 0
+    ) {
       return createActionResult({
-        actionId: "documents",
+        actionId:
+          "documents",
 
         status:
           ACTION_RESULT_STATUS.NO_RESULT,
@@ -49,14 +79,93 @@ async function executeDocumentsAction({
         metadata: {
           evidenceCount: 0,
           sourceCount: 0,
-          confidence: null,
-          consensus: null,
+
+          retrieval:
+            retrieval?.telemetry ??
+            null,
+
+          grading: null,
         },
       });
     }
 
+
+    /*
+     * Retrieval will usually return the best available chunks,
+     * even when the knowledge base does not genuinely answer
+     * the question.
+     *
+     * Reuse main's evidence grader so the Documents Action
+     * does not treat irrelevant retrieval results as valid
+     * evidence.
+     */
+    const grading =
+      await gradeEvidence(
+        question.trim(),
+        retrievedEvidence,
+        {
+          signal:
+            context?.signal ??
+            null,
+        }
+      );
+
+
+    if (
+      grading.grade ===
+      GRADES.INSUFFICIENT
+    ) {
+      return createActionResult({
+        actionId:
+          "documents",
+
+        status:
+          ACTION_RESULT_STATUS.NO_RESULT,
+
+        evidence: [],
+
+        metadata: {
+          evidenceCount: 0,
+          sourceCount: 0,
+
+          retrieval:
+            retrieval?.telemetry ??
+            null,
+
+          grading: {
+            grade:
+              grading.grade,
+
+            reason:
+              grading.reason,
+          },
+        },
+      });
+    }
+
+
+    const evidence =
+      Array.isArray(
+        grading.kept
+      )
+        ? grading.kept
+        : [];
+
+
+    const sourceIds =
+      new Set(
+        evidence
+          .map(
+            (chunk) =>
+              chunk?.doc_id
+          )
+          .filter(Boolean)
+      );
+
+
     return createActionResult({
-      actionId: "documents",
+      actionId:
+        "documents",
 
       status:
         ACTION_RESULT_STATUS.SUCCESS,
@@ -68,21 +177,28 @@ async function executeDocumentsAction({
           evidence.length,
 
         sourceCount:
-          mergedEvidence?.summary
-            ?.sourceCount ?? 0,
+          sourceIds.size,
 
-        confidence:
-          mergedEvidence?.summary ??
+        retrieval:
+          retrieval?.telemetry ??
           null,
 
-        consensus:
-          mergedEvidence?.consensus ??
-          null,
+        grading: {
+          grade:
+            grading.grade,
+
+          reason:
+            grading.reason,
+
+          dropped:
+            grading.dropped ?? 0,
+        },
       },
     });
   } catch (error) {
     return createActionResult({
-      actionId: "documents",
+      actionId:
+        "documents",
 
       status:
         ACTION_RESULT_STATUS.FAILED,
@@ -92,8 +208,8 @@ async function executeDocumentsAction({
       metadata: {
         evidenceCount: 0,
         sourceCount: 0,
-        confidence: null,
-        consensus: null,
+        retrieval: null,
+        grading: null,
       },
 
       error:
@@ -107,9 +223,11 @@ async function executeDocumentsAction({
 
 export const documentsAction =
   createActionDefinition({
-    id: "documents",
+    id:
+      "documents",
 
-    name: "Documents",
+    name:
+      "Documents",
 
     description:
       "Search unstructured tennis knowledge such as research papers, coaching material, presentations, conference content, manuals, reports, interviews, and internal written documents.",
@@ -127,13 +245,17 @@ export const documentsAction =
 
     inputSchema: {
       question: {
-        type: "string",
-        required: true,
+        type:
+          "string",
+
+        required:
+          true,
       },
     },
 
     execute:
       executeDocumentsAction,
 
-    isEnabled: true,
+    isEnabled:
+      true,
   });

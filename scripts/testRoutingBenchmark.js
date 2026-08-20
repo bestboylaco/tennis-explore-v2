@@ -3,78 +3,25 @@ import {
 } from "../src/modules/actions/index.js";
 
 import {
-  clearStatisticsProviderRegistry,
-  createInMemoryStatisticsProvider,
-  registerStatisticsProvider,
-} from "../src/modules/statistics/index.js";
+  env,
+} from "../src/config/env.js";
 
 import {
   routeQuestion,
 } from "../src/modules/routing/index.js";
 
 
-// --------------------------------------------------
-// 1. Register a generic structured dataset
-// --------------------------------------------------
 
-clearStatisticsProviderRegistry();
-
-
-const benchmarkStatisticsProvider =
-  createInMemoryStatisticsProvider({
-    datasetId:
-      "benchmark_player_testing",
-
-    name:
-      "Benchmark Player Testing",
-
-    description:
-      "Structured tennis player testing data containing player names, scores, and ages.",
-
-    fields: [
-      "player",
-      "score",
-      "age",
-    ],
-
-    records: [
-      {
-        player: "Player A",
-        score: 13.8,
-        age: 18,
-      },
-
-      {
-        player: "Player B",
-        score: 15.2,
-        age: 19,
-      },
-
-      {
-        player: "Player C",
-        score: 14.7,
-        age: 18,
-      },
-
-      {
-        player: "Player D",
-        score: 12.9,
-        age: 20,
-      },
-    ],
-  });
-
-
-registerStatisticsProvider(
-  benchmarkStatisticsProvider
-);
 
 
 // --------------------------------------------------
 // 2. Register actions
 // --------------------------------------------------
 
-bootstrapActions();
+await bootstrapActions({
+  structuredSourceDirs:
+    env.structuredSourceDirs,
+});
 
 
 // --------------------------------------------------

@@ -17,6 +17,7 @@ function isNonEmptyString(value) {
 
 export async function runAgent({
   question,
+  context = {},
 } = {}) {
   if (!isNonEmptyString(question)) {
     throw new TypeError(
@@ -63,6 +64,8 @@ export async function runAgent({
 
       actionIds:
         decision.selectedActions,
+
+      context,
     });
 
 

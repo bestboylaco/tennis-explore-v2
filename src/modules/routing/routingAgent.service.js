@@ -1,6 +1,6 @@
 import {
-  generateCompletion,
-} from "../ai/services/generationProvider.js";
+  retrievalConfig,
+} from "../../config/retrieval.config.js";
 
 import {
   getActionDescriptions,
@@ -18,7 +18,64 @@ import {
   createRoutingDecision,
 } from "./routing.types.js";
 
+async function generateRoutingCompletion({
+  prompt,
+  signal = null,
+} = {}) {
+  const model =
+    retrievalConfig.query.plannerModel;
 
+  const response =
+    await fetch(
+      `${retrievalConfig.generation.baseUrl}/api/chat`,
+      {
+        method: "POST",
+
+        headers: {
+          "Content-Type": "application/json",
+        },
+
+        body: JSON.stringify({
+          model,
+
+          stream: false,
+
+          options: {
+            temperature: 0,
+          },
+
+          messages: [
+            {
+              role: "user",
+              content: prompt,
+            },
+          ],
+        }),
+
+        signal,
+      }
+    );
+
+  if (!response.ok) {
+    throw new Error(
+      `Routing model returned ${response.status}.`
+    );
+  }
+
+  const payload =
+    await response.json();
+
+  return Object.freeze({
+    completion:
+      String(
+        payload.message?.content ?? ""
+      ).trim(),
+
+    provider: "ollama",
+
+    model,
+  });
+}
 function cleanJsonCompletion(value) {
   if (typeof value !== "string") {
     return "";
@@ -140,7 +197,7 @@ export async function routeQuestion({
 
 
   const generation =
-    await generateCompletion({
+    await generateRoutingCompletion({
       prompt,
 
       // Routing should be predictable,

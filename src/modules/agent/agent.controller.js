@@ -2,6 +2,10 @@ import {
   runAgent,
 } from "./agentOrchestrator.service.js";
 
+import {
+  randomUUID,
+} from "node:crypto";
+
 
 export async function askAgentController(
   req,
@@ -30,10 +34,25 @@ export async function askAgentController(
     }
 
 
+    const correlationId =
+      `agent:${randomUUID()}`;
+
+    req.telemetry?.setCorrelationId(
+      correlationId
+    );
+
+
     const result =
       await runAgent({
         question:
           question.trim(),
+
+        context: {
+          roleId:
+            req.user.roleId,
+
+          correlationId,
+        },
       });
 
 

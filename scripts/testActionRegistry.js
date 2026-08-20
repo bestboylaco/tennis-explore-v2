@@ -4,8 +4,11 @@ import {
 } from "../src/modules/actions/index.js";
 
 
-bootstrapActions();
-
+await bootstrapActions({
+  structuredSourceDirs: [
+    "C:/Users/user/OneDrive/Desktop/tennis-explore-backend/uploads",
+  ],
+});
 
 const enabledActions =
   getAvailableActions();
