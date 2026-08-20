@@ -119,6 +119,29 @@ describe("source panel", { skip: JSDOM ? false : "jsdom is not installed -- run 
     assert.match($("#source-panel-body iframe").getAttribute("src"), /embed\/793jVdalOI0\?start=80/);
   });
 
+  it("plays a recording of our own, which has no youtube id to find", () => {
+    // the clips we transcribed ourselves are files on disk. before this they
+    // fell through to "cannot be embedded", so every video citation from our
+    // own corpus was a dead end while the youtube ones worked fine.
+    const { panel, $ } = mount();
+
+    panel.open({
+      title: "Allistair McCaw talk",
+      link: {
+        href: "/api/assets/mccaw#t=90",
+        kind: "video",
+        locator: { startSeconds: 90 },
+        external: false,
+      },
+    });
+
+    const video = $("#source-panel-body video");
+
+    assert.ok(video, "a local recording should get a player, not a refusal");
+    assert.match(video.getAttribute("src"), /\/api\/assets\/mccaw#t=90$/);
+    assert.equal($("#source-panel-body iframe"), null);
+  });
+
   it("explains itself for slides instead of showing an empty frame", () => {
     // powerpoint cannot render in a browser. saying so beats a blank box that
     // looks like a bug.

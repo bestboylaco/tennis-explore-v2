@@ -311,9 +311,13 @@ npm run seed:users       # create demo users
 | Document | What it covers |
 |---|---|
 | [`docs/HOW-TO-RUN.md`](docs/HOW-TO-RUN.md) | Detailed setup and running instructions |
+| [`SYSTEM-OVERVIEW.md`](SYSTEM-OVERVIEW.md) | **Non-technical.** How it works, with diagrams and a worked example |
+| [`CODE-TOUR.md`](CODE-TOUR.md) | Where everything is, and one question followed through the code |
+| [`PIPELINE.md`](PIPELINE.md) | S3 to answers: prepare every content type, then build |
 | [`TEAM-SETUP.md`](TEAM-SETUP.md) | Teammate setup and local model workflow |
 | [`RUN-STACK.md`](RUN-STACK.md) | Full-stack run and troubleshooting notes |
 | [`docs/RETRIEVAL-DESIGN.md`](docs/RETRIEVAL-DESIGN.md) | Retrieval techniques and design decisions |
+| [`docs/MEDIA-INGESTION.md`](docs/MEDIA-INGESTION.md) | Transcribing video, captioning images and slide figures, plus the AWS pulls |
 | [`docs/HOW-IT-WORKS.md`](docs/HOW-IT-WORKS.md) | End-to-end retrieval and answer flow |
 | [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) | System architecture |
 | [`docs/QUERY-HANDLING.md`](docs/QUERY-HANDLING.md) | Query classification, planning, and routing |
