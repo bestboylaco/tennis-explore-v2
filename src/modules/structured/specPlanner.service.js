@@ -72,8 +72,15 @@ Rules:
 - Use column names EXACTLY as written above, including capitalisation. Never invent a column.
 - Only apply sum, avg, median, min or max to columns marked :number.
 - For "per year" or "year on year", set groupBy to the date column and timeGrain to "year". Use "month" for monthly.
+- Leave groupBy empty unless the user's question explicitly asks for results grouped by a category, entity, year, month, or other dimension.
+- Do not invent a grouping column merely because a date column exists; only group by time when the question explicitly asks for a trend, per-year, year-on-year, monthly, or similar breakdown.
 - For a lookup of specific rows, leave metrics empty and list the columns in select.
 - For a count of rows, use {"fn":"count"} with no column.
+- select may contain ONLY raw column names exactly as listed in the table schema.
+- NEVER put calculations or expressions such as avg(column), max(column), min(column), sum(column), median(column), or count(column) inside select.
+- All calculations must be represented through metrics.
+- For an average, use a metric with fn "avg" and the raw numeric column name.
+- For minimum, maximum, median, sum, count, or count distinct, use the corresponding metric function rather than writing an expression in select.
 - Set limit when the question asks for a top N.
 - If nothing here can answer the question, set table to "" and leave everything else empty.`;
 }
@@ -115,6 +122,121 @@ function normalise(raw) {
     limit: Number.isFinite(raw.limit) && raw.limit > 0 ? Math.min(raw.limit, 500) : null,
   };
 }
+
+function alignSpecToTable(spec, table) {
+  const canonicalColumn = (name) => {
+    if (typeof name !== "string") {
+      return name;
+    }
+
+    const exact =
+      table.columnNames.find(
+        (column) =>
+          column === name
+      );
+
+    if (exact) {
+      return exact;
+    }
+
+    const caseInsensitive =
+      table.columnNames.find(
+        (column) =>
+          column.toLowerCase() ===
+          name.toLowerCase()
+      );
+
+    return (
+      caseInsensitive ??
+      name
+    );
+  };
+
+
+  const filters =
+    (spec.filters ?? []).map(
+      (filter) => ({
+        ...filter,
+
+        column:
+          canonicalColumn(
+            filter.column
+          ),
+      })
+    );
+
+
+  const groupBy =
+    (spec.groupBy ?? []).map(
+      canonicalColumn
+    );
+
+
+  const metrics =
+    (spec.metrics ?? []).map(
+      (metric) => ({
+        ...metric,
+
+        column:
+          metric.column
+            ? canonicalColumn(
+                metric.column
+              )
+            : metric.column,
+      })
+    );
+
+
+  let select =
+    (spec.select ?? []).map(
+      canonicalColumn
+    );
+
+
+  /*
+   * Aggregate queries cannot select arbitrary
+   * raw columns alongside aggregate results.
+   *
+   * A raw column is valid here only when it
+   * is explicitly part of the grouping.
+   */
+  if (metrics.length > 0) {
+    select =
+      select.filter(
+        (column) =>
+          groupBy.includes(
+            column
+          )
+      );
+  }
+
+
+  const orderBy =
+    spec.orderBy?.column
+      ? {
+          ...spec.orderBy,
+
+          column:
+            canonicalColumn(
+              spec.orderBy.column
+            ),
+        }
+      : spec.orderBy;
+
+
+  return {
+    ...spec,
+    select,
+    filters,
+    groupBy,
+    metrics,
+    orderBy,
+  };
+}
+
+
+
+
 
 /**
  * builds and validates a spec, retrying once with the validation error.
@@ -176,6 +298,11 @@ export async function buildQuerySpec(question, tables, { signal = null } = {}) {
     }
 
     try {
+      raw =
+        alignSpecToTable(
+          raw,
+          table
+        );
       validateSpec(raw, table);
 
       return { spec: raw, table };
