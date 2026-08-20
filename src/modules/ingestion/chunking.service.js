@@ -439,9 +439,47 @@ export function chunkVideo(extracted) {
       start_time: segment.start,
       end_time: segment.end,
       external_url: segment.url,
+      media_path: segment.sourcePath ?? null,
       text: segment.text,
       context_header: contextHeader,
       embedding_text: contextHeader ? `${contextHeader}\n${segment.text}` : segment.text,
+    };
+  });
+}
+
+/**
+ * chunks a picture manifest: one chunk per image.
+ *
+ * what is indexed is a description of the picture, not the picture. that is a
+ * real limitation and worth naming rather than implying the system can see --
+ * but it is also what makes a chart findable at all. the 11.5 GB slide library
+ * averages 412 characters of text per slide; the substance is in the figures,
+ * and until they were captioned the index held only the remainder.
+ */
+export function chunkImages(extracted) {
+  return extracted.images.map((image) => {
+    const contextHeader = buildContextHeader({
+      title: image.sourceDocument ?? extracted.title,
+      section: image.title,
+      authors: [],
+      eventDate: null,
+      sourceType: "image",
+    });
+
+    return {
+      chunk_id: `${extracted.docId}#i${String(image.index).padStart(4, "0")}`,
+      doc_id: extracted.docId,
+      modality: "media",
+      title: image.title || extracted.title,
+      section: null,
+      page: image.page ?? null,
+      image_path: image.path,
+      text: image.text,
+      context_header: contextHeader,
+      embedding_text: contextHeader ? `${contextHeader}\n${image.text}` : image.text,
+      // says plainly that this text was generated from a picture rather than
+      // read off a page, so a quote drawn from it can be framed honestly.
+      derived_from_image: true,
     };
   });
 }

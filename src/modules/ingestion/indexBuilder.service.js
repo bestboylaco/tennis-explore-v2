@@ -24,7 +24,7 @@ import { retrievalConfig } from "../../config/retrieval.config.js";
 import { VectorStoreWriter } from "../../infrastructure/vector/vectorStore.service.js";
 import { NO_PROGRAM, grantsForDocument } from "../../shared/constants/accessControl.js";
 import { buildBm25 } from "../retrieval/bm25.service.js";
-import { chunkDocument, chunkRecords, chunkSlides, chunkVideo } from "./chunking.service.js";
+import { chunkDocument, chunkImages, chunkRecords, chunkSlides, chunkVideo } from "./chunking.service.js";
 import { embedTexts } from "./embedding.service.js";
 import { extractFile, listIngestableFiles } from "./extraction.service.js";
 import {
@@ -142,6 +142,33 @@ async function prepareFile(filePath, problems) {
       .filter(Boolean);
   }
 
+  if (extracted.kind === "images") {
+    // captions describe partner material, so they inherit the same internal
+    // classification the source decks carry rather than defaulting to public.
+    const classification = { domain: "performance", sensitivity: "internal", program: NO_PROGRAM };
+
+    return chunkImages(extracted)
+      .map((chunk) =>
+        finalise(
+          {
+            ...chunk,
+            source_type: "image",
+            provenance: "partner",
+            authors: [],
+            event_date: null,
+            publication_year: null,
+            entity_ids: [],
+            source_uri: chunk.image_path ?? filePath,
+            file_name: extracted.fileName ?? path.basename(filePath),
+            ingested_at: ingestedAt,
+          },
+          classification,
+          problems,
+        ),
+      )
+      .filter(Boolean);
+  }
+
   if (extracted.kind === "video") {
     const classification = { domain: "performance", sensitivity: "internal", program: NO_PROGRAM };
 
@@ -156,7 +183,8 @@ async function prepareFile(filePath, problems) {
             event_date: null,
             publication_year: null,
             entity_ids: [],
-            source_uri: filePath,
+            // the recording, not the manifest that describes it.
+            source_uri: chunk.media_path ?? filePath,
             file_name: extracted.fileName ?? path.basename(filePath),
             ingested_at: ingestedAt,
           },

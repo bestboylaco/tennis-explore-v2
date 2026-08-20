@@ -134,38 +134,70 @@ export async function loadTables(sourceDirs) {
 
       if (!extracted || extracted.kind !== "records" || extracted.records.length === 0) continue;
 
-      const headers = extracted.headers.length > 0 ? extracted.headers : Object.keys(extracted.records[0]);
-
-      const columns = headers.map((name) => ({
-        name,
-        type: inferType(extracted.records.map((row) => row[name])),
-      }));
-
-      const rows = extracted.records.map((row) => {
-        const typed = {};
-
-        for (const column of columns) {
-          typed[column.name] = coerce(row[column.name], column.type);
-        }
-
-        return typed;
-      });
-
       const classification = classifyDocument({
         sourceType: extracted.sourceType,
         fileName: path.basename(filePath),
       });
 
-      tables.push(
-        new Table({
-          name: extracted.docId,
-          title: extracted.title,
-          sourceUri: filePath,
-          columns,
-          rows,
-          classification,
-        }),
-      );
+      /*
+       * One table per WORKSHEET, not per file.
+       *
+       * The partner's match workbook holds three sheets with entirely different
+       * schemas -- match statistics, wearable sessions, and Hawk-Eye shot data.
+       * Merged they became a single table whose rows were mostly null, whose
+       * column types were decided by whichever sheet came first, and whose row
+       * counts were meaningless: "computed over 70 rows" when only 30 were
+       * match records.
+       *
+       * Worse, headers came from records[0], so the query engine's allowlist
+       * only ever learned the FIRST sheet's columns -- any question about
+       * Heart_rate_avg or Ball_speed was rejected as an unknown column.
+       *
+       * Kept separate, "average heart rate" queries the 20 wearable sessions and
+       * "average aces" queries the 30 match rows, and the count reported beside
+       * each answer is the count that actually backs it.
+       */
+      const parts =
+        extracted.sheets?.length > 0
+          ? extracted.sheets.map((sheet) => ({
+              suffix: `__${sheet.sheetName.replace(/[^A-Za-z0-9]+/g, "_")}`,
+              title: `${extracted.title} — ${sheet.sheetName}`,
+              headers: sheet.headers,
+              records: sheet.records,
+            }))
+          : [{ suffix: "", title: extracted.title, headers: extracted.headers, records: extracted.records }];
+
+      for (const part of parts) {
+        if (part.records.length === 0) continue;
+
+        const headers = part.headers?.length > 0 ? part.headers : Object.keys(part.records[0]);
+
+        const columns = headers.map((name) => ({
+          name,
+          type: inferType(part.records.map((row) => row[name])),
+        }));
+
+        const rows = part.records.map((row) => {
+          const typed = {};
+
+          for (const column of columns) {
+            typed[column.name] = coerce(row[column.name], column.type);
+          }
+
+          return typed;
+        });
+
+        tables.push(
+          new Table({
+            name: `${extracted.docId}${part.suffix}`,
+            title: part.title,
+            sourceUri: filePath,
+            columns,
+            rows,
+            classification,
+          }),
+        );
+      }
     }
   }
 

@@ -77,3 +77,47 @@ describe("table rendering", () => {
     assert.match(renderMarkdownTable(["n"], rows), /Showing 25 of 40 rows/);
   });
 });
+
+describe("timestamps on video citations", () => {
+  it("uses youtube's parameter for a youtube clip", () => {
+    const link = buildAssetLink({
+      doc_id: "atp1",
+      modality: "media",
+      title: "ATP rally footage",
+      start_time: "0:15",
+      external_url: "https://www.youtube.com/watch?v=abc123",
+    });
+
+    assert.equal(link.href, "https://www.youtube.com/watch?v=abc123&t=15s");
+    assert.equal(link.external, true);
+  });
+
+  it("uses a media fragment for a recording we serve ourselves", () => {
+    // the bug this guards: youtube's "&t=90s" appended to /api/assets/mccaw
+    // becomes part of the path, so the file is not found and the citation is
+    // dead. it has to be "#t=90", which is what a browser video player reads.
+    const link = buildAssetLink({
+      doc_id: "mccaw",
+      modality: "media",
+      title: "Allistair McCaw talk",
+      start_time: "1:30",
+      external_url: null,
+    });
+
+    assert.equal(link.href, "/api/assets/mccaw#t=90");
+    assert.equal(link.external, false);
+    assert.ok(!link.href.includes("&t="), "our own routes must not carry youtube syntax");
+  });
+
+  it("puts the timestamp in the label, which is what the citation chip shows", () => {
+    const link = buildAssetLink({
+      doc_id: "mccaw",
+      modality: "media",
+      title: "Allistair McCaw talk",
+      start_time: "1:30",
+      external_url: null,
+    });
+
+    assert.match(link.label, /1:30/);
+  });
+});
