@@ -88,6 +88,11 @@ export async function requestJson(
                 Accept: "application/json",
             },
 
+            // Sent explicitly rather than relying on fetch's same-origin
+            // default -- requireAuth reads this cookie, so the intent
+            // should be visible in the code (see authApi.js).
+            credentials: "same-origin",
+
             signal: abortController.signal,
         });
 

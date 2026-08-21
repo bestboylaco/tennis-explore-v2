@@ -27,26 +27,21 @@ if (
   );
 }
 
-const structuredSourceDirs =
-  (process.env.STRUCTURED_SOURCE_DIRS || "")
-    .split(";")
-    .map(
-      (directory) =>
-        directory.trim()
-    )
-    .filter(Boolean);
+const structuredSourceDirs = (process.env.STRUCTURED_SOURCE_DIRS || "")
+  .split(";")
+  .map((directory) => directory.trim())
+  .filter(Boolean);
 
+export const env = Object.freeze({
+  nodeEnv: process.env.NODE_ENV || "development",
+  port,
+  mongodbUri: process.env.MONGODB_URI,
 
-export const env =
-  Object.freeze({
-    nodeEnv:
-      process.env.NODE_ENV ||
-      "development",
+  // T-08: cors() was previously called with no origin at all, allowing any
+  // page in any browser to call this API. The frontend is same-origin (it is
+  // served by this same Express app), so the only legitimate caller is this
+  // origin unless a deployment explicitly names another one.
+  allowedOrigin: process.env.ALLOWED_ORIGIN || `http://localhost:${port}`,
 
-    port,
-
-    mongodbUri:
-      process.env.MONGODB_URI,
-
-    structuredSourceDirs,
-  });
+  structuredSourceDirs,
+});

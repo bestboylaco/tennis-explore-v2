@@ -1,7 +1,21 @@
 import { submitChatQuestion } from "./api/chatApi.js";
+import { getCurrentUser, logout } from "./api/authApi.js";
 import { appendAssistantMessage, appendUserMessage } from "./ui/messageRenderer.js";
 import { createProcessingStatus } from "./ui/processingStatus.js";
 import { createSourcePanel } from "./ui/sourcePanel.js";
+
+/*
+ * A role can no longer be picked in this interface -- it is a fact about
+ * the signed-in account (req.user.roleId, set at login from the session).
+ * An unauthenticated visitor is sent to /login before any of the rest of
+ * this file runs; nothing below assumes a session exists.
+ */
+const currentUser = await getCurrentUser();
+
+if (!currentUser) {
+    window.location.replace("/login");
+    throw new Error("Redirecting to sign in.");
+}
 
 /**
  * Returns a required page element, or throws a clear startup error.
@@ -23,10 +37,22 @@ const chatForm = getRequiredElement("#chat-form");
 const questionInput = getRequiredElement("#question");
 const sendButton = getRequiredElement("#send-button");
 const conversation = getRequiredElement("#conversation");
-const roleSelect = getRequiredElement("#role");
 const errorBanner = getRequiredElement("#error-banner");
 const errorMessage = getRequiredElement("#error-message");
 const dismissErrorButton = getRequiredElement("#dismiss-error-button");
+
+const userBadge = getRequiredElement("#user-badge");
+const userBadgeRole = getRequiredElement("#user-badge-role");
+const logoutButton = getRequiredElement("#logout-button");
+
+userBadgeRole.textContent = currentUser.displayName;
+userBadge.hidden = false;
+
+logoutButton.addEventListener("click", async () => {
+    logoutButton.disabled = true;
+    await logout();
+    window.location.assign("/login");
+});
 
 const status = createProcessingStatus({
     statusIndicator: getRequiredElement("#processing-status"),
@@ -118,7 +144,7 @@ chatForm.addEventListener("submit", async (event) => {
     status.start();
 
     try {
-        const result = await submitChatQuestion(question, roleSelect.value);
+        const result = await submitChatQuestion(question);
         const response = result?.response ?? {};
 
         appendAssistantMessage({
@@ -133,6 +159,14 @@ chatForm.addEventListener("submit", async (event) => {
             openCitation: sourcePanel.open,
         });
     } catch (error) {
+        // The session expired (8h max age) or was ended elsewhere. Sending
+        // the question again would just 401 a second time -- go sign in
+        // again instead of leaving a confusing error in the transcript.
+        if (error?.status === 401) {
+            window.location.assign("/login");
+            return;
+        }
+
         showError(error?.message ?? "The request could not be completed.");
     } finally {
         setBusy(false);

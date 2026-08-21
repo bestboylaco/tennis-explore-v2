@@ -36,7 +36,9 @@ const publicDirectory = path.resolve(currentDirectory, "../public");
 app.disable("x-powered-by");
 
 // Global middleware
-app.use(cors());
+// T-08: restricted to env.allowedOrigin rather than every origin -- see its
+// definition in config/env.js for why the default is safe unchanged.
+app.use(cors({ origin: env.allowedOrigin }));
 app.use(express.json());
 
 // Sessions back onto the same MongoDB Atlas cluster everything else uses, so

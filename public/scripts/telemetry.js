@@ -3,19 +3,23 @@ import {
     fetchRecords,
     fetchSummary,
 } from "./api/telemetryApi.js";
+import { getCurrentUser, logout } from "./api/authApi.js";
 import { createFilterBar } from "./ui/telemetry/filterBar.js";
 import { createRecordDetail } from "./ui/telemetry/recordDetail.js";
 import { createRecordsTable } from "./ui/telemetry/recordsTable.js";
 import { createSummaryView } from "./ui/telemetry/summaryView.js";
 
 /*
- * ADMIN GATE MOUNT POINT (E5-17).
- *
- * Telemetry is Internal-classified data served from unauthenticated routes
- * (threat model T-01). When accounts and roles land, the role check goes here,
- * before the first request is issued, alongside the matching gates on the page
- * itself and on the navigation link in index.html.
+ * E5-17: any signed-in account, not admin-only -- same reasoning as
+ * scripts/app.js. An unauthenticated visitor is sent to /login before any
+ * of the rest of this file runs; nothing below assumes a session exists.
  */
+const currentUser = await getCurrentUser();
+
+if (!currentUser) {
+    window.location.replace("/login");
+    throw new Error("Redirecting to sign in.");
+}
 
 /**
  * Returns a required page element or throws a clear startup error.
@@ -58,6 +62,19 @@ const recordsContainer = getRequiredElement(
 const detailContainer = getRequiredElement(
     "#telemetry-record-detail",
 );
+
+const userBadge = getRequiredElement("#user-badge");
+const userBadgeRole = getRequiredElement("#user-badge-role");
+const logoutButton = getRequiredElement("#logout-button");
+
+userBadgeRole.textContent = currentUser.displayName;
+userBadge.hidden = false;
+
+logoutButton.addEventListener("click", async () => {
+    logoutButton.disabled = true;
+    await logout();
+    window.location.assign("/login");
+});
 
 function setStatus(state, label) {
     statusIndicator.className =
@@ -186,6 +203,23 @@ function describeFailure(error) {
     );
 }
 
+/**
+ * The session expired (8h max age) or was ended elsewhere. Retrying the
+ * same request would just 401 again -- go sign in again instead of leaving
+ * a confusing error banner on a page the visitor can no longer read.
+ *
+ * Returns whether it redirected, so a caller can skip its own error
+ * handling for this request.
+ */
+function redirectIfSessionExpired(error) {
+    if (error?.status !== 401) {
+        return false;
+    }
+
+    window.location.assign("/login");
+    return true;
+}
+
 function showRecords({ records, meta }) {
     lastRecords = records;
     lastMeta = meta;
@@ -213,7 +247,7 @@ async function loadRecords() {
             setStatus("ready", "Loaded");
         }
     } catch (error) {
-        if (requestId === latestRequestId) {
+        if (requestId === latestRequestId && !redirectIfSessionExpired(error)) {
             setStatus("failed", "Failed");
             showError(describeFailure(error));
         }
@@ -263,6 +297,10 @@ async function loadAll() {
             summaryResult.reason ?? recordsResult.reason ?? null;
 
         if (failure) {
+            if (redirectIfSessionExpired(failure)) {
+                return;
+            }
+
             setStatus("failed", "Failed");
 
             /*
@@ -313,6 +351,10 @@ async function openLinkedRecord() {
             selectedRecordId,
         });
     } catch (error) {
+        if (redirectIfSessionExpired(error)) {
+            return;
+        }
+
         recordDetail.render(null);
         showError(describeFailure(error));
     }

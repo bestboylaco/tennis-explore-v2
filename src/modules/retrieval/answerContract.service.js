@@ -102,8 +102,17 @@ export const ABSTENTION_SENTENCE = "The knowledge base does not contain an answe
 export function isAbstention(answer) {
   const text = String(answer).toLowerCase();
 
-  if (text.includes(ABSTENTION_SENTENCE.toLowerCase())) return true;
-  if (/\bknowledge base (does not|doesn't) contain\b/.test(text)) return true;
+  // A genuine refusal is the model's whole reply -- the system prompt asks for
+  // exactly ABSTENTION_SENTENCE and nothing else when it cannot answer. A
+  // model that mostly answers with real citations, then honestly adds a
+  // caveat sentence about one sub-part it lacks evidence for, is not the same
+  // thing: flagging the whole reply as abstained there counts a mostly
+  // correct, cited answer as a false refusal (observed live, E5-18 test A-01).
+  // A citation marker is the signal a genuine abstention never carries one.
+  const hasCitation = /\[\d+\]/.test(answer);
+
+  if (text.includes(ABSTENTION_SENTENCE.toLowerCase())) return !hasCitation;
+  if (/\bknowledge base (does not|doesn't) contain\b/.test(text)) return !hasCitation;
 
   // the paraphrases. matching a refusal phrase and an evidence noun within the
   // same sentence is deliberately loose: an earlier version pinned the exact
@@ -112,9 +121,11 @@ export function isAbstention(answer) {
   const refusal = /\b(cannot|can not|can't|unable to|not able to|do not have enough|don't have enough|no information)\b/;
   const grounds = /\b(evidence|knowledge base|documents provided|information provided|available (information|evidence|data)|sources provided)\b/;
 
-  return text
+  const hasRefusalSentence = text
     .split(/[.!?]\s/)
     .some((sentence) => refusal.test(sentence) && grounds.test(sentence));
+
+  return hasRefusalSentence && !hasCitation;
 }
 
 /**

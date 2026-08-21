@@ -16,6 +16,7 @@
     "eval": "node bin/eval.js",
     "check:models": "node bin/check-models.js",
     "eval:answers": "node bin/eval-answers.js",
+    "eval:refusal": "node bin/e5-18-refusal-test.mjs",
     "seed:users": "node bin/seed-users.js"
   },
   "keywords": [
