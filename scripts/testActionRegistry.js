@@ -3,11 +3,11 @@ import {
   getAvailableActions,
 } from "../src/modules/actions/index.js";
 
+import { env } from "../src/config/env.js";
+
 
 await bootstrapActions({
-  structuredSourceDirs: [
-    "C:/Users/user/OneDrive/Desktop/tennis-explore-backend/uploads",
-  ],
+  structuredSourceDirs: env.structuredSourceDirs,
 });
 
 const enabledActions =
