@@ -21,27 +21,19 @@
     <link rel="stylesheet" href="/styles/base.css" />
     <link rel="stylesheet" href="/styles/chat.css" />
     <link rel="stylesheet" href="/styles/telemetry.css" />
+    <link rel="stylesheet" href="/styles/auth.css" />
 </head>
 
 <!--
-  ADMIN GATE MOUNT POINT (E5-17).
+  E5-17 access gate: any signed-in account, not admin-only.
 
-  This page and the telemetry API behind it are unauthenticated (threat model
-  T-01). Telemetry is Internal-classified data, and authentication now exists in
-  src/modules/auth with a requireAuth middleware, so this page must go behind an
-  admin role check, in two places:
-
-    1. here, at the page entry point, and in /scripts/telemetry.js
-    2. on the navigation link in index.html, which must be hidden for a
-       non-admin rather than only failing when followed
-
-  The API side is the one that actually protects the data: gate
-  telemetry.routes.js with requireAuth as well, because hiding the link leaves
-  /api/telemetry open to anyone who knows the path.
-
-  The records themselves are content-free by design (threat model T-04): no
-  document text and no question text is stored, and nothing on this page should
-  ever add a field that would display any.
+  requireAuth already gates /api/telemetry (app.js), and /scripts/telemetry.js
+  sends an anonymous visitor to /login before the first request the same way
+  scripts/app.js does. No role check beyond "signed in": the records are
+  content-free by design (threat model T-04) -- no document text and no
+  question text is stored -- so this is Internal debugging data, not
+  Confidential, and nothing on this page should ever add a field that would
+  display either.
 -->
 
 <!--
@@ -64,11 +56,12 @@
             <div class="chat-topbar__actions">
                 <span class="environment-badge">Internal</span>
 
-                <button class="profile-button"
-                        type="button"
-                        aria-label="Open user profile">
-                    C
-                </button>
+                <div id="user-badge" class="user-badge" hidden>
+                    <span id="user-badge-role" class="user-badge__role"></span>
+                    <button id="logout-button" class="user-badge__logout" type="button">
+                        Sign out
+                    </button>
+                </div>
             </div>
         </header>
 

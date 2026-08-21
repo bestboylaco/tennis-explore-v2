@@ -22,8 +22,19 @@ const LOCATORS = Object.freeze({
   pdf: (locator) => (locator.page ? `#page=${locator.page}` : ""),
   // no standard exists for slides; the viewer reads this and jumps.
   slide: (locator) => (locator.slide ? `#slide=${locator.slide}` : ""),
-  // youtube's own parameter. works for an embed and for the real site.
-  video: (locator) => (locator.startSeconds !== null ? `&t=${locator.startSeconds}s` : ""),
+  // two different syntaxes, because there are two different kinds of video.
+  video: (locator, isExternal) => {
+    if (locator.startSeconds === null) return "";
+
+    // youtube's own parameter. its urls already carry a ?v= so this joins on &.
+    if (isExternal) return `&t=${locator.startSeconds}s`;
+
+    // a clip we transcribed ourselves is served by /api/assets, and a browser
+    // video player jumps to a time using #t= instead. sending youtube's syntax
+    // here would glue "&t=90s" onto the end of the path and the file would not
+    // load at all -- so the timestamp would break the link rather than use it.
+    return `#t=${locator.startSeconds}`;
+  },
   // a row in a table. the viewer highlights it.
   table: (locator) => (locator.rowId ? `#row=${locator.rowId}` : ""),
 });
@@ -87,12 +98,9 @@ export function buildAssetLink(chunk, { baseUrl = "" } = {}) {
     ? chunk.external_url
     : `${baseUrl}/api/assets/${encodeURIComponent(chunk.doc_id)}`;
 
-  const fragment = LOCATORS[kind]?.(locator) ?? "";
+  const fragment = LOCATORS[kind]?.(locator, isExternal) ?? "";
 
-  // youtube wants & because its urls already carry a ?v=; everything else uses
-  // a hash fragment. getting this backwards produces a link that loads the
-  // asset but ignores the position.
-  const href = isExternal && kind === "video" ? `${base}${fragment}` : `${base}${fragment}`;
+  const href = `${base}${fragment}`;
 
   return {
     href,

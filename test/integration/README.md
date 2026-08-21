@@ -8,6 +8,18 @@ Required secrets in GitHub (`Settings > Secrets and variables > Actions`): `MONG
 
 Files matching `*.test.js`, picked up by `node --test test/integration`.
 
+Run with `--test-concurrency=1`, so files execute one at a time rather than
+node's default of running matched files concurrently across CPU cores. With
+several files opening their own connection to the same free-tier (M0) Atlas
+cluster at once, PR #29's CI run (2026-08-21) saw `telemetryAggregation.test.js`
+intermittently read back zero records for a correlationId it had just
+inserted -- the same aggregation returning both the correct count and 0 within
+one suite run, with per-query latency identical whether or not it found data,
+which pointed at the cluster being overloaded by concurrent connections rather
+than a real race in the test's own before()/after(). Serializing file
+execution removes that concurrent load; it did not reproduce locally where
+this suite was the only thing hitting the cluster.
+
 `test:integration` runs with `--test-force-exit`. Tests that dynamically import
 `src/app.js` (auth.test.js, telemetryHttpRoute.test.js) pull in the session
 middleware's `connect-mongo` store, which opens its own MongoDB connection

@@ -9,6 +9,7 @@
     <link rel="stylesheet" href="/styles/tokens.css">
     <link rel="stylesheet" href="/styles/base.css">
     <link rel="stylesheet" href="/styles/chat.css">
+    <link rel="stylesheet" href="/styles/auth.css">
 </head>
 <body class="chat-page">
     <div class="chat-application">
@@ -28,22 +29,17 @@
                 </nav>
 
                 <!--
-                    Role selection is preserved because it demonstrates the
-                    existing access-control behaviour. It does not choose a
-                    backend route, source, query mode or model.
+                    Populated from the signed-in session (scripts/app.js),
+                    never client-chosen -- the access filter reads
+                    req.user.roleId, which comes off the session, not this
+                    markup. This is a read-only fact about the account, not
+                    a control.
                 -->
-                <div class="role-picker">
-                    <label for="role">Role</label>
-                    <select id="role" name="role">
-                        <option value="analyst">Analyst</option>
-                        <option value="academy_coach">Academy coach</option>
-                        <option value="tour_coach">Tour coach</option>
-                        <option value="strength_conditioning">S&amp;C coach</option>
-                        <option value="physiotherapist">Physiotherapist</option>
-                        <option value="member_services">Member services</option>
-                        <option value="athlete">Athlete</option>
-                        <option value="admin" selected>Admin</option>
-                    </select>
+                <div id="user-badge" class="user-badge" hidden>
+                    <span id="user-badge-role" class="user-badge__role"></span>
+                    <button id="logout-button" class="user-badge__logout" type="button">
+                        Sign out
+                    </button>
                 </div>
             </div>
         </header>
@@ -66,14 +62,11 @@
                     <button class="navigation__item" type="button" disabled>AI Tools</button>
 
                     <!--
-                      ADMIN GATE MOUNT POINT (E5-17).
-
-                      Telemetry is Internal-classified data behind an
-                      unauthenticated route (threat model T-01). Authentication
-                      now exists in src/modules/auth, so this link should be
-                      hidden for a non-admin and the route gated with
-                      requireAuth; see the matching note in telemetry.html and
-                      scripts/telemetry.js.
+                      E5-17: no extra gate needed here. This whole page
+                      already redirects an anonymous visitor to /login
+                      (scripts/app.js) before this link would ever render,
+                      and telemetry access is any signed-in account, not
+                      admin-only -- see the matching note in telemetry.html.
                     -->
                     <a class="navigation__item" href="/telemetry.html">Telemetry</a>
                 </nav>

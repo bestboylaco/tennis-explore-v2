@@ -324,7 +324,14 @@ async function extractXlsx(filePath) {
       raw: true,
     });
 
-    if (records.length > 0) sheets.push({ sheetName, records });
+    if (records.length === 0) continue;
+
+    // the union across rows, not just row 0. sheet_to_json omits a key entirely
+    // when a cell is blank, so the first row alone under-reports the schema
+    // whenever the top record has a gap.
+    const headers = [...new Set(records.flatMap((row) => Object.keys(row)))];
+
+    sheets.push({ sheetName, headers, records });
   }
 
   return sheets;
@@ -388,6 +395,32 @@ function decodeXml(text) {
  * to offensive transition" and to link straight to the right second of the clip,
  * which is what a coach actually wants from video search.
  */
+/**
+ * reads a picture manifest written by tools/media/ingest_media.py.
+ *
+ * a caption and the OCR text are kept as separate fields and then indexed
+ * together, because they answer different questions. the caption says "a bar
+ * chart of injury counts by year"; the OCR says "2021 12, 2022 15, 2023 18".
+ * only the second one can answer "how many injuries in 2023", and only the
+ * first one can be found by someone searching for "injury chart".
+ */
+async function extractImageManifest(filePath) {
+  const raw = JSON.parse(await fsp.readFile(filePath, "utf8"));
+  const images = Array.isArray(raw?.images) ? raw.images : [];
+
+  return images
+    .filter((image) => String(image.caption ?? "").trim() !== "")
+    .map((image, index) => ({
+      index,
+      imageId: image.image_id ?? `image-${index}`,
+      title: image.title ?? "Image",
+      path: image.path ?? null,
+      sourceDocument: image.source_document ?? null,
+      page: image.page ?? null,
+      text: [image.caption, image.ocr_text].filter((part) => String(part ?? "").trim() !== "").join(" "),
+    }));
+}
+
 async function extractVideoManifest(filePath) {
   const raw = JSON.parse(await fsp.readFile(filePath, "utf8"));
   const videos = Array.isArray(raw) ? raw : (raw.videos ?? []);
@@ -404,6 +437,10 @@ async function extractVideoManifest(filePath) {
         index,
         videoId: video.video_id ?? video.id ?? null,
         url: video.url ?? null,
+        // a locally transcribed recording has no web url -- it is a file on
+        // disk. keeping the path means the citation can open the recording
+        // itself rather than the manifest describing it.
+        sourcePath: video.source_path ?? null,
         title: video.title ?? video.source ?? "Video clip",
         start: segment.start ?? null,
         end: segment.end ?? null,
@@ -488,8 +525,14 @@ export async function extractFile(filePath) {
   if (extension === ".xlsx" || extension === ".xls") {
     const sheets = await extractXlsx(filePath);
     const records = sheets.flatMap((sheet) => sheet.records);
-    const headers = records.length > 0 ? Object.keys(records[0]) : [];
-    return { ...base, kind: "records", tableId: docId, headers, records };
+    // the union of every sheet's columns, not just the first row's -- see the
+    // note in tableStore about why this mattered.
+    const headers = [...new Set(sheets.flatMap((sheet) => sheet.headers ?? []))];
+
+    // `sheets` is carried through so the table store can make one queryable
+    // table per sheet. the flattened `records` stay for the index build, where
+    // each row is verbalised independently and the sheet does not matter.
+    return { ...base, kind: "records", tableId: docId, headers, records, sheets };
   }
 
   if (extension === ".pptx") {
@@ -508,9 +551,16 @@ export async function extractFile(filePath) {
   }
 
   if (extension === ".json") {
+    // a picture manifest and a video manifest are both json; the shape decides.
+    const pictures = await extractImageManifest(filePath).catch(() => []);
+
+    if (pictures.length > 0) {
+      return { ...base, kind: "images", sourceType: "image", images: pictures };
+    }
+
     const manifest = await extractVideoManifest(filePath);
 
-    // a json file that holds no video segments is configuration, not content.
+    // a json file that holds neither is configuration, not content.
     if (manifest.segments.length === 0) return null;
 
     return { ...base, kind: "video", sourceType: "video", ...manifest };

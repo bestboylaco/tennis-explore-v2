@@ -15,6 +15,10 @@ import {
   withColdStartDetection,
 } from "./modules/telemetry/services/telemetryRecorder.service.js";
 
+import {
+  bootstrapActions,
+} from "./modules/actions/index.js";
+
 let server;
 let isShuttingDown = false;
 
@@ -27,16 +31,39 @@ async function startServer() {
   });
 
   try {
-    await withColdStartDetection(
+   await withColdStartDetection(
       run,
-      { resource: COLD_START_RESOURCES.MONGODB, stage: "mongodb_connect" },
-      () => run.measureStage("mongodb_connect", () => connectMongoDB()),
+      {
+        resource:
+          COLD_START_RESOURCES.MONGODB,
+
+        stage:
+          "mongodb_connect",
+      },
+      () =>
+        run.measureStage(
+          "mongodb_connect",
+          () =>
+            connectMongoDB()
+        ),
     );
 
-    server = app.listen(env.port, () => {
-      console.log(`TennisExplore V2 server running on port ${env.port}`);
+
+    await bootstrapActions({
+      structuredSourceDirs:
+        env.structuredSourceDirs,
     });
 
+
+    server =
+      app.listen(
+        env.port,
+        () => {
+          console.log(
+            `TennisExplore V2 server running on port ${env.port}`
+          );
+        }
+      );
     // Written after the connection is up, which is the first moment the
     // telemetry store is reachable.
     await run.finish(RUN_STATUSES.SUCCESS);

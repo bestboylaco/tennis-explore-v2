@@ -51,8 +51,10 @@ The user wants the exact wording. Quote the relevant passage verbatim in quotati
 /**
  * builds the system prompt for one answer.
  */
-export function buildSystemPrompt({ intent, contracts, needsExactWording }) {
-  const instruction = INSTRUCTIONS[intent] ?? INSTRUCTIONS[INTENTS.SINGLE_HOP];
+export function buildSystemPrompt({ intent, contracts, needsExactWording, evidenceIsPartial = false }) {
+  const instruction = evidenceIsPartial
+    ? PARTIAL_EVIDENCE_INSTRUCTION
+    : (INSTRUCTIONS[intent] ?? INSTRUCTIONS[INTENTS.SINGLE_HOP]);
 
   const extractive =
     needsExactWording && contracts.includes(CONTRACTS.EXTRACTIVE) ? EXTRACTIVE_SUFFIX : "";
@@ -69,6 +71,24 @@ ${GROUNDING_RULES}
 // the exact sentence the model is told to produce when it cannot answer. we
 // match on it afterwards to set the `answered` flag, so it has to be a constant
 // rather than something the model phrases freely.
+/**
+ * the instruction used when grading found *some* relevant evidence but not
+ * enough to answer fully.
+ *
+ * this exists because the two-way choice was wrong. an answer built on thin
+ * evidence and a flat refusal are both bad when the truth is "we know this much
+ * and not the rest" -- and that is the common case on a real archive. saying
+ * which part is missing is more useful than either, and it tells the partner
+ * exactly which document to go and find.
+ */
+export const PARTIAL_EVIDENCE_INSTRUCTION = `The evidence below is relevant but incomplete.
+
+Answer in two parts:
+1. State what the evidence DOES establish, with citations, as plainly as you can.
+2. Then state what the question asked for that the evidence does NOT cover. Be specific about the gap -- name the missing figure, period, population or comparison.
+
+Do not fill the gap with general knowledge. An explicit "the evidence does not cover X" is the useful half of this answer.`;
+
 export const ABSTENTION_SENTENCE = "The knowledge base does not contain an answer to this question.";
 
 /**
@@ -82,8 +102,17 @@ export const ABSTENTION_SENTENCE = "The knowledge base does not contain an answe
 export function isAbstention(answer) {
   const text = String(answer).toLowerCase();
 
-  if (text.includes(ABSTENTION_SENTENCE.toLowerCase())) return true;
-  if (/\bknowledge base (does not|doesn't) contain\b/.test(text)) return true;
+  // A genuine refusal is the model's whole reply -- the system prompt asks for
+  // exactly ABSTENTION_SENTENCE and nothing else when it cannot answer. A
+  // model that mostly answers with real citations, then honestly adds a
+  // caveat sentence about one sub-part it lacks evidence for, is not the same
+  // thing: flagging the whole reply as abstained there counts a mostly
+  // correct, cited answer as a false refusal (observed live, E5-18 test A-01).
+  // A citation marker is the signal a genuine abstention never carries one.
+  const hasCitation = /\[\d+\]/.test(answer);
+
+  if (text.includes(ABSTENTION_SENTENCE.toLowerCase())) return !hasCitation;
+  if (/\bknowledge base (does not|doesn't) contain\b/.test(text)) return !hasCitation;
 
   // the paraphrases. matching a refusal phrase and an evidence noun within the
   // same sentence is deliberately loose: an earlier version pinned the exact
@@ -92,9 +121,11 @@ export function isAbstention(answer) {
   const refusal = /\b(cannot|can not|can't|unable to|not able to|do not have enough|don't have enough|no information)\b/;
   const grounds = /\b(evidence|knowledge base|documents provided|information provided|available (information|evidence|data)|sources provided)\b/;
 
-  return text
+  const hasRefusalSentence = text
     .split(/[.!?]\s/)
     .some((sentence) => refusal.test(sentence) && grounds.test(sentence));
+
+  return hasRefusalSentence && !hasCitation;
 }
 
 /**
