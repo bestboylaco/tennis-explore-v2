@@ -1,0 +1,8 @@
+{
+  "permissions": {
+    "allow": [
+      "mcp__claude_ai_Atlassian_Rovo__getJiraIssue",
+      "Bash(node --test test/unit/generationPrompt.test.js)"
+    ]
+  }
+}
