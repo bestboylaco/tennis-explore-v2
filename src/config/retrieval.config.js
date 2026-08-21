@@ -224,6 +224,14 @@ export const retrievalConfig = Object.freeze({
     // the intent planner. fills in a schema-constrained form describing what the
     // question is asking for. see modules/query/queryPlanner.service.js for why
     // this is a form and not tool calling.
+    // ask the same question several ways when the first attempt comes back
+    // thin, and fuse the results. this is the retrieval half of corrective rag:
+    // when evidence is weak, do something about it rather than refusing or
+    // generating from whatever turned up. off by default per query -- it only
+    // fires when grading says the evidence is insufficient or partial.
+    expansionEnabled: bool(process.env.EXPANSION_ENABLED, true),
+    expansionModel: process.env.EXPANSION_MODEL || process.env.OLLAMA_GENERATION_MODEL || "llama3.1:8b",
+
     plannerEnabled: bool(process.env.PLANNER_ENABLED, true),
     plannerModel: process.env.PLANNER_MODEL || "llama3.1:8b",
     // below this rule-confidence we pay for a model call. above it the rules are

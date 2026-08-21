@@ -165,13 +165,16 @@ export function createSourcePanel({ panel, titleNode, metaNode, bodyNode, closeB
 
     function renderVideo(source, url) {
         const match = url.href.match(VIDEO_ID);
+        const start = source.locator?.startSeconds ?? 0;
 
+        // a recording we transcribed ourselves is a file on this machine, not a
+        // youtube page, so there is no video id in the link to find. it gets
+        // played directly instead of being turned away.
         if (!match) {
-            renderUnavailable("This clip cannot be embedded. Use Download to open it.");
+            renderLocalVideo(source, url, start);
             return;
         }
 
-        const start = source.locator?.startSeconds ?? 0;
         const frame = el("iframe", "source-panel__frame source-panel__frame--video");
 
         // start= is what makes the citation land on the cited moment rather
@@ -182,6 +185,45 @@ export function createSourcePanel({ panel, titleNode, metaNode, bodyNode, closeB
         frame.setAttribute("allowfullscreen", "");
 
         bodyNode.replaceChildren(frame);
+    }
+
+    function renderLocalVideo(source, url, start) {
+        const video = el("video", "source-panel__frame source-panel__frame--video");
+
+        video.src = url.href;
+        video.controls = true;
+        // metadata only. loading the whole recording to show one cited moment
+        // would stall the panel on a forty minute talk.
+        video.preload = "metadata";
+        video.setAttribute("playsinline", "");
+
+        if (start > 0) {
+            // the #t= in the url does this on its own in most browsers, but not
+            // all of them, so the jump is also made by hand. it has to wait for
+            // the length to be known -- seeking before then is silently ignored
+            // and the clip just starts from the beginning.
+            video.addEventListener(
+                "loadedmetadata",
+                () => {
+                    if (Number.isFinite(video.duration) && start < video.duration) {
+                        video.currentTime = start;
+                    }
+                },
+                { once: true },
+            );
+        }
+
+        video.addEventListener(
+            "error",
+            () => {
+                renderUnavailable(
+                    "This clip could not be played here. Use Download to open it.",
+                );
+            },
+            { once: true },
+        );
+
+        bodyNode.replaceChildren(video);
     }
 
     function renderQuote(source) {

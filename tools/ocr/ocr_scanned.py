@@ -80,7 +80,17 @@ def render_pages(pdf_path: Path, dpi: int = 200):
 # ---------------------------------------------------------------------------
 
 class SuryaEngine:
-    """layout-aware ocr on the gpu."""
+    """layout-aware ocr on the gpu.
+
+    surya's call signature has changed several times across releases -- the
+    argument that used to be `det_predictor` has been renamed, moved and at one
+    point removed. rather than pinning a version, this tries the signatures that
+    have existed and keeps whichever one works.
+
+    the probe runs ONCE, on a small blank image, at construction. that is the
+    same principle as the tesseract binary check: an engine that is going to
+    fail should fail at selection time, not 180 files into a loop.
+    """
 
     name = "surya"
 
@@ -88,21 +98,70 @@ class SuryaEngine:
         from surya.detection import DetectionPredictor
         from surya.recognition import RecognitionPredictor
 
-        # predictors hold the weights, so they are built once and reused. doing
-        # this per document reloads ~650M parameters every time and is the
-        # difference between hours and days.
+        # predictors hold the weights, so they are built once and reused.
+        # doing this per document reloads ~650M parameters every time.
         self.detection = DetectionPredictor()
         self.recognition = RecognitionPredictor()
+        self._call = self._resolve_signature()
+
+    def _candidate_calls(self):
+        """every way surya has accepted a batch of images, newest first."""
+        return [
+            ("images + det_predictor",
+             lambda images: self.recognition(images, det_predictor=self.detection)),
+            ("images + task_names + det_predictor",
+             lambda images: self.recognition(
+                 images,
+                 task_names=["ocr_with_boxes"] * len(images),
+                 det_predictor=self.detection,
+             )),
+            ("images + task_names only",
+             lambda images: self.recognition(images, task_names=["ocr_with_boxes"] * len(images))),
+            ("images only",
+             lambda images: self.recognition(images)),
+            ("images + langs + det_predictor (legacy positional)",
+             lambda images: self.recognition(images, [None] * len(images), self.detection)),
+        ]
+
+    def _resolve_signature(self):
+        from PIL import Image
+
+        probe = [Image.new("RGB", (64, 64), "white")]
+        errors = []
+
+        for label, call in self._candidate_calls():
+            try:
+                call(probe)
+                log(f"  surya call style: {label}")
+
+                return call
+            except TypeError as error:
+                # a TypeError is a signature mismatch: wrong style, try the next.
+                errors.append(f"{label}: {error}")
+            except Exception as error:  # noqa: BLE001
+                # anything else means the signature was ACCEPTED and something
+                # downstream complained -- on a blank image that is fine, and it
+                # means this is the right style.
+                log(f"  surya call style: {label}")
+
+                return call
+
+        raise RuntimeError(
+            "surya is installed but none of the known call signatures worked.\n"
+            "        tried:\n          " + "\n          ".join(e[:110] for e in errors) +
+            "\n        use tesseract instead:  --engine tesseract"
+        )
 
     def read(self, images) -> list[str]:
-        results = self.recognition(images, det_predictor=self.detection)
+        results = self._call(images)
         pages = []
 
         for result in results:
             # surya returns text lines with bounding boxes, already in reading
             # order for the detected layout. joining with newlines preserves the
             # line structure the chunker uses to find paragraph boundaries.
-            pages.append("\n".join(line.text for line in result.text_lines))
+            lines = getattr(result, "text_lines", None) or []
+            pages.append("\n".join(getattr(line, "text", "") for line in lines))
 
         return pages
 
@@ -113,9 +172,27 @@ class TesseractEngine:
     name = "tesseract"
 
     def __init__(self) -> None:
-        import pytesseract  # noqa: F401
+        import pytesseract
 
-        self.pytesseract = __import__("pytesseract")
+        # importing the python package is NOT the same as having tesseract
+        # installed -- pytesseract is a thin wrapper around a separate binary.
+        # without this check the engine reports itself available, and then every
+        # single file fails with the same message. that is exactly what happened:
+        # 41 identical failures before anyone stopped it.
+        #
+        # calling get_tesseract_version() runs the real thing, so a missing
+        # binary is caught here, once, before any work starts.
+        try:
+            pytesseract.get_tesseract_version()
+        except Exception as error:  # noqa: BLE001
+            raise RuntimeError(
+                "the tesseract binary is not installed or not on PATH.\n"
+                "        Windows:  winget install UB-Mannheim.TesseractOCR\n"
+                "        then reopen the shell so PATH picks it up.\n"
+                "        or install surya instead, which needs no binary:  pip install surya-ocr"
+            ) from error
+
+        self.pytesseract = pytesseract
 
     def read(self, images) -> list[str]:
         # psm 1 = automatic page segmentation with orientation detection. the
@@ -136,11 +213,13 @@ def build_engine(preference: str):
             log(f"  {name} unavailable: {str(error)[:120]}")
 
     log(
-        "\nno ocr engine available. install one:\n"
-        "  gpu (recommended):  pip install surya-ocr\n"
-        "  cpu:                pip install pytesseract  (plus the tesseract binary)\n"
+        "\nno working OCR engine. install one:\n"
+        "  gpu, no extra binary:  pip install surya-ocr\n"
+        "  cpu:                   pip install pytesseract\n"
+        "                         winget install UB-Mannheim.TesseractOCR\n"
+        "                         then reopen the shell so PATH picks it up\n"
     )
-    sys.exit(1)
+    return None
 
 
 # ---------------------------------------------------------------------------

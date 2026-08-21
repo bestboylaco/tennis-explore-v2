@@ -2,12 +2,11 @@ import assert from "node:assert/strict";
 import http from "node:http";
 import { after, before, describe, it } from "node:test";
 
-import { rerankCandidates } from "../../src/modules/retrieval/ranking.service.js";
-
 // a stand-in for the chat model that scores anything mentioning "lumbar"
 // highly. deterministic, so the test asserts ordering rather than luck.
 let server;
 let calls = 0;
+let rerankCandidates;
 
 before(async () => {
   server = http.createServer((req, res) => {
@@ -34,7 +33,19 @@ before(async () => {
     });
   });
 
-  await new Promise((resolve) => server.listen(11434, resolve));
+  // port 0 asks the operating system for any free port. this used to hard-code
+  // 11434, which is ollama's own port -- so on a machine actually running
+  // ollama the stub could not bind, the promise never settled, and the suite
+  // hung for four minutes instead of failing. which is every machine that can
+  // run this project.
+  await new Promise((resolve) => server.listen(0, "127.0.0.1", resolve));
+
+  process.env.OLLAMA_BASE_URL = `http://127.0.0.1:${server.address().port}`;
+
+  // imported here rather than at the top of the file on purpose. the config
+  // reads the environment once, the first time it is imported, so a normal
+  // import would have frozen the real ollama url before the line above ran.
+  ({ rerankCandidates } = await import("../../src/modules/retrieval/ranking.service.js"));
 });
 
 // closed inside the last test, so `after` only has to cope with it already

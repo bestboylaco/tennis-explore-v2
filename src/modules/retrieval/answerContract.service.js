@@ -51,8 +51,10 @@ The user wants the exact wording. Quote the relevant passage verbatim in quotati
 /**
  * builds the system prompt for one answer.
  */
-export function buildSystemPrompt({ intent, contracts, needsExactWording }) {
-  const instruction = INSTRUCTIONS[intent] ?? INSTRUCTIONS[INTENTS.SINGLE_HOP];
+export function buildSystemPrompt({ intent, contracts, needsExactWording, evidenceIsPartial = false }) {
+  const instruction = evidenceIsPartial
+    ? PARTIAL_EVIDENCE_INSTRUCTION
+    : (INSTRUCTIONS[intent] ?? INSTRUCTIONS[INTENTS.SINGLE_HOP]);
 
   const extractive =
     needsExactWording && contracts.includes(CONTRACTS.EXTRACTIVE) ? EXTRACTIVE_SUFFIX : "";
@@ -69,6 +71,24 @@ ${GROUNDING_RULES}
 // the exact sentence the model is told to produce when it cannot answer. we
 // match on it afterwards to set the `answered` flag, so it has to be a constant
 // rather than something the model phrases freely.
+/**
+ * the instruction used when grading found *some* relevant evidence but not
+ * enough to answer fully.
+ *
+ * this exists because the two-way choice was wrong. an answer built on thin
+ * evidence and a flat refusal are both bad when the truth is "we know this much
+ * and not the rest" -- and that is the common case on a real archive. saying
+ * which part is missing is more useful than either, and it tells the partner
+ * exactly which document to go and find.
+ */
+export const PARTIAL_EVIDENCE_INSTRUCTION = `The evidence below is relevant but incomplete.
+
+Answer in two parts:
+1. State what the evidence DOES establish, with citations, as plainly as you can.
+2. Then state what the question asked for that the evidence does NOT cover. Be specific about the gap -- name the missing figure, period, population or comparison.
+
+Do not fill the gap with general knowledge. An explicit "the evidence does not cover X" is the useful half of this answer.`;
+
 export const ABSTENTION_SENTENCE = "The knowledge base does not contain an answer to this question.";
 
 /**
