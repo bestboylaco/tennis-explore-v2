@@ -1,0 +1,111 @@
+/*
+ * Sign-in page and the header user badge that replaces the old role picker.
+ * Uses the same tokens as site.css/chat.css -- no new colours introduced.
+ */
+
+.auth-shell {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex: 1;
+    padding: var(--space-8) var(--space-4);
+}
+
+.auth-card {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+    width: 100%;
+    max-width: 24rem;
+    padding: var(--space-8);
+    border: 1px solid var(--border-glass);
+    border-radius: var(--radius-lg);
+    background: var(--surface-glass);
+}
+
+.auth-card h1 {
+    margin: 0;
+    font-size: 1.5rem;
+}
+
+.auth-card__lead {
+    margin: 0;
+    color: var(--colour-text-secondary);
+    font-size: 0.9rem;
+}
+
+.auth-card__error {
+    padding: var(--space-3) var(--space-4);
+    border: 1px solid rgba(255, 107, 107, 0.4);
+    border-radius: var(--radius-md);
+    background: rgba(255, 107, 107, 0.12);
+    color: var(--colour-error);
+    font-size: 0.86rem;
+}
+
+.field {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+}
+
+.field__label {
+    color: var(--colour-text-secondary);
+    font-size: 0.82rem;
+}
+
+.field input {
+    padding: var(--space-3) var(--space-4);
+    border: 1px solid var(--border-glass);
+    border-radius: var(--radius-md);
+    background: var(--colour-background-light);
+    color: var(--colour-text-primary);
+    font-size: 0.95rem;
+}
+
+.field input:focus {
+    outline: none;
+    border-color: var(--colour-green);
+}
+
+.auth-card__submit {
+    margin-top: var(--space-2);
+    width: 100%;
+    text-align: center;
+    border: none;
+}
+
+.auth-card__submit:disabled {
+    opacity: 0.6;
+}
+
+/* Header user badge -- what the role picker was replaced with. Read-only:
+   the role is a fact about the signed-in account, not a control. */
+.user-badge {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    font-size: 0.82rem;
+    color: var(--colour-text-secondary);
+}
+
+.user-badge__role {
+    padding: var(--space-1) var(--space-3);
+    border: 1px solid var(--border-glass);
+    border-radius: var(--radius-pill);
+    background: var(--colour-background-light);
+    color: var(--colour-text-primary);
+}
+
+.user-badge__logout {
+    padding: 0;
+    border: none;
+    background: none;
+    color: var(--colour-text-secondary);
+    font-size: 0.82rem;
+    text-decoration: underline;
+}
+
+.user-badge__logout:hover {
+    color: var(--colour-text-primary);
+}
