@@ -36,8 +36,9 @@ TennisExplore V2 is a modular AI-powered tennis intelligence platform that combi
 - Production-ready sign-in UI and session flow
 - Player intelligence extensions
 - Coaching intelligence extensions
-- Cross-machine availability of original source assets used by citation previews
 - Replacing temporary platform links with the real platform URLs
+
+Cross-machine availability of original source assets used by citation previews is now available, opt-in, via S3 storage — see [Asset Storage (S3)](#asset-storage-s3) below. Off by default; the local-disk behaviour described above is unchanged unless `STORAGE_PROVIDER=s3` is set.
 
 > **Development note:** non-production runs currently create a temporary Admin session automatically so the protected chat flow can be tested without manual sign-in. This must be removed or disabled before production deployment.
 
@@ -198,7 +199,44 @@ It supports:
 - page, slide, row, and video timestamp citation locations
 - direct links to original indexed assets when available locally
 
-If an index was built on another machine and the original source file is not present locally, `/api/assets/:docId` returns an explicit `ASSET_NOT_LOCAL` response. The indexed text and citation metadata remain available even when the raw file is missing.
+If an index was built on another machine and the original source file is not present locally, `/api/assets/:docId` returns an explicit `ASSET_NOT_LOCAL` response. The indexed text and citation metadata remain available even when the raw file is missing. Enabling S3 storage (below) removes this limitation — every machine reads citation files from the same bucket instead of local disk.
+
+---
+
+## Asset Storage (S3)
+
+Citation-linked source files (PDFs, slides, spreadsheets, video) are served from **local disk by default** (`STORAGE_PROVIDER=local`, or unset) — that's all the local demo needs, and it's what `/api/assets/:docId` has always done.
+
+Setting `STORAGE_PROVIDER=s3` switches that route to read the same files from an S3 bucket instead, fixing the cross-machine gap above. It works against real AWS or any S3-compatible server — the code only ever speaks the S3 API, never anything AWS-specific — so it can be developed and tested against a local [MinIO](https://min.io/) container with no AWS account at all:
+
+```bash
+docker compose up -d   # starts MinIO, creates the bucket (docker-compose.yml)
+```
+
+### Switching to a partner-provided bucket
+
+Once a real AWS bucket and an access key are available, no code changes are needed — only `.env`:
+
+```bash
+STORAGE_PROVIDER=s3
+S3_BUCKET=<their bucket name>
+S3_REGION=<their bucket's region>
+S3_ENDPOINT=                # blank for real AWS; only set for MinIO/LocalStack
+S3_FORCE_PATH_STYLE=false   # true only for MinIO/LocalStack
+S3_ACCESS_KEY_ID=<their access key id>
+S3_SECRET_ACCESS_KEY=<their secret access key>
+ASSET_SOURCE_ROOT=<the local root every indexed file's path is under>
+```
+
+Then, once for the currently-built index (it does not need to be rebuilt — this only uploads files, it does not re-embed anything):
+
+```bash
+npm run backfill:s3
+```
+
+`ASSET_SOURCE_ROOT` is how a file already recorded in the index (`sourceUri`, a local path from whichever machine built it) maps to the S3 key that same file gets uploaded under — see `src/infrastructure/storage/storageKey.service.js`. Get it wrong and every citation will 410 with `ASSET_NOT_IN_BUCKET` rather than opening; a rerun of `npm run backfill:s3` after fixing it is safe, since it skips whatever the previous run already got into the bucket.
+
+Going back to local disk at any point is just unsetting `STORAGE_PROVIDER` — nothing about local mode changes because S3 mode exists.
 
 ---
 
