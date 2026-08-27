@@ -34,29 +34,6 @@ jobs:
     needs: unit-tests
     if: github.event_name == 'workflow_dispatch' || (github.event_name == 'push' && github.ref == 'refs/heads/main')
 
-    # test/integration/s3Upload.test.js needs an S3-compatible server, same as
-    # local dev (docker-compose.yml runs the official minio/minio image
-    # there). GitHub Actions' `services:` block has no way to pass minio/minio
-    # its required "server /data" command, so this uses bitnami/minio instead,
-    # which starts the server on its own from env vars -- MINIO_DEFAULT_BUCKETS
-    # even creates the bucket, replacing the mc-based init step docker-compose
-    # needs locally. Nothing here is AWS-specific, so this is testing the same
-    # code path storage.service.js uses against real AWS.
-    services:
-      minio:
-        image: bitnami/minio:latest
-        ports:
-          - 9000:9000
-        env:
-          MINIO_ROOT_USER: minioadmin
-          MINIO_ROOT_PASSWORD: minioadmin
-          MINIO_DEFAULT_BUCKETS: tennis-explore-assets
-        options: >-
-          --health-cmd "curl -f http://localhost:9000/minio/health/live || exit 1"
-          --health-interval 5s
-          --health-timeout 5s
-          --health-retries 10
-
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -69,6 +46,42 @@ jobs:
 
       - name: Install dependencies
         run: npm ci
+
+      # test/integration/s3Upload.test.js needs an S3-compatible server, same
+      # as local dev (docker-compose.yml runs this same image there). Started
+      # as a plain container rather than a `services:` entry because GitHub
+      # Actions' services schema has no field for a container command, and
+      # minio/minio requires one ("server /data") -- it isn't a "run with no
+      # args" image the way most service containers (databases, caches) are.
+      # bitnami/minio used to be the standard workaround for that (it starts
+      # itself from env vars, no command needed), but Broadcom discontinued
+      # bitnami/minio:latest on Docker Hub in 2025, so this runs the real
+      # image directly instead, with its command spelled out explicitly.
+      - name: Start MinIO
+        run: |
+          docker run -d --name minio -p 9000:9000 -p 9001:9001 \
+            -e MINIO_ROOT_USER=minioadmin \
+            -e MINIO_ROOT_PASSWORD=minioadmin \
+            minio/minio server /data --console-address ":9001"
+
+          for i in $(seq 1 30); do
+            if curl -sf http://localhost:9000/minio/health/live > /dev/null; then
+              echo "MinIO is up"
+              exit 0
+            fi
+            sleep 1
+          done
+
+          echo "MinIO did not become healthy in time" >&2
+          docker logs minio
+          exit 1
+
+      - name: Create MinIO bucket
+        run: |
+          docker run --rm --network host --entrypoint /bin/sh minio/mc -c "
+            mc alias set local http://localhost:9000 minioadmin minioadmin &&
+            mc mb --ignore-existing local/tennis-explore-assets
+          "
 
       - name: Run integration tests
         env:
