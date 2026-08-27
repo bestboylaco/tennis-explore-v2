@@ -34,6 +34,29 @@ jobs:
     needs: unit-tests
     if: github.event_name == 'workflow_dispatch' || (github.event_name == 'push' && github.ref == 'refs/heads/main')
 
+    # test/integration/s3Upload.test.js needs an S3-compatible server, same as
+    # local dev (docker-compose.yml runs the official minio/minio image
+    # there). GitHub Actions' `services:` block has no way to pass minio/minio
+    # its required "server /data" command, so this uses bitnami/minio instead,
+    # which starts the server on its own from env vars -- MINIO_DEFAULT_BUCKETS
+    # even creates the bucket, replacing the mc-based init step docker-compose
+    # needs locally. Nothing here is AWS-specific, so this is testing the same
+    # code path storage.service.js uses against real AWS.
+    services:
+      minio:
+        image: bitnami/minio:latest
+        ports:
+          - 9000:9000
+        env:
+          MINIO_ROOT_USER: minioadmin
+          MINIO_ROOT_PASSWORD: minioadmin
+          MINIO_DEFAULT_BUCKETS: tennis-explore-assets
+        options: >-
+          --health-cmd "curl -f http://localhost:9000/minio/health/live || exit 1"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -59,4 +82,8 @@ jobs:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           AWS_REGION: ${{ secrets.AWS_REGION }}
+          S3_TEST_ENDPOINT: http://localhost:9000
+          S3_TEST_BUCKET: tennis-explore-assets
+          S3_ACCESS_KEY_ID: minioadmin
+          S3_SECRET_ACCESS_KEY: minioadmin
         run: npm run test:integration
