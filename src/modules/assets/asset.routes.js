@@ -3,9 +3,12 @@ import fs from "node:fs";
 import path from "node:path";
 
 import asyncHandler from "../../middleware/asyncHandler.js";
+import { env } from "../../config/env.js";
 import { grantsForRole, isPermitted } from "../../shared/constants/accessControl.js";
 import { loadIndex } from "../retrieval/retrieval.service.js";
 import { buildAssetRegistry } from "../retrieval/assetLink.service.js";
+import { getObject, objectExists } from "../../infrastructure/storage/storage.service.js";
+import { toStorageKey } from "../../infrastructure/storage/storageKey.service.js";
 
 const router = express.Router();
 
@@ -77,6 +80,10 @@ router.get(
       });
     }
 
+    if (env.storage.provider === "s3") {
+      return serveFromS3(asset, req, res);
+    }
+
     if (!fs.existsSync(asset.path)) {
       // the index is committed but the raw files are not, so a teammate who
       // pulled the repo has citations pointing at files they do not have. that
@@ -93,8 +100,48 @@ router.get(
       });
     }
 
+    // express's sendFile already honours a Range header on its own, which is
+    // what lets a video citation seek straight to its cited timestamp instead
+    // of downloading from the start.
     return res.sendFile(path.resolve(asset.path));
   }),
 );
+
+/**
+ * S3-mode counterpart to the local branch above. asset.path still holds the
+ * local path recorded by the current index -- toStorageKey derives the S3
+ * key the same file would use once uploaded, so this works against today's
+ * index with no rebuild. Once ingestion writes sourceUri as an S3 key
+ * directly, this can read asset.path as the key verbatim instead.
+ */
+async function serveFromS3(asset, req, res) {
+  const key = toStorageKey(asset.path, env.storage.assetSourceRoot);
+
+  if (!(await objectExists(key))) {
+    // same situation as ASSET_NOT_LOCAL above, one bucket over: the index
+    // knows about this file but nothing has uploaded it (yet).
+    return res.status(410).json({
+      success: false,
+      error: {
+        code: "ASSET_NOT_IN_BUCKET",
+        message:
+          "This asset was indexed but has not been uploaded to the configured S3 bucket. " +
+          "The citation text and metadata are still available.",
+        title: asset.title,
+      },
+    });
+  }
+
+  const range = req.headers.range || undefined;
+  const object = await getObject(key, { range });
+
+  res.status(object.statusCode);
+  if (object.contentType) res.set("Content-Type", object.contentType);
+  if (object.contentRange) res.set("Content-Range", object.contentRange);
+  if (object.contentLength !== undefined) res.set("Content-Length", String(object.contentLength));
+  if (range) res.set("Accept-Ranges", "bytes");
+
+  object.body.pipe(res);
+}
 
 export default router;
