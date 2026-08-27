@@ -531,7 +531,7 @@ async function answerFromTables(plan, { roleId, signal, startedAt, correlationId
   // to describe it, which removes any opportunity to do arithmetic of its own --
   // the single most common way a structured answer goes wrong.
   const answer = await generate(
-    buildSystemPrompt(plan),
+    buildSystemPrompt({ ...plan, isTableAnswer: true }),
     `Result of the query (already computed, do not recalculate):\n\n` +
       `${renderMarkdownTable(result.columns, result.rows)}\n\n` +
       `Rows scanned: ${result.rowsScanned}. Rows matched: ${result.rowsMatched}.\n` +
