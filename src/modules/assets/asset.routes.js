@@ -50,22 +50,13 @@ router.get(
       });
     }
 
-    // in a real deployment the role comes off the authenticated session. taking
-    // it from a query parameter is fine for the local demo and must not survive
-    // into anything the partner can reach -- a caller who picks their own role
-    // is a caller with every role.
-    const roleId = req.query.role ?? "analyst";
-
-    let grants;
-
-    try {
-      grants = grantsForRole(roleId);
-    } catch {
-      return res.status(400).json({
-        success: false,
-        error: { code: "UNKNOWN_ROLE", message: `Unknown role "${roleId}".` },
-      });
-    }
+    // the role comes off the authenticated session (requireAuth populates
+    // req.user), never a caller-supplied value -- a caller who picks their
+    // own role is a caller with every role (threat model T-01). This used to
+    // read req.query.role, which meant anyone could open any document by
+    // appending ?role=admin to a citation URL, logged in or not.
+    const roleId = req.user.roleId;
+    const grants = grantsForRole(roleId);
 
     if (!isPermitted(asset.aclGroups, grants)) {
       // 403 rather than 404. the caller already knows the document exists --
