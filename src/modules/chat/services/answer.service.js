@@ -29,7 +29,13 @@ import { GRADES, gradeEvidence } from "../../generation/evidenceGrader.service.j
 import { prepareEvidence } from "../../generation/contextOrdering.service.js";
 import { expandQuery, keywordFallback } from "../../query/queryExpansion.service.js";
 import { fewShotMessages } from "../../generation/fewShot.service.js";
-import { verifyAnswer } from "../../generation/verifier.service.js";
+
+import {
+  shouldBlockAnswer,
+  verifyAnswer,
+} from "../../generation/verifier.service.js";
+
+
 import { buildQuerySpec } from "../../structured/specPlanner.service.js";
 import { runQuery } from "../../structured/queryEngine.service.js";
 import { AUDIT_QUERY_KINDS } from "../../../shared/constants/audit.js";
@@ -334,6 +340,19 @@ async function answerFromDocuments(plan, { roleId, signal, startedAt, correlatio
   const abstained = isAbstention(answer);
   const verification = verifyAnswer(answer, evidence);
 
+  if (shouldBlockAnswer(verification)) {
+    const mismatch = verification.warnings.find(
+      (warning) => warning.kind === "citation_mismatch",
+    );
+
+    return abstain({
+      plan,
+      roleId,
+      reason: `generated answer failed citation verification: ${mismatch?.detail ?? "citation mismatch"}`,
+      cause: "grounding_failed",
+      startedAt,
+    });
+  }
   let citations = verification.citations.map((citation) => {
     const chunk = evidence.find((candidate) => candidate.chunk_id === citation.chunkId);
 
