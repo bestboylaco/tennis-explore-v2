@@ -24,6 +24,9 @@ npm-debug.log*
 !data/index/
 !data/index/*
 
+# scratch output for `npm run build:index:test` -- never the real index.
+data/index-test/
+
 # raw source documents are NOT committed. they are partner data, some of it
 # classified internal or above, and the repo is not the right place for it.
 data/raw/
