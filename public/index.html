@@ -22,18 +22,10 @@
             </a>
 
             <div class="chat-topbar__actions">
-                <!-- Keep the existing public pages reachable after the UI reskin. -->
-                <nav class="chat-topbar__links" aria-label="Site navigation">
-                    <a href="/platforms">Platforms</a>
-                    <a href="/platforms#about">About</a>
-                </nav>
-
                 <!--
-                    Populated from the signed-in session (scripts/app.js),
-                    never client-chosen -- the access filter reads
-                    req.user.roleId, which comes off the session, not this
-                    markup. This is a read-only fact about the account, not
-                    a control.
+                    Platforms and About are intentionally no longer linked from
+                    the AI Coach top bar. Their page remains available for later
+                    product decisions; see docs/UI-NAVIGATION-NOTES.md.
                 -->
                 <div id="user-badge" class="user-badge" hidden>
                     <span id="user-badge-role" class="user-badge__role"></span>
@@ -50,30 +42,90 @@
                 <div class="sidebar__heading">Workspace</div>
 
                 <nav class="navigation" aria-label="Product capabilities">
-                    <button class="navigation__item navigation__item--active"
-                            type="button" aria-current="page">
-                        AI Coach
-                    </button>
-                    <button class="navigation__item" type="button" disabled>Athletes</button>
-                    <button class="navigation__item" type="button" disabled>Match Intelligence</button>
-                    <button class="navigation__item" type="button" disabled>Vision Analysis</button>
-                    <button class="navigation__item" type="button" disabled>Reports</button>
-                    <button class="navigation__item" type="button" disabled>Training Load</button>
-                    <button class="navigation__item" type="button" disabled>AI Tools</button>
+                    <a class="navigation__item navigation__item--active"
+                       href="/"
+                       aria-current="page">
+                        <span>AI Coach</span>
+                    </a>
+
+                    <p class="navigation__group-label">Connected tools</p>
+
+                    <a class="navigation__item navigation__item--external"
+                       href="https://tennis.smartabase.com/ams/auth"
+                       target="_blank"
+                       rel="noopener noreferrer">
+                        <span>AMS</span>
+                        <small>Open</small>
+                    </a>
+
+                    <a class="navigation__item navigation__item--external"
+                       href="https://app-v3.teambuildr.com/login"
+                       target="_blank"
+                       rel="noopener noreferrer">
+                        <span>TeamBuildr</span>
+                        <small>Open</small>
+                    </a>
+
+                    <a class="navigation__item navigation__item--external"
+                       href="https://login.teamworksapp.com/"
+                       target="_blank"
+                       rel="noopener noreferrer">
+                        <span>Teamworks</span>
+                        <small>Open</small>
+                    </a>
+
+                    <a class="navigation__item navigation__item--external"
+                       href="https://www.tennismove.com.au/"
+                       target="_blank"
+                       rel="noopener noreferrer">
+                        <span>TennisMove</span>
+                        <small>Open</small>
+                    </a>
+
+                    <p class="navigation__group-label">System</p>
 
                     <!--
-                      E5-17: no extra gate needed here. This whole page
-                      already redirects an anonymous visitor to /login
-                      (scripts/app.js) before this link would ever render,
-                      and telemetry access is any signed-in account, not
-                      admin-only -- see the matching note in telemetry.html.
+                      E5-17: telemetry is available to any signed-in account.
+                      Authentication is already enforced before this page loads.
                     -->
-                    <a class="navigation__item" href="/telemetry.html">Telemetry</a>
+                    <a class="navigation__item" href="/telemetry.html">
+                        <span>Telemetry</span>
+                    </a>
                 </nav>
 
+                <section class="chat-history" aria-labelledby="chat-history-title">
+                    <div class="chat-history__controls">
+                        <button id="chat-history-toggle"
+                                class="chat-history__toggle"
+                                type="button"
+                                aria-expanded="false"
+                                aria-controls="chat-history-panel">
+                            <span id="chat-history-title">Chat history</span>
+                            <span id="chat-history-count" class="chat-history__count">0</span>
+                        </button>
+
+                        <button id="new-chat-button"
+                                class="chat-history__new"
+                                type="button">
+                            New chat
+                        </button>
+                    </div>
+
+                    <div id="chat-history-panel"
+                         class="chat-history__panel"
+                         hidden>
+                        <p id="chat-history-empty" class="chat-history__empty">
+                            No previous conversations yet. Your current session will appear here as you chat.
+                        </p>
+                        <div id="chat-history-list"
+                             class="chat-history__list"
+                             aria-label="Conversation history"></div>
+                    </div>
+                </section>
+
                 <div class="sidebar__footer">
-                    <strong>Unified coaching</strong>
-                    <p>Ask one natural-language question without choosing a mode, source or command.</p>
+                    <strong>One connected workspace</strong>
+                    <p>Ask AI Coach or open an organisational tool without hunting through separate bookmarks.</p>
                 </div>
             </aside>
 
