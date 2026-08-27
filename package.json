@@ -17,7 +17,8 @@
     "check:models": "node bin/check-models.js",
     "eval:answers": "node bin/eval-answers.js",
     "eval:refusal": "node bin/e5-18-refusal-test.mjs",
-    "seed:users": "node bin/seed-users.js"
+    "seed:users": "node bin/seed-users.js",
+    "backfill:s3": "node bin/backfill-s3.js"
   },
   "keywords": [
     "tennis",
