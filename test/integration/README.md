@@ -4,6 +4,8 @@ Exercises real MongoDB Atlas / AWS services (S3, Bedrock, OpenSearch, Textract p
 
 Generation (TENISE-19) is the exception: it runs against a local Ollama server instead of Nova Pro/Bedrock, per the project's move away from AWS Bedrock (Head project decision, 2026-07-30). It needs no cloud credentials, but does need Ollama running locally with the configured model pulled (`OLLAMA_BASE_URL`, `OLLAMA_GENERATION_MODEL` in `.env`) — it skips itself cleanly if Ollama is unreachable, which is expected on the CI runner today.
 
+`s3Upload.test.js` is the same shape again, for the S3 asset-storage work (`STORAGE_PROVIDER=s3`, `src/infrastructure/storage/`). It needs no AWS credentials either — it runs against a local S3-compatible server, `docker compose up -d` (MinIO, see `docker-compose.yml`), and skips itself cleanly if nothing answers at `S3_TEST_ENDPOINT` (default `http://localhost:9000`). Not yet wired into CI: that would mean adding MinIO as a service container to `.github/workflows/ci.yml`, which hasn't been done. Verified manually against a real MinIO container and a real `bin/build-index.js` run as of 2026-08-27.
+
 Required secrets in GitHub (`Settings > Secrets and variables > Actions`): `MONGODB_URI`, plus AWS credentials once TENISE-11/15 land. Never print these in test output or logs (TENISE-43 T-05).
 
 Files matching `*.test.js`, picked up by `node --test test/integration`.

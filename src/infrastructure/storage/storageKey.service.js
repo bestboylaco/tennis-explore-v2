@@ -32,3 +32,28 @@ export function toStorageKey(sourcePath, rootDir) {
 
   return relative.split(path.sep).join("/");
 }
+
+// Covers what the ingestion pipeline actually produces citations for
+// (extraction.service.js's supported extensions, plus the image/video
+// source_uri values chunkImages()/chunkVideo() can emit). No dependency
+// pulled in for this -- it's a fixed, small set of known extensions, not
+// general-purpose MIME sniffing.
+const CONTENT_TYPES = {
+  ".pdf": "application/pdf",
+  ".pptx": "application/vnd.openxmlformats-officedocument.presentationml.presentation",
+  ".csv": "text/csv",
+  ".xlsx": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+  ".xls": "application/vnd.ms-excel",
+  ".txt": "text/plain",
+  ".md": "text/markdown",
+  ".json": "application/json",
+  ".jpg": "image/jpeg",
+  ".jpeg": "image/jpeg",
+  ".png": "image/png",
+  ".mp4": "video/mp4",
+  ".mov": "video/quicktime",
+};
+
+export function guessContentType(filePath) {
+  return CONTENT_TYPES[path.extname(filePath).toLowerCase()] || "application/octet-stream";
+}

@@ -10,6 +10,7 @@
 import {
   GetObjectCommand,
   HeadObjectCommand,
+  PutObjectCommand,
   S3Client,
 } from "@aws-sdk/client-s3";
 
@@ -85,6 +86,25 @@ export async function getObject(key, { range } = {}) {
     contentRange: response.ContentRange,
     statusCode: range ? 206 : 200,
   };
+}
+
+/**
+ * Uploads one object -- used by the ingestion side (indexBuilder.service.js)
+ * to populate the bucket from the existing local corpus, keyed the same way
+ * storageKey.service.js derives keys for reads. `body` is anything the SDK's
+ * underlying HTTP body accepts: a Buffer is enough for this codebase, since
+ * the source files being uploaded (PDFs, slides, spreadsheets, video, images)
+ * are already read fully into memory by the extraction step upstream.
+ */
+export async function putObject(key, body, { contentType } = {}) {
+  await getClient().send(
+    new PutObjectCommand({
+      Bucket: env.storage.s3.bucket,
+      Key: key,
+      Body: body,
+      ContentType: contentType || undefined,
+    }),
+  );
 }
 
 // Tests construct a fresh client per case (different endpoints/credentials)
