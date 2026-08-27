@@ -13,6 +13,22 @@
 
 import path from "node:path";
 
+/**
+ * The index that sourceUri values come from is built once, on whatever
+ * machine ran bin/build-index.js (in this project's case, Windows), and the
+ * server reading citations back can be a different machine entirely --
+ * Linux in CI, Linux in a container deployment, someone else's Windows
+ * laptop. node:path's default export is platform-dependent (POSIX on Linux,
+ * where a Windows path like "C:\Users\...\file.pdf" has no "/" in it and is
+ * parsed as a single opaque segment), so picking the implementation from
+ * process.platform would make this function correct on the machine that
+ * built the index and silently wrong everywhere else. Picking it from the
+ * path string itself keeps behaviour tied to the data, not the host.
+ */
+function pathImplFor(pathString) {
+  return /^[A-Za-z]:[\\/]|\\/.test(pathString) ? path.win32 : path.posix;
+}
+
 export function toStorageKey(sourcePath, rootDir) {
   if (!rootDir) {
     throw new Error(
@@ -21,16 +37,17 @@ export function toStorageKey(sourcePath, rootDir) {
     );
   }
 
-  const relative = path.relative(rootDir, sourcePath);
+  const impl = pathImplFor(rootDir);
+  const relative = impl.relative(rootDir, sourcePath);
 
-  if (relative.startsWith("..") || path.isAbsolute(relative)) {
+  if (relative.startsWith("..") || impl.isAbsolute(relative)) {
     throw new Error(
       `cannot derive an S3 key for "${sourcePath}": it is not inside ASSET_SOURCE_ROOT ` +
         `("${rootDir}").`,
     );
   }
 
-  return relative.split(path.sep).join("/");
+  return relative.split(impl.sep).join("/");
 }
 
 // Covers what the ingestion pipeline actually produces citations for
