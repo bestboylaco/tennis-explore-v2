@@ -19,7 +19,8 @@
     "eval:answers": "node bin/eval-answers.js",
     "eval:refusal": "node bin/e5-18-refusal-test.mjs",
     "seed:users": "node bin/seed-users.js",
-    "backfill:s3": "node bin/backfill-s3.js"
+    "backfill:s3": "node bin/backfill-s3.js",
+    "backfill:s3:structured": "node bin/backfill-s3-structured.js"
   },
   "keywords": [
     "tennis",

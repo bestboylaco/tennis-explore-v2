@@ -65,6 +65,36 @@ export class QuerySpecError extends Error {
  * because these messages are shown to the planner on a retry -- a message the
  * model can act on turns a failed query into a corrected one.
  */
+// Above this many distinct values, a text column reads as an identifier or
+// free text (player names, IDs) rather than a closed vocabulary, and neither
+// enumerating it nor dumping it into a retry message is useful -- there could
+// legitimately be no matching row, and the "did you mean" list would just be
+// prompt noise. Below it, "playerNationalityCode" (a few hundred country
+// codes) and similar columns are exactly the case worth catching: a filter
+// value that reads as plausible but was never read off the real data.
+const MAX_ENUM_SIZE_TO_VALIDATE = 250;
+
+/**
+ * The full set of distinct values a text column actually holds, or null if
+ * there are more than MAX_ENUM_SIZE_TO_VALIDATE of them (not a closed
+ * vocabulary, not worth enumerating).
+ */
+function distinctStringValues(table, columnName) {
+  const values = new Set();
+
+  for (const row of table.rows) {
+    const value = row[columnName];
+
+    if (value === null || value === undefined) continue;
+
+    values.add(String(value));
+
+    if (values.size > MAX_ENUM_SIZE_TO_VALIDATE) return null;
+  }
+
+  return values;
+}
+
 export function validateSpec(spec, table) {
   if (!spec || typeof spec !== "object") throw new QuerySpecError("spec must be an object");
 
@@ -88,6 +118,35 @@ export function validateSpec(spec, table) {
       throw new QuerySpecError(
         `filter uses operator "${filter.op}". valid: ${Object.keys(OPERATORS).join(", ")}`,
       );
+    }
+
+    // Catches the failure mode where the model fills in a plausible-looking
+    // value it never actually read off the data -- e.g. the ISO country code
+    // "BGR" for Bulgaria, when this dataset's own playerNationalityCode
+    // column uses "BUL". That produces a confident, silent zero-row result:
+    // validation passes (the column and operator are both fine), the filter
+    // just never matches anything, and the answer comes back "no data" for a
+    // question the table could actually answer. Checked only for eq/in
+    // against a column with a small enough vocabulary to enumerate -- see
+    // MAX_ENUM_SIZE_TO_VALIDATE.
+    if ((filter.op === "eq" || filter.op === "in") && table.column(filter.column)?.type === "string") {
+      const actual = distinctStringValues(table, filter.column);
+
+      if (actual) {
+        const requested = filter.op === "in" ? (Array.isArray(filter.value) ? filter.value : [filter.value]) : [filter.value];
+        const actualLower = new Set([...actual].map((value) => value.toLowerCase()));
+        const unmatched = requested.filter((value) => !actualLower.has(String(value).toLowerCase()));
+
+        if (unmatched.length > 0) {
+          const sample = [...actual].sort();
+
+          throw new QuerySpecError(
+            `filter on "${filter.column}" uses value ${unmatched.map((value) => JSON.stringify(value)).join(", ")}, ` +
+              `which does not appear anywhere in that column's real data. actual values: ` +
+              `${sample.slice(0, 120).join(", ")}${sample.length > 120 ? `, ...and ${sample.length - 120} more` : ""}`,
+          );
+        }
+      }
     }
   }
 
