@@ -1,30 +1,58 @@
 import {
-  SYNTHESIS_MODES,
-} from "./synthesis.types.js";
-
-import {
-  registerSynthesisStrategy,
   hasSynthesisStrategy,
+  registerSynthesisStrategy,
 } from "./synthesis.registry.js";
 
 import {
   statisticsSynthesisStrategy,
 } from "./strategies/statisticsSynthesis.strategy.js";
 
+import {
+  documentsSynthesisStrategy,
+} from "./strategies/documentsSynthesis.strategy.js";
+
+
+/*
+ * Registers all synthesis strategies available
+ * to the TennisExplore Agent.
+ *
+ * This function is idempotent:
+ * calling it multiple times will not register
+ * duplicate strategies.
+ */
 export function bootstrapSynthesis() {
+  /*
+   * Statistics
+   */
   if (
     !hasSynthesisStrategy(
-      SYNTHESIS_MODES.STATISTICS,
+      statisticsSynthesisStrategy.id
     )
   ) {
     registerSynthesisStrategy({
       mode:
-        SYNTHESIS_MODES.STATISTICS,
+        statisticsSynthesisStrategy.id,
 
       strategy:
         statisticsSynthesisStrategy,
     });
   }
 
-  return true;
+
+  /*
+   * Documents
+   */
+  if (
+    !hasSynthesisStrategy(
+      documentsSynthesisStrategy.id
+    )
+  ) {
+    registerSynthesisStrategy({
+      mode:
+        documentsSynthesisStrategy.id,
+
+      strategy:
+        documentsSynthesisStrategy,
+    });
+  }
 }

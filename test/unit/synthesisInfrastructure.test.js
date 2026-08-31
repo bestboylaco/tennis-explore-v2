@@ -47,7 +47,10 @@ test(
 
     assert.deepEqual(
       listSynthesisStrategies(),
-      ["statistics"],
+      [
+        "statistics",
+        "documents",
+      ]
     );
   },
 );
@@ -63,7 +66,10 @@ test(
 
     assert.deepEqual(
       listSynthesisStrategies(),
-      ["statistics"],
+      ["statistics",
+        "documents",
+
+      ]
     );
   },
 );
@@ -119,6 +125,7 @@ test(
 
       successfulActionIds: [
         "statistics",
+        "documents",
       ],
     };
 
@@ -143,6 +150,7 @@ test(
     assert.equal(
       result.mode,
       "statistics",
+      "documents",
     );
 
     assert.equal(

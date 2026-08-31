@@ -52,9 +52,12 @@ test(
     );
 
     assert.deepEqual(
-      listVerificationStrategies(),
-      ["numeric"],
-    );
+        listVerificationStrategies(),
+        [
+            "numeric",
+            "document_grounding",
+        ]
+        );
   },
 );
 
@@ -68,9 +71,12 @@ test(
     bootstrapVerification();
 
     assert.deepEqual(
-      listVerificationStrategies(),
-      ["numeric"],
-    );
+        listVerificationStrategies(),
+        [
+            "numeric",
+            "document_grounding",
+        ]
+        );
   },
 );
 
