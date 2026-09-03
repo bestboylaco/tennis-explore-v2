@@ -107,6 +107,14 @@ async function main() {
     console.log(`${r.correct ? "OK (answered)" : "FAIL (wrongly refused)"} (${r.durationMs}ms)`);
   }
 
+  // r.answered is null when runOne() caught an error (e.g. Ollama unreachable)
+  // rather than getting a real true/false back. `=== true` / `=== false`
+  // checks alone treat null as neither a false claim nor a false refusal, so a
+  // total pipeline outage during the whole run used to score as a perfect
+  // pass. counting errors explicitly here makes that failure visible instead
+  // of silently vanishing into a 0% rate.
+  const unanswerableErrors = results.unanswerable.filter((r) => r.answered === null).length;
+  const answerableErrors = results.answerable.filter((r) => r.answered === null).length;
   const falseClaims = results.unanswerable.filter((r) => r.answered === true).length;
   const falseRefusals = results.answerable.filter((r) => r.answered === false).length;
   const falseRefusalRate = (falseRefusals / ANSWERABLE.length) * 100;
@@ -125,12 +133,18 @@ async function main() {
       : null;
 
   const summary = {
-    unanswerableSet: { total: UNANSWERABLE.length, falseClaims, passed: falseClaims === 0 },
+    unanswerableSet: {
+      total: UNANSWERABLE.length,
+      falseClaims,
+      erroredCount: unanswerableErrors,
+      passed: falseClaims === 0 && unanswerableErrors === 0,
+    },
     answerableSet: {
       total: ANSWERABLE.length,
       falseRefusals,
+      erroredCount: answerableErrors,
       falseRefusalRatePercent: Number(falseRefusalRate.toFixed(1)),
-      passed: falseRefusalRate <= 10,
+      passed: falseRefusalRate <= 10 && answerableErrors === 0,
     },
     avgLatencyMs: Math.round(avgLatencyMs),
     avgGroundingCheckMs: avgGroundingCheckMs === null ? null : Number(avgGroundingCheckMs.toFixed(2)),
