@@ -42,7 +42,9 @@ __pycache__/
 
 # prepared media and OCR output. large, machine-generated, and rebuilt by
 # tools/prepare_corpus.py -- the INDEX is what gets committed, not its inputs.
-data/media/
+# (data/media/ is tracked on Tenk_corpus_duplication on purpose: it's the g-l
+# whisper transcripts data/index-video-gl/ was built from, kept so continuing
+# this work doesn't mean re-running a 17-minute GPU transcribe for nothing.)
 data/ocr-cache/
 
 .venv/
