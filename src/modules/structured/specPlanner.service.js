@@ -58,6 +58,53 @@ const SPEC_SCHEMA = {
   required: ["table", "select", "filters", "groupBy", "metrics"],
 };
 
+function tokenize(text) {
+  return String(text)
+    .toLowerCase()
+    .split(/[^a-z0-9]+/)
+    .filter(Boolean);
+}
+
+/**
+ * Narrows the tables shown to the planner before it ever sees a question.
+ *
+ * The ranking corpus alone is ~50 near-identical weekly tables (itf/atp/wta/utr
+ * x many dates), differing only in circuit and week. Dumping every one of
+ * their schemas into a single system prompt for an 8B model to pick from is
+ * exactly the setup that made it answer "Who is ranked number 1 in the ITF
+ * rankings dated 2026-01-05?" from utr-international-2026-01-07 instead of
+ * the itf-2026-01-05 table that matches the question verbatim -- the right
+ * table was one candidate lost among fifty near-duplicates, and the closest
+ * date won over the right circuit.
+ *
+ * This is a plain lexical pre-filter, not a second model call: a table's name
+ * (e.g. "itf-2026-01-05" -> tokens "itf", "2026", "01", "05") is scored by how
+ * many of its tokens appear in the question. "ITF rankings dated 2026-01-05"
+ * scores itf-2026-01-05 at 4 and utr-international-2026-01-07 at 2 (just the
+ * shared year and month), which is enough to keep the right table off the
+ * ambiguity floor entirely. Below the size where that ambiguity can occur,
+ * or when nothing in a table's name matches the question at all, every table
+ * is still shown -- this only narrows an already-oversized candidate set, it
+ * never removes the only table capable of answering a normal question.
+ */
+export function selectCandidateTables(question, tables, { maxCandidates = 8, minTablesToFilter = 12 } = {}) {
+  if (tables.length <= minTablesToFilter) return tables;
+
+  const questionTokens = new Set(tokenize(question));
+
+  const scored = tables
+    .map((table) => ({
+      table,
+      score: tokenize(table.name).filter((token) => questionTokens.has(token)).length,
+    }))
+    .filter((entry) => entry.score > 0)
+    .sort((a, b) => b.score - a.score);
+
+  if (scored.length === 0) return tables;
+
+  return scored.slice(0, maxCandidates).map((entry) => entry.table);
+}
+
 function systemPrompt(tables) {
   const schemas = tables
     .map((table) => `  ${table.describe({ maxColumns: 60 })}`)
@@ -252,8 +299,10 @@ export async function buildQuerySpec(question, tables, { signal = null } = {}) {
     return { unanswerable: true, reason: "no tables are visible to this role" };
   }
 
+  const candidates = selectCandidateTables(question, tables);
+
   const messages = [
-    { role: "system", content: systemPrompt(tables) },
+    { role: "system", content: systemPrompt(candidates) },
     { role: "user", content: question },
   ];
 

@@ -152,9 +152,10 @@ chatForm.addEventListener("submit", async (event) => {
             content: response.answer ?? "No answer was returned.",
             citations: result?.citations ?? [],
             // present only when the question was answered from the tables. the
-            // renderer ignores them when absent, so one code path covers both.
+            // renderer ignores it when absent, so one code path covers both.
+            // the SQL behind it is not repeated here -- it is the same block
+            // the "Sources" citation already opens in the side panel.
             table: response.table ?? null,
-            sql: response.sql ?? null,
             grounding: response.grounding ?? null,
             openCitation: sourcePanel.open,
         });

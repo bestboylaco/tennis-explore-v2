@@ -113,11 +113,75 @@ export function createSourcePanel({ panel, titleNode, metaNode, bodyNode, closeB
 
     let lastFocused = null;
 
+    // bumped every time a citation opens, so a HEAD response that comes back
+    // after the reader has already moved to a different citation (or closed
+    // the panel) knows not to append its badge to content that is no longer
+    // showing that source.
+    let openToken = 0;
+
+    /**
+     * Asks the asset endpoint, with no body transferred, whether this citation
+     * is being served from S3 or local disk (see the HEAD route added
+     * alongside this for exactly this purpose) and appends a small badge with
+     * the answer. Best-effort: a request that fails or a panel that has moved
+     * on by the time it resolves just means no badge appears, not an error
+     * shown to the reader.
+     */
+    /**
+     * `inlineLink`, when given, is appended right after the storage line
+     * instead of leaving "Open in a new tab" down in the fixed footer -- for
+     * a table citation the footer sits below a viewport's worth of SQL and
+     * row-count text and reads as gone, whereas here it lands exactly where
+     * the reader's eye already is. It is appended whether or not the HEAD
+     * call itself succeeds, so a network hiccup loses the storage line, not
+     * the only way to open the file.
+     */
+    function announceStorage(url, token, { inlineLink = null } = {}) {
+        const appendInlineLink = () => {
+            if (!inlineLink || token !== openToken) return;
+
+            const link = el("a", "source-panel__download source-panel__download--inline", inlineLink);
+
+            link.href = url;
+            link.target = "_blank";
+            link.rel = "noopener noreferrer";
+            bodyNode.appendChild(link);
+        };
+
+        (view?.fetch ?? fetch)(url, { method: "HEAD", credentials: "same-origin" })
+            .then((response) => {
+                if (token !== openToken) return;
+
+                const storage = response.headers.get("X-Asset-Storage");
+
+                if (storage) {
+                    const label = storage === "s3" ? "AWS S3" : "local disk";
+                    const key = response.headers.get("X-Asset-S3-Key");
+
+                    bodyNode.appendChild(
+                        el(
+                            "p",
+                            "source-panel__storage",
+                            key ? `Storage: ${label} (${key})` : `Storage: ${label}`,
+                        ),
+                    );
+                }
+
+                appendInlineLink();
+            })
+            .catch(() => {
+                // network error or the endpoint rejecting HEAD -- the storage
+                // line just does not appear; the download link still should.
+                appendInlineLink();
+            });
+    }
+
     function close() {
         panel.hidden = true;
         panel.classList.remove("source-panel--open");
         doc.body.classList.remove("has-source-panel");
         bodyNode.replaceChildren();
+        openToken += 1;
 
         // send focus back where it came from, so keyboard users are not dumped
         // at the top of the document after closing.
@@ -277,6 +341,9 @@ export function createSourcePanel({ panel, titleNode, metaNode, bodyNode, closeB
     function open(citation, trigger) {
         const source = normalise(citation);
 
+        openToken += 1;
+        const token = openToken;
+
         lastFocused = trigger ?? doc.activeElement;
 
         titleNode.textContent = source.label ?? source.title;
@@ -311,12 +378,27 @@ export function createSourcePanel({ panel, titleNode, metaNode, bodyNode, closeB
             renderQuote(source);
         }
 
+        // a table citation has no iframe or clip to anchor the eye near the
+        // footer -- it is a screen of SQL and row counts, with the footer link
+        // a scroll away and easy to miss (reported directly: "it's too far
+        // down, I can't see it"). Inlining it right under the storage line
+        // puts it where the reader is already looking; every other kind keeps
+        // the fixed footer, which sits right beside their iframe/clip/quote.
+        const inlineDownload = source.kind === "table";
+
+        // our own /api/assets route serves every non-external citation, so a
+        // HEAD to the same url the panel already resolved tells the reader
+        // where the byte actually came from without them opening devtools.
+        if (url && !source.external) {
+            announceStorage(url.href, token, inlineDownload ? { inlineLink: "Open in a new tab" } : {});
+        }
+
         // "open in a new tab" is a deliberate escape hatch, not the main path.
         // some things genuinely cannot render inline -- PowerPoint, and any
         // browser without a built-in PDF viewer -- and a dead end is worse than
         // a second tab.
         if (downloadLink) {
-            if (url) {
+            if (url && !inlineDownload) {
                 downloadLink.href = url.href;
                 downloadLink.hidden = false;
                 downloadLink.textContent = source.external

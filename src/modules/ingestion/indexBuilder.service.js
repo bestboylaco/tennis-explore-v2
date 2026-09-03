@@ -20,8 +20,11 @@
 import fsp from "node:fs/promises";
 import path from "node:path";
 
+import { env } from "../../config/env.js";
 import { retrievalConfig } from "../../config/retrieval.config.js";
 import { VectorStoreWriter } from "../../infrastructure/vector/vectorStore.service.js";
+import { objectExists, putObject } from "../../infrastructure/storage/storage.service.js";
+import { guessContentType, toStorageKey } from "../../infrastructure/storage/storageKey.service.js";
 import { NO_PROGRAM, grantsForDocument } from "../../shared/constants/accessControl.js";
 import { buildBm25 } from "../retrieval/bm25.service.js";
 import { chunkDocument, chunkImages, chunkRecords, chunkSlides, chunkVideo } from "./chunking.service.js";
@@ -263,6 +266,56 @@ async function prepareFile(filePath, problems) {
 }
 
 // ---------------------------------------------------------------------------
+// s3 upload (STORAGE_PROVIDER=s3 only)
+// ---------------------------------------------------------------------------
+
+/**
+ * Uploads the source file(s) behind one file's chunks to S3, so a citation
+ * has something to open once asset.routes.js is reading from the bucket
+ * instead of local disk.
+ *
+ * Keyed off chunk.source_uri rather than the file path the loop is on: for
+ * images and video, source_uri is the actual media file a caption or clip
+ * belongs to (chunk.image_path / chunk.media_path), which can differ from
+ * the file that was walked to produce the chunk (a manifest, in the media
+ * pipeline's case). Uploading whatever source_uri actually points at is what
+ * the citation needs, not what was iterated.
+ *
+ * `uploaded` is a same-process Set of keys already pushed this run, so a
+ * source_uri shared by many chunks (the normal case -- one PDF, hundreds of
+ * chunks) is read and PUT once. `objectExists` is checked on top of that so
+ * a *resumed* build (a fresh process, empty `uploaded`) also skips files the
+ * previous run already got into the bucket, without needing its own entry in
+ * the checkpoint file.
+ */
+export async function uploadSourceFiles(chunks, uploaded, failures) {
+  if (env.storage.provider !== "s3") return;
+
+  const sourceUris = new Set(chunks.map((chunk) => chunk.source_uri).filter(Boolean));
+
+  for (const sourceUri of sourceUris) {
+    if (uploaded.has(sourceUri)) continue;
+
+    try {
+      const key = toStorageKey(sourceUri, env.storage.assetSourceRoot);
+
+      if (!(await objectExists(key))) {
+        const body = await fsp.readFile(sourceUri);
+
+        await putObject(key, body, { contentType: guessContentType(sourceUri) });
+      }
+
+      uploaded.add(sourceUri);
+    } catch (error) {
+      // one file failing to upload must not lose the chunks already written
+      // for it -- they still search and answer from local disk, they just
+      // will not open a citation until this is retried.
+      failures.push({ file: path.basename(sourceUri), reason: error.message.slice(0, 200) });
+    }
+  }
+}
+
+// ---------------------------------------------------------------------------
 // checkpointing
 // ---------------------------------------------------------------------------
 
@@ -366,6 +419,8 @@ export async function buildIndex({
 
   const problems = previous?.problems ?? [];
   const skipped = previous?.skipped ?? [];
+  const uploadFailures = previous?.uploadFailures ?? [];
+  const uploaded = new Set();
 
   let filesDone = done.size;
   let chunkCount = writer.count;
@@ -394,6 +449,9 @@ export async function buildIndex({
           }
 
           chunkCount += chunks.length;
+
+          await uploadSourceFiles(chunks, uploaded, uploadFailures);
+          onProgress({ phase: "upload", file: name, uploaded: uploaded.size, failed: uploadFailures.length });
         } else {
           skipped.push({ file: name, reason: "no usable text extracted" });
         }
@@ -419,6 +477,7 @@ export async function buildIndex({
         chunkCount,
         problems: problems.slice(0, 500),
         skipped,
+        uploadFailures: uploadFailures.slice(0, 500),
       });
     }
   }
@@ -458,6 +517,7 @@ export async function buildIndex({
     fileCount: files.length,
     skippedCount: skipped.length,
     schemaFailures: problems.length,
+    uploadFailureCount: uploadFailures.length,
     bm25: { vocabSize: bm25.vocabSize, postings: bm25.postingCount },
   };
 
@@ -469,10 +529,14 @@ export async function buildIndex({
   // a written record of everything that did not make it in. at this scale
   // "313 files were skipped" is not something anyone should have to discover by
   // noticing an answer is missing.
-  if (skipped.length > 0 || problems.length > 0) {
+  if (skipped.length > 0 || problems.length > 0 || uploadFailures.length > 0) {
     await fsp.writeFile(
       path.join(outputDir, "build-report.json"),
-      `${JSON.stringify({ skipped, schemaProblems: problems.slice(0, 500) }, null, 2)}\n`,
+      `${JSON.stringify(
+        { skipped, schemaProblems: problems.slice(0, 500), uploadFailures: uploadFailures.slice(0, 500) },
+        null,
+        2,
+      )}\n`,
     );
   }
 
@@ -482,5 +546,5 @@ export async function buildIndex({
 
   onProgress({ phase: "done", ...finalManifest });
 
-  return { manifest: finalManifest, chunkCount, fileCount: files.length, skipped, problems };
+  return { manifest: finalManifest, chunkCount, fileCount: files.length, skipped, problems, uploadFailures };
 }
