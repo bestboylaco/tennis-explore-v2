@@ -3,6 +3,7 @@ import { getCurrentUser, logout } from "./api/authApi.js";
 import { appendAssistantMessage, appendUserMessage } from "./ui/messageRenderer.js";
 import { createProcessingStatus } from "./ui/processingStatus.js";
 import { createSourcePanel } from "./ui/sourcePanel.js";
+import { createChatHistory } from "./ui/chatHistory.js";
 
 /*
  * A role can no longer be picked in this interface -- it is a fact about
@@ -75,6 +76,64 @@ const sourcePanel = createSourcePanel({
     downloadLink: getRequiredElement("#source-panel-download"),
 });
 
+/**
+ * Rebuilds the visible transcript when a history item is selected.
+ *
+ * The processing indicator stays mounted because processingStatus keeps a
+ * reference to it. Only rendered user/assistant message rows are replaced.
+ */
+function renderConversation(messages) {
+    sourcePanel.close();
+    clearError();
+
+    for (const message of conversation.querySelectorAll(".message")) {
+        message.remove();
+    }
+
+    for (const message of messages) {
+        if (message.role === "user") {
+            appendUserMessage({
+                conversation,
+                content: message.content,
+            });
+            continue;
+        }
+
+        if (message.role === "assistant") {
+            appendAssistantMessage({
+                conversation,
+                content: message.content,
+                citations: message.citations ?? [],
+                table: message.table ?? null,
+                sql: message.sql ?? null,
+                grounding: message.grounding ?? null,
+                openCitation: sourcePanel.open,
+            });
+        }
+    }
+
+    conversation.scrollTop = conversation.scrollHeight;
+    questionInput.focus();
+}
+
+/*
+ * This is intentionally a UI-only history prototype. Conversation content is
+ * kept in page memory and is cleared on refresh; account-level persistence is
+ * a separate backend/security decision.
+ */
+const chatHistory = createChatHistory({
+    toggleButton: getRequiredElement("#chat-history-toggle"),
+    panel: getRequiredElement("#chat-history-panel"),
+    list: getRequiredElement("#chat-history-list"),
+    emptyState: getRequiredElement("#chat-history-empty"),
+    countNode: getRequiredElement("#chat-history-count"),
+    newChatButton: getRequiredElement("#new-chat-button"),
+    onSelectConversation: ({ messages }) => {
+        status.ready();
+        renderConversation(messages);
+    },
+});
+
 function showError(message) {
     errorMessage.textContent = message;
     errorBanner.hidden = false;
@@ -126,6 +185,7 @@ questionInput.addEventListener("keydown", (event) => {
 function setBusy(busy) {
     sendButton.disabled = busy;
     questionInput.disabled = busy;
+    chatHistory.setBusy(busy);
 }
 
 chatForm.addEventListener("submit", async (event) => {
@@ -136,6 +196,7 @@ chatForm.addEventListener("submit", async (event) => {
 
     if (question === "") return;
 
+    chatHistory.recordUserMessage(question);
     appendUserMessage({ conversation, content: question });
 
     questionInput.value = "";
@@ -147,8 +208,7 @@ chatForm.addEventListener("submit", async (event) => {
         const result = await submitChatQuestion(question);
         const response = result?.response ?? {};
 
-        appendAssistantMessage({
-            conversation,
+        const assistantMessage = {
             content: response.answer ?? "No answer was returned.",
             citations: result?.citations ?? [],
             // present only when the question was answered from the tables. the
@@ -157,6 +217,13 @@ chatForm.addEventListener("submit", async (event) => {
             // the "Sources" citation already opens in the side panel.
             table: response.table ?? null,
             grounding: response.grounding ?? null,
+        };
+
+        chatHistory.recordAssistantMessage(assistantMessage);
+
+        appendAssistantMessage({
+            conversation,
+            ...assistantMessage,
             openCitation: sourcePanel.open,
         });
     } catch (error) {
