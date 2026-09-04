@@ -9,6 +9,7 @@ import agentRoutes from "./modules/agent/agent.routes.js";
 
 import { env } from "./config/env.js";
 import { authConfig } from "./modules/auth/auth.config.js";
+import User from "./modules/auth/models/user.model.js";
 import { getMongoDBStatus } from "./infrastructure/database/mongodb.service.js";
 import { notFoundHandler } from "./middleware/notFoundHandler.js";
 import { errorHandler } from "./middleware/errorHandler.js";
@@ -17,6 +18,8 @@ import { telemetryMiddleware } from "./middleware/telemetry.middleware.js";
 import { sourceRoutes } from "./modules/sources/index.js";
 import { telemetryRoutes } from "./modules/telemetry/index.js";
 import { chatRoutes } from "./modules/chat/index.js";
+import { conversationRoutes } from "./modules/conversations/index.js";
+import { quickQuestionRoutes } from "./modules/quickquestion/index.js";
 import assetRoutes from "./modules/assets/asset.routes.js";
 import auditRoutes from "./modules/audit/routes/audit.routes.js";
 import authRoutes from "./modules/auth/routes/auth.routes.js";
@@ -67,14 +70,34 @@ app.use(
  * NODE_ENV -- CI runs with NODE_ENV unset too, and this must not turn on
  * there (see authConfig.devAutoLoginEnabled).
  */
-app.use((req, res, next) => {
-  if (authConfig.devAutoLoginEnabled && !req.session.user) {
-    req.session.user = {
-      roleId: "admin",
-    };
+app.use(async (req, res, next) => {
+  if (!authConfig.devAutoLoginEnabled || req.session.user) {
+    return next();
   }
 
-  next();
+  try {
+    // Auto-login still resolves a real seeded account. This keeps development
+    // history, audit records and access checks attached to the same identity
+    // shape produced by the normal login flow.
+    const admin = await User.findOne({
+      roleId: "admin",
+      isActive: true,
+    });
+
+    if (!admin) {
+      const error = new Error(
+        "Development auto-login requires a seeded admin account. Run npm run seed:users first.",
+      );
+      error.statusCode = 500;
+      error.code = "DEV_ADMIN_NOT_SEEDED";
+      throw error;
+    }
+
+    req.session.user = admin.toSafeJSON();
+    return next();
+  } catch (error) {
+    return next(error);
+  }
 });
 app.use(express.static(publicDirectory));
 app.use(telemetryMiddleware);
@@ -117,6 +140,7 @@ app.get("/login", (req, res) => {
 // Application routes
 app.use("/api/auth", authRoutes);
 app.use("/api/chat", requireAuth, chatRoutes);
+app.use("/api/conversations", requireAuth, conversationRoutes);
 app.use("/api/agent", requireAuth, agentRoutes);
 app.use("/api/sources", sourceRoutes);
 // Internal-classified data; not a public route (threat model T-01).
@@ -127,7 +151,7 @@ app.use("/api/assets", assetRoutes);
 // access itself (threat model T-01). Admin-only, per the route's own
 // original intent (§7 Data Gate).
 app.use("/api/audit", requireAuth, requireRole("admin"), auditRoutes);
-
+app.use("/api/quickquestions", requireAuth, quickQuestionRoutes);
 // Error handling must come last
 app.use(notFoundHandler);
 app.use(errorHandler);

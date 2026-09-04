@@ -10,6 +10,8 @@
     <link rel="stylesheet" href="/styles/base.css">
     <link rel="stylesheet" href="/styles/chat.css">
     <link rel="stylesheet" href="/styles/auth.css">
+    <link rel="stylesheet"
+          href="/styles/theme-courtside-light.css">
 </head>
 <body class="chat-page">
     <div class="chat-application">
@@ -115,7 +117,7 @@
                          class="chat-history__panel"
                          hidden>
                         <p id="chat-history-empty" class="chat-history__empty">
-                            No previous conversations yet. Your current session will appear here as you chat.
+                            No saved conversations yet. Your first question will create one for this account.
                         </p>
                         <div id="chat-history-list"
                              class="chat-history__list"
@@ -195,6 +197,13 @@
                               autocomplete="off"
                               required></textarea>
                     <button id="send-button" class="send-button" type="submit">Send</button>
+                    <button id="composer-plus-button"
+                            class="composer__plus"
+                            type="button"
+                            aria-label="More options"
+                            title="More options">
+                        +
+                    </button>
                 </form>
 
                 <p class="composer-hint">
@@ -202,52 +211,67 @@
                 </p>
             </section>
 
-            <aside class="sidebar sidebar--right">
-                <section class="explore-panel">
-                    <div class="explore-panel__heading">
-                        <p class="section-eyebrow">Quick start</p>
-                        <h2>Explore</h2>
+            <aside class="sidebar sidebar--right"
+                   aria-label="Quick questions">
+                <section class="explore-panel"
+                         aria-labelledby="explore-heading">
+                    <div class="explore-panel__top">
+                        <div class="explore-panel__heading">
+                            <p class="section-eyebrow">
+                                Quick start
+                            </p>
+
+                            <h2 id="explore-heading">
+                                Explore
+                            </h2>
+                        </div>
+
+                        <button id="quick-questions-edit"
+                                class="quick-questions__edit"
+                                type="button">
+                            Edit
+                        </button>
                     </div>
 
                     <p class="explore-panel__description">
-                        Start with a suggested natural-language coaching question.
+                        Start with a suggested natural-language
+                        coaching question.
                     </p>
 
-                    <div class="explore-list">
-                        <button class="explore-card"
-                                type="button"
-                                data-suggested-question="Show me the latest player performance insights.">
-                            <strong>Recent insights</strong>
-                            <small>Review key player trends</small>
+
+                    <!-- Saved Quick Questions -->
+
+                    <div id="quick-questions-list"
+                         class="explore-list"></div>
+
+
+                    <!-- Quick Question editor -->
+
+                    <div id="quick-questions-editor"
+                         class="quick-questions-editor"
+                         hidden>
+                        <div id="quick-questions-editor-list"
+                             class="quick-questions-editor__list"></div>
+
+                        <button id="quick-question-add"
+                                class="quick-question-add"
+                                type="button">
+                            Add question
                         </button>
 
-                        <button class="explore-card"
-                                type="button"
-                                data-suggested-question="Create a coaching plan for the player's next training session.">
-                            <strong>Create a plan</strong>
-                            <small>Prepare the next session</small>
-                        </button>
+                        <div class="quick-questions-editor__actions">
+                            <button id="quick-questions-cancel"
+                                    class="quick-question-secondary"
+                                    type="button">
+                                Cancel
+                            </button>
 
-                        <button class="explore-card"
-                                type="button"
-                                data-suggested-question="What technical weakness should the player work on first?">
-                            <strong>Technique analysis</strong>
-                            <small>Identify technical priorities</small>
-                        </button>
-
-                        <button class="explore-card"
-                                type="button"
-                                data-suggested-question="Review the player's latest match performance.">
-                            <strong>Match review</strong>
-                            <small>Analyse recent performance</small>
-                        </button>
-
-                        <button class="explore-card"
-                                type="button"
-                                data-suggested-question="What does the available video evidence show about the player's technique?">
-                            <strong>Video evidence</strong>
-                            <small>Review cited video moments</small>
-                        </button>
+                            <button id="quick-questions-save"
+                                    class="quick-question-save"
+                                    type="button">
+                                Save
+                            </button>
+                        </div>
                     </div>
                 </section>
             </aside>
