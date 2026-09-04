@@ -10,8 +10,9 @@
  *
  *   answer     prose, with [n] citation markers
  *   table      a computed result, when the question was answered from records
- *   sql        the query that produced that table, shown so it can be audited
- *   citations  buttons that open the source beside the conversation
+ *   citations  buttons that open the source beside the conversation, which is
+ *              also where the SQL behind a table answer is shown -- putting it
+ *              here too just duplicated the same block under every table.
  */
 
 function element(doc, tag, className, text) {
@@ -247,7 +248,6 @@ export function appendAssistantMessage({
     content,
     citations = [],
     table = null,
-    sql = null,
     grounding = null,
     openCitation,
 }) {
@@ -259,10 +259,6 @@ export function appendAssistantMessage({
     const tableNode = renderTable(doc, table);
 
     if (tableNode) row.append(tableNode);
-
-    if (sql) {
-        row.append(element(doc, "pre", "answer-sql", sql));
-    }
 
     if (Array.isArray(citations) && citations.length > 0 && openCitation) {
         row.append(renderCitations(doc, citations, openCitation));

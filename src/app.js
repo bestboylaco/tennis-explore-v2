@@ -146,7 +146,7 @@ app.use("/api/sources", sourceRoutes);
 // Internal-classified data; not a public route (threat model T-01).
 app.use("/api/telemetry", requireAuth, telemetryRoutes);
 // serves the original file behind a citation, with its own access check
-app.use("/api/assets", assetRoutes);
+app.use("/api/assets", requireAuth, assetRoutes);
 // Says who accessed what -- gating this is as important as gating the
 // access itself (threat model T-01). Admin-only, per the route's own
 // original intent (§7 Data Gate).
