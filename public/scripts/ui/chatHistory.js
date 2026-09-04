@@ -1,50 +1,4 @@
-/**
- * Lightweight chat-history prototype for the AI Coach workspace.
- *
- * Conversations live only in browser memory for the lifetime of this page.
- * That is deliberate: this story is about the interaction pattern, while
- * account-scoped persistence, retention and privacy rules belong to a later
- * backend story.
- */
-
-function createId() {
-    if (globalThis.crypto?.randomUUID) {
-        return globalThis.crypto.randomUUID();
-    }
-
-    return `conversation-${Date.now()}-${Math.random().toString(16).slice(2)}`;
-}
-
-function createConversation(now) {
-    const timestamp = now();
-
-    return {
-        id: createId(),
-        title: "New conversation",
-        createdAt: timestamp,
-        updatedAt: timestamp,
-        messages: [],
-    };
-}
-
-function titleFromQuestion(question) {
-    const compact = String(question).replace(/\s+/g, " ").trim();
-
-    if (compact.length <= 42) return compact || "New conversation";
-
-    return `${compact.slice(0, 39).trimEnd()}...`;
-}
-
-function formatTime(value) {
-    try {
-        return new Intl.DateTimeFormat(undefined, {
-            hour: "numeric",
-            minute: "2-digit",
-        }).format(new Date(value));
-    } catch {
-        return "Earlier";
-    }
-}
+import * as conversationApi from "../api/conversationApi.js";
 
 function cloneTurn(turn) {
     return {
@@ -57,10 +11,67 @@ function cloneTurn(turn) {
     };
 }
 
+function toTimestamp(value) {
+    const timestamp = new Date(value).getTime();
+
+    return Number.isFinite(timestamp) ? timestamp : 0;
+}
+
+function sortByLatestMessage(conversations) {
+    return [...conversations].sort((left, right) => {
+        const messageDifference =
+            toTimestamp(right.lastMessageAt) - toTimestamp(left.lastMessageAt);
+
+        if (messageDifference !== 0) return messageDifference;
+
+        return toTimestamp(right.createdAt) - toTimestamp(left.createdAt);
+    });
+}
+
+function formatHistoryTime(value) {
+    const date = new Date(value);
+
+    if (Number.isNaN(date.getTime())) return "Earlier";
+
+    const now = new Date();
+    const sameDay =
+        date.getFullYear() === now.getFullYear() &&
+        date.getMonth() === now.getMonth() &&
+        date.getDate() === now.getDate();
+
+    return new Intl.DateTimeFormat(undefined, {
+        ...(sameDay
+            ? {}
+            : {
+                  day: "numeric",
+                  month: "short",
+              }),
+        hour: "numeric",
+        minute: "2-digit",
+    }).format(date);
+}
+
+function messageMeta(conversation, isActive) {
+    const count = Number(conversation.messageCount ?? 0);
+    const messageText = `${count} ${count === 1 ? "message" : "messages"}`;
+    const timeText = formatHistoryTime(
+        conversation.lastMessageAt ?? conversation.updatedAt ?? conversation.createdAt,
+    );
+
+    return isActive
+        ? `Current · ${messageText} · ${timeText}`
+        : `${messageText} · ${timeText}`;
+}
+
 /**
- * Creates the collapsible conversation-history interaction.
+ * Account-scoped chat history for the AI Coach workspace.
+ *
+ * The backend owns persistence and derives the account from the authenticated
+ * session. Selecting a conversation never changes its timestamp, so merely
+ * opening history cannot reshuffle the list. A conversation moves only when a
+ * new message is actually added to it.
  */
-export function createChatHistory({
+export async function createChatHistory({
     toggleButton,
     panel,
     list,
@@ -68,18 +79,30 @@ export function createChatHistory({
     countNode,
     newChatButton,
     onSelectConversation,
-    now = () => new Date().toISOString(),
+    onError,
+    store = conversationApi,
 }) {
     const doc = panel.ownerDocument;
-    const conversations = [createConversation(now)];
+    let conversations = [];
+    let activeConversationId = null;
+    let activeMessages = [];
+    let busy = false;
+    let selecting = false;
+
+    function reportError(error) {
+        onError?.(error);
+    }
+
+    try {
+        conversations = sortByLatestMessage(await store.listConversations());
+    } catch (error) {
+        reportError(error);
+    }
 
     if (emptyState.textContent.trim() === "") {
         emptyState.textContent =
-            "No previous conversations yet. Your current session will appear here as you chat.";
+            "No saved conversations yet. Your first question will create one for this account.";
     }
-
-    let activeConversationId = conversations[0].id;
-    let busy = false;
 
     function activeConversation() {
         return conversations.find(
@@ -87,29 +110,31 @@ export function createChatHistory({
         );
     }
 
-    function previousConversationCount() {
-        return Math.max(0, conversations.length - 1);
+    function upsertSummary(summary) {
+        const index = conversations.findIndex(
+            (conversation) => conversation.id === summary.id,
+        );
+
+        if (index >= 0) {
+            conversations[index] = {
+                ...conversations[index],
+                ...summary,
+            };
+        } else {
+            conversations.push(summary);
+        }
+
+        conversations = sortByLatestMessage(conversations);
     }
 
     function render() {
-        const previousCount = previousConversationCount();
-
-        countNode.textContent = String(previousCount);
-        emptyState.hidden = previousCount > 0;
+        countNode.textContent = String(conversations.length);
+        emptyState.hidden = conversations.length > 0;
         list.replaceChildren();
 
-        /*
-         * Keep the active conversation first. Previous conversations follow
-         * in most-recently-used order so history stays easy to scan.
-         */
-        const ordered = [...conversations].sort((left, right) => {
-            if (left.id === activeConversationId) return -1;
-            if (right.id === activeConversationId) return 1;
-
-            return new Date(right.updatedAt) - new Date(left.updatedAt);
-        });
-
-        for (const conversation of ordered) {
+        // Do not move the active conversation to the top. The server order is
+        // based on actual message activity, which makes the list predictable.
+        for (const conversation of conversations) {
             const button = doc.createElement("button");
             const title = doc.createElement("span");
             const meta = doc.createElement("span");
@@ -118,7 +143,7 @@ export function createChatHistory({
             button.type = "button";
             button.className = "chat-history__item";
             button.dataset.conversationId = conversation.id;
-            button.disabled = busy;
+            button.disabled = busy || selecting;
 
             if (isActive) {
                 button.classList.add("chat-history__item--active");
@@ -126,41 +151,40 @@ export function createChatHistory({
             }
 
             title.className = "chat-history__item-title";
-            title.textContent = conversation.title;
+            title.textContent = conversation.title || "Untitled conversation";
 
             meta.className = "chat-history__item-meta";
-            meta.textContent = isActive
-                ? "Current"
-                : `Last used ${formatTime(conversation.updatedAt)}`;
+            meta.textContent = messageMeta(conversation, isActive);
 
             button.append(title, meta);
 
-            button.addEventListener("click", () => {
-                if (busy || isActive) return;
+            button.addEventListener("click", async () => {
+                if (busy || selecting || isActive) return;
 
-                const current = activeConversation();
-
-                /*
-                 * An untouched New chat is a workspace state, not useful
-                 * history. Drop it when the user returns to an earlier chat.
-                 */
-                if (current.messages.length === 0) {
-                    const emptyIndex = conversations.findIndex(
-                        (item) => item.id === current.id,
-                    );
-
-                    if (emptyIndex >= 0) conversations.splice(emptyIndex, 1);
-                }
-
-                activeConversationId = conversation.id;
-                conversation.updatedAt = now();
+                selecting = true;
                 render();
 
-                onSelectConversation?.({
-                    id: conversation.id,
-                    title: conversation.title,
-                    messages: conversation.messages.map(cloneTurn),
-                });
+                try {
+                    const selected = await store.getConversation(conversation.id);
+
+                    activeConversationId = selected.id;
+                    activeMessages = (selected.messages ?? []).map(cloneTurn);
+
+                    // Reading a conversation does not alter updatedAt or
+                    // lastMessageAt, so its position remains unchanged.
+                    render();
+
+                    onSelectConversation?.({
+                        id: selected.id,
+                        title: selected.title,
+                        messages: activeMessages.map(cloneTurn),
+                    });
+                } catch (error) {
+                    reportError(error);
+                } finally {
+                    selecting = false;
+                    render();
+                }
             });
 
             list.append(button);
@@ -177,52 +201,88 @@ export function createChatHistory({
     });
 
     newChatButton.addEventListener("click", () => {
-        if (busy) return;
+        if (busy || selecting) return;
 
-        const current = activeConversation();
-
-        /*
-         * Do not create a stack of empty conversations when New chat is
-         * clicked repeatedly. The current empty conversation is already ready.
-         */
-        if (current.messages.length === 0) {
-            onSelectConversation?.({
-                id: current.id,
-                title: current.title,
-                messages: [],
-            });
-            return;
-        }
-
-        const conversation = createConversation(now);
-
-        conversations.push(conversation);
-        activeConversationId = conversation.id;
+        // An empty chat is only a workspace state. It is not written to the
+        // database until the first user message, avoiding empty history rows.
+        activeConversationId = null;
+        activeMessages = [];
         render();
-        setExpanded(true);
 
         onSelectConversation?.({
-            id: conversation.id,
-            title: conversation.title,
+            id: null,
+            title: "New conversation",
             messages: [],
         });
     });
 
-    function recordTurn(turn) {
-        const conversation = activeConversation();
-        const recorded = cloneTurn(turn);
+    async function recordUserMessage(content) {
+        const message = {
+            role: "user",
+            content,
+        };
 
-        conversation.messages.push(recorded);
-        conversation.updatedAt = now();
+        activeMessages.push(cloneTurn(message));
 
-        if (
-            recorded.role === "user" &&
-            conversation.messages.filter((message) => message.role === "user").length === 1
-        ) {
-            conversation.title = titleFromQuestion(recorded.content);
+        try {
+            if (!activeConversationId) {
+                const created = await store.createConversation(message);
+
+                activeConversationId = created.id;
+                activeMessages = (created.messages ?? activeMessages).map(cloneTurn);
+                upsertSummary(created);
+            } else {
+                const summary = await store.appendConversationMessage(
+                    activeConversationId,
+                    message,
+                );
+
+                upsertSummary(summary);
+            }
+
+            render();
+            return true;
+        } catch (error) {
+            reportError(error);
+            return false;
+        }
+    }
+
+    async function recordAssistantMessage({
+        content,
+        citations = [],
+        table = null,
+        sql = null,
+        grounding = null,
+    }) {
+        const message = {
+            role: "assistant",
+            content,
+            citations,
+            table,
+            sql,
+            grounding,
+        };
+
+        activeMessages.push(cloneTurn(message));
+
+        if (!activeConversationId) {
+            return false;
         }
 
-        render();
+        try {
+            const summary = await store.appendConversationMessage(
+                activeConversationId,
+                message,
+            );
+
+            upsertSummary(summary);
+            render();
+            return true;
+        } catch (error) {
+            reportError(error);
+            return false;
+        }
     }
 
     function setBusy(nextBusy) {
@@ -231,43 +291,25 @@ export function createChatHistory({
         newChatButton.disabled = busy;
 
         for (const item of list.querySelectorAll("button")) {
-            item.disabled = busy;
+            item.disabled = busy || selecting;
         }
     }
 
     render();
+    setExpanded(true);
 
     return {
-        recordUserMessage(content) {
-            recordTurn({ role: "user", content });
-        },
-
-        recordAssistantMessage({
-            content,
-            citations = [],
-            table = null,
-            sql = null,
-            grounding = null,
-        }) {
-            recordTurn({
-                role: "assistant",
-                content,
-                citations,
-                table,
-                sql,
-                grounding,
-            });
-        },
-
+        recordUserMessage,
+        recordAssistantMessage,
         setBusy,
 
         getActiveConversation() {
             const conversation = activeConversation();
 
             return {
-                id: conversation.id,
-                title: conversation.title,
-                messages: conversation.messages.map(cloneTurn),
+                id: activeConversationId,
+                title: conversation?.title ?? "New conversation",
+                messages: activeMessages.map(cloneTurn),
             };
         },
     };

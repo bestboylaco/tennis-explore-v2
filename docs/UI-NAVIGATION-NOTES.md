@@ -21,23 +21,33 @@ External tools open in a new tab so the active AI Coach conversation remains in
 place. More organisational tools can be added to the same `Connected tools`
 section when their URLs are confirmed.
 
-## Chat-history prototype
+## Account-scoped chat history
 
-The chat-history work in this branch is intentionally an interaction prototype,
-not long-term account persistence.
+Chat history is now persisted in MongoDB and belongs to the authenticated
+account. The browser never supplies an owner id; `/api/conversations` derives
+the owner from `req.user.id`, so signing out and later signing back in restores
+that account's conversations without exposing another account's history.
 
-The prototype provides:
+The interface provides:
 
 - a collapsible history area in the existing left sidebar;
-- a visible current-conversation state;
-- a `New chat` action that moves the completed conversation into history;
+- a `New chat` action that starts a clean workspace without creating an empty
+  database record;
+- persisted user and assistant messages, including citations, tables, SQL and
+  grounding information;
 - selection of an earlier conversation without leaving the AI Coach workspace;
-- an empty state when there are no earlier conversations; and
-- temporary preservation of rendered answer details, including citations,
-  tables, SQL and grounding warnings, while the page remains open.
+- an active-conversation highlight; and
+- an empty state when the signed-in account has no saved conversations.
 
-Conversation content is held only in browser memory and is cleared when the page
-is refreshed or closed. This avoids making an unreviewed persistence decision
-for potentially sensitive coaching or athlete information. Server-side history,
-retention, account scoping, deletion and privacy rules should be handled in a
-separate story before production persistence is introduced.
+### Ordering rule
+
+History is ordered by `lastMessageAt` (newest activity first). Selecting or
+reading an older conversation does **not** change that timestamp, so clicking a
+history item never causes the list to reshuffle. A conversation moves to the
+top only after a new message is added to it. Each row also shows its message
+count and last-message time so similarly named conversations remain easier to
+distinguish.
+
+Retention, deletion and organisation-wide privacy policy can still be expanded
+later if the partner requires them; this implementation covers account-scoped
+persistence and stable navigation behaviour.

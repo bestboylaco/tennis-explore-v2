@@ -1,0 +1,905 @@
+/*
+ * Courtside Light
+ *
+ * Light-colour theme overrides for the current TennisExplore interface.
+ *
+ * Presentation only:
+ * - keeps the existing application layout and navigation
+ * - keeps Chat History behaviour unchanged
+ * - styles the main workspace, login page and source surfaces
+ * - includes the current editable Quick Questions controls
+ * - includes the composer focus override used by the chat input
+ */
+
+/* ==========================================================================
+   1. Core colour tokens
+   ========================================================================== */
+
+:root {
+    /* Main backgrounds */
+    --colour-background-deep: #eef1e8;
+    --colour-background: #f6f7f1;
+    --colour-background-light: #ffffff;
+    /* Text */
+    --colour-text-primary: #17251d;
+    --colour-text-secondary: #536158;
+    --colour-text-muted: #818b84;
+    /* Main accents */
+    --colour-green: #a8d94c;
+    --colour-blue-500: #397c68;
+    --colour-blue-600: #285f4d;
+    /* Borders */
+    --border-glass: rgba(35, 79, 55, 0.12);
+    --border-glass-strong: rgba(35, 79, 55, 0.22);
+}
+
+/* ==========================================================================
+   2. Page background
+   ========================================================================== */
+
+html,
+body {
+    color: #17251d !important;
+    background: radial-gradient(circle at 90% 8%, rgba(179, 218, 104, 0.17), transparent 28rem), radial-gradient(circle at 5% 90%, rgba(63, 132, 96, 0.08), transparent 30rem), #f4f6ef !important;
+}
+
+/*
+ * Keep all current dimensions/grid behaviour.
+ * Only replace the dark purple surfaces.
+*/
+
+.app-shell,
+.app,
+.workspace,
+.chat-layout {
+    background: transparent !important;
+    color: #17251d !important;
+}
+
+/* ==========================================================================
+   3. Top bar
+   ========================================================================== */
+
+.topbar,
+.app-header,
+.chat-header,
+.workspace-header {
+    background: rgba(250, 251, 246, 0.94) !important;
+    border-color: rgba(36, 80, 55, 0.12) !important;
+    color: #173c29 !important;
+    box-shadow: 0 1px 0 rgba(35, 75, 51, 0.06) !important;
+    backdrop-filter: blur(14px);
+}
+
+/* Brand */
+
+.brand,
+.brand strong,
+.brand span,
+.topbar__brand {
+    color: #173c29 !important;
+}
+
+/* Ready status */
+
+.status-pill,
+.ready-pill {
+    color: #365241 !important;
+    background: #eef4e8 !important;
+    border-color: rgba(62, 108, 72, 0.18) !important;
+}
+
+/* ==========================================================================
+   4. Left sidebar
+   ========================================================================== */
+
+.sidebar,
+.workspace-sidebar,
+.left-sidebar {
+    background: rgba(247, 249, 242, 0.96) !important;
+    border-color: rgba(36, 80, 55, 0.12) !important;
+}
+
+    /* Sidebar normal items */
+
+    .sidebar a,
+    .sidebar button,
+    .workspace-sidebar a,
+    .workspace-sidebar button,
+    .left-sidebar a,
+    .left-sidebar button {
+        color: #647068 !important;
+    }
+
+        /* Sidebar hover */
+
+        .sidebar a:hover,
+        .sidebar button:hover,
+        .workspace-sidebar a:hover,
+        .workspace-sidebar button:hover,
+        .left-sidebar a:hover,
+        .left-sidebar button:hover {
+            color: #173c29 !important;
+            background: rgba(62, 118, 80, 0.07) !important;
+        }
+
+    /* Active AI Coach */
+
+    .sidebar .active,
+    .sidebar [aria-current="page"],
+    .workspace-sidebar .active,
+    .workspace-sidebar [aria-current="page"] {
+        color: #173c29 !important;
+        background: linear-gradient(135deg, rgba(180, 221, 94, 0.34), rgba(76, 145, 103, 0.12)) !important;
+        border-color: rgba(61, 116, 77, 0.19) !important;
+    }
+
+/* Sidebar labels */
+
+.sidebar__heading,
+.sidebar-section__title,
+.nav-section__label {
+    color: #879089 !important;
+}
+
+/* ==========================================================================
+   5. Chat History
+   ========================================================================== */
+
+.chat-history,
+.chat-history__panel,
+.chat-history__content {
+    border-color: rgba(37, 79, 55, 0.1) !important;
+}
+
+    /* History rows */
+
+    .chat-history__item,
+    .conversation-history__item,
+    .chat-history button {
+        color: #626e66 !important;
+        background: transparent !important;
+    }
+
+        /* History hover */
+
+        .chat-history__item:hover,
+        .conversation-history__item:hover,
+        .chat-history button:hover {
+            color: #173c29 !important;
+            background: rgba(63, 119, 81, 0.07) !important;
+        }
+
+        /*
+ * Current conversation.
+ *
+ * Position/order is still handled by the existing Chat History JS.
+*/
+
+        .chat-history__item.active,
+        .chat-history__item.is-active,
+        .conversation-history__item.active,
+        .conversation-history__item.is-active,
+        .chat-history button[aria-current="true"] {
+            color: #173c29 !important;
+            background: rgba(166, 211, 77, 0.2) !important;
+            border-color: rgba(72, 121, 77, 0.18) !important;
+        }
+
+/* Chat history metadata */
+
+.chat-history__meta,
+.chat-history__time,
+.chat-history__count {
+    color: #8b958d !important;
+}
+
+/* ==========================================================================
+   6. Main AI Coach area
+   ========================================================================== */
+
+.chat-panel,
+.ai-coach-panel,
+.chat-main {
+    background: rgba(255, 255, 252, 0.78) !important;
+    border-color: rgba(36, 80, 55, 0.12) !important;
+    box-shadow: 0 18px 50px rgba(38, 72, 51, 0.06) !important;
+}
+
+    /* Headings */
+
+    .chat-panel h1,
+    .chat-panel h2,
+    .chat-panel h3,
+    .ai-coach-panel h1,
+    .ai-coach-panel h2 {
+        color: #173c29 !important;
+    }
+
+/* Supporting text */
+
+.chat-panel__subtitle,
+.chat-subtitle {
+    color: #707c73 !important;
+}
+
+/* ==========================================================================
+   7. User message
+   ========================================================================== */
+
+.message--user .message__bubble {
+    color: #ffffff !important;
+    background: linear-gradient(135deg, #275f47, #3d7b5d) !important;
+    border-color: rgba(36, 92, 65, 0.2) !important;
+    box-shadow: 0 8px 22px rgba(38, 91, 64, 0.13) !important;
+}
+
+/* ==========================================================================
+   8. Assistant response
+   ========================================================================== */
+
+.message--assistant .message__bubble {
+    color: #29362e !important;
+    background: #ffffff !important;
+    border: 1px solid rgba(37, 82, 57, 0.13) !important;
+    box-shadow: 0 7px 24px rgba(37, 70, 48, 0.055) !important;
+}
+
+    .message--assistant .message__bubble p {
+        color: #35433a !important;
+    }
+
+/* ==========================================================================
+   9. Composer
+   ========================================================================== */
+
+.composer {
+    background: rgba(255, 255, 252, 0.96) !important;
+    border-color: rgba(37, 81, 56, 0.16) !important;
+    box-shadow: 0 10px 28px rgba(36, 70, 48, 0.08) !important;
+}
+
+    .composer textarea,
+    .composer input {
+        color: #25342b !important;
+        background: transparent !important;
+    }
+
+        .composer textarea::placeholder,
+        .composer input::placeholder {
+            color: #929c94 !important;
+        }
+
+/* Send */
+
+.send-button {
+    color: #ffffff !important;
+    background: linear-gradient(135deg, #397b5d, #286249) !important;
+    border-color: transparent !important;
+    box-shadow: 0 7px 18px rgba(38, 100, 71, 0.18) !important;
+}
+
+    .send-button:hover {
+        background: linear-gradient(135deg, #448a69, #2f6e53) !important;
+    }
+
+/* --------------------------------------------------------------------------
+   Composer focus behaviour
+   -------------------------------------------------------------------------- */
+
+/*
+ * The composer already has a visible container, so the textarea does not
+ * need a second focus rectangle inside it.
+*/
+
+.composer #question:focus,
+.composer #question:focus-visible,
+.composer textarea:focus,
+.composer textarea:focus-visible {
+    outline: none !important;
+    outline-offset: 0 !important;
+    border: 0 !important;
+    box-shadow: none !important;
+}
+
+/*
+ * Keep the composer visually unchanged while typing.
+*/
+
+.composer:focus-within {
+    border-color: var(--border-glass-strong) !important;
+    box-shadow: 0 10px 28px rgba(36, 70, 48, 0.08) !important;
+}
+
+/* ==========================================================================
+   10. Right Explore / Quick Questions
+   ========================================================================== */
+
+.explore-panel,
+.quick-questions,
+.suggestions-panel,
+.right-panel {
+    background: rgba(249, 250, 245, 0.88) !important;
+    border-color: rgba(35, 79, 55, 0.12) !important;
+    box-shadow: 0 18px 50px rgba(39, 71, 51, 0.05) !important;
+}
+
+    .explore-panel h2,
+    .explore-panel h3,
+    .quick-questions h2,
+    .quick-questions h3 {
+        color: #173c29 !important;
+    }
+
+    .explore-panel p,
+    .quick-questions p {
+        color: #748078 !important;
+    }
+
+/* Quick-question cards */
+
+[data-suggested-question],
+.suggested-question,
+.quick-question,
+.prompt-card {
+    color: #38463d !important;
+    background: #ffffff !important;
+    border-color: rgba(40, 89, 61, 0.13) !important;
+    box-shadow: 0 5px 16px rgba(40, 72, 50, 0.04) !important;
+    transition: transform 160ms ease, border-color 160ms ease, background 160ms ease, box-shadow 160ms ease;
+}
+
+    [data-suggested-question]:hover,
+    .suggested-question:hover,
+    .quick-question:hover,
+    .prompt-card:hover {
+        color: #173c29 !important;
+        background: #fbfdf6 !important;
+        border-color: rgba(71, 128, 78, 0.34) !important;
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(46, 83, 55, 0.08) !important;
+    }
+
+/* ==========================================================================
+   11. Sources button
+   ========================================================================== */
+
+.citation-list {
+    border-color: rgba(37, 80, 55, 0.11) !important;
+}
+
+.citation-list__toggle {
+    color: #536158 !important;
+    background: #f4f7ef !important;
+    border: 1px solid rgba(39, 87, 59, 0.17) !important;
+}
+
+    .citation-list__toggle:hover {
+        color: #173c29 !important;
+        background: #ebf1e5 !important;
+        border-color: rgba(42, 93, 62, 0.3) !important;
+    }
+
+/* ==========================================================================
+   12. Sources popover
+   ========================================================================== */
+
+.citation-popover {
+    background: rgba(255, 255, 252, 0.99) !important;
+    border: 1px solid rgba(39, 85, 58, 0.15) !important;
+    box-shadow: 0 16px 45px rgba(31, 64, 43, 0.16) !important;
+    backdrop-filter: blur(15px);
+}
+
+.citation-popover__heading {
+    color: #78837a !important;
+}
+
+.citation-button {
+    color: #526158 !important;
+    background: transparent !important;
+}
+
+    .citation-button:hover {
+        color: #173c29 !important;
+        background: rgba(65, 122, 79, 0.07) !important;
+    }
+
+/* ==========================================================================
+   13. Supporting Evidence panel
+   ========================================================================== */
+
+.source-panel,
+.source-drawer,
+.evidence-panel {
+    color: #28362d !important;
+    background: #fbfcf8 !important;
+    border-color: rgba(36, 81, 55, 0.14) !important;
+    box-shadow: -16px 0 45px rgba(32, 63, 43, 0.11) !important;
+}
+
+.source-panel__header,
+.source-drawer__header {
+    background: #f2f5ec !important;
+    border-color: rgba(37, 82, 56, 0.11) !important;
+}
+
+.source-panel h1,
+.source-panel h2,
+.source-panel h3,
+.source-panel__title {
+    color: #173c29 !important;
+}
+
+.source-panel pre,
+.source-panel code,
+.source-panel__content,
+.source-chunk {
+    color: #29372e !important;
+    background: #ffffff !important;
+    border-color: rgba(37, 81, 55, 0.12) !important;
+}
+
+/* ==========================================================================
+   14. Tables
+   ========================================================================== */
+
+.answer-table {
+    color: #2b3930 !important;
+    background: #ffffff !important;
+    border-color: rgba(39, 84, 58, 0.13) !important;
+}
+
+    .answer-table th {
+        color: #173c29 !important;
+        background: #edf2e7 !important;
+    }
+
+    .answer-table td,
+    .answer-table th {
+        border-color: rgba(39, 84, 58, 0.11) !important;
+    }
+
+/* ==========================================================================
+   15. SQL / technical output
+   ========================================================================== */
+
+.answer-sql {
+    color: #294638 !important;
+    background: #eef3e9 !important;
+    border-color: rgba(38, 82, 56, 0.13) !important;
+}
+
+/* ==========================================================================
+   16. Processing status
+   ========================================================================== */
+
+.processing,
+.processing-state,
+.status-card,
+.composer-status {
+    color: #4d5b52 !important;
+}
+
+.status-dot,
+.ready-dot {
+    background: #94cb37 !important;
+    box-shadow: 0 0 8px rgba(148, 203, 55, 0.38) !important;
+}
+
+/* ==========================================================================
+   17. Error messages
+   ========================================================================== */
+
+.error-banner,
+.error-state,
+.request-error {
+    color: #813833 !important;
+    background: #fff3f1 !important;
+    border-color: rgba(178, 76, 67, 0.25) !important;
+}
+
+/* ==========================================================================
+   18. Generic buttons / small controls
+   ========================================================================== */
+
+.icon-button,
+.secondary-button,
+.ghost-button {
+    color: #536158 !important;
+    background: rgba(255, 255, 252, 0.82) !important;
+    border-color: rgba(38, 82, 56, 0.15) !important;
+}
+
+    .icon-button:hover,
+    .secondary-button:hover,
+    .ghost-button:hover {
+        color: #173c29 !important;
+        background: #ebf1e6 !important;
+    }
+
+/* ==========================================================================
+   19. Focus accessibility
+   ========================================================================== */
+
+button:focus-visible,
+a:focus-visible,
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible {
+    outline: 2px solid rgba(49, 116, 84, 0.55) !important;
+    outline-offset: 2px;
+}
+
+/* ==========================================================================
+   20. Scrollbars
+   ========================================================================== */
+
+* {
+    scrollbar-color: rgba(63, 105, 77, 0.25) transparent;
+}
+
+    *::-webkit-scrollbar {
+        width: 8px;
+        height: 8px;
+    }
+
+    *::-webkit-scrollbar-thumb {
+        background: rgba(63, 105, 77, 0.24);
+        border-radius: 999px;
+    }
+
+        *::-webkit-scrollbar-thumb:hover {
+            background: rgba(63, 105, 77, 0.38);
+        }
+
+/* ==========================================================================
+   21. Login page - shared auth styles
+   ========================================================================== */
+
+.auth-page,
+.login-page {
+    min-height: 100vh;
+    color: #17251d !important;
+    background: radial-gradient(circle at 82% 12%, rgba(179, 218, 104, 0.18), transparent 28rem), radial-gradient(circle at 8% 88%, rgba(63, 132, 96, 0.09), transparent 30rem), #f4f6ef !important;
+}
+
+.auth-shell,
+.login-shell {
+    background: transparent !important;
+}
+
+/* Login card */
+
+.auth-card,
+.login-card {
+    color: #25342b !important;
+    background: rgba(255, 255, 252, 0.94) !important;
+    border: 1px solid rgba(37, 81, 56, 0.13) !important;
+    box-shadow: 0 18px 55px rgba(37, 70, 48, 0.09) !important;
+}
+
+    .auth-card h1,
+    .auth-card h2,
+    .login-card h1,
+    .login-card h2 {
+        color: #173c29 !important;
+    }
+
+    .auth-card p,
+    .login-card p,
+    .auth-subtitle {
+        color: #6f7b73 !important;
+    }
+
+    /* Inputs */
+
+    .auth-card input,
+    .login-card input {
+        color: #25342b !important;
+        background: #ffffff !important;
+        border-color: rgba(37, 81, 56, 0.17) !important;
+    }
+
+        .auth-card input::placeholder,
+        .login-card input::placeholder {
+            color: #949d96 !important;
+        }
+
+        .auth-card input:focus,
+        .login-card input:focus {
+            border-color: rgba(54, 119, 84, 0.48) !important;
+            box-shadow: 0 0 0 3px rgba(93, 151, 98, 0.10) !important;
+        }
+
+    /* Login button */
+
+    .auth-card button[type="submit"],
+    .login-card button[type="submit"],
+    .auth-submit {
+        color: #ffffff !important;
+        background: linear-gradient(135deg, #397b5d, #285f49) !important;
+        border-color: transparent !important;
+    }
+
+        .auth-card button[type="submit"]:hover,
+        .login-card button[type="submit"]:hover,
+        .auth-submit:hover {
+            background: linear-gradient(135deg, #458a69, #306d52) !important;
+        }
+
+/* ==========================================================================
+   22. Login page - TennisExplore site structure
+   ========================================================================== */
+
+/*
+ * login.html uses .site rather than .auth-page/.login-page.
+ * Override the site's normal purple background here.
+*/
+
+.site--login {
+    min-height: 100vh;
+    color: #17251d !important;
+    background: radial-gradient(circle at 82% 10%, rgba(183, 220, 105, 0.18), transparent 28rem), radial-gradient(circle at 8% 88%, rgba(75, 143, 105, 0.08), transparent 30rem), linear-gradient(145deg, #f8f9f3, #f0f3e9) !important;
+}
+
+/* --------------------------------------------------------------------------
+   Login header
+   -------------------------------------------------------------------------- */
+
+.site-header--login {
+    position: relative;
+    background: rgba(250, 251, 246, 0.94) !important;
+    border-bottom: 1px solid rgba(36, 80, 55, 0.11) !important;
+    box-shadow: 0 1px 0 rgba(36, 75, 52, 0.05) !important;
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+}
+
+    /*
+ * There is no navigation on the login page, so the brand sits cleanly
+ * on the left without leaving a dark header section behind.
+*/
+
+    .site-header--login .brand {
+        color: #173c29 !important;
+    }
+
+/* --------------------------------------------------------------------------
+   TennisExplore logo
+   -------------------------------------------------------------------------- */
+
+.brand__logo {
+    width: 2.15rem;
+    height: 2.15rem;
+    display: grid;
+    place-items: center;
+    flex: none;
+    border: 1px solid rgba(51, 105, 70, 0.16);
+    border-radius: 0.7rem;
+    background: rgba(255, 255, 252, 0.9);
+    box-shadow: 0 4px 14px rgba(43, 79, 55, 0.07);
+}
+
+/*
+ * CSS tennis ball instead of a text character or small outline SVG.
+*/
+
+.brand__tennis-ball {
+    position: relative;
+    display: block;
+    width: 1.05rem;
+    height: 1.05rem;
+    overflow: hidden;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #dff77b, #a7d83f);
+    box-shadow: inset 0 0 0 1px rgba(71, 105, 43, 0.12), 0 0 0.65rem rgba(164, 213, 63, 0.24);
+}
+
+    /*
+ * Tennis-ball seam.
+*/
+
+    .brand__tennis-ball::before,
+    .brand__tennis-ball::after {
+        content: "";
+        position: absolute;
+        top: -0.08rem;
+        width: 0.55rem;
+        height: 1.2rem;
+        border: 1px solid rgba(67, 102, 44, 0.48);
+        border-top-color: transparent;
+        border-bottom-color: transparent;
+        border-radius: 50%;
+    }
+
+    .brand__tennis-ball::before {
+        left: -0.18rem;
+    }
+
+    .brand__tennis-ball::after {
+        right: -0.18rem;
+    }
+
+.brand__name {
+    display: inline-flex;
+    align-items: baseline;
+    color: #173c29 !important;
+}
+
+    .brand__name strong {
+        color: #173c29 !important;
+        font-weight: 800;
+    }
+
+    .brand__name span {
+        color: #173c29 !important;
+        font-weight: 400;
+    }
+
+/* --------------------------------------------------------------------------
+   Login workspace
+   -------------------------------------------------------------------------- */
+
+.site--login .auth-shell {
+    background: transparent !important;
+}
+
+/* Login card */
+
+.site--login .auth-card {
+    color: #26352c !important;
+    background: rgba(255, 255, 252, 0.96) !important;
+    border: 1px solid rgba(37, 81, 56, 0.13) !important;
+    box-shadow: 0 1.25rem 3.5rem rgba(37, 70, 48, 0.09) !important;
+}
+
+    .site--login .auth-card h1 {
+        color: #173c29 !important;
+    }
+
+.site--login .auth-card__lead {
+    color: #68766d !important;
+}
+
+/* --------------------------------------------------------------------------
+   Login fields
+   -------------------------------------------------------------------------- */
+
+.site--login .field__label {
+    color: #526158 !important;
+    font-weight: 600;
+}
+
+.site--login .field input {
+    color: #25342b !important;
+    background: #ffffff !important;
+    border: 1px solid rgba(37, 81, 56, 0.16) !important;
+    box-shadow: inset 0 1px 2px rgba(37, 70, 48, 0.025);
+}
+
+    .site--login .field input:hover {
+        border-color: rgba(47, 104, 70, 0.28) !important;
+    }
+
+    .site--login .field input:focus {
+        outline: none !important;
+        border-color: #5d9770 !important;
+        box-shadow: 0 0 0 3px rgba(84, 143, 98, 0.11) !important;
+    }
+
+/* --------------------------------------------------------------------------
+   Sign-in button
+   -------------------------------------------------------------------------- */
+
+.site--login .auth-card__submit {
+    color: #ffffff !important;
+    background: linear-gradient(135deg, #397b5d, #286249) !important;
+    border: none !important;
+    box-shadow: 0 7px 18px rgba(38, 100, 71, 0.17);
+}
+
+    .site--login .auth-card__submit:hover {
+        background: linear-gradient(135deg, #448a69, #306e53) !important;
+    }
+
+    .site--login .auth-card__submit:disabled {
+        opacity: 0.55;
+    }
+
+/* --------------------------------------------------------------------------
+   Login errors
+   -------------------------------------------------------------------------- */
+
+.site--login .auth-card__error {
+    color: #833b35 !important;
+    background: #fff3f0 !important;
+    border-color: rgba(180, 82, 72, 0.22) !important;
+}
+
+/* --------------------------------------------------------------------------
+   Login footer
+   -------------------------------------------------------------------------- */
+
+.site--login .site-footer {
+    color: #7e8981 !important;
+    background: transparent !important;
+    border-top: 1px solid rgba(36, 80, 55, 0.09) !important;
+}
+
+/* ==========================================================================
+   23. Editable Quick Questions
+   ========================================================================== */
+
+.quick-questions__edit {
+    color: #536158 !important;
+    background: #f4f7ef !important;
+    border-color: rgba(39, 87, 59, 0.17) !important;
+}
+
+    .quick-questions__edit:hover {
+        color: #173c29 !important;
+        background: #eaf1e4 !important;
+    }
+
+.quick-question-editor-row {
+    background: #f8faf4 !important;
+    border-color: rgba(39, 87, 59, 0.14) !important;
+}
+
+    .quick-question-editor-row input,
+    .quick-question-editor-row textarea {
+        color: #29372e !important;
+        background: #ffffff !important;
+        border-color: rgba(39, 87, 59, 0.16) !important;
+    }
+
+        .quick-question-editor-row input:focus,
+        .quick-question-editor-row textarea:focus {
+            border-color: #4f8d6c !important;
+            box-shadow: 0 0 0 3px rgba(79, 141, 108, 0.09);
+        }
+
+.quick-question-add {
+    color: #536158 !important;
+    border-color: rgba(39, 87, 59, 0.22) !important;
+}
+
+    .quick-question-add:hover {
+        color: #173c29 !important;
+        background: #eef3e9 !important;
+    }
+
+/* --------------------------------------------------------------------------
+   Quick Questions action buttons
+   -------------------------------------------------------------------------- */
+
+.sidebar--right .quick-question-save {
+    color: #ffffff !important;
+    background: linear-gradient(135deg, #397b5d, #286249) !important;
+    border: none !important;
+    box-shadow: 0 5px 14px rgba(38, 98, 73, 0.16) !important;
+}
+
+    .sidebar--right .quick-question-save:hover:not(:disabled) {
+        color: #ffffff !important;
+        background: linear-gradient(135deg, #448a69, #306e53) !important;
+    }
+
+    .sidebar--right .quick-question-save:disabled {
+        color: rgba(255, 255, 255, 0.72) !important;
+        opacity: 0.65;
+    }
+
+/* Keep Cancel as the secondary action */
+
+.sidebar--right .quick-question-secondary {
+    color: #536158 !important;
+    background: rgba(255, 255, 252, 0.82) !important;
+    border: 1px solid rgba(39, 87, 59, 0.17) !important;
+}
+
+    .sidebar--right .quick-question-secondary:hover {
+        color: #173c29 !important;
+        background: #eef3e9 !important;
+    }
