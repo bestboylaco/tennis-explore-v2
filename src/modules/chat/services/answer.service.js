@@ -332,7 +332,15 @@ async function answerFromDocuments(plan, { roleId, signal, startedAt, correlatio
 
   // ---- check what came back ------------------------------------------------
   const abstained = isAbstention(answer);
+
+  // Timed on its own (TENISE-30) because "how much does grounding add" was
+  // previously answerable only as "somewhere inside the ~14-16s total" --
+  // verifyAnswer is synchronous string/regex work with no model or network
+  // call, so this number is expected to be milliseconds, not seconds, and
+  // separating it out is what actually shows that rather than asserting it.
+  const groundingCheckStartedAt = Date.now();
   const verification = verifyAnswer(answer, evidence);
+  const groundingCheckMs = Date.now() - groundingCheckStartedAt;
 
   let citations = verification.citations.map((citation) => {
     const chunk = evidence.find((candidate) => candidate.chunk_id === citation.chunkId);
@@ -421,6 +429,7 @@ async function answerFromDocuments(plan, { roleId, signal, startedAt, correlatio
       droppedForLength: prepared.droppedForLength,
       contextChars: prepared.chars,
       itemsOut: evidence.length,
+      groundingCheckMs,
       durationMs: Date.now() - startedAt,
     },
   };
@@ -531,7 +540,7 @@ async function answerFromTables(plan, { roleId, signal, startedAt, correlationId
   // to describe it, which removes any opportunity to do arithmetic of its own --
   // the single most common way a structured answer goes wrong.
   const answer = await generate(
-    buildSystemPrompt(plan),
+    buildSystemPrompt({ ...plan, isTableAnswer: true }),
     `Result of the query (already computed, do not recalculate):\n\n` +
       `${renderMarkdownTable(result.columns, result.rows)}\n\n` +
       `Rows scanned: ${result.rowsScanned}. Rows matched: ${result.rowsMatched}.\n` +

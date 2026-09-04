@@ -616,20 +616,6 @@
     text-transform: uppercase;
 }
 
-.answer-sql {
-    width: min(100%, 44rem);
-    margin: var(--space-2) 0 0;
-    padding: var(--space-4);
-    overflow-x: auto;
-    border: 1px solid var(--border-glass);
-    border-radius: var(--radius-sm);
-    color: #b9ddff;
-    background: rgba(7, 4, 16, 0.72);
-    font-family: var(--font-mono);
-    font-size: 0.76rem;
-    line-height: 1.55;
-}
-
 /* --------------------------------------------------------------------------
    Citations
    -------------------------------------------------------------------------- */
@@ -1095,6 +1081,15 @@ body.has-source-panel .sidebar--right {
     line-height: 1.5;
 }
 
+.source-panel__storage {
+    margin: var(--space-3) 0 0;
+    color: var(--colour-text-secondary);
+    font-size: 0.72rem;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+    opacity: 0.75;
+}
+
 .source-panel__footer {
     padding: var(--space-4) var(--space-5);
     border-top: 1px solid var(--border-glass);
@@ -1103,6 +1098,12 @@ body.has-source-panel .sidebar--right {
 .source-panel__download {
     color: #b9ddff;
     font-size: 0.8rem;
+}
+
+.source-panel__download--inline {
+    display: inline-block;
+    margin: var(--space-3) 0 0;
+    text-decoration: underline;
 }
 
 /* --------------------------------------------------------------------------
