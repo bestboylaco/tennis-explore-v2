@@ -11,13 +11,16 @@
     "test:unit": "node --test \"test/unit/**/*.test.js\"",
     "test:integration": "node --test --test-force-exit --test-concurrency=1 \"test/integration/**/*.test.js\"",
     "build:index": "node bin/build-index.js",
+    "build:index:test": "node bin/build-index-test.js",
     "search": "node bin/search.js",
     "ask": "node bin/ask.js",
     "eval": "node bin/eval.js",
     "check:models": "node bin/check-models.js",
     "eval:answers": "node bin/eval-answers.js",
     "eval:refusal": "node bin/e5-18-refusal-test.mjs",
-    "seed:users": "node bin/seed-users.js"
+    "seed:users": "node bin/seed-users.js",
+    "backfill:s3": "node bin/backfill-s3.js",
+    "backfill:s3:structured": "node bin/backfill-s3-structured.js"
   },
   "keywords": [
     "tennis",
@@ -28,6 +31,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@aws-sdk/client-s3": "^3.1119.0",
     "adm-zip": "^0.5.16",
     "bcryptjs": "^3.0.3",
     "connect-mongo": "^6.0.0",

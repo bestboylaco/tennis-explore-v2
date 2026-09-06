@@ -10,6 +10,7 @@
 
 import process from "node:process";
 
+import { env } from "../src/config/env.js";
 import { retrievalConfig } from "../src/config/retrieval.config.js";
 import { buildIndex } from "../src/modules/ingestion/indexBuilder.service.js";
 import { checkEmbeddingProvider } from "../src/modules/ingestion/embedding.service.js";
@@ -40,7 +41,15 @@ if (check.warning) {
 
 console.log(`embedding with: ${check.provider}/${check.model}`);
 console.log(`contextual headers: ${retrievalConfig.contextual.enabled ? retrievalConfig.contextual.mode : "off"}`);
-console.log(`chunk size: ${retrievalConfig.chunking.targetChars} chars, overlap ${retrievalConfig.chunking.overlapChars}\n`);
+console.log(`chunk size: ${retrievalConfig.chunking.targetChars} chars, overlap ${retrievalConfig.chunking.overlapChars}`);
+
+if (env.storage.provider === "s3") {
+  console.log(`asset storage: s3 (bucket ${env.storage.s3.bucket}) -- source files upload as each one is indexed`);
+} else {
+  console.log("asset storage: local disk (STORAGE_PROVIDER=s3 to upload source files as they are indexed)");
+}
+
+console.log();
 
 const startedAt = Date.now();
 let lastFilePercent = -1;
@@ -103,6 +112,19 @@ try {
 
   if (result.problems.length > 0) {
     console.log(`\n  ${result.problems.length} chunk(s) failed schema v2 and were left out.`);
+  }
+
+  if (result.uploadFailures.length > 0) {
+    console.log(
+      `\n  ${result.uploadFailures.length} file(s) failed to upload to S3 -- see ${retrievalConfig.index.dir}/build-report.json`,
+    );
+    console.log(`  their chunks are still indexed and searchable; only opening the citation is affected`);
+
+    for (const item of result.uploadFailures.slice(0, 5)) {
+      console.log(`    ${item.file}: ${item.reason}`);
+    }
+
+    if (result.uploadFailures.length > 5) console.log(`    ...and ${result.uploadFailures.length - 5} more`);
   }
 
   console.log(`\n  written to ${retrievalConfig.index.dir}/`);

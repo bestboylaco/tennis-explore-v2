@@ -24,9 +24,17 @@ npm-debug.log*
 !data/index/
 !data/index/*
 
+# scratch output for `npm run build:index:test` -- never the real index.
+data/index-test/
+
+# scratch index built from a subset of videos before merging into the real,
+# committed data/index/ -- see data/media/ below for why raw video isn't committed.
+data/index-video-gl/
+
 # raw source documents are NOT committed. they are partner data, some of it
 # classified internal or above, and the repo is not the right place for it.
 data/raw/
+data/video/
 
 # python bytecode from the ingestion tools
 __pycache__/
