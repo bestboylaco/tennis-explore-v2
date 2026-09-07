@@ -28,6 +28,17 @@ import { guessContentType, toStorageKey } from "../../infrastructure/storage/sto
 import { NO_PROGRAM, grantsForDocument } from "../../shared/constants/accessControl.js";
 import { buildBm25 } from "../retrieval/bm25.service.js";
 import { chunkDocument, chunkImages, chunkRecords, chunkSlides, chunkVideo } from "./chunking.service.js";
+
+
+
+import {
+  prepareVisualEvidence,
+} from "./visualEvidencePreparation.service.js";
+
+import {
+  prepareVideoVisualEvidence,
+} from "./videoVisualEvidence.service.js";
+
 import { embedTexts } from "./embedding.service.js";
 import { extractFile, listIngestableFiles } from "./extraction.service.js";
 import {
@@ -106,7 +117,10 @@ function finalise(chunk, classification, problems) {
   return valid ? complete : null;
 }
 
-async function prepareFile(filePath, problems) {
+export async function prepareFile(
+  filePath,
+  problems = [],
+) {
   const extracted = await extractFile(filePath);
 
   if (!extracted) return [];
@@ -145,58 +159,392 @@ async function prepareFile(filePath, problems) {
       .filter(Boolean);
   }
 
-  if (extracted.kind === "images") {
-    // captions describe partner material, so they inherit the same internal
-    // classification the source decks carry rather than defaulting to public.
-    const classification = { domain: "performance", sensitivity: "internal", program: NO_PROGRAM };
+ if (
+    extracted.kind ===
+    "images"
+  ) {
+    const classification = {
+      domain:
+        "performance",
 
-    return chunkImages(extracted)
-      .map((chunk) =>
-        finalise(
-          {
-            ...chunk,
-            source_type: "image",
-            provenance: "partner",
-            authors: [],
-            event_date: null,
-            publication_year: null,
-            entity_ids: [],
-            source_uri: chunk.image_path ?? filePath,
-            file_name: extracted.fileName ?? path.basename(filePath),
-            ingested_at: ingestedAt,
-          },
-          classification,
-          problems,
-        ),
+      sensitivity:
+        "internal",
+
+      program:
+        NO_PROGRAM,
+    };
+
+
+    const trustedImages =
+      [];
+
+
+    for (
+      const image of
+        extracted.images
+    ) {
+      const prepared =
+        await prepareVisualEvidence({
+          image,
+
+          manifestPath:
+            filePath,
+        });
+
+
+      if (
+        prepared
+      ) {
+        trustedImages.push(
+          prepared,
+        );
+      }
+    }
+
+
+    if (
+      trustedImages.length ===
+      0
+    ) {
+      return [];
+    }
+
+
+    return chunkImages({
+      ...extracted,
+
+      images:
+        trustedImages,
+    })
+      .map(
+        (chunk) =>
+          finalise(
+            {
+              ...chunk,
+
+              source_type:
+                "image",
+
+              provenance:
+                "partner",
+
+              authors:
+                [],
+
+              event_date:
+                null,
+
+              publication_year:
+                null,
+
+              entity_ids:
+                [],
+
+              source_uri:
+                chunk.image_path ??
+                filePath,
+
+              file_name:
+                extracted.fileName ??
+                path.basename(
+                  filePath,
+                ),
+
+              ingested_at:
+                ingestedAt,
+            },
+
+            classification,
+
+            problems,
+          ),
       )
-      .filter(Boolean);
+      .filter(
+        Boolean,
+      );
   }
 
-  if (extracted.kind === "video") {
-    const classification = { domain: "performance", sensitivity: "internal", program: NO_PROGRAM };
+  if (
+  extracted.kind ===
+  "video"
+) {
+  const classification = {
+    domain:
+      "performance",
 
-    return chunkVideo(extracted)
-      .map((chunk) =>
-        finalise(
-          {
-            ...chunk,
-            source_type: "video",
-            provenance: "partner",
-            authors: [],
-            event_date: null,
-            publication_year: null,
-            entity_ids: [],
-            // the recording, not the manifest that describes it.
-            source_uri: chunk.media_path ?? filePath,
-            file_name: extracted.fileName ?? path.basename(filePath),
-            ingested_at: ingestedAt,
-          },
-          classification,
-          problems,
-        ),
+    sensitivity:
+      "internal",
+
+    program:
+      NO_PROGRAM,
+  };
+
+
+  /*
+   * Existing video evidence stream:
+   *
+   * Human-described or transcript-like
+   * segments already present in the
+   * manifest.
+   */
+  const segmentChunks =
+    chunkVideo(
+      extracted,
+    )
+      .map(
+        (chunk) =>
+          finalise(
+            {
+              ...chunk,
+
+              source_type:
+                "video",
+
+              provenance:
+                "partner",
+
+              authors:
+                [],
+
+              event_date:
+                null,
+
+              publication_year:
+                null,
+
+              entity_ids:
+                [],
+
+              /*
+               * Prefer the original
+               * recording over the JSON
+               * manifest for citations.
+               */
+              source_uri:
+                chunk.media_path ??
+                filePath,
+
+              file_name:
+                extracted.fileName ??
+                path.basename(
+                  filePath,
+                ),
+
+              ingested_at:
+                ingestedAt,
+            },
+
+            classification,
+
+            problems,
+          ),
       )
-      .filter(Boolean);
+      .filter(
+        Boolean,
+      );
+
+
+  /*
+   * New visual evidence stream:
+   *
+   * Each physical recording referenced
+   * by the manifest is sampled, filtered
+   * by Gate 1, then evaluated by the
+   * existing TENISE-53 Gate 2 pipeline.
+   */
+  const trustedVideoFrames =
+    [];
+
+
+  for (
+    const [
+      videoIndex,
+      video,
+    ] of
+      extracted.videos.entries()
+  ) {
+    if (
+      typeof video.source_path !==
+        "string" ||
+      video.source_path.trim()
+        .length ===
+        0
+    ) {
+      continue;
+    }
+
+
+    /*
+     * source_path may be absolute or
+     * relative to the manifest file.
+     */
+    const videoPath =
+      path.isAbsolute(
+        video.source_path,
+      )
+        ? video.source_path
+        : path.resolve(
+            path.dirname(
+              filePath,
+            ),
+            video.source_path,
+          );
+
+
+    const videoId =
+      video.video_id ??
+      video.id ??
+      `video_${videoIndex}`;
+
+
+    /*
+     * Keep generated frames separate for
+     * each manifest and each video.
+     *
+     * This prevents candidate_0001.jpg
+     * from different videos overwriting
+     * each other.
+     */
+    const frameOutputDirectory =
+      path.join(
+        path.dirname(
+          filePath,
+        ),
+
+        ".tennisexplore-frames",
+
+        String(
+          extracted.docId,
+        ),
+
+        String(
+          videoId,
+        ),
+      );
+
+
+    const visualEvidence =
+      await prepareVideoVisualEvidence({
+        videoPath,
+
+        outputDirectory:
+          frameOutputDirectory,
+
+        videoId,
+      });
+
+
+    trustedVideoFrames.push(
+      ...visualEvidence.trustedFrames,
+    );
   }
+
+
+  /*
+   * chunkImages() uses image.index inside
+   * the chunk ID.
+   *
+   * Frame numbering restarts for each
+   * video, so assign one continuous index
+   * across the whole manifest.
+   */
+  const indexedVideoFrames =
+    trustedVideoFrames.map(
+      (
+        frame,
+        index,
+      ) => ({
+        ...frame,
+
+        index,
+      }),
+    );
+
+
+  const visualChunks =
+    indexedVideoFrames.length >
+    0
+      ? chunkImages({
+          ...extracted,
+
+          images:
+            indexedVideoFrames,
+        })
+          .map(
+            (chunk) =>
+              finalise(
+                {
+                  ...chunk,
+
+                  /*
+                   * The evidence came from
+                   * an extracted frame, but
+                   * the source is still the
+                   * original video.
+                   */
+                  source_type:
+                    "video",
+
+                  provenance:
+                    "partner",
+
+                  authors:
+                    [],
+
+                  event_date:
+                    null,
+
+                  publication_year:
+                    null,
+
+                  entity_ids:
+                    [],
+
+                  /*
+                   * media_path points to
+                   * the original MP4.
+                   *
+                   * image_path still points
+                   * to the exact trusted
+                   * evidence frame.
+                   */
+                  source_uri:
+                    chunk.media_path ??
+                    chunk.image_path ??
+                    filePath,
+
+                  file_name:
+                    extracted.fileName ??
+                    path.basename(
+                      filePath,
+                    ),
+
+                  ingested_at:
+                    ingestedAt,
+                },
+
+                classification,
+
+                problems,
+              ),
+          )
+          .filter(
+            Boolean,
+          )
+      : [];
+
+
+  /*
+   * Keep both evidence streams.
+   *
+   * Existing video segments are preserved.
+   * Visual evidence is added alongside them.
+   */
+  return [
+    ...segmentChunks,
+    ...visualChunks,
+  ];
+}
 
   if (extracted.kind === "slides") {
     const titleSlide = extracted.slides[0]?.text ?? "";

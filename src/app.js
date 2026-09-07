@@ -23,7 +23,7 @@ import { quickQuestionRoutes } from "./modules/quickquestion/index.js";
 import assetRoutes from "./modules/assets/asset.routes.js";
 import auditRoutes from "./modules/audit/routes/audit.routes.js";
 import authRoutes from "./modules/auth/routes/auth.routes.js";
-
+import visionRoutes from "./modules/vision/routes/vision.routes.js";
 const app = express();
 
 const currentFilePath = fileURLToPath(import.meta.url);
@@ -139,10 +139,36 @@ app.get("/login", (req, res) => {
 
 // Application routes
 app.use("/api/auth", authRoutes);
-app.use("/api/chat", requireAuth, chatRoutes);
-app.use("/api/conversations", requireAuth, conversationRoutes);
-app.use("/api/agent", requireAuth, agentRoutes);
-app.use("/api/sources", sourceRoutes);
+
+app.use(
+  "/api/chat",
+  requireAuth,
+  chatRoutes,
+);
+
+app.use(
+  "/api/conversations",
+  requireAuth,
+  conversationRoutes,
+);
+
+app.use(
+  "/api/agent",
+  requireAuth,
+  agentRoutes,
+);
+
+app.use(
+  "/api/vision",
+  requireAuth,
+  visionRoutes,
+);
+
+app.use(
+  "/api/sources",
+  sourceRoutes,
+);
+
 // Internal-classified data; not a public route (threat model T-01).
 app.use("/api/telemetry", requireAuth, telemetryRoutes);
 // serves the original file behind a citation, with its own access check

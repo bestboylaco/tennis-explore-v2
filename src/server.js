@@ -19,6 +19,14 @@ import {
   bootstrapActions,
 } from "./modules/actions/index.js";
 
+import {
+  bootstrapSynthesis,
+} from "./modules/synthesis/synthesis.bootstrap.js";
+
+import {
+  bootstrapVerification,
+} from "./modules/verification/verification.bootstrap.js";
+
 let server;
 let isShuttingDown = false;
 
@@ -54,6 +62,10 @@ async function startServer() {
         env.structuredSourceDirs,
     });
 
+
+    bootstrapSynthesis();
+
+    bootstrapVerification();
 
     server =
       app.listen(

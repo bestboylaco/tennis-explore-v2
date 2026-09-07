@@ -2,6 +2,7 @@ export const SOURCE_TYPES = [
   "research_paper",
   "coach_interview",
   "conference_transcript",
+  "video",
   "ranking_data",
   "match_report",
   "player_report",

@@ -63,6 +63,20 @@ export async function submitChatQuestion(question) {
 
             headers: {
                 "Content-Type": "application/json",
+
+                /*
+                * Send the coach's browser timezone so the backend
+                * can render response dates in the correct local date.
+                *
+                * Example:
+                * Australia/Brisbane
+                * Australia/Sydney
+                * Europe/London
+                */
+                "X-Time-Zone":
+                    Intl.DateTimeFormat()
+                        .resolvedOptions()
+                        .timeZone,
             },
 
             credentials: "same-origin",

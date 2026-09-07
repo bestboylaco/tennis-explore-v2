@@ -48,3 +48,7 @@ data/ocr-cache/
 .venv/
 mnt/
 .profile
+
+
+# Local vision models
+models/vision/*.onnx

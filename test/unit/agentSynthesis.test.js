@@ -556,3 +556,113 @@ test(
     );
   }
 );
+
+test("preserves no-result observations as refusal context", () => {
+  const state = {
+    steps: [
+      {
+        observations: [
+          {
+            actionId:
+              "documents",
+
+            status:
+              ACTION_RESULT_STATUS.NO_RESULT,
+
+            data:
+              null,
+
+            evidence: [],
+
+            metadata: {
+              evidenceCount:
+                0,
+
+              retrieval: {
+                searched:
+                  true,
+              },
+
+              grading: {
+                grade:
+                  "insufficient",
+
+                reason:
+                  "The retrieved evidence does not answer the question.",
+              },
+            },
+          },
+        ],
+      },
+    ],
+  };
+
+
+  const input =
+    createAgentSynthesisInput({
+      question:
+        "What happened to this player's development?",
+
+      state,
+    });
+
+
+  assert.equal(
+    input.mode,
+    "none",
+  );
+
+
+  assert.deepEqual(
+    input.successfulActionIds,
+    [],
+  );
+
+
+  assert.deepEqual(
+    input.noResultActionIds,
+    [
+      "documents",
+    ],
+  );
+
+
+  assert.equal(
+    input.noResultObservations.length,
+    1,
+  );
+
+
+  assert.equal(
+    input.noResultObservations[0]
+      .actionId,
+    "documents",
+  );
+
+
+  assert.equal(
+    input.noResultObservations[0]
+      .metadata
+      .grading
+      .reason,
+
+    "The retrieved evidence does not answer the question.",
+  );
+
+
+  /*
+   * Critical boundary:
+   *
+   * NO_RESULT must NOT become valid
+   * synthesis evidence.
+   */
+  assert.deepEqual(
+    input.documentEvidence,
+    [],
+  );
+
+  assert.deepEqual(
+    input.statisticsResults,
+    [],
+  );
+});

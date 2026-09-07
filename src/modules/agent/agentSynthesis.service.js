@@ -65,6 +65,32 @@ function getSuccessfulObservations(
 }
 
 
+function getNoResultObservations(
+  state
+) {
+  if (
+    !state ||
+    !Array.isArray(state.steps)
+  ) {
+    return [];
+  }
+
+
+  return state.steps.flatMap(
+    (step) =>
+      Array.isArray(
+        step.observations
+      )
+        ? step.observations.filter(
+            (observation) =>
+              observation?.status ===
+              ACTION_RESULT_STATUS.NO_RESULT
+          )
+        : []
+  );
+}
+
+
 function getDocumentEvidence(
   observations
 ) {
@@ -169,8 +195,31 @@ export function createAgentSynthesisInput({
   }
 
 
+  /*
+   * Successful observations are the only observations
+   * allowed to contribute evidence/data to synthesis.
+   */
   const successfulObservations =
     getSuccessfulObservations(
+      state
+    );
+
+
+  /*
+   * NO_RESULT observations are deliberately kept
+   * separate from synthesis evidence.
+   *
+   * They are useful later when TennisExplore needs
+   * to explain:
+   *
+   * - what was searched
+   * - why evidence was insufficient
+   *
+   * without treating failed retrieval/grading as
+   * valid answer evidence.
+   */
+  const noResultObservations =
+    getNoResultObservations(
       state
     );
 
@@ -194,40 +243,68 @@ export function createAgentSynthesisInput({
     });
 
 
- const successfulActionIds =
-  [
-    ...new Set(
-      successfulObservations.map(
-        (observation) =>
-          observation.actionId
-      )
-    ),
-  ];
+  const successfulActionIds =
+    [
+      ...new Set(
+        successfulObservations
+          .map(
+            (observation) =>
+              observation.actionId
+          )
+          .filter(
+            isNonEmptyString
+          )
+      ),
+    ];
 
 
-return Object.freeze({
-  question:
-    question.trim(),
+  const noResultActionIds =
+    [
+      ...new Set(
+        noResultObservations
+          .map(
+            (observation) =>
+              observation.actionId
+          )
+          .filter(
+            isNonEmptyString
+          )
+      ),
+    ];
 
-  mode,
 
-  documentEvidence:
-    Object.freeze([
-      ...documentEvidence,
-    ]),
+  return Object.freeze({
+    question:
+      question.trim(),
 
-  statisticsResults:
-    Object.freeze([
-      ...statisticsResults,
-    ]),
+    mode,
 
-  successfulActionIds:
-    Object.freeze([
-      ...successfulActionIds,
-    ]),
-});
+    documentEvidence:
+      Object.freeze([
+        ...documentEvidence,
+      ]),
+
+    statisticsResults:
+      Object.freeze([
+        ...statisticsResults,
+      ]),
+
+    successfulActionIds:
+      Object.freeze([
+        ...successfulActionIds,
+      ]),
+
+    noResultActionIds:
+      Object.freeze([
+        ...noResultActionIds,
+      ]),
+
+    noResultObservations:
+      Object.freeze([
+        ...noResultObservations,
+      ]),
+  });
 }
-
 
 
 

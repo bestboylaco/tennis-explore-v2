@@ -243,9 +243,92 @@ export function appendUserMessage({ conversation, content }) {
     return row;
 }
 
+
+function renderResponseSections(
+    doc,
+    sections,
+) {
+    if (
+        !Array.isArray(sections) ||
+        sections.length === 0
+    ) {
+        return null;
+    }
+
+    const wrapper =
+        element(
+            doc,
+            "div",
+            "message__bubble intelligence-response",
+        );
+
+    for (const section of sections) {
+        if (
+            !section ||
+            typeof section.title !== "string" ||
+            typeof section.content !== "string"
+        ) {
+            continue;
+        }
+
+        const sectionNode =
+            element(
+                doc,
+                "section",
+                "intelligence-response__section",
+            );
+
+        sectionNode.append(
+            element(
+                doc,
+                "h3",
+                "intelligence-response__title",
+                section.title,
+            ),
+        );
+
+        /*
+         * Keep backend text untrusted.
+         * Render it only through textContent,
+         * never innerHTML.
+         */
+        for (
+            const paragraph of
+            section.content.split(/\n+/)
+        ) {
+            if (
+                paragraph.trim() === ""
+            ) {
+                continue;
+            }
+
+            sectionNode.append(
+                element(
+                    doc,
+                    "p",
+                    "intelligence-response__content",
+                    paragraph.trim(),
+                ),
+            );
+        }
+
+        wrapper.append(
+            sectionNode,
+        );
+    }
+
+    return wrapper.children.length > 0
+        ? wrapper
+        : null;
+}
+
+
+
+
 export function appendAssistantMessage({
     conversation,
     content,
+    sections = [],
     citations = [],
     table = null,
     grounding = null,
@@ -254,7 +337,24 @@ export function appendAssistantMessage({
     const doc = conversation.ownerDocument;
     const row = element(doc, "div", "message message--assistant");
 
-    row.append(renderAnswer(doc, content));
+    const sectionsNode =
+        renderResponseSections(
+            doc,
+            sections,
+        );
+
+    if (sectionsNode) {
+        row.append(
+            sectionsNode,
+        );
+    } else {
+        row.append(
+            renderAnswer(
+                doc,
+                content,
+            ),
+        );
+    }
 
     const tableNode = renderTable(doc, table);
 

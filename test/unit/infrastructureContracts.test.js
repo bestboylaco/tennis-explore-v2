@@ -280,7 +280,20 @@ test("creates the common intelligence response", () => {
       answer:
         "The average singles ranking is 94.22.",
 
-      intent: "aggregation",
+      summary:
+        "The average singles ranking is 94.22.",
+
+      sources:
+        "Player Rankings dataset.",
+
+      date:
+        "31 August 2026",
+
+      explanation:
+        "The average was calculated from the matching ranking records.",
+
+      intent:
+        "aggregation",
 
       actions: [
         "statistics",
@@ -303,9 +316,10 @@ test("creates the common intelligence response", () => {
       },
     });
 
+
   assert.equal(
     response.contractVersion,
-    1,
+    2,
   );
 
   assert.equal(
@@ -331,6 +345,41 @@ test("creates the common intelligence response", () => {
   assert.equal(
     response.telemetry.steps,
     1,
+  );
+
+
+  assert.deepEqual(
+    response.sections.map(
+      (section) =>
+        section.id,
+    ),
+    [
+      "summary",
+      "sources",
+      "date",
+      "explanation",
+    ],
+  );
+
+
+  assert.equal(
+    response.sections[0].title,
+    "Summary",
+  );
+
+  assert.equal(
+    response.sections[1].title,
+    "Sources",
+  );
+
+  assert.equal(
+    response.sections[2].title,
+    "Date",
+  );
+
+  assert.equal(
+    response.sections[3].title,
+    "Explanation",
   );
 });
 
@@ -372,7 +421,8 @@ test("contracts connect into one complete pipeline shape", () => {
         SYNTHESIS_MODES.STATISTICS,
       answer:
         "The average singles ranking is 94.22.",
-      data: observation.data,
+      data:
+        observation.data,
     });
 
   const verification =
@@ -395,6 +445,18 @@ test("contracts connect into one complete pipeline shape", () => {
       answer:
         synthesis.answer,
 
+      summary:
+        "The average singles ranking is 94.22.",
+
+      sources:
+        "Player Rankings dataset.",
+
+      date:
+        "31 August 2026",
+
+      explanation:
+        "The value was calculated from the structured ranking data.",
+
       intent:
         query.intent,
 
@@ -410,6 +472,7 @@ test("contracts connect into one complete pipeline shape", () => {
         steps: 1,
       },
     });
+
 
   assert.equal(
     query.intent,
@@ -439,5 +502,44 @@ test("contracts connect into one complete pipeline shape", () => {
   assert.equal(
     response.answer,
     "The average singles ranking is 94.22.",
+  );
+
+  assert.deepEqual(
+    response.sections.map(
+      (section) =>
+        section.id,
+    ),
+    [
+      "summary",
+      "sources",
+      "date",
+      "explanation",
+    ],
+  );
+});
+
+
+test("rejects an intelligence response missing a required section", () => {
+  assert.throws(
+    () =>
+      createIntelligenceResponse({
+        answered: false,
+
+        answer:
+          "Insufficient evidence.",
+
+        summary:
+          "The available evidence is insufficient.",
+
+        sources:
+          "Documents knowledge base.",
+
+        date:
+          "31 August 2026",
+
+        // explanation intentionally missing
+      }),
+
+    /explanation must be a non-empty string/,
   );
 });

@@ -9,10 +9,15 @@
 // string checks are cruder but they are independent, which is the property that
 // matters.
 
-import { bindCitations, findUnsupportedNumbers } from "../retrieval/citation.service.js";
+import {
+  bindCitations,
+  findUnsupportedNumbers,
+} from "../retrieval/citation.service.js";
+
 function normaliseForMatch(value) {
   return String(value)
     .toLowerCase()
+    .replace(/(?:['’]s)\b/gu, "")
     .replace(/[^\p{L}\p{N}\s]/gu, " ")
     .replace(/\s+/g, " ")
     .trim();

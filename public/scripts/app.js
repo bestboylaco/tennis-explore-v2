@@ -434,7 +434,7 @@ await createQuickQuestions({
         questionInput.focus();
     },
 
-    onError(error) {
+        onError(error) {
         /*
          * If the session has expired, there is no useful reason to keep
          * retrying the preferences endpoint.
