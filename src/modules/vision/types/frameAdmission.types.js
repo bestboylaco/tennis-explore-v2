@@ -43,6 +43,8 @@ export function createFrameAdmissionResult({
 
   frameQuality,
 
+  interpretability = null,
+
   personVisibility = null,
 } = {}) {
   if (!isNonEmptyString(frameId)) {
@@ -80,6 +82,17 @@ export function createFrameAdmissionResult({
 
 
   if (
+    interpretability !== null &&
+    typeof interpretability !==
+      "object"
+  ) {
+    throw new TypeError(
+      "interpretability must be an object or null.",
+    );
+  }
+
+
+  if (
     personVisibility !== null &&
     typeof personVisibility !== "object"
   ) {
@@ -104,6 +117,13 @@ export function createFrameAdmissionResult({
     frameQuality: {
       ...frameQuality,
     },
+
+    interpretability:
+      interpretability
+        ? {
+            ...interpretability,
+          }
+        : null,
 
     personVisibility:
       personVisibility

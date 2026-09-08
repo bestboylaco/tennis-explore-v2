@@ -1,4 +1,4 @@
-import test from "node:test";
+﻿import test from "node:test";
 
 import assert from "node:assert/strict";
 
@@ -128,6 +128,50 @@ function createBaseInput() {
           true,
 
         sourceTraceable:
+          true,
+      },
+    },
+
+    grounding: {
+      provider:
+        "ollama",
+
+      model:
+        "qwen3-vl:8b",
+
+      promptVersion:
+        "caption-grounding-v1",
+
+      claims: [
+        {
+          claim:
+            "A conference slide is visible.",
+
+          status:
+            "supported",
+
+          reason:
+            "The slide is directly visible.",
+        },
+      ],
+
+      summary: {
+        status:
+          "verified",
+
+        supported:
+          1,
+
+        uncertain:
+          0,
+
+        unsupported:
+          0,
+
+        totalClaims:
+          1,
+
+        evidenceEligible:
           true,
       },
     },

@@ -200,12 +200,19 @@ export function verifyFrameCaption({
   }
 
 
+  const unreliable =
+    speculativeLanguage;
+
+
   const status =
-    issues.length === 0
+    unreliable
       ? CAPTION_VERIFICATION_STATUS
-          .VERIFIED
-      : CAPTION_VERIFICATION_STATUS
-          .VERIFIED_WITH_WARNINGS;
+          .UNRELIABLE
+      : issues.length === 0
+        ? CAPTION_VERIFICATION_STATUS
+            .VERIFIED
+        : CAPTION_VERIFICATION_STATUS
+            .VERIFIED_WITH_WARNINGS;
 
 
   return createCaptionVerificationResult({
@@ -215,7 +222,7 @@ export function verifyFrameCaption({
     status,
 
     evidenceEligible:
-      true,
+      !unreliable,
 
     rawCaption:
       captionResult.caption,

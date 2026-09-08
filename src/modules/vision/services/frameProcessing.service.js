@@ -1,4 +1,4 @@
-import path from "node:path";
+﻿import path from "node:path";
 
 import {
   FRAME_QUALITY_THRESHOLDS,
@@ -43,6 +43,10 @@ import {
 import {
   verifyFrameCaption,
 } from "./captionVerification.service.js";
+
+import {
+  groundFrameCaption,
+} from "./captionGrounding.service.js";
 
 import {
   buildTrustedVisualEvidence,
@@ -292,6 +296,30 @@ export async function processFrame({
     });
 
 
+  // 7. Re-check generated visual claims
+  // directly against the source frame.
+  let grounding =
+    null;
+
+  if (
+    caption.status ===
+      "generated" &&
+    verification.evidenceEligible ===
+      true
+  ) {
+    grounding =
+      await groundFrameCaption({
+        imagePath:
+          resolvedSource.framePath,
+
+        caption:
+          caption.caption,
+      });
+  }
+
+
+  // 8. Build trusted evidence only after
+  // caption verification and grounding.
   const trustedEvidence =
     buildTrustedVisualEvidence({
       frameQuality,
@@ -301,6 +329,8 @@ export async function processFrame({
       caption,
 
       verification,
+
+      grounding,
 
       source:
         resolvedSource,
@@ -327,6 +357,9 @@ export async function processFrame({
 
     verification,
 
+    grounding,
+
     trustedEvidence,
   };
 }
+

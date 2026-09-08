@@ -1,4 +1,4 @@
-import {
+﻿import {
   FRAME_CAPTION_STATUS,
 } from "../constants/frameCaption.constants.js";
 
@@ -114,6 +114,9 @@ export function buildTrustedVisualEvidence({
       caption.status ===
         FRAME_CAPTION_STATUS.GENERATED &&
       verification.evidenceEligible ===
+        true &&
+      grounding !== null &&
+      grounding?.summary?.evidenceEligible ===
         true
     );
 

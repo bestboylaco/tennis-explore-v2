@@ -7,6 +7,51 @@ import {
   VERIFICATION_CHECK_STATUS,
 } from "../verification.types.js";
 
+function findIneligibleVisualEvidence(
+  evidence,
+) {
+  return evidence.filter(
+    (chunk) =>
+      chunk?.derived_from_image === true &&
+      chunk?.evidence_eligible !== true,
+  );
+}
+
+
+function summarizeVisualEvidenceQuality(
+  evidence,
+) {
+  return evidence
+    .filter(
+      (chunk) =>
+        chunk?.derived_from_image === true,
+    )
+    .map(
+      (chunk) => ({
+        chunkId:
+          chunk.chunk_id ?? null,
+
+        qualityStatus:
+          chunk.quality_status ?? null,
+
+        qualityScore:
+          chunk.quality_score ?? null,
+
+        qualityIssues:
+          Array.isArray(
+            chunk.quality_issues,
+          )
+            ? [...chunk.quality_issues]
+            : [],
+
+        verificationStatus:
+          chunk.verification_status ?? null,
+
+        evidenceEligible:
+          chunk.evidence_eligible === true,
+      }),
+    );
+}
 
 export const documentGroundingVerificationStrategy =
   Object.freeze({
@@ -153,7 +198,69 @@ export const documentGroundingVerificationStrategy =
           answer,
           evidence,
         );
+      
+      const visualEvidenceQuality =
+        summarizeVisualEvidenceQuality(
+          evidence,
+        );
 
+
+      const ineligibleVisualEvidence =
+        findIneligibleVisualEvidence(
+          evidence,
+        );
+
+
+      if (
+        ineligibleVisualEvidence.length >
+        0
+      ) {
+        return {
+          status:
+            VERIFICATION_CHECK_STATUS.FAILED,
+
+          issues: [
+            "Document evidence contains ineligible visual evidence",
+          ],
+
+          metadata: {
+            grounded:
+              false,
+
+            citedFraction:
+              0,
+
+            claimCount:
+              0,
+
+            citations:
+              [],
+
+            danglingCitations:
+              [],
+
+            unusedEvidence:
+              [],
+
+            unsupportedNumbers:
+              [],
+
+            warnings:
+              [],
+
+            legacyShouldBlock:
+              false,
+
+            visualEvidenceQuality,
+
+            ineligibleVisualEvidence:
+              ineligibleVisualEvidence.map(
+                (chunk) =>
+                  chunk.chunk_id ?? null,
+              ),
+          },
+        };
+      }
 
       /*
        * In the new Verification contract,
@@ -258,6 +365,12 @@ export const documentGroundingVerificationStrategy =
             report.warnings,
 
           legacyShouldBlock,
+
+          visualEvidenceQuality,
+          
+          ineligibleVisualEvidence: [],
+
+
         },
       };
     },

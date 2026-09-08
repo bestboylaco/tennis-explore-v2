@@ -66,6 +66,31 @@ function createVisiblePerson() {
   };
 }
 
+function createInsufficientInterpretability() {
+  return {
+    frameId:
+      "frame_001.jpg",
+
+    mode:
+      FRAME_ADMISSION_MODE
+        .GENERAL_CAPTION,
+
+    status:
+      "insufficient",
+
+    obstructionDetected:
+      true,
+
+    interpretable:
+      false,
+
+    evidenceEligible:
+      false,
+
+    reason:
+      "Frame is too obstructed to interpret reliably.",
+  };
+}
 
 function createSmallPerson() {
   return {
@@ -266,6 +291,46 @@ test(
         }),
 
       /Invalid frame admission mode/,
+    );
+  },
+);
+
+test(
+  "general caption rejects insufficient interpretability",
+  () => {
+    const interpretability =
+      createInsufficientInterpretability();
+
+    const result =
+      evaluateFrameAdmission({
+        frameQuality:
+          createUsableFrameQuality(),
+
+        interpretability,
+
+        mode:
+          FRAME_ADMISSION_MODE
+            .GENERAL_CAPTION,
+      });
+
+
+    assert.equal(
+      result.eligible,
+      false,
+    );
+
+    assert.deepEqual(
+      result.reasons,
+      [
+        FRAME_ADMISSION_REASON
+          .INTERPRETABILITY_INSUFFICIENT,
+      ],
+    );
+
+    assert.equal(
+      result.interpretability
+        .evidenceEligible,
+      false,
     );
   },
 );

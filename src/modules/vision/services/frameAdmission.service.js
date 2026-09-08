@@ -23,7 +23,7 @@ function validateFrameQuality(
 
   if (
     typeof frameQuality.frameId !==
-    "string" ||
+      "string" ||
     frameQuality.frameId.trim().length ===
       0
   ) {
@@ -39,6 +39,32 @@ function validateFrameQuality(
   ) {
     throw new TypeError(
       "frameQuality.usable must be a boolean.",
+    );
+  }
+}
+
+
+function validateInterpretability(
+  interpretability,
+) {
+  if (
+    !interpretability ||
+    typeof interpretability !==
+      "object"
+  ) {
+    throw new TypeError(
+      "interpretability must be an object or null.",
+    );
+  }
+
+
+  if (
+    typeof interpretability
+      .evidenceEligible !==
+    "boolean"
+  ) {
+    throw new TypeError(
+      "interpretability.evidenceEligible must be a boolean.",
     );
   }
 }
@@ -71,6 +97,8 @@ function validatePersonVisibility(
 
 export function evaluateFrameAdmission({
   frameQuality,
+
+  interpretability = null,
 
   personVisibility = null,
 
@@ -110,27 +138,54 @@ export function evaluateFrameAdmission({
   }
 
 
- if (
-  mode ===
-    FRAME_ADMISSION_MODE
-      .PERSON_ANALYSIS &&
-  frameQuality.usable
-) {
-  validatePersonVisibility(
-    personVisibility,
-  );
+  if (
+    frameQuality.usable &&
+    interpretability !== null
+  ) {
+    validateInterpretability(
+      interpretability,
+    );
+
+
+    if (
+      interpretability
+        .evidenceEligible ===
+      false
+    ) {
+      reasons.push(
+        FRAME_ADMISSION_REASON
+          .INTERPRETABILITY_INSUFFICIENT,
+      );
+    }
+  }
 
 
   if (
-    !personVisibility
-      .sufficientVisibility
+    mode ===
+      FRAME_ADMISSION_MODE
+        .PERSON_ANALYSIS &&
+    frameQuality.usable &&
+    (
+      !interpretability ||
+      interpretability
+        .evidenceEligible !== false
+    )
   ) {
-    reasons.push(
-      FRAME_ADMISSION_REASON
-        .PERSON_VISIBILITY_INSUFFICIENT,
+    validatePersonVisibility(
+      personVisibility,
     );
+
+
+    if (
+      !personVisibility
+        .sufficientVisibility
+    ) {
+      reasons.push(
+        FRAME_ADMISSION_REASON
+          .PERSON_VISIBILITY_INSUFFICIENT,
+      );
+    }
   }
-}
 
 
   return createFrameAdmissionResult({
@@ -145,6 +200,8 @@ export function evaluateFrameAdmission({
     reasons,
 
     frameQuality,
+
+    interpretability,
 
     personVisibility,
   });

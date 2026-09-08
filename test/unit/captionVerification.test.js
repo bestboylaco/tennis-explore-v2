@@ -102,7 +102,7 @@ test(
 
 
 test(
-  "flags speculative language without deleting the caption",
+  "marks speculative language as unreliable evidence",
   () => {
     const caption =
       "The person is probably a tennis coach.";
@@ -120,12 +120,12 @@ test(
     assert.equal(
       result.status,
       CAPTION_VERIFICATION_STATUS
-        .VERIFIED_WITH_WARNINGS,
+        .UNRELIABLE,
     );
 
     assert.equal(
       result.evidenceEligible,
-      true,
+      false,
     );
 
     assert.equal(
