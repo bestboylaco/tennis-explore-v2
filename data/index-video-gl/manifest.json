@@ -1,0 +1,33 @@
+{
+  "schemaVersion": 3,
+  "embeddingProvider": "ollama",
+  "embeddingModel": "bge-m3",
+  "contextual": "template",
+  "chunking": {
+    "targetChars": 1600,
+    "overlapChars": 200,
+    "minChars": 120
+  },
+  "sourceDirs": [
+    "data/media"
+  ],
+  "chunkCount": 527,
+  "dimension": 1024,
+  "quantisation": "int8",
+  "quantScale": 127,
+  "shards": [
+    {
+      "index": 0,
+      "count": 527
+    }
+  ],
+  "builtAt": "2026-09-01T17:17:10.544Z",
+  "fileCount": 28,
+  "skippedCount": 0,
+  "schemaFailures": 0,
+  "uploadFailureCount": 28,
+  "bm25": {
+    "vocabSize": 8286,
+    "postings": 66401
+  }
+}
