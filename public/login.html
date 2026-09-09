@@ -2,60 +2,100 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1">
+
     <title>Sign in — TennisExplore</title>
+
     <link rel="stylesheet" href="/styles/tokens.css">
     <link rel="stylesheet" href="/styles/base.css">
     <link rel="stylesheet" href="/styles/site.css">
     <link rel="stylesheet" href="/styles/auth.css">
+
+    <!--
+        Loaded last so the light theme overrides the normal site colours
+        without changing the existing layout.
+    -->
+    <link rel="stylesheet"
+          href="/styles/theme-courtside-light.css">
 </head>
+
 <body>
-    <div class="site">
-        <header class="site-header">
-            <a class="brand" href="/">
-                <svg class="brand__mark" viewBox="0 0 24 24" aria-hidden="true">
-                    <circle cx="12" cy="12" r="11" fill="none"
-                            stroke="var(--colour-green)" stroke-width="2"/>
-                    <path d="M4 6c6 3 10 7 16 12" fill="none"
-                          stroke="var(--colour-green)" stroke-width="2"/>
-                </svg>
-                <strong>Tennis</strong><span>Explore</span>
+    <div class="site site--login">
+
+        <header class="site-header site-header--login">
+            <a class="brand"
+               href="/"
+               aria-label="TennisExplore">
+                <span class="brand__logo"
+                      aria-hidden="true">
+                    <span class="brand__tennis-ball"></span>
+                </span>
+
+                <span class="brand__name">
+                    <strong>Tennis</strong><span>Explore</span>
+                </span>
             </a>
         </header>
 
         <main class="auth-shell">
-            <form id="login-form" class="auth-card">
+
+            <form id="login-form"
+                  class="auth-card">
                 <h1>Sign in</h1>
+
                 <p class="auth-card__lead">
-                    Your account decides what data you can see. Ask your
-                    administrator for access if you don't have one yet.
+                    Your account decides what data you can see.
+                    Ask your administrator for access if you
+                    don't have one yet.
                 </p>
 
-                <div id="login-error" class="auth-card__error" role="alert" hidden></div>
+                <div id="login-error"
+                     class="auth-card__error"
+                     role="alert"
+                     hidden></div>
 
                 <label class="field">
-                    <span class="field__label">Email</span>
-                    <input id="email" name="email" type="email"
-                           autocomplete="username" required>
+                    <span class="field__label">
+                        Email
+                    </span>
+
+                    <input id="email"
+                           name="email"
+                           type="email"
+                           autocomplete="username"
+                           required>
                 </label>
 
                 <label class="field">
-                    <span class="field__label">Password</span>
-                    <input id="password" name="password" type="password"
-                           autocomplete="current-password" required>
+                    <span class="field__label">
+                        Password
+                    </span>
+
+                    <input id="password"
+                           name="password"
+                           type="password"
+                           autocomplete="current-password"
+                           required>
                 </label>
 
-                <button id="login-button" class="button-green auth-card__submit" type="submit">
+                <button id="login-button"
+                        class="button-green auth-card__submit"
+                        type="submit">
                     Sign in
                 </button>
             </form>
+
         </main>
 
         <footer class="site-footer">
             Tennis Australia &middot; Performance Intelligence
         </footer>
+
     </div>
 
-    <script type="module" src="/scripts/login.js"></script>
+    <script type="module"
+            src="/scripts/login.js"></script>
 </body>
 </html>

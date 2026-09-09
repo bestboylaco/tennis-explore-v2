@@ -59,11 +59,20 @@ Rules:
  * improvement to retrieval, not a precondition for it -- a question that cannot
  * be rephrased should still be answered from whatever the first pass found.
  */
-export async function expandQuery(question, { signal = null, max = 3 } = {}) {
+export async function expandQuery(
+    question,
+    {
+        signal = null,
+        max = 3,
+        fetchImpl = fetch,
+    } = {},
+) {
   if (!retrievalConfig.query.expansionEnabled) return [];
 
   try {
-    const response = await fetch(`${retrievalConfig.generation.baseUrl}/api/chat`, {
+      const response = await fetchImpl(
+          `${retrievalConfig.generation.baseUrl}/api/chat`,
+          {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
