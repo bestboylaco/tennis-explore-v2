@@ -13,8 +13,8 @@
       "falseRefusalRatePercent": 10,
       "passed": true
     },
-    "avgLatencyMs": 20539,
-    "avgGroundingCheckMs": 0.33,
+    "avgLatencyMs": 20792,
+    "avgGroundingCheckMs": 0.17,
     "groundingCheckedCount": 18
   },
   "results": {
@@ -25,7 +25,7 @@
         "expectAnswered": false,
         "answered": false,
         "correct": true,
-        "durationMs": 30938,
+        "durationMs": 33770,
         "groundingCheckMs": null,
         "answerPreview": "The knowledge base does not contain an answer to this question.",
         "evidenceCount": 0
@@ -36,7 +36,7 @@
         "expectAnswered": false,
         "answered": false,
         "correct": true,
-        "durationMs": 20998,
+        "durationMs": 22267,
         "groundingCheckMs": null,
         "answerPreview": "The knowledge base does not contain an answer to this question.",
         "evidenceCount": 0
@@ -47,7 +47,7 @@
         "expectAnswered": false,
         "answered": false,
         "correct": true,
-        "durationMs": 22148,
+        "durationMs": 24526,
         "groundingCheckMs": null,
         "answerPreview": "The knowledge base does not contain an answer to this question.",
         "evidenceCount": 0
@@ -58,7 +58,7 @@
         "expectAnswered": false,
         "answered": false,
         "correct": true,
-        "durationMs": 22289,
+        "durationMs": 25009,
         "groundingCheckMs": null,
         "answerPreview": "The knowledge base does not contain an answer to this question.",
         "evidenceCount": 0
@@ -69,7 +69,7 @@
         "expectAnswered": false,
         "answered": false,
         "correct": true,
-        "durationMs": 13930,
+        "durationMs": 14584,
         "groundingCheckMs": null,
         "answerPreview": "The knowledge base does not contain an answer to this question.",
         "evidenceCount": 0
@@ -80,7 +80,7 @@
         "expectAnswered": false,
         "answered": false,
         "correct": true,
-        "durationMs": 22086,
+        "durationMs": 26878,
         "groundingCheckMs": null,
         "answerPreview": "The knowledge base does not contain an answer to this question.",
         "evidenceCount": 0
@@ -91,7 +91,7 @@
         "expectAnswered": false,
         "answered": false,
         "correct": true,
-        "durationMs": 22814,
+        "durationMs": 24647,
         "groundingCheckMs": null,
         "answerPreview": "The knowledge base does not contain an answer to this question.",
         "evidenceCount": 0
@@ -102,7 +102,7 @@
         "expectAnswered": false,
         "answered": false,
         "correct": true,
-        "durationMs": 23342,
+        "durationMs": 24733,
         "groundingCheckMs": null,
         "answerPreview": "The knowledge base does not contain an answer to this question.",
         "evidenceCount": 0
@@ -113,7 +113,7 @@
         "expectAnswered": false,
         "answered": false,
         "correct": true,
-        "durationMs": 25626,
+        "durationMs": 25485,
         "groundingCheckMs": null,
         "answerPreview": "The knowledge base does not contain an answer to this question.",
         "evidenceCount": 0
@@ -124,7 +124,7 @@
         "expectAnswered": false,
         "answered": false,
         "correct": true,
-        "durationMs": 19365,
+        "durationMs": 19626,
         "groundingCheckMs": null,
         "answerPreview": "The knowledge base does not contain an answer to this question.",
         "evidenceCount": 0
@@ -137,8 +137,8 @@
         "expectAnswered": true,
         "answered": true,
         "correct": true,
-        "durationMs": 19257,
-        "groundingCheckMs": 0,
+        "durationMs": 18171,
+        "groundingCheckMs": 1,
         "answerPreview": "The research suggests that match play tends to have higher internal loads (RPE) despite similar external loads [1]. In tennis, a study found that 3D body load d",
         "evidenceCount": 4
       },
@@ -148,8 +148,8 @@
         "expectAnswered": true,
         "answered": true,
         "correct": true,
-        "durationMs": 19337,
-        "groundingCheckMs": 1,
+        "durationMs": 18180,
+        "groundingCheckMs": 0,
         "answerPreview": "The wearable stroke detection algorithm was validated by comparing its outputs with manually coded ball contacts and shadow swing events from video recordings o",
         "evidenceCount": 2
       },
@@ -159,7 +159,7 @@
         "expectAnswered": true,
         "answered": true,
         "correct": true,
-        "durationMs": 15103,
+        "durationMs": 14578,
         "groundingCheckMs": 0,
         "answerPreview": "The proposed universal risk factors for BSIs include training surfaces, type of sport (team or individual), seasonality, footwear, exposure to high or low impac",
         "evidenceCount": 2
@@ -170,7 +170,7 @@
         "expectAnswered": true,
         "answered": true,
         "correct": true,
-        "durationMs": 17926,
+        "durationMs": 17450,
         "groundingCheckMs": 0,
         "answerPreview": "**Risk is high, but modifiable.** Junior tennis players have a higher risk of lumbar stress injuries compared to their peers [3], with 38% reporting a lumbar re",
         "evidenceCount": 5
@@ -181,7 +181,7 @@
         "expectAnswered": true,
         "answered": true,
         "correct": true,
-        "durationMs": 18288,
+        "durationMs": 17617,
         "groundingCheckMs": 0,
         "answerPreview": "**Wearable Technology's Role in Performance Monitoring**\n\nThe use of wearable technology in sports has grown significantly, with various devices providing data ",
         "evidenceCount": 5
@@ -192,8 +192,8 @@
         "expectAnswered": true,
         "answered": true,
         "correct": true,
-        "durationMs": 13101,
-        "groundingCheckMs": 1,
+        "durationMs": 12547,
+        "groundingCheckMs": 0,
         "answerPreview": "~47% of the year’s training and competition is disrupted [1][2].",
         "evidenceCount": 2
       },
@@ -203,9 +203,9 @@
         "expectAnswered": true,
         "answered": true,
         "correct": true,
-        "durationMs": 14433,
+        "durationMs": 13803,
         "groundingCheckMs": 0,
-        "answerPreview": "5349 strokes were manually coded and categorized [7].",
+        "answerPreview": "5349 strokes were manually coded and categorised [8].",
         "evidenceCount": 1
       },
       {
@@ -214,7 +214,7 @@
         "expectAnswered": true,
         "answered": false,
         "correct": false,
-        "durationMs": 23360,
+        "durationMs": 22616,
         "groundingCheckMs": null,
         "answerPreview": "The knowledge base does not contain an answer to this question.",
         "evidenceCount": 0
@@ -225,9 +225,9 @@
         "expectAnswered": true,
         "answered": true,
         "correct": true,
-        "durationMs": 14079,
+        "durationMs": 14002,
         "groundingCheckMs": 1,
-        "answerPreview": "According to Beni Linder [1], players should vary their speed between 60% for inner-range movements and 100% for outer/end range movements.",
+        "answerPreview": "According to Beni Linder [1], players should vary their speed as needed, with 60% for inner-range movements and 100% for outer/end range movements.",
         "evidenceCount": 1
       },
       {
@@ -236,7 +236,7 @@
         "expectAnswered": true,
         "answered": false,
         "correct": false,
-        "durationMs": 26182,
+        "durationMs": 25969,
         "groundingCheckMs": null,
         "answerPreview": "The knowledge base does not contain an answer to this question.",
         "evidenceCount": 0
@@ -247,8 +247,8 @@
         "expectAnswered": true,
         "answered": true,
         "correct": true,
-        "durationMs": 28198,
-        "groundingCheckMs": 1,
+        "durationMs": 28883,
+        "groundingCheckMs": 0,
         "answerPreview": "Thirty-one elite female tennis players provided informed consent and were arranged into pre-pubescent, pubescent and adult groups [4]. The groups in this study ",
         "evidenceCount": 1
       },
@@ -258,10 +258,10 @@
         "expectAnswered": true,
         "answered": true,
         "correct": true,
-        "durationMs": 15461,
+        "durationMs": 15545,
         "groundingCheckMs": 0,
-        "answerPreview": "The study used a commercial GPS device with in-built accelerometer, gyroscope, and magnetometer to measure serve events in tennis [4]. The precision of the prot",
-        "evidenceCount": 1
+        "answerPreview": "The study found that official matches showed the highest accelerometer load, which may be useful in establishing benchmarks for training design [5]. Serve-focus",
+        "evidenceCount": 3
       },
       {
         "id": "A-13",
@@ -269,10 +269,10 @@
         "expectAnswered": true,
         "answered": true,
         "correct": true,
-        "durationMs": 32035,
+        "durationMs": 30048,
         "groundingCheckMs": 0,
-        "answerPreview": "The study reports on the multi-year periodised international competition engagement of elite top 100 [T100] and 250 [T250] female tennis players during their yo",
-        "evidenceCount": 4
+        "answerPreview": "The evidence establishes that:\n\n* International tournament and match volumes were quantified for junior and professional categories, along with measures of comp",
+        "evidenceCount": 3
       },
       {
         "id": "A-14",
@@ -280,8 +280,8 @@
         "expectAnswered": true,
         "answered": true,
         "correct": true,
-        "durationMs": 18514,
-        "groundingCheckMs": 1,
+        "durationMs": 18075,
+        "groundingCheckMs": 0,
         "answerPreview": "**A planned and progressive structure is essential.** Long-term athletic development models recommend a structured approach to training, with periods of intense",
         "evidenceCount": 5
       },
@@ -291,10 +291,10 @@
         "expectAnswered": true,
         "answered": true,
         "correct": true,
-        "durationMs": 14524,
-        "groundingCheckMs": 1,
-        "answerPreview": "A prototype algorithm was developed and validated for detecting tennis strokes from a commercially available trunk-mounted wearable sensor, using machine learni",
-        "evidenceCount": 3
+        "durationMs": 15108,
+        "groundingCheckMs": 0,
+        "answerPreview": "A prototype algorithm from a commercially available trunk-mounted wearable sensor uses machine learning to detect stroke events in tennis, with the highest accu",
+        "evidenceCount": 2
       },
       {
         "id": "A-16",
@@ -302,7 +302,7 @@
         "expectAnswered": true,
         "answered": true,
         "correct": true,
-        "durationMs": 30978,
+        "durationMs": 29847,
         "groundingCheckMs": 0,
         "answerPreview": "The evidence does establish that:\n- Forehand and backhand \"drives\" were detected with high accuracy (>86%) [7].\n- The prototype algorithm accurately quantifies ",
         "evidenceCount": 1
@@ -313,7 +313,7 @@
         "expectAnswered": true,
         "answered": true,
         "correct": true,
-        "durationMs": 15409,
+        "durationMs": 15472,
         "groundingCheckMs": 0,
         "answerPreview": "The study reports a novel approach to accelerometry measures in tennis by describing concurrent movement and stroke match-play demands from a single wearable se",
         "evidenceCount": 1
@@ -324,8 +324,8 @@
         "expectAnswered": true,
         "answered": true,
         "correct": true,
-        "durationMs": 28643,
-        "groundingCheckMs": 0,
+        "durationMs": 28189,
+        "groundingCheckMs": 1,
         "answerPreview": "The evidence establishes that a single wearable sensor can be used to differentiate between stroke and movement loads in tennis, with accuracy ranging from 84% ",
         "evidenceCount": 2
       },
@@ -335,7 +335,7 @@
         "expectAnswered": true,
         "answered": true,
         "correct": true,
-        "durationMs": 14320,
+        "durationMs": 13685,
         "groundingCheckMs": 0,
         "answerPreview": "The main goals of strength training in tennis are to develop power, muscular endurance, and maximum strength [4]. Periodised resistance training models are pref",
         "evidenceCount": 2
@@ -346,7 +346,7 @@
         "expectAnswered": true,
         "answered": true,
         "correct": true,
-        "durationMs": 13487,
+        "durationMs": 12464,
         "groundingCheckMs": 0,
         "answerPreview": "The National Academy is planning to use VO2 Master and the 1080 Sprint for measuring athlete movement, recovery, or capacity [3][5].",
         "evidenceCount": 2
