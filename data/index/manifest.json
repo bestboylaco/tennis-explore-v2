@@ -12,9 +12,11 @@
     "C:\\Users\\User\\Desktop\\TA_S2\\document-resources\\research-pdfs",
     "C:\\Users\\User\\Desktop\\TA_S2\\document-resources\\powerpoint-folder",
     "C:\\Users\\User\\Desktop\\TA_S2\\document-resources\\match-data",
-    "data\\video"
+    "data\\video",
+    "data/media",
+    "data/media (wayne_elderton x3)"
   ],
-  "chunkCount": 99496,
+  "chunkCount": 100063,
   "dimension": 1024,
   "quantisation": "int8",
   "quantScale": 127,
@@ -29,15 +31,16 @@
     },
     {
       "index": 2,
-      "count": 20964
+      "count": 21531
     }
   ],
-  "builtAt": "2026-08-13T02:38:51.317Z",
-  "fileCount": 2599,
+  "builtAt": "2026-09-09T12:28:53.510Z",
+  "fileCount": 2630,
   "skippedCount": 168,
   "schemaFailures": 0,
+  "uploadFailureCount": 31,
   "bm25": {
-    "vocabSize": 359290,
-    "postings": 11930456
+    "vocabSize": 360213,
+    "postings": 12001704
   }
 }
