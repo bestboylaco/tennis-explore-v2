@@ -44,6 +44,21 @@ app.disable("x-powered-by");
 app.use(cors({ origin: env.allowedOrigin }));
 app.use(express.json());
 
+// Atlas's free (M0) tier occasionally serves a session read as "not found"
+// for a few tens of ms right after regenerate() on login writes it -- the
+// write is already durable (confirmed against the sessions collection
+// directly), the store's own read path just hasn't caught up yet. One short
+// retry before treating it as "not signed in" avoids spurious 401s on the
+// request immediately following login.
+class ResilientMongoStore extends MongoStore {
+  get(sid, callback) {
+    super.get(sid, (err, session) => {
+      if (err || session) return callback(err, session);
+      setTimeout(() => super.get(sid, callback), 75);
+    });
+  }
+}
+
 // Sessions back onto the same MongoDB Atlas cluster everything else uses, so
 // there is no second datastore to run or fail independently. A session
 // becomes req.session.user only at login (auth.controller.js) -- nothing
@@ -53,7 +68,9 @@ app.use(
     secret: authConfig.sessionSecret,
     resave: false,
     saveUninitialized: false,
-    store: MongoStore.create({ mongoUrl: env.mongodbUri }),
+    // connect-mongo's static create() hardcodes `new MongoStore(...)`, so a
+    // subclass must be constructed directly to actually be used.
+    store: new ResilientMongoStore({ mongoUrl: env.mongodbUri }),
     cookie: {
       httpOnly: true,
       maxAge: authConfig.sessionMaxAgeMs,
