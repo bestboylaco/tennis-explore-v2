@@ -10,6 +10,8 @@
     <link rel="stylesheet" href="/styles/base.css">
     <link rel="stylesheet" href="/styles/chat.css">
     <link rel="stylesheet" href="/styles/auth.css">
+    <link rel="stylesheet"
+          href="/styles/theme-courtside-light.css">
 </head>
 <body class="chat-page">
     <div class="chat-application">
@@ -22,18 +24,10 @@
             </a>
 
             <div class="chat-topbar__actions">
-                <!-- Keep the existing public pages reachable after the UI reskin. -->
-                <nav class="chat-topbar__links" aria-label="Site navigation">
-                    <a href="/platforms">Platforms</a>
-                    <a href="/platforms#about">About</a>
-                </nav>
-
                 <!--
-                    Populated from the signed-in session (scripts/app.js),
-                    never client-chosen -- the access filter reads
-                    req.user.roleId, which comes off the session, not this
-                    markup. This is a read-only fact about the account, not
-                    a control.
+                    Platforms and About are intentionally no longer linked from
+                    the AI Coach top bar. Their page remains available for later
+                    product decisions; see docs/UI-NAVIGATION-NOTES.md.
                 -->
                 <div id="user-badge" class="user-badge" hidden>
                     <span id="user-badge-role" class="user-badge__role"></span>
@@ -50,30 +44,90 @@
                 <div class="sidebar__heading">Workspace</div>
 
                 <nav class="navigation" aria-label="Product capabilities">
-                    <button class="navigation__item navigation__item--active"
-                            type="button" aria-current="page">
-                        AI Coach
-                    </button>
-                    <button class="navigation__item" type="button" disabled>Athletes</button>
-                    <button class="navigation__item" type="button" disabled>Match Intelligence</button>
-                    <button class="navigation__item" type="button" disabled>Vision Analysis</button>
-                    <button class="navigation__item" type="button" disabled>Reports</button>
-                    <button class="navigation__item" type="button" disabled>Training Load</button>
-                    <button class="navigation__item" type="button" disabled>AI Tools</button>
+                    <a class="navigation__item navigation__item--active"
+                       href="/"
+                       aria-current="page">
+                        <span>AI Coach</span>
+                    </a>
+
+                    <p class="navigation__group-label">Connected tools</p>
+
+                    <a class="navigation__item navigation__item--external"
+                       href="https://tennis.smartabase.com/ams/auth"
+                       target="_blank"
+                       rel="noopener noreferrer">
+                        <span>AMS</span>
+                        <small>Open</small>
+                    </a>
+
+                    <a class="navigation__item navigation__item--external"
+                       href="https://app-v3.teambuildr.com/login"
+                       target="_blank"
+                       rel="noopener noreferrer">
+                        <span>TeamBuildr</span>
+                        <small>Open</small>
+                    </a>
+
+                    <a class="navigation__item navigation__item--external"
+                       href="https://login.teamworksapp.com/"
+                       target="_blank"
+                       rel="noopener noreferrer">
+                        <span>Teamworks</span>
+                        <small>Open</small>
+                    </a>
+
+                    <a class="navigation__item navigation__item--external"
+                       href="https://www.tennismove.com.au/"
+                       target="_blank"
+                       rel="noopener noreferrer">
+                        <span>TennisMove</span>
+                        <small>Open</small>
+                    </a>
+
+                    <p class="navigation__group-label">System</p>
 
                     <!--
-                      E5-17: no extra gate needed here. This whole page
-                      already redirects an anonymous visitor to /login
-                      (scripts/app.js) before this link would ever render,
-                      and telemetry access is any signed-in account, not
-                      admin-only -- see the matching note in telemetry.html.
+                      E5-17: telemetry is available to any signed-in account.
+                      Authentication is already enforced before this page loads.
                     -->
-                    <a class="navigation__item" href="/telemetry.html">Telemetry</a>
+                    <a class="navigation__item" href="/telemetry.html">
+                        <span>Telemetry</span>
+                    </a>
                 </nav>
 
+                <section class="chat-history" aria-labelledby="chat-history-title">
+                    <div class="chat-history__controls">
+                        <button id="chat-history-toggle"
+                                class="chat-history__toggle"
+                                type="button"
+                                aria-expanded="false"
+                                aria-controls="chat-history-panel">
+                            <span id="chat-history-title">Chat history</span>
+                            <span id="chat-history-count" class="chat-history__count">0</span>
+                        </button>
+
+                        <button id="new-chat-button"
+                                class="chat-history__new"
+                                type="button">
+                            New chat
+                        </button>
+                    </div>
+
+                    <div id="chat-history-panel"
+                         class="chat-history__panel"
+                         hidden>
+                        <p id="chat-history-empty" class="chat-history__empty">
+                            No saved conversations yet. Your first question will create one for this account.
+                        </p>
+                        <div id="chat-history-list"
+                             class="chat-history__list"
+                             aria-label="Conversation history"></div>
+                    </div>
+                </section>
+
                 <div class="sidebar__footer">
-                    <strong>Unified coaching</strong>
-                    <p>Ask one natural-language question without choosing a mode, source or command.</p>
+                    <strong>One connected workspace</strong>
+                    <p>Ask AI Coach or open an organisational tool without hunting through separate bookmarks.</p>
                 </div>
             </aside>
 
@@ -143,6 +197,13 @@
                               autocomplete="off"
                               required></textarea>
                     <button id="send-button" class="send-button" type="submit">Send</button>
+                    <button id="composer-plus-button"
+                            class="composer__plus"
+                            type="button"
+                            aria-label="More options"
+                            title="More options">
+                        +
+                    </button>
                 </form>
 
                 <p class="composer-hint">
@@ -150,52 +211,67 @@
                 </p>
             </section>
 
-            <aside class="sidebar sidebar--right">
-                <section class="explore-panel">
-                    <div class="explore-panel__heading">
-                        <p class="section-eyebrow">Quick start</p>
-                        <h2>Explore</h2>
+            <aside class="sidebar sidebar--right"
+                   aria-label="Quick questions">
+                <section class="explore-panel"
+                         aria-labelledby="explore-heading">
+                    <div class="explore-panel__top">
+                        <div class="explore-panel__heading">
+                            <p class="section-eyebrow">
+                                Quick start
+                            </p>
+
+                            <h2 id="explore-heading">
+                                Explore
+                            </h2>
+                        </div>
+
+                        <button id="quick-questions-edit"
+                                class="quick-questions__edit"
+                                type="button">
+                            Edit
+                        </button>
                     </div>
 
                     <p class="explore-panel__description">
-                        Start with a suggested natural-language coaching question.
+                        Start with a suggested natural-language
+                        coaching question.
                     </p>
 
-                    <div class="explore-list">
-                        <button class="explore-card"
-                                type="button"
-                                data-suggested-question="Show me the latest player performance insights.">
-                            <strong>Recent insights</strong>
-                            <small>Review key player trends</small>
+
+                    <!-- Saved Quick Questions -->
+
+                    <div id="quick-questions-list"
+                         class="explore-list"></div>
+
+
+                    <!-- Quick Question editor -->
+
+                    <div id="quick-questions-editor"
+                         class="quick-questions-editor"
+                         hidden>
+                        <div id="quick-questions-editor-list"
+                             class="quick-questions-editor__list"></div>
+
+                        <button id="quick-question-add"
+                                class="quick-question-add"
+                                type="button">
+                            Add question
                         </button>
 
-                        <button class="explore-card"
-                                type="button"
-                                data-suggested-question="Create a coaching plan for the player's next training session.">
-                            <strong>Create a plan</strong>
-                            <small>Prepare the next session</small>
-                        </button>
+                        <div class="quick-questions-editor__actions">
+                            <button id="quick-questions-cancel"
+                                    class="quick-question-secondary"
+                                    type="button">
+                                Cancel
+                            </button>
 
-                        <button class="explore-card"
-                                type="button"
-                                data-suggested-question="What technical weakness should the player work on first?">
-                            <strong>Technique analysis</strong>
-                            <small>Identify technical priorities</small>
-                        </button>
-
-                        <button class="explore-card"
-                                type="button"
-                                data-suggested-question="Review the player's latest match performance.">
-                            <strong>Match review</strong>
-                            <small>Analyse recent performance</small>
-                        </button>
-
-                        <button class="explore-card"
-                                type="button"
-                                data-suggested-question="What does the available video evidence show about the player's technique?">
-                            <strong>Video evidence</strong>
-                            <small>Review cited video moments</small>
-                        </button>
+                            <button id="quick-questions-save"
+                                    class="quick-question-save"
+                                    type="button">
+                                Save
+                            </button>
+                        </div>
                     </div>
                 </section>
             </aside>

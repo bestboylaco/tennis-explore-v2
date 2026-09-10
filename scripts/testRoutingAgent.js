@@ -1,6 +1,10 @@
 import {
+  env,
+} from "../src/config/env.js";
+
+import {
   bootstrapActions,
-  getActionDescriptions,
+  getAvailableActions,
 } from "../src/modules/actions/index.js";
 
 import {
@@ -8,7 +12,14 @@ import {
 } from "../src/modules/routing/index.js";
 
 
-bootstrapActions();
+await bootstrapActions({
+  structuredSourceDirs:
+    env.structuredSourceDirs,
+});
+
+
+const availableActions =
+  getAvailableActions();
 
 
 console.log(
@@ -16,12 +27,14 @@ console.log(
 );
 
 console.log(
-  getActionDescriptions()
+  availableActions.map(
+    (action) => action.id
+  )
 );
 
 
 const question =
-  "What does research say about training load?";
+  "What is the average singles ranking?";
 
 
 console.log(
@@ -42,18 +55,19 @@ try {
     "\n=== ROUTING RESULT ==="
   );
 
-  console.dir(
-    result,
-    {
-      depth: null,
-    }
+  console.log(
+    JSON.stringify(
+      result,
+      null,
+      2
+    )
   );
 } catch (error) {
   console.error(
     "\n=== ROUTING ERROR ==="
   );
 
-  console.error(
-    error
-  );
+  console.error(error);
+
+  process.exitCode = 1;
 }

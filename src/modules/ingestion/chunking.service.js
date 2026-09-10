@@ -568,30 +568,116 @@ export function chunkVideo(extracted) {
  * averages 412 characters of text per slide; the substance is in the figures,
  * and until they were captioned the index held only the remainder.
  */
-export function chunkImages(extracted) {
-  return extracted.images.map((image) => {
-    const contextHeader = buildContextHeader({
-      title: image.sourceDocument ?? extracted.title,
-      section: image.title,
-      authors: [],
-      eventDate: null,
-      sourceType: "image",
-    });
+export function chunkImages(
+  extracted,
+) {
+  return extracted.images.map(
+    (image) => {
+      const contextHeader =
+        buildContextHeader({
+          title:
+            image.sourceDocument ??
+            extracted.title,
 
-    return {
-      chunk_id: `${extracted.docId}#i${String(image.index).padStart(4, "0")}`,
-      doc_id: extracted.docId,
-      modality: "media",
-      title: image.title || extracted.title,
-      section: null,
-      page: image.page ?? null,
-      image_path: image.path,
-      text: image.text,
-      context_header: contextHeader,
-      embedding_text: contextHeader ? `${contextHeader}\n${image.text}` : image.text,
-      // says plainly that this text was generated from a picture rather than
-      // read off a page, so a quote drawn from it can be framed honestly.
-      derived_from_image: true,
-    };
-  });
+          section:
+            image.title,
+
+          authors:
+            [],
+
+          eventDate:
+            null,
+
+          sourceType:
+            "image",
+        });
+
+
+      return {
+        chunk_id:
+          `${extracted.docId}#i${String(
+            image.index,
+          ).padStart(
+            4,
+            "0",
+          )}`,
+
+        doc_id:
+          extracted.docId,
+
+        modality:
+          "media",
+
+        title:
+          image.title ||
+          extracted.title,
+
+        section:
+          null,
+
+        page:
+          image.page ??
+          null,
+
+        image_path:
+          image.path,
+
+        media_path:
+          image.mediaPath ??
+          null,
+
+        frame_id:
+          image.imageId ??
+          null,
+
+        video_id:
+          image.videoId ??
+          null,
+
+        timestamp_seconds:
+          image.timestampSeconds ??
+          null,
+
+        text:
+          image.text,
+
+        context_header:
+          contextHeader,
+
+        embedding_text:
+          contextHeader
+            ? `${contextHeader}\n${image.text}`
+            : image.text,
+
+        quality_status:
+          image.qualityStatus ??
+          null,
+
+        quality_score:
+          image.qualityScore ??
+          null,
+
+        quality_issues:
+          Array.isArray(
+            image.qualityIssues,
+          )
+            ? [
+                ...image.qualityIssues,
+              ]
+            : [],
+
+        verification_status:
+          image.verificationStatus ??
+          null,
+
+        evidence_eligible:
+          image.evidenceEligible ===
+          true,
+
+        derived_from_image:
+          true,
+      };
+    },
+  );
 }
+

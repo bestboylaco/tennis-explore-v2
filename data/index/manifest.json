@@ -9,24 +9,58 @@
     "minChars": 120
   },
   "sourceDirs": [
+<<<<<<< HEAD
     "data/scanned"
   ],
   "chunkCount": 49,
+=======
+    "C:\\Users\\User\\Desktop\\TA_S2\\document-resources\\research-pdfs",
+    "C:\\Users\\User\\Desktop\\TA_S2\\document-resources\\powerpoint-folder",
+    "C:\\Users\\User\\Desktop\\TA_S2\\document-resources\\match-data",
+    "data\\video",
+    "data/media",
+    "data/media (wayne_elderton x3)"
+  ],
+  "chunkCount": 100063,
+>>>>>>> 3cd36a0f2cbada9263f9f47fb9fa7743551254d4
   "dimension": 1024,
   "quantisation": "int8",
   "quantScale": 127,
   "shards": [
     {
       "index": 0,
+<<<<<<< HEAD
       "count": 49
     }
   ],
   "builtAt": "2026-09-04T06:20:46.513Z",
   "fileCount": 2,
   "skippedCount": 0,
+=======
+      "count": 40611
+    },
+    {
+      "index": 1,
+      "count": 37921
+    },
+    {
+      "index": 2,
+      "count": 21531
+    }
+  ],
+  "builtAt": "2026-09-09T12:28:53.510Z",
+  "fileCount": 2630,
+  "skippedCount": 168,
+>>>>>>> 3cd36a0f2cbada9263f9f47fb9fa7743551254d4
   "schemaFailures": 0,
+  "uploadFailureCount": 31,
   "bm25": {
+<<<<<<< HEAD
     "vocabSize": 625,
     "postings": 3778
+=======
+    "vocabSize": 360213,
+    "postings": 12001704
+>>>>>>> 3cd36a0f2cbada9263f9f47fb9fa7743551254d4
   }
 }

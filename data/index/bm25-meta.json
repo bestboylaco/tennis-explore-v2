@@ -1,5 +1,11 @@
 {
+<<<<<<< HEAD
   "docCount": 49,
   "vocabSize": 625,
   "postings": 3778
+=======
+  "docCount": 100063,
+  "vocabSize": 360213,
+  "postings": 12001704
+>>>>>>> 3cd36a0f2cbada9263f9f47fb9fa7743551254d4
 }

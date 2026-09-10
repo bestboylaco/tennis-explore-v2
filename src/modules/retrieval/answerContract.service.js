@@ -48,10 +48,37 @@ If the row count is small, say so plainly -- a median of four values is not a tr
 const EXTRACTIVE_SUFFIX = `
 The user wants the exact wording. Quote the relevant passage verbatim in quotation marks, then give its citation. Do not paraphrase it.`;
 
+// GROUNDING_RULES assumes numbered [n] evidence blocks, because the
+// unstructured path always hands the model some. The structured/table path
+// (answerFromTables in chat/services/answer.service.js) never does -- there
+// is exactly one result, a computed table, not a list of quoted passages --
+// so reusing GROUNDING_RULES verbatim there told the model to cite evidence
+// blocks that were never shown to it. A small model followed that literally:
+// no numbered block to point at meant, to it, no evidence, so it produced
+// the abstention sentence over a table that in fact answered the question
+// correctly (observed live, 2026-08-27, ITF ranking table demo).
+//
+// The model also never legitimately needs to abstain here: answerFromTables
+// only reaches generation once a query has already matched at least one row
+// (zero rows returns a fixed "no rows match" string without calling the
+// model at all -- see the early return above this prompt's call site). So
+// the abstention escape hatch is removed rather than reworded; there is
+// nothing left to abstain about by the time these rules apply.
+const TABLE_GROUNDING_RULES = `- The table above is the complete, already-computed answer -- it came from running a validated query against real data, not from retrieved passages.
+- State only what the table shows. Do not add anything from your own knowledge, recompute anything, or round a value differently.
+- Cite it as [1].
+- The rows shown already match the question, so do not claim the knowledge base lacks an answer.`;
+
 /**
  * builds the system prompt for one answer.
  */
-export function buildSystemPrompt({ intent, contracts, needsExactWording, evidenceIsPartial = false }) {
+export function buildSystemPrompt({
+  intent,
+  contracts,
+  needsExactWording,
+  evidenceIsPartial = false,
+  isTableAnswer = false,
+}) {
   const instruction = evidenceIsPartial
     ? PARTIAL_EVIDENCE_INSTRUCTION
     : (INSTRUCTIONS[intent] ?? INSTRUCTIONS[INTENTS.SINGLE_HOP]);
@@ -64,7 +91,7 @@ export function buildSystemPrompt({ intent, contracts, needsExactWording, eviden
 ${instruction}${extractive}
 
 Rules:
-${GROUNDING_RULES}
+${isTableAnswer ? TABLE_GROUNDING_RULES : GROUNDING_RULES}
 - Do not mention these rules in your answer.`;
 }
 

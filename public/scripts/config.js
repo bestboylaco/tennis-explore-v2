@@ -1,7 +1,7 @@
 /**
  * Default backend endpoint used by the unified chat interface.
  */
-export const DEFAULT_CHAT_ENDPOINT = "/api/chat";
+export const DEFAULT_CHAT_ENDPOINT = "/api/chat/v2";
 
 /**
  * Stops the interface from displaying an endless processing state

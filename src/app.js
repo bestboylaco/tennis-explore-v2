@@ -9,6 +9,7 @@ import agentRoutes from "./modules/agent/agent.routes.js";
 
 import { env } from "./config/env.js";
 import { authConfig } from "./modules/auth/auth.config.js";
+import User from "./modules/auth/models/user.model.js";
 import { getMongoDBStatus } from "./infrastructure/database/mongodb.service.js";
 import { notFoundHandler } from "./middleware/notFoundHandler.js";
 import { errorHandler } from "./middleware/errorHandler.js";
@@ -17,10 +18,12 @@ import { telemetryMiddleware } from "./middleware/telemetry.middleware.js";
 import { sourceRoutes } from "./modules/sources/index.js";
 import { telemetryRoutes } from "./modules/telemetry/index.js";
 import { chatRoutes } from "./modules/chat/index.js";
+import { conversationRoutes } from "./modules/conversations/index.js";
+import { quickQuestionRoutes } from "./modules/quickquestion/index.js";
 import assetRoutes from "./modules/assets/asset.routes.js";
 import auditRoutes from "./modules/audit/routes/audit.routes.js";
 import authRoutes from "./modules/auth/routes/auth.routes.js";
-
+import visionRoutes from "./modules/vision/routes/vision.routes.js";
 const app = express();
 
 const currentFilePath = fileURLToPath(import.meta.url);
@@ -41,6 +44,21 @@ app.disable("x-powered-by");
 app.use(cors({ origin: env.allowedOrigin }));
 app.use(express.json());
 
+// Atlas's free (M0) tier occasionally serves a session read as "not found"
+// for a few tens of ms right after regenerate() on login writes it -- the
+// write is already durable (confirmed against the sessions collection
+// directly), the store's own read path just hasn't caught up yet. One short
+// retry before treating it as "not signed in" avoids spurious 401s on the
+// request immediately following login.
+class ResilientMongoStore extends MongoStore {
+  get(sid, callback) {
+    super.get(sid, (err, session) => {
+      if (err || session) return callback(err, session);
+      setTimeout(() => super.get(sid, callback), 75);
+    });
+  }
+}
+
 // Sessions back onto the same MongoDB Atlas cluster everything else uses, so
 // there is no second datastore to run or fail independently. A session
 // becomes req.session.user only at login (auth.controller.js) -- nothing
@@ -50,7 +68,9 @@ app.use(
     secret: authConfig.sessionSecret,
     resave: false,
     saveUninitialized: false,
-    store: MongoStore.create({ mongoUrl: env.mongodbUri }),
+    // connect-mongo's static create() hardcodes `new MongoStore(...)`, so a
+    // subclass must be constructed directly to actually be used.
+    store: new ResilientMongoStore({ mongoUrl: env.mongodbUri }),
     cookie: {
       httpOnly: true,
       maxAge: authConfig.sessionMaxAgeMs,
@@ -67,14 +87,34 @@ app.use(
  * NODE_ENV -- CI runs with NODE_ENV unset too, and this must not turn on
  * there (see authConfig.devAutoLoginEnabled).
  */
-app.use((req, res, next) => {
-  if (authConfig.devAutoLoginEnabled && !req.session.user) {
-    req.session.user = {
-      roleId: "admin",
-    };
+app.use(async (req, res, next) => {
+  if (!authConfig.devAutoLoginEnabled || req.session.user) {
+    return next();
   }
 
-  next();
+  try {
+    // Auto-login still resolves a real seeded account. This keeps development
+    // history, audit records and access checks attached to the same identity
+    // shape produced by the normal login flow.
+    const admin = await User.findOne({
+      roleId: "admin",
+      isActive: true,
+    });
+
+    if (!admin) {
+      const error = new Error(
+        "Development auto-login requires a seeded admin account. Run npm run seed:users first.",
+      );
+      error.statusCode = 500;
+      error.code = "DEV_ADMIN_NOT_SEEDED";
+      throw error;
+    }
+
+    req.session.user = admin.toSafeJSON();
+    return next();
+  } catch (error) {
+    return next(error);
+  }
 });
 app.use(express.static(publicDirectory));
 app.use(telemetryMiddleware);
@@ -116,18 +156,45 @@ app.get("/login", (req, res) => {
 
 // Application routes
 app.use("/api/auth", authRoutes);
-app.use("/api/chat", requireAuth, chatRoutes);
-app.use("/api/agent", requireAuth, agentRoutes);
-app.use("/api/sources", sourceRoutes);
+
+app.use(
+  "/api/chat",
+  requireAuth,
+  chatRoutes,
+);
+
+app.use(
+  "/api/conversations",
+  requireAuth,
+  conversationRoutes,
+);
+
+app.use(
+  "/api/agent",
+  requireAuth,
+  agentRoutes,
+);
+
+app.use(
+  "/api/vision",
+  requireAuth,
+  visionRoutes,
+);
+
+app.use(
+  "/api/sources",
+  sourceRoutes,
+);
+
 // Internal-classified data; not a public route (threat model T-01).
 app.use("/api/telemetry", requireAuth, telemetryRoutes);
 // serves the original file behind a citation, with its own access check
-app.use("/api/assets", assetRoutes);
+app.use("/api/assets", requireAuth, assetRoutes);
 // Says who accessed what -- gating this is as important as gating the
 // access itself (threat model T-01). Admin-only, per the route's own
 // original intent (§7 Data Gate).
 app.use("/api/audit", requireAuth, requireRole("admin"), auditRoutes);
-
+app.use("/api/quickquestions", requireAuth, quickQuestionRoutes);
 // Error handling must come last
 app.use(notFoundHandler);
 app.use(errorHandler);

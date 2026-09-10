@@ -16,5 +16,10 @@ export const chatConfig = Object.freeze({
   ollamaBaseUrl: stripTrailingSlash(
     process.env.OLLAMA_BASE_URL || "http://localhost:11434",
   ),
-  generationModel: process.env.OLLAMA_GENERATION_MODEL || "llama3.1:8b",
+
+  generationModel:
+    process.env.OLLAMA_GENERATION_MODEL || "llama3.1:8b",
+
+  visionModel:
+    process.env.OLLAMA_VISION_MODEL || "llama3.2-vision:11b",
 });

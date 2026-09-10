@@ -11,6 +11,7 @@
     "test:unit": "node --test \"test/unit/**/*.test.js\"",
     "test:integration": "node --test --test-force-exit --test-concurrency=1 \"test/integration/**/*.test.js\"",
     "build:index": "node bin/build-index.js",
+    "build:index:test": "node bin/build-index-test.js",
     "search": "node bin/search.js",
     "ask": "node bin/ask.js",
     "eval": "node bin/eval.js",
@@ -18,6 +19,7 @@
     "eval:answers": "node bin/eval-answers.js",
     "eval:refusal": "node bin/e5-18-refusal-test.mjs",
     "seed:users": "node bin/seed-users.js",
+<<<<<<< HEAD
     "textract": "node bin/textract-extract.js",
     "textract:preflight": "node bin/textract-preflight.js",
     "textract:pick": "node bin/textract-pick.js",
@@ -25,6 +27,10 @@
     "textract:checklist": "node bin/textract-checklist.js",
     "textract:eval": "node bin/textract-eval.js",
     "textract:cloudtrail": "node bin/textract-cloudtrail.js"
+=======
+    "backfill:s3": "node bin/backfill-s3.js",
+    "backfill:s3:structured": "node bin/backfill-s3-structured.js"
+>>>>>>> 3cd36a0f2cbada9263f9f47fb9fa7743551254d4
   },
   "keywords": [
     "tennis",
@@ -35,7 +41,11 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+<<<<<<< HEAD
     "@aws-sdk/client-textract": "^3.1119.0",
+=======
+    "@aws-sdk/client-s3": "^3.1119.0",
+>>>>>>> 3cd36a0f2cbada9263f9f47fb9fa7743551254d4
     "adm-zip": "^0.5.16",
     "bcryptjs": "^3.0.3",
     "connect-mongo": "^6.0.0",
@@ -45,7 +55,9 @@
     "express-session": "^1.19.0",
     "mongoose": "^9.0.0",
     "multer": "^2.2.0",
+    "onnxruntime-node": "^1.29.0",
     "pdf-parse": "^2.4.5",
+    "sharp": "^0.35.4",
     "xlsx": "^0.18.5"
   },
   "devDependencies": {
