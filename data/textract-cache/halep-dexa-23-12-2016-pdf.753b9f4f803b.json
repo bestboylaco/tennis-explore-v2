@@ -1,0 +1,1280 @@
+{
+  "sourceFile": "halep-dexa-23-12-2016-pdf.pdf",
+  "docId": "halep-dexa-23-12-2016-pdf",
+  "sha256": "753b9f4f803b076f66ced7a04d1dba9775b8ec815f6bc2f30fd9012ffc747784",
+  "pageCount": 1,
+  "dpi": 300,
+  "pages": [
+    "257 Fullarton Road\nsound\nParkside South Australia 5063\nP. 08 8357 8855 F. 08 8357 2868\ninfo@soundradiology.com.au\nRADIOLOGY\nwww.bodycomp.soundradiology.com.au\nBody Composition\nPatient : HALEP Simona\nHeight: 168 cm\nWeight 61 kg\nPrescriber : BA\nPatient's ID : K52076\nEthnic Australian\nSex Female\nScan date: 23/12/2016 08:51:24\nBirth Date : 27/09/1991\nCurrent Age : 25 Years\nMenopause age\nAnalysis date : 23/12/2016 08:51:24\nWhole Body\n100 % Fat\nComposition indices\nMeasure\nResults\nTotal body weight (kg)\n62.465\nTotal body % Bone\n6.3\nTotal body % Lean\n81.7\nTotal body % Fat\n12.0\nBMC/Height2 (g/m²)\n1.4\nFat mass/height2 (kg/m²) (FMI)\n2.7\nAndroid/Gynoid % fat ratio\n0.73\nTrunk/legs % fat ratio\n1.05\nTrunk/limb fat mass ratio\n0.82\nLean mass/height2 (kg/m²)\n18.1\nSkeletal lean mass index (kg/m²)\n7.8\nBasal metabolic rate (kcal/Day)\n1447.5\n% Fat\n60\n50\n40\n30\n20\n0% Fat\n20\n30\n40\n50\n60\n70\n80\nTissue\nComposition\nYear\nFat Mass Index (FMI) = 2.66\n0\n5\n9\n13\n17\n21\n(FMI) 25\nFat Deficit\nNormal\nExcess Fat\nObese Class I\nObese\nClass\nII\nObese Class III\nBody composition\nROI\nTissues\nTissues\nFat\nLean\nBMC\nTotal mass\n(%Fat)\n(g)\n(g)\n(g)\n(g)\n(kg)\nLeft Arm\n13.5\n2922\n395\n2527\n195.5\n3.1\nRight Arm\n13.6\n3107\n424\n2683\n239.7\n3.3\nLeft Ribs\n10.2\n7542\n770\n6772\n254.3\n7.8\nRight Ribs\n9.7\n7549\n729\n6820\n263.2\n7.8\nT Spine\n10.0\n2165\n217\n1948\n174.8\n2.3\nLSpine\n6.7\n1448\n98\n1351\n131.4\n1.6\nPelvis\n11.9\n10127\n1209\n8918\n582.7\n10.7\nLeft Leg\n14.4\n9687\n1400\n8287\n658.4\n10.3\nRight Leg\n14.6\n10026\n1466\n8559\n670.0\n10.7\nSubTotal\n12.3\n54572\n6707\n47865\n3170.0\n57.7\nHead\n20.0\n3973\n794\n3180\n750.0\n4.7\nTotal\n12.8\n58545\n7501\n51045\n3920.0\n62.5\nAndroid\n10.9\n3725\n407\n3318\n120.6\n3.8\nGynoid\n15.0\n10810\n1623\n9187\n456.1\n11.3\nAchieving results through\nBody Composition Analysis"
+  ],
+  "pageModes": [
+    "tables"
+  ],
+  "twoPass": false,
+  "tables": [
+    {
+      "page": 1,
+      "index": 0,
+      "title": "Composition indices",
+      "rowCount": 13,
+      "columnCount": 2,
+      "grid": [
+        [
+          "Measure",
+          "Results"
+        ],
+        [
+          "Total body weight (kg)",
+          "62.465"
+        ],
+        [
+          "Total body % Bone",
+          "6.3"
+        ],
+        [
+          "Total body % Lean",
+          "81.7"
+        ],
+        [
+          "Total body % Fat",
+          "12.0"
+        ],
+        [
+          "BMC/Height2 (g/m²)",
+          "1.4"
+        ],
+        [
+          "Fat mass/height2 (kg/m²) (FMI)",
+          "2.7"
+        ],
+        [
+          "Android/Gynoid % fat ratio",
+          "0.73"
+        ],
+        [
+          "Trunk/legs % fat ratio",
+          "1.05"
+        ],
+        [
+          "Trunk/limb fat mass ratio",
+          "0.82"
+        ],
+        [
+          "Lean mass/height2 (kg/m²)",
+          "18.1"
+        ],
+        [
+          "Skeletal lean mass index (kg/m²)",
+          "7.8"
+        ],
+        [
+          "Basal metabolic rate (kcal/Day)",
+          "1447.5"
+        ]
+      ],
+      "cells": [
+        {
+          "row": 1,
+          "column": 1,
+          "rowSpan": 1,
+          "columnSpan": 1,
+          "text": "Measure",
+          "confidence": 100
+        },
+        {
+          "row": 1,
+          "column": 2,
+          "rowSpan": 1,
+          "columnSpan": 1,
+          "text": "Results",
+          "confidence": 100
+        },
+        {
+          "row": 2,
+          "column": 1,
+          "rowSpan": 1,
+          "columnSpan": 1,
+          "text": "Total body weight (kg)",
+          "confidence": 99.79332733154297
+        },
+        {
+          "row": 2,
+          "column": 2,
+          "rowSpan": 1,
+          "columnSpan": 1,
+          "text": "62.465",
+          "confidence": 99.87145233154297
+        },
+        {
+          "row": 3,
+          "column": 1,
+          "rowSpan": 1,
+          "columnSpan": 1,
+          "text": "Total body % Bone",
+          "confidence": 98.87535858154297
+        },
+        {
+          "row": 3,
+          "column": 2,
+          "rowSpan": 1,
+          "columnSpan": 1,
+          "text": "6.3",
+          "confidence": 99.87065887451172
+        },
+        {
+          "row": 4,
+          "column": 1,
+          "rowSpan": 1,
+          "columnSpan": 1,
+          "text": "Total body % Lean",
+          "confidence": 99.03160858154297
+        },
+        {
+          "row": 4,
+          "column": 2,
+          "rowSpan": 1,
+          "columnSpan": 1,
+          "text": "81.7",
+          "confidence": 99.892578125
+        },
+        {
+          "row": 5,
+          "column": 1,
+          "rowSpan": 1,
+          "columnSpan": 1,
+          "text": "Total body % Fat",
+          "confidence": 97.97612762451172
+        },
+        {
+          "row": 5,
+          "column": 2,
+          "rowSpan": 1,
+          "columnSpan": 1,
+          "text": "12.0",
+          "confidence": 99.69168090820312
+        },
+        {
+          "row": 6,
+          "column": 1,
+          "rowSpan": 1,
+          "columnSpan": 1,
+          "text": "BMC/Height2 (g/m²)",
+          "confidence": 78.4422836303711
+        },
+        {
+          "row": 6,
+          "column": 2,
+          "rowSpan": 1,
+          "columnSpan": 1,
+          "text": "1.4",
+          "confidence": 97.7784194946289
+        },
+        {
+          "row": 7,
+          "column": 1,
+          "rowSpan": 1,
+          "columnSpan": 1,
+          "text": "Fat mass/height2 (kg/m²) (FMI)",
+          "confidence": 77.88005828857422
+        },
+        {
+          "row": 7,
+          "column": 2,
+          "rowSpan": 1,
+          "columnSpan": 1,
+          "text": "2.7",
+          "confidence": 99.951171875
+        },
+        {
+          "row": 8,
+          "column": 1,
+          "rowSpan": 1,
+          "columnSpan": 1,
+          "text": "Android/Gynoid % fat ratio",
+          "confidence": 96.572265625
+        },
+        {
+          "row": 8,
+          "column": 2,
+          "rowSpan": 1,
+          "columnSpan": 1,
+          "text": "0.73",
+          "confidence": 99.990234375
+        },
+        {
+          "row": 9,
+          "column": 1,
+          "rowSpan": 1,
+          "columnSpan": 1,
+          "text": "Trunk/legs % fat ratio",
+          "confidence": 98.17223358154297
+        },
+        {
+          "row": 9,
+          "column": 2,
+          "rowSpan": 1,
+          "columnSpan": 1,
+          "text": "1.05",
+          "confidence": 99.970703125
+        },
+        {
+          "row": 10,
+          "column": 1,
+          "rowSpan": 1,
+          "columnSpan": 1,
+          "text": "Trunk/limb fat mass ratio",
+          "confidence": 99.55974578857422
+        },
+        {
+          "row": 10,
+          "column": 2,
+          "rowSpan": 1,
+          "columnSpan": 1,
+          "text": "0.82",
+          "confidence": 100
+        },
+        {
+          "row": 11,
+          "column": 1,
+          "rowSpan": 1,
+          "columnSpan": 1,
+          "text": "Lean mass/height2 (kg/m²)",
+          "confidence": 68.99234771728516
+        },
+        {
+          "row": 11,
+          "column": 2,
+          "rowSpan": 1,
+          "columnSpan": 1,
+          "text": "18.1",
+          "confidence": 99.970703125
+        },
+        {
+          "row": 12,
+          "column": 1,
+          "rowSpan": 1,
+          "columnSpan": 1,
+          "text": "Skeletal lean mass index (kg/m²)",
+          "confidence": 74.32298278808594
+        },
+        {
+          "row": 12,
+          "column": 2,
+          "rowSpan": 1,
+          "columnSpan": 1,
+          "text": "7.8",
+          "confidence": 99.9609375
+        },
+        {
+          "row": 13,
+          "column": 1,
+          "rowSpan": 1,
+          "columnSpan": 1,
+          "text": "Basal metabolic rate (kcal/Day)",
+          "confidence": 98.93753814697266
+        },
+        {
+          "row": 13,
+          "column": 2,
+          "rowSpan": 1,
+          "columnSpan": 1,
+          "text": "1447.5",
+          "confidence": 99.970703125
+        }
+      ],
+      "lowConfidenceCells": 4,
+      "confidence": 99.609375
+    },
+    {
+      "page": 1,
+      "index": 1,
+      "title": "Body composition",
+      "rowCount": 15,
+      "columnCount": 7,
+      "grid": [
+        [
+          "ROI",
+          "Tissues (%Fat)",
+          "Tissues (g)",
+          "Fat (g)",
+          "Lean (g)",
+          "BMC (g)",
+          "Total mass (kg)"
+        ],
+        [
+          "Left Arm",
+          "13.5",
+          "2922",
+          "395",
+          "2527",
+          "195.5",
+          "3.1"
+        ],
+        [
+          "Right Arm",
+          "13.6",
+          "3107",
+          "424",
+          "2683",
+          "239.7",
+          "3.3"
+        ],
+        [
+          "Left Ribs",
+          "10.2",
+          "7542",
+          "770",
+          "6772",
+          "254.3",
+          "7.8"
+        ],
+        [
+          "Right Ribs",
+          "9.7",
+          "7549",
+          "729",
+          "6820",
+          "263.2",
+          "7.8"
+        ],
+        [
+          "T Spine",
+          "10.0",
+          "2165",
+          "217",
+          "1948",
+          "174.8",
+          "2.3"
+        ],
+        [
+          "LSpine",
+          "6.7",
+          "1448",
+          "98",
+          "1351",
+          "131.4",
+          "1.6"
+        ],
+        [
+          "Pelvis",
+          "11.9",
+          "10127",
+          "1209",
+          "8918",
+          "582.7",
+          "10.7"
+        ],
+        [
+          "Left Leg",
+          "14.4",
+          "9687",
+          "1400",
+          "8287",
+          "658.4",
+          "10.3"
+        ],
+        [
+          "Right Leg",
+          "14.6",
+          "10026",
+          "1466",
+          "8559",
+          "670.0",
+          "10.7"
+        ],
+        [
+          "SubTotal",
+          "12.3",
+          "54572",
+          "6707",
+          "47865",
+          "3170.0",
+          "57.7"
+        ],
+        [
+          "Head",
+          "20.0",
+          "3973",
+          "794",
+          "3180",
+          "750.0",
+          "4.7"
+        ],
+        [
+          "Total",
+          "12.8",
+          "58545",
+          "7501",
+          "51045",
+          "3920.0",
+          "62.5"
+        ],
+        [
+          "Android",
+          "10.9",
+          "3725",
+          "407",
+          "3318",
+          "120.6",
+          "3.8"
+        ],
+        [
+          "Gynoid",
+          "15.0",
+          "10810",
+          "1623",
+          "9187",
+          "456.1",
+          "11.3"
+        ]
+      ],
+      "cells": [
+        {
+          "row": 1,
+          "column": 1,
+          "rowSpan": 1,
+          "columnSpan": 1,
+          "text": "ROI",
+          "confidence": 99.83159637451172
+        },
+        {
+          "row": 1,
+          "column": 2,
+          "rowSpan": 1,
+          "columnSpan": 1,
+          "text": "Tissues (%Fat)",
+          "confidence": 99.59243774414062
+        },
+        {
+          "row": 1,
+          "column": 3,
+          "rowSpan": 1,
+          "columnSpan": 1,
+          "text": "Tissues (g)",
+          "confidence": 99.79173278808594
+        },
+        {
+          "row": 1,
+          "column": 4,
+          "rowSpan": 1,
+          "columnSpan": 1,
+          "text": "Fat (g)",
+          "confidence": 99.85112762451172
+        },
+        {
+          "row": 1,
+          "column": 5,
+          "rowSpan": 1,
+          "columnSpan": 1,
+          "text": "Lean (g)",
+          "confidence": 99.83159637451172
+        },
+        {
+          "row": 1,
+          "column": 6,
+          "rowSpan": 1,
+          "columnSpan": 1,
+          "text": "BMC (g)",
+          "confidence": 99.87145233154297
+        },
+        {
+          "row": 1,
+          "column": 7,
+          "rowSpan": 1,
+          "columnSpan": 1,
+          "text": "Total mass (kg)",
+          "confidence": 99.755859375
+        },
+        {
+          "row": 2,
+          "column": 1,
+          "rowSpan": 1,
+          "columnSpan": 1,
+          "text": "Left Arm",
+          "confidence": 99.63787078857422
+        },
+        {
+          "row": 2,
+          "column": 2,
+          "rowSpan": 1,
+          "columnSpan": 1,
+          "text": "13.5",
+          "confidence": 99.970703125
+        },
+        {
+          "row": 2,
+          "column": 3,
+          "rowSpan": 1,
+          "columnSpan": 1,
+          "text": "2922",
+          "confidence": 100
+        },
+        {
+          "row": 2,
+          "column": 4,
+          "rowSpan": 1,
+          "columnSpan": 1,
+          "text": "395",
+          "confidence": 100
+        },
+        {
+          "row": 2,
+          "column": 5,
+          "rowSpan": 1,
+          "columnSpan": 1,
+          "text": "2527",
+          "confidence": 99.970703125
+        },
+        {
+          "row": 2,
+          "column": 6,
+          "rowSpan": 1,
+          "columnSpan": 1,
+          "text": "195.5",
+          "confidence": 100
+        },
+        {
+          "row": 2,
+          "column": 7,
+          "rowSpan": 1,
+          "columnSpan": 1,
+          "text": "3.1",
+          "confidence": 99.970703125
+        },
+        {
+          "row": 3,
+          "column": 1,
+          "rowSpan": 1,
+          "columnSpan": 1,
+          "text": "Right Arm",
+          "confidence": 99.404296875
+        },
+        {
+          "row": 3,
+          "column": 2,
+          "rowSpan": 1,
+          "columnSpan": 1,
+          "text": "13.6",
+          "confidence": 100
+        },
+        {
+          "row": 3,
+          "column": 3,
+          "rowSpan": 1,
+          "columnSpan": 1,
+          "text": "3107",
+          "confidence": 99.970703125
+        },
+        {
+          "row": 3,
+          "column": 4,
+          "rowSpan": 1,
+          "columnSpan": 1,
+          "text": "424",
+          "confidence": 100
+        },
+        {
+          "row": 3,
+          "column": 5,
+          "rowSpan": 1,
+          "columnSpan": 1,
+          "text": "2683",
+          "confidence": 99.990234375
+        },
+        {
+          "row": 3,
+          "column": 6,
+          "rowSpan": 1,
+          "columnSpan": 1,
+          "text": "239.7",
+          "confidence": 99.970703125
+        },
+        {
+          "row": 3,
+          "column": 7,
+          "rowSpan": 1,
+          "columnSpan": 1,
+          "text": "3.3",
+          "confidence": 99.89098358154297
+        },
+        {
+          "row": 4,
+          "column": 1,
+          "rowSpan": 1,
+          "columnSpan": 1,
+          "text": "Left Ribs",
+          "confidence": 98.8879165649414
+        },
+        {
+          "row": 4,
+          "column": 2,
+          "rowSpan": 1,
+          "columnSpan": 1,
+          "text": "10.2",
+          "confidence": 99.970703125
+        },
+        {
+          "row": 4,
+          "column": 3,
+          "rowSpan": 1,
+          "columnSpan": 1,
+          "text": "7542",
+          "confidence": 100
+        },
+        {
+          "row": 4,
+          "column": 4,
+          "rowSpan": 1,
+          "columnSpan": 1,
+          "text": "770",
+          "confidence": 100
+        },
+        {
+          "row": 4,
+          "column": 5,
+          "rowSpan": 1,
+          "columnSpan": 1,
+          "text": "6772",
+          "confidence": 100
+        },
+        {
+          "row": 4,
+          "column": 6,
+          "rowSpan": 1,
+          "columnSpan": 1,
+          "text": "254.3",
+          "confidence": 99.990234375
+        },
+        {
+          "row": 4,
+          "column": 7,
+          "rowSpan": 1,
+          "columnSpan": 1,
+          "text": "7.8",
+          "confidence": 99.93083953857422
+        },
+        {
+          "row": 5,
+          "column": 1,
+          "rowSpan": 1,
+          "columnSpan": 1,
+          "text": "Right Ribs",
+          "confidence": 99.31581115722656
+        },
+        {
+          "row": 5,
+          "column": 2,
+          "rowSpan": 1,
+          "columnSpan": 1,
+          "text": "9.7",
+          "confidence": 99.990234375
+        },
+        {
+          "row": 5,
+          "column": 3,
+          "rowSpan": 1,
+          "columnSpan": 1,
+          "text": "7549",
+          "confidence": 100
+        },
+        {
+          "row": 5,
+          "column": 4,
+          "rowSpan": 1,
+          "columnSpan": 1,
+          "text": "729",
+          "confidence": 99.990234375
+        },
+        {
+          "row": 5,
+          "column": 5,
+          "rowSpan": 1,
+          "columnSpan": 1,
+          "text": "6820",
+          "confidence": 100
+        },
+        {
+          "row": 5,
+          "column": 6,
+          "rowSpan": 1,
+          "columnSpan": 1,
+          "text": "263.2",
+          "confidence": 99.970703125
+        },
+        {
+          "row": 5,
+          "column": 7,
+          "rowSpan": 1,
+          "columnSpan": 1,
+          "text": "7.8",
+          "confidence": 99.970703125
+        },
+        {
+          "row": 6,
+          "column": 1,
+          "rowSpan": 1,
+          "columnSpan": 1,
+          "text": "T Spine",
+          "confidence": 98.310546875
+        },
+        {
+          "row": 6,
+          "column": 2,
+          "rowSpan": 1,
+          "columnSpan": 1,
+          "text": "10.0",
+          "confidence": 99.970703125
+        },
+        {
+          "row": 6,
+          "column": 3,
+          "rowSpan": 1,
+          "columnSpan": 1,
+          "text": "2165",
+          "confidence": 99.970703125
+        },
+        {
+          "row": 6,
+          "column": 4,
+          "rowSpan": 1,
+          "columnSpan": 1,
+          "text": "217",
+          "confidence": 99.970703125
+        },
+        {
+          "row": 6,
+          "column": 5,
+          "rowSpan": 1,
+          "columnSpan": 1,
+          "text": "1948",
+          "confidence": 100
+        },
+        {
+          "row": 6,
+          "column": 6,
+          "rowSpan": 1,
+          "columnSpan": 1,
+          "text": "174.8",
+          "confidence": 99.990234375
+        },
+        {
+          "row": 6,
+          "column": 7,
+          "rowSpan": 1,
+          "columnSpan": 1,
+          "text": "2.3",
+          "confidence": 99.93083953857422
+        },
+        {
+          "row": 7,
+          "column": 1,
+          "rowSpan": 1,
+          "columnSpan": 1,
+          "text": "LSpine",
+          "confidence": 95.58932495117188
+        },
+        {
+          "row": 7,
+          "column": 2,
+          "rowSpan": 1,
+          "columnSpan": 1,
+          "text": "6.7",
+          "confidence": 99.970703125
+        },
+        {
+          "row": 7,
+          "column": 3,
+          "rowSpan": 1,
+          "columnSpan": 1,
+          "text": "1448",
+          "confidence": 100
+        },
+        {
+          "row": 7,
+          "column": 4,
+          "rowSpan": 1,
+          "columnSpan": 1,
+          "text": "98",
+          "confidence": 99.9609375
+        },
+        {
+          "row": 7,
+          "column": 5,
+          "rowSpan": 1,
+          "columnSpan": 1,
+          "text": "1351",
+          "confidence": 99.970703125
+        },
+        {
+          "row": 7,
+          "column": 6,
+          "rowSpan": 1,
+          "columnSpan": 1,
+          "text": "131.4",
+          "confidence": 99.85112762451172
+        },
+        {
+          "row": 7,
+          "column": 7,
+          "rowSpan": 1,
+          "columnSpan": 1,
+          "text": "1.6",
+          "confidence": 99.59163665771484
+        },
+        {
+          "row": 8,
+          "column": 1,
+          "rowSpan": 1,
+          "columnSpan": 1,
+          "text": "Pelvis",
+          "confidence": 99.81205749511719
+        },
+        {
+          "row": 8,
+          "column": 2,
+          "rowSpan": 1,
+          "columnSpan": 1,
+          "text": "11.9",
+          "confidence": 99.931640625
+        },
+        {
+          "row": 8,
+          "column": 3,
+          "rowSpan": 1,
+          "columnSpan": 1,
+          "text": "10127",
+          "confidence": 99.970703125
+        },
+        {
+          "row": 8,
+          "column": 4,
+          "rowSpan": 1,
+          "columnSpan": 1,
+          "text": "1209",
+          "confidence": 99.9609375
+        },
+        {
+          "row": 8,
+          "column": 5,
+          "rowSpan": 1,
+          "columnSpan": 1,
+          "text": "8918",
+          "confidence": 99.970703125
+        },
+        {
+          "row": 8,
+          "column": 6,
+          "rowSpan": 1,
+          "columnSpan": 1,
+          "text": "582.7",
+          "confidence": 99.970703125
+        },
+        {
+          "row": 8,
+          "column": 7,
+          "rowSpan": 1,
+          "columnSpan": 1,
+          "text": "10.7",
+          "confidence": 99.970703125
+        },
+        {
+          "row": 9,
+          "column": 1,
+          "rowSpan": 1,
+          "columnSpan": 1,
+          "text": "Left Leg",
+          "confidence": 99.59721374511719
+        },
+        {
+          "row": 9,
+          "column": 2,
+          "rowSpan": 1,
+          "columnSpan": 1,
+          "text": "14.4",
+          "confidence": 99.990234375
+        },
+        {
+          "row": 9,
+          "column": 3,
+          "rowSpan": 1,
+          "columnSpan": 1,
+          "text": "9687",
+          "confidence": 99.990234375
+        },
+        {
+          "row": 9,
+          "column": 4,
+          "rowSpan": 1,
+          "columnSpan": 1,
+          "text": "1400",
+          "confidence": 99.990234375
+        },
+        {
+          "row": 9,
+          "column": 5,
+          "rowSpan": 1,
+          "columnSpan": 1,
+          "text": "8287",
+          "confidence": 99.970703125
+        },
+        {
+          "row": 9,
+          "column": 6,
+          "rowSpan": 1,
+          "columnSpan": 1,
+          "text": "658.4",
+          "confidence": 99.990234375
+        },
+        {
+          "row": 9,
+          "column": 7,
+          "rowSpan": 1,
+          "columnSpan": 1,
+          "text": "10.3",
+          "confidence": 99.95037078857422
+        },
+        {
+          "row": 10,
+          "column": 1,
+          "rowSpan": 1,
+          "columnSpan": 1,
+          "text": "Right Leg",
+          "confidence": 99.56951904296875
+        },
+        {
+          "row": 10,
+          "column": 2,
+          "rowSpan": 1,
+          "columnSpan": 1,
+          "text": "14.6",
+          "confidence": 99.990234375
+        },
+        {
+          "row": 10,
+          "column": 3,
+          "rowSpan": 1,
+          "columnSpan": 1,
+          "text": "10026",
+          "confidence": 99.990234375
+        },
+        {
+          "row": 10,
+          "column": 4,
+          "rowSpan": 1,
+          "columnSpan": 1,
+          "text": "1466",
+          "confidence": 100
+        },
+        {
+          "row": 10,
+          "column": 5,
+          "rowSpan": 1,
+          "columnSpan": 1,
+          "text": "8559",
+          "confidence": 99.990234375
+        },
+        {
+          "row": 10,
+          "column": 6,
+          "rowSpan": 1,
+          "columnSpan": 1,
+          "text": "670.0",
+          "confidence": 99.96014404296875
+        },
+        {
+          "row": 10,
+          "column": 7,
+          "rowSpan": 1,
+          "columnSpan": 1,
+          "text": "10.7",
+          "confidence": 99.990234375
+        },
+        {
+          "row": 11,
+          "column": 1,
+          "rowSpan": 1,
+          "columnSpan": 1,
+          "text": "SubTotal",
+          "confidence": 99.01944732666016
+        },
+        {
+          "row": 11,
+          "column": 2,
+          "rowSpan": 1,
+          "columnSpan": 1,
+          "text": "12.3",
+          "confidence": 99.85112762451172
+        },
+        {
+          "row": 11,
+          "column": 3,
+          "rowSpan": 1,
+          "columnSpan": 1,
+          "text": "54572",
+          "confidence": 99.71121215820312
+        },
+        {
+          "row": 11,
+          "column": 4,
+          "rowSpan": 1,
+          "columnSpan": 1,
+          "text": "6707",
+          "confidence": 100
+        },
+        {
+          "row": 11,
+          "column": 5,
+          "rowSpan": 1,
+          "columnSpan": 1,
+          "text": "47865",
+          "confidence": 99.990234375
+        },
+        {
+          "row": 11,
+          "column": 6,
+          "rowSpan": 1,
+          "columnSpan": 1,
+          "text": "3170.0",
+          "confidence": 99.951171875
+        },
+        {
+          "row": 11,
+          "column": 7,
+          "rowSpan": 1,
+          "columnSpan": 1,
+          "text": "57.7",
+          "confidence": 99.81126403808594
+        },
+        {
+          "row": 12,
+          "column": 1,
+          "rowSpan": 1,
+          "columnSpan": 1,
+          "text": "Head",
+          "confidence": 99.970703125
+        },
+        {
+          "row": 12,
+          "column": 2,
+          "rowSpan": 1,
+          "columnSpan": 1,
+          "text": "20.0",
+          "confidence": 99.96014404296875
+        },
+        {
+          "row": 12,
+          "column": 3,
+          "rowSpan": 1,
+          "columnSpan": 1,
+          "text": "3973",
+          "confidence": 100
+        },
+        {
+          "row": 12,
+          "column": 4,
+          "rowSpan": 1,
+          "columnSpan": 1,
+          "text": "794",
+          "confidence": 99.990234375
+        },
+        {
+          "row": 12,
+          "column": 5,
+          "rowSpan": 1,
+          "columnSpan": 1,
+          "text": "3180",
+          "confidence": 99.9609375
+        },
+        {
+          "row": 12,
+          "column": 6,
+          "rowSpan": 1,
+          "columnSpan": 1,
+          "text": "750.0",
+          "confidence": 99.990234375
+        },
+        {
+          "row": 12,
+          "column": 7,
+          "rowSpan": 1,
+          "columnSpan": 1,
+          "text": "4.7",
+          "confidence": 99.85192108154297
+        },
+        {
+          "row": 13,
+          "column": 1,
+          "rowSpan": 1,
+          "columnSpan": 1,
+          "text": "Total",
+          "confidence": 99.970703125
+        },
+        {
+          "row": 13,
+          "column": 2,
+          "rowSpan": 1,
+          "columnSpan": 1,
+          "text": "12.8",
+          "confidence": 99.970703125
+        },
+        {
+          "row": 13,
+          "column": 3,
+          "rowSpan": 1,
+          "columnSpan": 1,
+          "text": "58545",
+          "confidence": 100
+        },
+        {
+          "row": 13,
+          "column": 4,
+          "rowSpan": 1,
+          "columnSpan": 1,
+          "text": "7501",
+          "confidence": 100
+        },
+        {
+          "row": 13,
+          "column": 5,
+          "rowSpan": 1,
+          "columnSpan": 1,
+          "text": "51045",
+          "confidence": 99.951171875
+        },
+        {
+          "row": 13,
+          "column": 6,
+          "rowSpan": 1,
+          "columnSpan": 1,
+          "text": "3920.0",
+          "confidence": 99.91051483154297
+        },
+        {
+          "row": 13,
+          "column": 7,
+          "rowSpan": 1,
+          "columnSpan": 1,
+          "text": "62.5",
+          "confidence": 99.970703125
+        },
+        {
+          "row": 14,
+          "column": 1,
+          "rowSpan": 1,
+          "columnSpan": 1,
+          "text": "Android",
+          "confidence": 99.990234375
+        },
+        {
+          "row": 14,
+          "column": 2,
+          "rowSpan": 1,
+          "columnSpan": 1,
+          "text": "10.9",
+          "confidence": 99.93083953857422
+        },
+        {
+          "row": 14,
+          "column": 3,
+          "rowSpan": 1,
+          "columnSpan": 1,
+          "text": "3725",
+          "confidence": 100
+        },
+        {
+          "row": 14,
+          "column": 4,
+          "rowSpan": 1,
+          "columnSpan": 1,
+          "text": "407",
+          "confidence": 100
+        },
+        {
+          "row": 14,
+          "column": 5,
+          "rowSpan": 1,
+          "columnSpan": 1,
+          "text": "3318",
+          "confidence": 99.970703125
+        },
+        {
+          "row": 14,
+          "column": 6,
+          "rowSpan": 1,
+          "columnSpan": 1,
+          "text": "120.6",
+          "confidence": 99.95037078857422
+        },
+        {
+          "row": 14,
+          "column": 7,
+          "rowSpan": 1,
+          "columnSpan": 1,
+          "text": "3.8",
+          "confidence": 99.65182495117188
+        },
+        {
+          "row": 15,
+          "column": 1,
+          "rowSpan": 1,
+          "columnSpan": 1,
+          "text": "Gynoid",
+          "confidence": 99.970703125
+        },
+        {
+          "row": 15,
+          "column": 2,
+          "rowSpan": 1,
+          "columnSpan": 1,
+          "text": "15.0",
+          "confidence": 99.970703125
+        },
+        {
+          "row": 15,
+          "column": 3,
+          "rowSpan": 1,
+          "columnSpan": 1,
+          "text": "10810",
+          "confidence": 99.951171875
+        },
+        {
+          "row": 15,
+          "column": 4,
+          "rowSpan": 1,
+          "columnSpan": 1,
+          "text": "1623",
+          "confidence": 99.93083953857422
+        },
+        {
+          "row": 15,
+          "column": 5,
+          "rowSpan": 1,
+          "columnSpan": 1,
+          "text": "9187",
+          "confidence": 99.970703125
+        },
+        {
+          "row": 15,
+          "column": 6,
+          "rowSpan": 1,
+          "columnSpan": 1,
+          "text": "456.1",
+          "confidence": 99.990234375
+        },
+        {
+          "row": 15,
+          "column": 7,
+          "rowSpan": 1,
+          "columnSpan": 1,
+          "text": "11.3",
+          "confidence": 99.89178466796875
+        }
+      ],
+      "lowConfidenceCells": 0,
+      "confidence": 99.853515625
+    }
+  ],
+  "complete": true,
+  "synthetic": false,
+  "extractedAt": "2026-09-03T22:58:36.226Z"
+}

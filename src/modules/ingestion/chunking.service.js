@@ -21,6 +21,7 @@
 // quotes what the document actually says, not our header.
 
 import { retrievalConfig } from "../../config/retrieval.config.js";
+import { tableRowToText, tableToText } from "./textractBlocks.js";
 
 // ---------------------------------------------------------------------------
 // splitting prose
@@ -319,6 +320,117 @@ export function chunkDocument(extracted, { authors = [], eventDate = null } = {}
         });
       });
     }
+  }
+
+  return chunks;
+}
+
+// ---------------------------------------------------------------------------
+// tables read out of scanned pages
+// ---------------------------------------------------------------------------
+
+/**
+ * this is deliberately NOT `chunkDocument` with a different input. a table must
+ * never reach `splitText`, and the reason is visible in that function: it joins
+ * on `\s+`, which flattens every row onto one line, and then hard-cuts by
+ * character count when a "sentence" is longer than the target. a table put
+ * through it comes out as an undifferentiated run of numbers -- the columns are
+ * gone, the rows are gone, and nothing downstream can tell that anything was
+ * lost. so tables are cut on row boundaries here and never handed over.
+ */
+export function chunkTables(extracted, { authors = [], eventDate = null } = {}) {
+  const { targetChars } = retrievalConfig.chunking;
+  const tables = extracted.tables ?? [];
+  const chunks = [];
+
+  for (const table of tables) {
+    if (!Array.isArray(table.grid) || table.grid.length === 0) continue;
+
+    const body = tableToText(table);
+
+    if (body === "") continue;
+
+    // Textract's own caption when it read one off the page, because "Table 3.
+    // Mean serve speed by round" is what someone actually searches for. failing
+    // that, a generated label -- a chunk opening on a bare grid of numbers is
+    // both unreadable in a citation and nearly unretrievable.
+    const caption = table.title ?? `Table ${table.index + 1}`;
+    const heading = `${caption} (page ${table.page}) — ${extracted.title}`;
+
+    // the header row is repeated into every part, so it counts against the
+    // budget of each. the separator row costs the same again.
+    const [header] = table.grid;
+    const headerText = tableToText({ grid: [header] });
+    // serialise each row directly. this used to build a whole two-row markdown
+    // table per row just to take its third line, which re-escaped the entire
+    // header once for every row in the table -- 200 redundant header
+    // serialisations on a 200-row table, for a string that is already computed
+    // on the line above.
+    const rowTexts = table.grid.slice(1).map((row) => tableRowToText(row));
+
+    // rows per part, from what is actually left after the heading and the
+    // repeated header. floored at one so a single enormous row still lands
+    // somewhere rather than looping forever.
+    const budget = targetChars - heading.length - headerText.length - 32;
+    const parts = [];
+
+    let current = [];
+    let currentChars = 0;
+
+    for (const rowText of rowTexts) {
+      if (current.length > 0 && currentChars + rowText.length > budget) {
+        parts.push(current);
+        current = [];
+        currentChars = 0;
+      }
+
+      current.push(rowText);
+      currentChars += rowText.length + 1;
+    }
+
+    if (current.length > 0) parts.push(current);
+    // a table of nothing but a header row is still worth keeping -- the column
+    // names alone answer "what was measured".
+    if (parts.length === 0) parts.push([]);
+
+    parts.forEach((rows, partIndex) => {
+      const label =
+        parts.length > 1 ? `${heading} — part ${partIndex + 1} of ${parts.length}` : heading;
+
+      const text = [label, headerText, ...rows].join("\n");
+
+      const contextHeader = buildContextHeader({
+        title: extracted.title,
+        section: "table",
+        authors,
+        eventDate,
+        sourceType: extracted.sourceType,
+      });
+
+      chunks.push({
+        // padded like the page chunk ids in chunkDocument, so table chunks from
+        // page 12 sort after page 4's rather than before them.
+        chunk_id:
+          `${extracted.docId}#t${String(table.page).padStart(4, "0")}_${table.index}` +
+          (parts.length > 1 ? `_${partIndex}` : ""),
+        doc_id: extracted.docId,
+        modality: "document",
+        title: extracted.title,
+        section: "table",
+        page: table.page,
+        text,
+        context_header: contextHeader,
+        embedding_text: contextHeader ? `${contextHeader}\n${text}` : text,
+        // says plainly that this text was read off a scanned image by OCR
+        // rather than lifted from a text layer, so a quoted figure can be
+        // framed with the honest caveat that it was machine-read.
+        derived_from_ocr: true,
+        ocr_engine: "textract",
+        // carried through for the accuracy checklist, which sorts the cells a
+        // human reviews by how unsure Textract was about them.
+        low_confidence_cells: table.lowConfidenceCells ?? 0,
+      });
+    });
   }
 
   return chunks;

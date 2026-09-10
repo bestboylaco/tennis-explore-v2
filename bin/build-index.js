@@ -15,10 +15,23 @@ import { retrievalConfig } from "../src/config/retrieval.config.js";
 import { buildIndex } from "../src/modules/ingestion/indexBuilder.service.js";
 import { checkEmbeddingProvider } from "../src/modules/ingestion/embedding.service.js";
 
-const sourceDirs = process.argv.slice(2);
+const argv = process.argv.slice(2);
+
+// adds to the existing index instead of building a new one. the reason it
+// exists: a finished build deletes its checkpoint, so re-running to add two
+// documents re-embeds all 2,599 files and takes hours. see buildIndex.
+const append = argv.includes("--append");
+// see the refusal in indexBuilder: synthetic chunks cannot be removed from an
+// append-only shard, so letting them in has to be typed out on purpose.
+const allowSynthetic = argv.includes("--allow-synthetic");
+const sourceDirs = argv.filter((argument) => !argument.startsWith("--"));
 
 if (sourceDirs.length === 0) {
-  console.error("usage: node bin/build-index.js <folder> [more folders...]");
+  console.error("usage: node bin/build-index.js [--append] <folder> [more folders...]");
+  console.error("  --append  add these files to the existing index rather than rebuilding it");
+  console.error("  --allow-synthetic  let textract:seed --synthetic chunks into the index.");
+  console.error("                     refused by default: shards are append-only and this");
+  console.error("                     cannot be undone without a full rebuild.");
   process.exit(1);
 }
 
@@ -57,8 +70,19 @@ let lastFilePercent = -1;
 try {
   const result = await buildIndex({
     sourceDirs,
+    append,
+    allowSynthetic,
     onProgress: (event) => {
-      if (event.phase === "resume") {
+      if (event.phase === "append") {
+        console.log(
+          `appending to an existing index: ${event.chunks.toLocaleString()} chunks from ` +
+            `${event.files} files already there\n`,
+        );
+      } else if (event.phase === "duplicate") {
+        // said out loud rather than skipped quietly. someone who expected this
+        // file to be re-indexed needs to know it was not, and why.
+        console.log(`  already in the index, skipping: ${event.file}`);
+      } else if (event.phase === "resume") {
         console.log(
           `resuming an interrupted build: ${event.filesDone} files and ${event.chunks} chunks already done\n`,
         );
@@ -131,7 +155,12 @@ try {
   console.log(`\nnow try:  npm run search -- "serve load during tournaments"`);
 } catch (error) {
   console.error(`\n\nbuild failed:\n${error.message}\n`);
-  console.error("progress was checkpointed -- re-running this command resumes rather than starting over.\n");
+
+  // an append run is not checkpointed -- saying it was would send someone
+  // looking for a resume that cannot happen. see buildIndex.
+  if (!append) {
+    console.error("progress was checkpointed -- re-running this command resumes rather than starting over.\n");
+  }
   process.exit(1);
 }
 

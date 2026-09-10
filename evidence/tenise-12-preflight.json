@@ -1,0 +1,13 @@
+{
+  "ranAt": "2026-09-03T22:58:18.064Z",
+  "region": "ap-southeast-2",
+  "file": "halep-dexa-23-12-2016-pdf.pdf",
+  "dpi": 225,
+  "imagePixels": "1860x2631",
+  "detectDocumentText": "ok",
+  "analyzeDocumentTables": "ok",
+  "modelVersion": "1.0",
+  "blockCount": 635,
+  "tablesFound": 2,
+  "pagesSpent": 1
+}

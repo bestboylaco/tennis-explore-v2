@@ -19,6 +19,13 @@
     "eval:answers": "node bin/eval-answers.js",
     "eval:refusal": "node bin/e5-18-refusal-test.mjs",
     "seed:users": "node bin/seed-users.js",
+    "textract": "node bin/textract-extract.js",
+    "textract:preflight": "node bin/textract-preflight.js",
+    "textract:pick": "node bin/textract-pick.js",
+    "textract:seed": "node bin/textract-seed.js",
+    "textract:checklist": "node bin/textract-checklist.js",
+    "textract:eval": "node bin/textract-eval.js",
+    "textract:cloudtrail": "node bin/textract-cloudtrail.js",
     "backfill:s3": "node bin/backfill-s3.js",
     "backfill:s3:structured": "node bin/backfill-s3-structured.js"
   },
@@ -32,6 +39,7 @@
   "license": "ISC",
   "dependencies": {
     "@aws-sdk/client-s3": "^3.1119.0",
+    "@aws-sdk/client-textract": "^3.1119.0",
     "adm-zip": "^0.5.16",
     "bcryptjs": "^3.0.3",
     "connect-mongo": "^6.0.0",

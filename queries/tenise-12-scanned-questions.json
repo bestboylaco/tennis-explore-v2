@@ -1,0 +1,89 @@
+{
+  "_readme": [
+    "Five questions whose answers exist ONLY in the scanned documents recovered by",
+    "Textract (TENISE-12 / E2-06).",
+    "",
+    "That constraint is the whole point of this set. A question also answerable",
+    "from a digital-native PDF proves nothing about this story -- the pipeline",
+    "could answer it before, and passing would be a false positive. Each question",
+    "must target a number or a label that appears in a TABLE on a scanned page and",
+    "nowhere else in the 99,496-chunk index.",
+    "",
+    "HOW TO FILL THIS IN",
+    "",
+    "  1. Pick the two scanned PDFs:   npm run textract:pick -- <corpus-folder>",
+    "  2. Extract them:                npm run textract",
+    "  3. Open evidence/tenise-12-table-checklist.md and read the real tables.",
+    "  4. For each question below, replace expectedDocIds with the docId of the",
+    "     scanned file (its filename without .pdf, non-alphanumerics -> _) and",
+    "     expectedAnswerContains with a value that appears in the table.",
+    "  5. Before trusting a question, CHECK IT IS ACTUALLY UNIQUE:",
+    "       npm run search -- \"<the value you chose>\"",
+    "     If anything other than the scanned document comes back holding that",
+    "     value, pick a different one.",
+    "",
+    "  Then:  npm run build:index -- --append data/scanned",
+    "         npm run textract:eval",
+    "",
+    "The threshold is 4 of 5.",
+    "",
+    "Question shapes that work well on table data, in rough order of difficulty:",
+    "  - a single cell lookup      'what was X for Y'",
+    "  - a row read                'what were the values reported for Y'",
+    "  - a column label            'which measures were reported in table N'",
+    "  - a comparison across rows  'which group had the higher X'",
+    "  - a caption or unit         'what unit was X reported in'"
+  ],
+  "questions": [
+    {
+      "id": "TX-1",
+      "tag": "scanned_table",
+      "shape": "single cell lookup",
+      "query": "REPLACE ME -- ask for one value that appears in a table in the first scanned document",
+      "role": "admin",
+      "expectedDocIds": ["REPLACE_ME_scanned_doc_one"],
+      "expectedAnswerContains": ["REPLACE_ME_a_value_from_that_table"],
+      "minSources": 1
+    },
+    {
+      "id": "TX-2",
+      "tag": "scanned_table",
+      "shape": "row read",
+      "query": "REPLACE ME -- ask for the values reported for one row of that same table",
+      "role": "admin",
+      "expectedDocIds": ["REPLACE_ME_scanned_doc_one"],
+      "expectedAnswerContains": ["REPLACE_ME_a_value_from_that_row"],
+      "minSources": 1
+    },
+    {
+      "id": "TX-3",
+      "tag": "scanned_table",
+      "shape": "column label",
+      "query": "REPLACE ME -- ask which measures or columns a named table reports",
+      "role": "admin",
+      "expectedDocIds": ["REPLACE_ME_scanned_doc_one"],
+      "expectedAnswerContains": ["REPLACE_ME_a_column_heading"],
+      "minSources": 1
+    },
+    {
+      "id": "TX-4",
+      "tag": "scanned_table",
+      "shape": "single cell lookup",
+      "query": "REPLACE ME -- ask for one value from a table in the SECOND scanned document",
+      "role": "admin",
+      "expectedDocIds": ["REPLACE_ME_scanned_doc_two"],
+      "expectedAnswerContains": ["REPLACE_ME_a_value_from_that_table"],
+      "minSources": 1
+    },
+    {
+      "id": "TX-5",
+      "tag": "scanned_table",
+      "shape": "comparison across rows",
+      "query": "REPLACE ME -- ask which of two rows in the second document's table is larger",
+      "role": "admin",
+      "expectedDocIds": ["REPLACE_ME_scanned_doc_two"],
+      "expectedAnswerContains": ["REPLACE_ME_the_winning_label"],
+      "minSources": 1
+    }
+  ]
+}
