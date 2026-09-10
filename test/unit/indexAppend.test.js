@@ -19,6 +19,15 @@ before(async () => {
   process.env.EMBEDDING_MODEL = "bge-m3";
   process.env.EMBEDDING_DIMENSION = "1024";
 
+  // indexBuilder.service.js imports env.js, which validates PORT and
+  // MONGODB_URI eagerly at import time and throws when either is missing.
+  // Neither value is used here. On a developer machine env.js's dotenv.config()
+  // picks them up from .env and this passes without them; CI's unit-tests job
+  // has no .env and sets no variables, so leaving them out fails the whole file
+  // in a hook. Same reason and same fix as test/unit/storage.test.js.
+  process.env.PORT ||= "3000";
+  process.env.MONGODB_URI ||= "mongodb://unused-in-this-test/db";
+
   ({ buildIndex } = await import("../../src/modules/ingestion/indexBuilder.service.js"));
 });
 
