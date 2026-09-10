@@ -4,7 +4,7 @@
 **Epic:** Epic 5 — Security, Privacy & Governance
 **Run date:** 2026-09-10
 **Status:** Access control matrix and negative test — **executed live, evidence attached below**. Video
-verification — **blocked**, see §4. Sprint 2 regression rerun — **not yet executed**, see §5.
+verification — **blocked**, see §4. Sprint 2 regression rerun — **descoped by owner decision**, see §5.
 
 This ticket predates the AWS-to-local-stack pivot (TENISE-40) and was written against CloudTrail and
 Nova Pro. Its acceptance criteria are re-interpreted here against what is actually implemented today:
@@ -155,7 +155,7 @@ nothing.
 - [x] 24-cell (→ 31-execution, see §1.1) access matrix executed and results recorded — §1.3
 - [x] Negative test executed and recorded — §2
 - [ ] Video rubric scoring completed by both scorers — **blocked, see §4**
-- [ ] Sprint 2 routing/hybrid sets rerun to confirm no unexplained regression — **not yet executed, see §5**
+- [ ] Sprint 2 routing/hybrid sets rerun to confirm no unexplained regression — **descoped, see §5**
 
 ## 4. Video verification — blocked
 
@@ -185,16 +185,22 @@ as an unresolved acceptance criterion on a ticket whose other half (the access c
 This mirrors how TENISE-25's stale AWS-era acceptance criteria were handled (clarifying comment, not a
 silent close).
 
-## 5. Sprint 2 regression rerun — not yet executed
+## 5. Sprint 2 regression rerun — descoped
 
-Baseline artifacts exist from before the access-control filter (E5-17) landed:
-`evidence/answer_evaluation.json`, `evidence/e5-18-refusal-rate.json`, and the `bin/eval.js` /
-`queries/query_set.json` ablation harness. None of these have been rerun against the current,
-ACL-filtered pipeline. Per the ticket's own note, some shift in results is *expected* (the filter
-narrows the retrievable corpus) — the point of rerunning is to confirm any change is explained by the
-filter, not an unrelated regression. This is a separate, sizeable run (another full pass of live
-Ollama evaluation) and was not executed in this session; flagging it here as the remaining item rather
-than leaving it silently undone.
+The "Sprint 2 routing and hybrid sets" this line refers to are not a separate deliverable of this
+ticket — they are the three shared question sets (routing set, hybrid-necessity set, grounding
+control set) that **TENISE-35** ("TS-02 Sprint 2 shared question sets and walking skeleton acceptance")
+was supposed to build and commit, for TENISE-16/17/19 to consume. TENISE-35 itself is still **To Do**,
+not Done, so there is no confirmed, committed Sprint-2 question set to rerun as a like-for-like
+baseline — `evidence/answer_evaluation.json`, `evidence/e5-18-refusal-rate.json` and
+`queries/query_set.json` exist in the repo but their relationship to TENISE-35's specific three sets was
+never confirmed.
+
+**Decision (project owner, 2026-09-10): do not pick up TENISE-35 as part of closing this ticket.** The
+regression-rerun line item is left undone by that decision, not by omission — re-running against
+whatever eval artifacts happen to exist would not actually satisfy "rerun the Sprint 2 sets" if those
+were never confirmed to be the sets TENISE-35 specifies. If this line item is picked up later, it
+depends on TENISE-35 first.
 
 ## 6. Reproducing this run
 
