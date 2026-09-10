@@ -18,6 +18,8 @@
     "check:models": "node bin/check-models.js",
     "eval:answers": "node bin/eval-answers.js",
     "eval:refusal": "node bin/e5-18-refusal-test.mjs",
+    "test:rbac-matrix": "node bin/tenise36-access-matrix-test.mjs",
+    "test:rbac-negative": "node bin/tenise36-negative-test.mjs",
     "seed:users": "node bin/seed-users.js",
     "backfill:s3": "node bin/backfill-s3.js",
     "backfill:s3:structured": "node bin/backfill-s3-structured.js"
