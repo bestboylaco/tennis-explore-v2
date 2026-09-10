@@ -29,7 +29,6 @@ import { objectExists, putObject } from "../../infrastructure/storage/storage.se
 import { guessContentType, toStorageKey } from "../../infrastructure/storage/storageKey.service.js";
 import { NO_PROGRAM, grantsForDocument } from "../../shared/constants/accessControl.js";
 import { buildBm25 } from "../retrieval/bm25.service.js";
-<<<<<<< HEAD
 import {
   chunkDocument,
   chunkImages,
@@ -38,20 +37,8 @@ import {
   chunkTables,
   chunkVideo,
 } from "./chunking.service.js";
-=======
-import { chunkDocument, chunkImages, chunkRecords, chunkSlides, chunkVideo } from "./chunking.service.js";
-
-
-
-import {
-  prepareVisualEvidence,
-} from "./visualEvidencePreparation.service.js";
-
-import {
-  prepareVideoVisualEvidence,
-} from "./videoVisualEvidence.service.js";
-
->>>>>>> 3cd36a0f2cbada9263f9f47fb9fa7743551254d4
+import { prepareVisualEvidence } from "./visualEvidencePreparation.service.js";
+import { prepareVideoVisualEvidence } from "./videoVisualEvidence.service.js";
 import { embedTexts } from "./embedding.service.js";
 import { docIdFor, extractFile, listIngestableFiles } from "./extraction.service.js";
 import {
@@ -1116,21 +1103,24 @@ export async function buildIndex({
   // a written record of everything that did not make it in. at this scale
   // "313 files were skipped" is not something anyone should have to discover by
   // noticing an answer is missing.
-<<<<<<< HEAD
   //
   // in append mode this MERGES rather than replaces. the report is not just a
   // log -- it is the list bin/textract-pick.js reads to find the 144 scanned
   // documents this story exists to rescue. overwriting it with a two-file
   // append run's results would delete that list, and the only way to get it
   // back is a full rebuild.
-  let report = { skipped, schemaProblems: problems.slice(0, 500) };
+  let report = {
+    skipped,
+    schemaProblems: problems.slice(0, 500),
+    uploadFailures: uploadFailures.slice(0, 500),
+  };
 
   if (append) {
     const touched = new Set(files.map((file) => path.basename(file)));
     const earlier = await fsp
       .readFile(path.join(outputDir, "build-report.json"), "utf8")
       .then((raw) => JSON.parse(raw))
-      .catch(() => ({ skipped: [], schemaProblems: [] }));
+      .catch(() => ({ skipped: [], schemaProblems: [], uploadFailures: [] }));
 
     report = {
       // a file this run handled gets its new verdict; every other file keeps
@@ -1138,23 +1128,27 @@ export async function buildIndex({
       // from the skipped list, which is exactly the outcome to look for.
       skipped: [...(earlier.skipped ?? []).filter((entry) => !touched.has(entry.file)), ...skipped],
       schemaProblems: [...(earlier.schemaProblems ?? []), ...problems].slice(0, 500),
+      // same rule as skipped, and for the same reason: these entries are
+      // {file, reason} too, so a file whose upload succeeded on this run drops
+      // off the list instead of being reported as still failing. the run's own
+      // uploadFailures already carry over within a build via the checkpoint,
+      // but the checkpoint is deleted at the end of one -- so without this an
+      // append run would silently forget every earlier failure.
+      uploadFailures: [
+        ...(earlier.uploadFailures ?? []).filter((entry) => !touched.has(entry.file)),
+        ...uploadFailures,
+      ].slice(0, 500),
     };
   }
 
-  if (report.skipped.length > 0 || report.schemaProblems.length > 0) {
+  if (
+    report.skipped.length > 0 ||
+    report.schemaProblems.length > 0 ||
+    report.uploadFailures.length > 0
+  ) {
     await fsp.writeFile(
       path.join(outputDir, "build-report.json"),
       `${JSON.stringify(report, null, 2)}\n`,
-=======
-  if (skipped.length > 0 || problems.length > 0 || uploadFailures.length > 0) {
-    await fsp.writeFile(
-      path.join(outputDir, "build-report.json"),
-      `${JSON.stringify(
-        { skipped, schemaProblems: problems.slice(0, 500), uploadFailures: uploadFailures.slice(0, 500) },
-        null,
-        2,
-      )}\n`,
->>>>>>> 3cd36a0f2cbada9263f9f47fb9fa7743551254d4
     );
   }
 
