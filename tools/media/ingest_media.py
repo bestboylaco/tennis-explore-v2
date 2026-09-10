@@ -44,6 +44,35 @@ import sys
 import time
 from pathlib import Path
 
+def _register_nvidia_dll_dirs() -> None:
+    """makes the GPU findable without a manual PATH export every session.
+
+    faster-whisper's backend (ctranslate2) loads cuBLAS/cuDNN with a plain
+    Win32 LoadLibrary call, which walks the legacy search order (app dir,
+    System32, then PATH) -- it does NOT consult directories registered via
+    Python's os.add_dll_directory, that only affects LoadLibraryEx-based
+    loads. So on a machine with only the NVIDIA driver installed (no full
+    CUDA Toolkit), where those DLLs come from the
+    `nvidia-cublas-cu12`/`nvidia-cudnn-cu12` pip packages instead, the only
+    thing that works is prepending their `bin/` folders to the real PATH
+    env var before ctranslate2 is imported.
+    """
+    if os.name != "nt":
+        return
+
+    for package in ("nvidia.cublas", "nvidia.cudnn"):
+        try:
+            module = __import__(package, fromlist=["__path__"])
+            bin_dir = Path(list(module.__path__)[0]) / "bin"
+
+            if bin_dir.is_dir() and str(bin_dir) not in os.environ.get("PATH", ""):
+                os.environ["PATH"] = str(bin_dir) + os.pathsep + os.environ.get("PATH", "")
+        except Exception:  # noqa: BLE001
+            pass
+
+
+_register_nvidia_dll_dirs()
+
 DEFAULT_OUT = Path("data/media")
 
 VIDEO_EXT = {".mp4", ".mov", ".mkv", ".avi", ".webm", ".m4v"}
@@ -210,10 +239,13 @@ def _timestamp(seconds: float) -> str:
 
 
 def _has_cuda() -> bool:
+    # faster-whisper runs on ctranslate2, not torch -- checking torch's own
+    # CUDA build here was a false negative on this machine: a CPU-only torch
+    # wheel was installed even though the GPU and ctranslate2 both work fine.
     try:
-        import torch
+        import ctranslate2
 
-        return torch.cuda.is_available()
+        return ctranslate2.get_cuda_device_count() > 0
     except Exception:  # noqa: BLE001
         return False
 

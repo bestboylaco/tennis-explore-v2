@@ -20,7 +20,7 @@ const UNANSWERABLE = [
   { id: "U-07", q: "What is the standard treatment protocol for carpal tunnel syndrome in office workers?", note: "replaced 2026-08-20: original ACL-protocol question was answered from a real public research document (published clinical research is classified research:public, not clinical -- clinical domain is reserved for TA's own internal medical records). Verified this unrelated-condition question returns 0 evidence before adding it." },
   { id: "U-08", q: "What is the direct phone number for the head of the National Academy program?", note: "personal/PII specifics not retrievable in this form" },
   { id: "U-09", q: "What does the 2027 National Academy technology roadmap say about AI-based recovery tracking?", note: "hallucination trap: plausible doc-naming pattern (real docs exist for 2024-25/2025-26), 2027 does not" },
-  { id: "U-10", q: "What training philosophy did Rafael Nadal's uncle and coach Toni Nadal describe in his own coaching manual?", note: "unresolved: answered live on 2026-08-20 from a real interview paper (giles-movement-interviews-paper-2), grounded/citedFraction 1 -- kept as a known caveat rather than replaced again, see evidence/e5-18-refusal-rate.json" },
+  { id: "U-10", q: "What does Patrick Mouratoglou say about developing a junior player's mental resilience in his coaching academy?", note: "replaced 2026-08-28: original Toni Nadal question was answered live from a real interview paper (giles-movement-interviews-paper-2), grounded/citedFraction 1 -- genuinely not absent. Verified this one returns 0 evidence, twice, before adding it." },
 ];
 
 const ANSWERABLE = [
@@ -66,6 +66,11 @@ async function runOne(item, expectAnswered) {
       answered,
       correct,
       durationMs,
+      // TENISE-30: isolates verifyAnswer()'s own cost from the rest of the
+      // pipeline. Undefined on the structured/table route, which never calls
+      // it (see verifier.service.js's TABLE_GROUNDING_RULES comment) -- that
+      // is a real "no grounding check ran here", not a missing measurement.
+      groundingCheckMs: result.response.retrieval?.groundingCheckMs ?? null,
       answerPreview: String(result.response.answer ?? "").slice(0, 160),
       evidenceCount: result.response.evidenceCount ?? result.citations?.length ?? 0,
     };
@@ -102,22 +107,48 @@ async function main() {
     console.log(`${r.correct ? "OK (answered)" : "FAIL (wrongly refused)"} (${r.durationMs}ms)`);
   }
 
+  // r.answered is null when runOne() caught an error (e.g. Ollama unreachable)
+  // rather than getting a real true/false back. `=== true` / `=== false`
+  // checks alone treat null as neither a false claim nor a false refusal, so a
+  // total pipeline outage during the whole run used to score as a perfect
+  // pass. counting errors explicitly here makes that failure visible instead
+  // of silently vanishing into a 0% rate.
+  const unanswerableErrors = results.unanswerable.filter((r) => r.answered === null).length;
+  const answerableErrors = results.answerable.filter((r) => r.answered === null).length;
   const falseClaims = results.unanswerable.filter((r) => r.answered === true).length;
   const falseRefusals = results.answerable.filter((r) => r.answered === false).length;
   const falseRefusalRate = (falseRefusals / ANSWERABLE.length) * 100;
-  const avgLatencyMs =
-    [...results.unanswerable, ...results.answerable].reduce((sum, r) => sum + r.durationMs, 0) /
-    (UNANSWERABLE.length + ANSWERABLE.length);
+  const all = [...results.unanswerable, ...results.answerable];
+  const avgLatencyMs = all.reduce((sum, r) => sum + r.durationMs, 0) / all.length;
+
+  // TENISE-30: only questions that actually ran the unstructured/document path
+  // call verifyAnswer() at all (see the groundingCheckMs comment in runOne).
+  // Averaging over the ones that ran it, rather than over every question, is
+  // what makes this "the added cost of grounding" instead of "that cost
+  // diluted by questions that never paid it".
+  const groundingChecked = all.filter((r) => typeof r.groundingCheckMs === "number");
+  const avgGroundingCheckMs =
+    groundingChecked.length > 0
+      ? groundingChecked.reduce((sum, r) => sum + r.groundingCheckMs, 0) / groundingChecked.length
+      : null;
 
   const summary = {
-    unanswerableSet: { total: UNANSWERABLE.length, falseClaims, passed: falseClaims === 0 },
+    unanswerableSet: {
+      total: UNANSWERABLE.length,
+      falseClaims,
+      erroredCount: unanswerableErrors,
+      passed: falseClaims === 0 && unanswerableErrors === 0,
+    },
     answerableSet: {
       total: ANSWERABLE.length,
       falseRefusals,
+      erroredCount: answerableErrors,
       falseRefusalRatePercent: Number(falseRefusalRate.toFixed(1)),
-      passed: falseRefusalRate <= 10,
+      passed: falseRefusalRate <= 10 && answerableErrors === 0,
     },
     avgLatencyMs: Math.round(avgLatencyMs),
+    avgGroundingCheckMs: avgGroundingCheckMs === null ? null : Number(avgGroundingCheckMs.toFixed(2)),
+    groundingCheckedCount: groundingChecked.length,
   };
 
   console.log("\n=== SUMMARY ===");

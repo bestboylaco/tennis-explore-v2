@@ -1,0 +1,118 @@
+{
+  "skipped": [],
+  "schemaProblems": [],
+  "uploadFailures": [
+    {
+      "file": "gareth_keating (1080p).mp4",
+      "reason": "cannot derive an S3 key for \"data\\video\\gareth_keating (1080p).mp4\": it is not inside ASSET_SOURCE_ROOT (\"C:\\Users\\chatc\\Downloads\\IFN736 Industry Project Repository\\tennis-explore-v2\\data\\raw\")."
+    },
+    {
+      "file": "garry_cahill_session_v1 (1080p).mp4",
+      "reason": "cannot derive an S3 key for \"data\\video\\garry_cahill_session_v1 (1080p).mp4\": it is not inside ASSET_SOURCE_ROOT (\"C:\\Users\\chatc\\Downloads\\IFN736 Industry Project Repository\\tennis-explore-v2\\data\\ra"
+    },
+    {
+      "file": "howard_green_-_using_the_integrated_tennis_shapes__supporting_transfer_of_training_to_the_court (1080p).mp4",
+      "reason": "cannot derive an S3 key for \"data\\video\\howard_green_-_using_the_integrated_tennis_shapes__supporting_transfer_of_training_to_the_court (1080p).mp4\": it is not inside ASSET_SOURCE_ROOT (\"C:\\Users\\chat"
+    },
+    {
+      "file": "ian_ketteringham_&_matt_wigham_-_from_practice_to_performance (720p).mp4",
+      "reason": "cannot derive an S3 key for \"data\\video\\ian_ketteringham_&_matt_wigham_-_from_practice_to_performance (720p).mp4\": it is not inside ASSET_SOURCE_ROOT (\"C:\\Users\\chatc\\Downloads\\IFN736 Industry Project"
+    },
+    {
+      "file": "ian_ketteringham_&_matt_wigham_-_pressure_points_v1 (720p).mp4",
+      "reason": "cannot derive an S3 key for \"data\\video\\ian_ketteringham_&_matt_wigham_-_pressure_points_v1 (720p).mp4\": it is not inside ASSET_SOURCE_ROOT (\"C:\\Users\\chatc\\Downloads\\IFN736 Industry Project Repositor"
+    },
+    {
+      "file": "isla_smith_-_2024_coaches_conference_v1 (1080p).mp4",
+      "reason": "cannot derive an S3 key for \"data\\video\\isla_smith_-_2024_coaches_conference_v1 (1080p).mp4\": it is not inside ASSET_SOURCE_ROOT (\"C:\\Users\\chatc\\Downloads\\IFN736 Industry Project Repository\\tennis-ex"
+    },
+    {
+      "file": "ivan_lendl_session_v1 (1080p).mp4",
+      "reason": "cannot derive an S3 key for \"data\\video\\ivan_lendl_session_v1 (1080p).mp4\": it is not inside ASSET_SOURCE_ROOT (\"C:\\Users\\chatc\\Downloads\\IFN736 Industry Project Repository\\tennis-explore-v2\\data\\raw\""
+    },
+    {
+      "file": "jamie_fernandez_-_effective_warm-ups_for_youth_performance_players (1080p).mp4",
+      "reason": "cannot derive an S3 key for \"data\\video\\jamie_fernandez_-_effective_warm-ups_for_youth_performance_players (1080p).mp4\": it is not inside ASSET_SOURCE_ROOT (\"C:\\Users\\chatc\\Downloads\\IFN736 Industry P"
+    },
+    {
+      "file": "jay_deacon_&_shayne_tabb_-_modified_tennis_competition (1080p).mp4",
+      "reason": "cannot derive an S3 key for \"data\\video\\jay_deacon_&_shayne_tabb_-_modified_tennis_competition (1080p).mp4\": it is not inside ASSET_SOURCE_ROOT (\"C:\\Users\\chatc\\Downloads\\IFN736 Industry Project Repos"
+    },
+    {
+      "file": "jay_deacon_and_shayne_tabb_-_modified_tennis_competition (1080p).mp4",
+      "reason": "cannot derive an S3 key for \"data\\video\\jay_deacon_and_shayne_tabb_-_modified_tennis_competition (1080p).mp4\": it is not inside ASSET_SOURCE_ROOT (\"C:\\Users\\chatc\\Downloads\\IFN736 Industry Project Rep"
+    },
+    {
+      "file": "jeff_coetzee_q&a_session_v1 (1080p).mp4",
+      "reason": "cannot derive an S3 key for \"data\\video\\jeff_coetzee_q&a_session_v1 (1080p).mp4\": it is not inside ASSET_SOURCE_ROOT (\"C:\\Users\\chatc\\Downloads\\IFN736 Industry Project Repository\\tennis-explore-v2\\dat"
+    },
+    {
+      "file": "jeff_coetzee_session_v1 (1080p).mp4",
+      "reason": "cannot derive an S3 key for \"data\\video\\jeff_coetzee_session_v1 (1080p).mp4\": it is not inside ASSET_SOURCE_ROOT (\"C:\\Users\\chatc\\Downloads\\IFN736 Industry Project Repository\\tennis-explore-v2\\data\\ra"
+    },
+    {
+      "file": "jon_watson,_yvonne_fantin_&_darren_ha__-_2024_coaches_conference_v1 (1080p).mp4",
+      "reason": "cannot derive an S3 key for \"data\\video\\jon_watson,_yvonne_fantin_&_darren_ha__-_2024_coaches_conference_v1 (1080p).mp4\": it is not inside ASSET_SOURCE_ROOT (\"C:\\Users\\chatc\\Downloads\\IFN736 Industry "
+    },
+    {
+      "file": "jose_canos (1080p).mp4",
+      "reason": "cannot derive an S3 key for \"data\\video\\jose_canos (1080p).mp4\": it is not inside ASSET_SOURCE_ROOT (\"C:\\Users\\chatc\\Downloads\\IFN736 Industry Project Repository\\tennis-explore-v2\\data\\raw\")."
+    },
+    {
+      "file": "jose_silva (1080p).mp4",
+      "reason": "cannot derive an S3 key for \"data\\video\\jose_silva (1080p).mp4\": it is not inside ASSET_SOURCE_ROOT (\"C:\\Users\\chatc\\Downloads\\IFN736 Industry Project Repository\\tennis-explore-v2\\data\\raw\")."
+    },
+    {
+      "file": "justin_sherring_v1 (1080p).mp4",
+      "reason": "cannot derive an S3 key for \"data\\video\\justin_sherring_v1 (1080p).mp4\": it is not inside ASSET_SOURCE_ROOT (\"C:\\Users\\chatc\\Downloads\\IFN736 Industry Project Repository\\tennis-explore-v2\\data\\raw\")."
+    },
+    {
+      "file": "kai_gerber (1080p).mp4",
+      "reason": "cannot derive an S3 key for \"data\\video\\kai_gerber (1080p).mp4\": it is not inside ASSET_SOURCE_ROOT (\"C:\\Users\\chatc\\Downloads\\IFN736 Industry Project Repository\\tennis-explore-v2\\data\\raw\")."
+    },
+    {
+      "file": "kody_thompson_q&a_session_v1 (1080p).mp4",
+      "reason": "cannot derive an S3 key for \"data\\video\\kody_thompson_q&a_session_v1 (1080p).mp4\": it is not inside ASSET_SOURCE_ROOT (\"C:\\Users\\chatc\\Downloads\\IFN736 Industry Project Repository\\tennis-explore-v2\\da"
+    },
+    {
+      "file": "kody_thompson_session_v1 (1080p).mp4",
+      "reason": "cannot derive an S3 key for \"data\\video\\kody_thompson_session_v1 (1080p).mp4\": it is not inside ASSET_SOURCE_ROOT (\"C:\\Users\\chatc\\Downloads\\IFN736 Industry Project Repository\\tennis-explore-v2\\data\\r"
+    },
+    {
+      "file": "lars_wahlgren_-_talent_development_in_sweden (1080p).mp4",
+      "reason": "cannot derive an S3 key for \"data\\video\\lars_wahlgren_-_talent_development_in_sweden (1080p).mp4\": it is not inside ASSET_SOURCE_ROOT (\"C:\\Users\\chatc\\Downloads\\IFN736 Industry Project Repository\\tenn"
+    },
+    {
+      "file": "lewis_woodham_-_5_part_series_v1 (720p).mp4",
+      "reason": "cannot derive an S3 key for \"data\\video\\lewis_woodham_-_5_part_series_v1 (720p).mp4\": it is not inside ASSET_SOURCE_ROOT (\"C:\\Users\\chatc\\Downloads\\IFN736 Industry Project Repository\\tennis-explore-v2"
+    },
+    {
+      "file": "louis_cayer_q&a_session_v1 (1080p).mp4",
+      "reason": "cannot derive an S3 key for \"data\\video\\louis_cayer_q&a_session_v1 (1080p).mp4\": it is not inside ASSET_SOURCE_ROOT (\"C:\\Users\\chatc\\Downloads\\IFN736 Industry Project Repository\\tennis-explore-v2\\data"
+    },
+    {
+      "file": "louis_cayer_session_v1 (1080p).mp4",
+      "reason": "cannot derive an S3 key for \"data\\video\\louis_cayer_session_v1 (1080p).mp4\": it is not inside ASSET_SOURCE_ROOT (\"C:\\Users\\chatc\\Downloads\\IFN736 Industry Project Repository\\tennis-explore-v2\\data\\raw"
+    },
+    {
+      "file": "louise_broadfoot_-_progressing_talented_athletes_and_related_integrity_risks (1080p).mp4",
+      "reason": "cannot derive an S3 key for \"data\\video\\louise_broadfoot_-_progressing_talented_athletes_and_related_integrity_risks (1080p).mp4\": it is not inside ASSET_SOURCE_ROOT (\"C:\\Users\\chatc\\Downloads\\IFN736 "
+    },
+    {
+      "file": "louise_broadfoot_and_david_berthon_-_2024_coaches_conference_v1 (1080p).mp4",
+      "reason": "cannot derive an S3 key for \"data\\video\\louise_broadfoot_and_david_berthon_-_2024_coaches_conference_v1 (1080p).mp4\": it is not inside ASSET_SOURCE_ROOT (\"C:\\Users\\chatc\\Downloads\\IFN736 Industry Proj"
+    },
+    {
+      "file": "luke_vella_-_2024_coaches_conference_v1 (1080p).mp4",
+      "reason": "cannot derive an S3 key for \"data\\video\\luke_vella_-_2024_coaches_conference_v1 (1080p).mp4\": it is not inside ASSET_SOURCE_ROOT (\"C:\\Users\\chatc\\Downloads\\IFN736 Industry Project Repository\\tennis-ex"
+    },
+    {
+      "file": "lyndon_krause_session (1080p).mp4",
+      "reason": "cannot derive an S3 key for \"data\\video\\lyndon_krause_session (1080p).mp4\": it is not inside ASSET_SOURCE_ROOT (\"C:\\Users\\chatc\\Downloads\\IFN736 Industry Project Repository\\tennis-explore-v2\\data\\raw\""
+    },
+    {
+      "file": "lynton_joseph_-_2024_coaches_conference_v1 (1080p).mp4",
+      "reason": "cannot derive an S3 key for \"data\\video\\lynton_joseph_-_2024_coaches_conference_v1 (1080p).mp4\": it is not inside ASSET_SOURCE_ROOT (\"C:\\Users\\chatc\\Downloads\\IFN736 Industry Project Repository\\tennis"
+    }
+  ]
+}

@@ -10,8 +10,9 @@
  *
  *   answer     prose, with [n] citation markers
  *   table      a computed result, when the question was answered from records
- *   sql        the query that produced that table, shown so it can be audited
- *   citations  buttons that open the source beside the conversation
+ *   citations  buttons that open the source beside the conversation, which is
+ *              also where the SQL behind a table answer is shown -- putting it
+ *              here too just duplicated the same block under every table.
  */
 
 function element(doc, tag, className, text) {
@@ -242,27 +243,122 @@ export function appendUserMessage({ conversation, content }) {
     return row;
 }
 
+
+function renderResponseSections(
+    doc,
+    sections,
+) {
+    if (
+        !Array.isArray(sections) ||
+        sections.length === 0
+    ) {
+        return null;
+    }
+
+    const wrapper =
+        element(
+            doc,
+            "div",
+            "message__bubble intelligence-response",
+        );
+
+    for (const section of sections) {
+        if (
+            !section ||
+            typeof section.title !== "string" ||
+            typeof section.content !== "string"
+        ) {
+            continue;
+        }
+
+        const sectionNode =
+            element(
+                doc,
+                "section",
+                "intelligence-response__section",
+            );
+
+        sectionNode.append(
+            element(
+                doc,
+                "h3",
+                "intelligence-response__title",
+                section.title,
+            ),
+        );
+
+        /*
+         * Keep backend text untrusted.
+         * Render it only through textContent,
+         * never innerHTML.
+         */
+        for (
+            const paragraph of
+            section.content.split(/\n+/)
+        ) {
+            if (
+                paragraph.trim() === ""
+            ) {
+                continue;
+            }
+
+            sectionNode.append(
+                element(
+                    doc,
+                    "p",
+                    "intelligence-response__content",
+                    paragraph.trim(),
+                ),
+            );
+        }
+
+        wrapper.append(
+            sectionNode,
+        );
+    }
+
+    return wrapper.children.length > 0
+        ? wrapper
+        : null;
+}
+
+
+
+
 export function appendAssistantMessage({
     conversation,
     content,
+    sections = [],
     citations = [],
     table = null,
-    sql = null,
     grounding = null,
     openCitation,
 }) {
     const doc = conversation.ownerDocument;
     const row = element(doc, "div", "message message--assistant");
 
-    row.append(renderAnswer(doc, content));
+    const sectionsNode =
+        renderResponseSections(
+            doc,
+            sections,
+        );
+
+    if (sectionsNode) {
+        row.append(
+            sectionsNode,
+        );
+    } else {
+        row.append(
+            renderAnswer(
+                doc,
+                content,
+            ),
+        );
+    }
 
     const tableNode = renderTable(doc, table);
 
     if (tableNode) row.append(tableNode);
-
-    if (sql) {
-        row.append(element(doc, "pre", "answer-sql", sql));
-    }
 
     if (Array.isArray(citations) && citations.length > 0 && openCitation) {
         row.append(renderCitations(doc, citations, openCitation));

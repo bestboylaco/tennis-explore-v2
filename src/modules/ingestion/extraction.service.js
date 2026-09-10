@@ -404,21 +404,88 @@ function decodeXml(text) {
  * only the second one can answer "how many injuries in 2023", and only the
  * first one can be found by someone searching for "injury chart".
  */
-async function extractImageManifest(filePath) {
-  const raw = JSON.parse(await fsp.readFile(filePath, "utf8"));
-  const images = Array.isArray(raw?.images) ? raw.images : [];
+async function extractImageManifest(
+  filePath,
+) {
+  const raw =
+    JSON.parse(
+      await fsp.readFile(
+        filePath,
+        "utf8",
+      ),
+    );
+
+
+  const images =
+    Array.isArray(
+      raw?.images,
+    )
+      ? raw.images
+      : [];
+
 
   return images
-    .filter((image) => String(image.caption ?? "").trim() !== "")
-    .map((image, index) => ({
-      index,
-      imageId: image.image_id ?? `image-${index}`,
-      title: image.title ?? "Image",
-      path: image.path ?? null,
-      sourceDocument: image.source_document ?? null,
-      page: image.page ?? null,
-      text: [image.caption, image.ocr_text].filter((part) => String(part ?? "").trim() !== "").join(" "),
-    }));
+    .filter(
+      (image) =>
+        typeof image?.path ===
+          "string" &&
+        image.path.trim().length >
+          0,
+    )
+    .map(
+      (
+        image,
+        index,
+      ) => ({
+        index,
+
+        imageId:
+          image.image_id ??
+          `image-${index}`,
+
+        title:
+          image.title ??
+          "Image",
+
+        path:
+          image.path.trim(),
+
+        sourceDocument:
+          image.source_document ??
+          null,
+
+        page:
+          image.page ??
+          null,
+
+        // Preserved for migration/audit only.
+        legacyCaption:
+          typeof image.caption ===
+            "string"
+            ? image.caption.trim()
+            : "",
+
+        // OCR remains separate from the
+        // visual captioning pipeline.
+        ocrText:
+          typeof image.ocr_text ===
+            "string"
+            ? image.ocr_text.trim()
+            : "",
+
+        // Optional video-frame traceability.
+        videoId:
+          image.video_id ??
+          null,
+
+        timestampSeconds:
+          Number.isFinite(
+            image.timestamp_seconds,
+          )
+            ? image.timestamp_seconds
+            : null,
+      }),
+    );
 }
 
 async function extractVideoManifest(filePath) {

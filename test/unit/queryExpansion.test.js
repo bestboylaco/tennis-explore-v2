@@ -61,13 +61,38 @@ describe("query expansion", () => {
     assert.ok(!rewrites.some((r) => r.toLowerCase() === question.toLowerCase()));
   });
 
-  it("returns nothing rather than throwing when the model is unreachable", async () => {
-    // expansion improves retrieval; it is not a precondition for it. a question
-    // that cannot be rephrased must still be answered from the first pass.
-    await new Promise((resolve) => server.close(() => resolve()));
+    it(
+        "returns nothing rather than throwing when the model is unreachable",
+        async () => {
+            /*
+             * Simulate the same failure fetch produces when the model
+             * endpoint cannot be reached.
+             *
+             * Injecting the failure is deterministic and avoids relying
+             * on HTTP keep-alive behaviour from the test server.
+             */
+            const unreachableFetch =
+                async () => {
+                    throw new TypeError(
+                        "fetch failed",
+                    );
+                };
 
-    assert.deepEqual(await expandQuery("anything"), []);
-  });
+            const rewrites =
+                await expandQuery(
+                    "anything",
+                    {
+                        fetchImpl:
+                            unreachableFetch,
+                    },
+                );
+
+            assert.deepEqual(
+                rewrites,
+                [],
+            );
+        },
+    );
 });
 
 describe("keyword fallback", () => {

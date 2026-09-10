@@ -22,6 +22,27 @@ const sourceSchema = new mongoose.Schema(
       enum: SOURCE_TYPES,
     },
 
+    storageType: {
+      type: String,
+      enum: [
+        "local",
+        "s3",
+      ],
+      default: null,
+    },
+
+    storageBucket: {
+      type: String,
+      default: null,
+      trim: true,
+    },
+
+    storageKey: {
+      type: String,
+      default: null,
+      trim: true,
+    },
+
     processingStatus: {
       type: String,
       enum: PROCESSING_STATUSES,
@@ -29,15 +50,19 @@ const sourceSchema = new mongoose.Schema(
     },
 
     isActive: {
-        type: Boolean,
-        default: true,
+      type: Boolean,
+      default: true,
     },
   },
   {
     timestamps: true,
-  }
+  },
 );
 
-const Source = mongoose.model("Source", sourceSchema);
+const Source =
+  mongoose.model(
+    "Source",
+    sourceSchema,
+  );
 
 export default Source;

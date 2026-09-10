@@ -2,6 +2,10 @@ import { randomUUID } from "node:crypto";
 
 import { submitChatQuestion } from "../services/chat.service.js";
 
+import {
+  submitAgentChatQuestion,
+} from "../services/agentChat.service.js";
+
 /**
  * Accepts one natural-language coaching question and returns the
  * structure produced by the chat service.
@@ -60,5 +64,58 @@ export function deliberatelyFailChatController(req, res) {
             message:
                 "The demo chat endpoint is deliberately unavailable.",
         },
+    });
+}
+
+
+
+/**
+ * Executes the new Agent-based intelligence pipeline.
+ *
+ * The authenticated role still comes exclusively
+ * from the server-side session.
+ */
+export async function submitAgentChatQuestionController(
+  req,
+  res,
+) {
+  const correlationId =
+    `agent-query:${randomUUID()}`;
+
+
+  req.telemetry?.setCorrelationId(
+    correlationId,
+  );
+
+
+  const result =
+    await submitAgentChatQuestion(
+      req.body.question,
+      {
+        roleId:
+          req.user.roleId,
+
+        correlationId,
+
+        /*
+         * Presentation-only information.
+         * The client cannot use this to alter routing,
+         * permissions or evidence access.
+         */
+        responseTimeZone:
+          req.get("X-Time-Zone") ??
+          "UTC",
+      },
+    );
+
+
+  return res
+    .status(200)
+    .json({
+      success:
+        true,
+
+      data:
+        result,
     });
 }
