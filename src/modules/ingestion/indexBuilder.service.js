@@ -17,16 +17,25 @@
 // that finishes is recorded; re-running after a crash, a reboot or a closed
 // laptop lid picks up where it stopped instead of starting again.
 
+import fs from "node:fs";
 import fsp from "node:fs/promises";
 import path from "node:path";
+import readline from "node:readline";
 
 import { retrievalConfig } from "../../config/retrieval.config.js";
 import { VectorStoreWriter } from "../../infrastructure/vector/vectorStore.service.js";
 import { NO_PROGRAM, grantsForDocument } from "../../shared/constants/accessControl.js";
 import { buildBm25 } from "../retrieval/bm25.service.js";
-import { chunkDocument, chunkImages, chunkRecords, chunkSlides, chunkVideo } from "./chunking.service.js";
+import {
+  chunkDocument,
+  chunkImages,
+  chunkRecords,
+  chunkSlides,
+  chunkTables,
+  chunkVideo,
+} from "./chunking.service.js";
 import { embedTexts } from "./embedding.service.js";
-import { extractFile, listIngestableFiles } from "./extraction.service.js";
+import { docIdFor, extractFile, listIngestableFiles } from "./extraction.service.js";
 import {
   SCHEMA_VERSION,
   classifyDocument,
@@ -240,7 +249,16 @@ async function prepareFile(filePath, problems) {
     text: frontMatter,
   });
 
-  return chunkDocument(extracted, { authors, eventDate })
+  // prose and tables are chunked by different rules and then finalised
+  // identically. tables only ever appear on scanned documents that have been
+  // through Textract (TENISE-12); every other document contributes an empty
+  // array here and the behaviour is unchanged.
+  const documentChunks = [
+    ...chunkDocument(extracted, { authors, eventDate }),
+    ...chunkTables(extracted, { authors, eventDate }),
+  ];
+
+  return documentChunks
     .map((chunk) =>
       finalise(
         {
@@ -254,6 +272,13 @@ async function prepareFile(filePath, problems) {
           source_uri: filePath,
           file_name: extracted.fileName ?? path.basename(filePath),
           ingested_at: ingestedAt,
+          // stamped on every chunk of a locally seeded document, prose and
+          // tables alike. chunkTables marks its output ocr_engine:"textract",
+          // which is a claim these chunks cannot make -- their cells were
+          // invented. the shards are append-only, so a synthetic chunk that
+          // reaches the index cannot be taken out again without a full rebuild;
+          // this flag is what lets buildIndex refuse it before that happens.
+          ...(extracted.synthetic === true ? { synthetic: true } : {}),
         },
         classification,
         problems,
@@ -307,10 +332,134 @@ async function writeState(directory, state) {
 // the build
 // ---------------------------------------------------------------------------
 
+/**
+ * refuses to append to an index built under different settings.
+ *
+ * the same danger `configFingerprint` guards against on resume, at the one
+ * other place vectors can be added to an existing file. two embedding spaces
+ * interleaved in one index is the worst failure mode this system has: it loads
+ * without complaint, searches without error, and returns quiet nonsense that
+ * looks exactly like a bad retrieval result. there is no symptom to notice.
+ *
+ * the model and the dimension are non-negotiable. the chunking and contextual
+ * settings are checked too -- they do not corrupt the vector space, but they do
+ * mean the appended chunks were built to a different recipe than the rest, and
+ * silently mixing them makes an evaluation compare two things at once.
+ */
+async function assertAppendCompatible(outputDir, existing) {
+  const mismatches = [];
+  const check = (label, was, now) => {
+    if (JSON.stringify(was) !== JSON.stringify(now)) {
+      mismatches.push(`  ${label}: index has ${JSON.stringify(was)}, this run would use ${JSON.stringify(now)}`);
+    }
+  };
+
+  check("embedding model", existing.embeddingModel, retrievalConfig.embedding.model);
+  check("embedding provider", existing.embeddingProvider, retrievalConfig.embedding.provider);
+  check("dimension", existing.dimension, retrievalConfig.embedding.dimension);
+  check("schema version", existing.schemaVersion, SCHEMA_VERSION);
+  check("chunking", existing.chunking, {
+    targetChars: retrievalConfig.chunking.targetChars,
+    overlapChars: retrievalConfig.chunking.overlapChars,
+    minChars: retrievalConfig.chunking.minChars,
+  });
+  check(
+    "contextual headers",
+    existing.contextual,
+    retrievalConfig.contextual.enabled ? retrievalConfig.contextual.mode : "off",
+  );
+
+  if (mismatches.length > 0) {
+    throw new Error(
+      `cannot append to the index at ${outputDir} -- it was built with different settings:\n` +
+        `${mismatches.join("\n")}\n` +
+        `appending would put vectors from two different embedding spaces in one index, which ` +
+        `loads fine, searches fine, and returns nonsense.\n` +
+        `either restore the settings above, or rebuild the whole index from scratch.`,
+    );
+  }
+}
+
+/**
+ * the doc_ids already written into an index.
+ *
+ * needed because appending is the one operation with no other way to tell that
+ * a document is already there. a full build has its checkpoint; a resume has
+ * the same. an append deliberately ignores both -- the checkpoint belongs to
+ * some earlier build and treating its file list as "done" would skip files this
+ * run was asked to add -- which left nothing at all standing between running
+ * the same command twice and a second copy of every chunk in the index.
+ *
+ * that failure was silent. the index still loaded, still searched, and only
+ * showed up as a quietly inflated chunk count, skewed bm25 document
+ * frequencies, and the same passage retrieved twice.
+ *
+ * read with a regex rather than JSON.parse per line. this walks every chunk
+ * file -- ~185 MB on the current corpus -- and parsing all of it to reach one
+ * field would add real time to a command whose whole purpose is being faster
+ * than a rebuild. doc_id is sanitised to [A-Za-z0-9._-] by docIdFor, so it can
+ * never contain a character JSON would escape and the match is exact. any line
+ * the regex misses falls back to a parse rather than being silently dropped.
+ */
+async function indexedDocIds(outputDir, manifest) {
+  const found = new Set();
+
+  for (const shard of manifest.shards ?? []) {
+    const chunkFile = path.join(outputDir, `chunks-${String(shard.index).padStart(3, "0")}.jsonl`);
+
+    let stream;
+
+    try {
+      stream = readline.createInterface({
+        input: fs.createReadStream(chunkFile),
+        crlfDelay: Infinity,
+      });
+    } catch {
+      continue;
+    }
+
+    for await (const line of stream) {
+      if (line === "") continue;
+
+      const match = line.match(/"doc_id":"([A-Za-z0-9._-]*)"/);
+
+      if (match) {
+        found.add(match[1]);
+        continue;
+      }
+
+      try {
+        const { doc_id: docId } = JSON.parse(line);
+
+        if (docId) found.add(docId);
+      } catch {
+        // a truncated final line, which is what a crashed build leaves behind.
+        // VectorStore.load reports that properly; here it is just one id we
+        // cannot read, and treating it as absent is the safe direction.
+      }
+    }
+  }
+
+  return found;
+}
+
 export async function buildIndex({
   sourceDirs,
   outputDir = retrievalConfig.index.dir,
   resume = true,
+  // adds to an index that is already finished, rather than building one.
+  //
+  // this exists because there is otherwise no way to index two new files. the
+  // checkpoint is deleted when a build completes, so re-running is a FULL
+  // rebuild: 2,599 files re-embedded over several hours to add two documents.
+  // the writer could already continue after existing shards -- it does exactly
+  // that on resume -- and bm25 is rebuilt from everything on disk in a second
+  // pass regardless, so appending needed a flag rather than a new code path.
+  append = false,
+  // lets chunks from a locally seeded cache entry into the index. off by
+  // default and deliberately awkward to reach -- see the refusal in the file
+  // loop for why an accident here is not recoverable.
+  allowSynthetic = false,
   onProgress = () => {},
 }) {
   const files = [];
@@ -324,10 +473,37 @@ export async function buildIndex({
   }
 
   const fingerprint = configFingerprint();
-  const previous = await readState(outputDir);
+
+  // in append mode the checkpoint is deliberately not consulted. a leftover
+  // state file belongs to some earlier full build, and treating its file list
+  // as "already done" would skip files this run was asked to add.
+  const previous = append ? null : await readState(outputDir);
+
+  let existingManifest = null;
+
+  if (append) {
+    try {
+      existingManifest = JSON.parse(
+        await fsp.readFile(path.join(outputDir, "manifest.json"), "utf8"),
+      );
+    } catch {
+      throw new Error(
+        `--append was given but there is no readable index at ${outputDir}. ` +
+          `build one first, without --append.`,
+      );
+    }
+
+    await assertAppendCompatible(outputDir, existingManifest);
+
+    onProgress({
+      phase: "append",
+      chunks: existingManifest.chunkCount,
+      files: existingManifest.fileCount,
+    });
+  }
 
   let done = new Set();
-  let appending = false;
+  let appending = append;
 
   if (resume && previous) {
     if (previous.fingerprint !== fingerprint) {
@@ -346,7 +522,36 @@ export async function buildIndex({
     if (appending) onProgress({ phase: "resume", filesDone: done.size, chunks: previous.chunkCount ?? 0 });
   }
 
-  const pending = files.filter((file) => !done.has(file));
+  let pending = files.filter((file) => !done.has(file));
+
+  // an append must not re-add what is already there. the shards are append-only
+  // -- there is no way to replace a document's chunks in place -- so the only
+  // correct action for one already indexed is to leave it alone and say so.
+  if (append) {
+    const already = await indexedDocIds(outputDir, existingManifest);
+    const duplicates = pending.filter((file) => already.has(docIdFor(file)));
+
+    for (const file of duplicates) {
+      onProgress({ phase: "duplicate", file: path.basename(file) });
+    }
+
+    pending = pending.filter((file) => !already.has(docIdFor(file)));
+
+    // refusing BEFORE the writer opens matters. going ahead with nothing to add
+    // would rebuild bm25 over the whole corpus and rewrite the manifest to
+    // achieve exactly nothing -- churning ~130 MB of committed files, since
+    // data/index is in git.
+    if (pending.length === 0) {
+      throw new Error(
+        `every file under ${sourceDirs.join(", ")} is already in the index at ${outputDir}:\n` +
+          `${duplicates.map((file) => `  ${path.basename(file)}`).join("\n")}\n` +
+          `nothing was changed.\n` +
+          `if one of these documents has CHANGED, --append cannot help -- the shards are ` +
+          `append-only, so its old chunks cannot be removed. rebuild the index from scratch ` +
+          `instead.`,
+      );
+    }
+  }
 
   onProgress({ phase: "scan", files: files.length, pending: pending.length });
 
@@ -358,7 +563,12 @@ export async function buildIndex({
       embeddingModel: retrievalConfig.embedding.model,
       contextual: retrievalConfig.contextual.enabled ? retrievalConfig.contextual.mode : "off",
       chunking: retrievalConfig.chunking,
-      sourceDirs,
+      // the union, not a replacement. an append run is pointed at one folder,
+      // and overwriting the list with just that folder would erase the record
+      // of where the other 2,599 files came from -- which is what the
+      // structured query engine falls back to when STRUCTURED_SOURCE_DIRS is
+      // unset.
+      sourceDirs: [...new Set([...(existingManifest?.sourceDirs ?? []), ...sourceDirs])],
     },
   });
 
@@ -380,6 +590,25 @@ export async function buildIndex({
         skipped.push({ file: name, reason: `${(stats.size / 1048576).toFixed(0)} MB, over the size limit` });
       } else {
         const chunks = await prepareFile(filePath, problems);
+
+        // a locally seeded document. refused by default, and refused HERE
+        // rather than warned about, because the shards are append-only: once
+        // invented cells are written they cannot be removed without rebuilding
+        // the whole corpus, which is hours. the failure mode this prevents is
+        // specific and easy to hit -- seed a document to test the pipeline,
+        // forget to point INDEX_DIR somewhere scratch, and the demo index
+        // permanently contains 11 tables claiming ocr_engine:"textract".
+        if (chunks.some((chunk) => chunk.synthetic === true) && !allowSynthetic) {
+          skipped.push({
+            file: name,
+            reason:
+              "synthetic (seeded by textract:seed --synthetic). pass allowSynthetic, or " +
+              "build into a scratch INDEX_DIR -- the shards are append-only and this " +
+              "cannot be undone.",
+          });
+
+          continue;
+        }
 
         if (chunks.length > 0) {
           const texts = chunks.map((chunk) => chunk.embedding_text ?? chunk.text);
@@ -412,7 +641,10 @@ export async function buildIndex({
     // checkpoint periodically rather than every file: the state file lists every
     // path done so far, and rewriting a 2,300-entry json after each of 2,300
     // files is a quadratic amount of io for no benefit.
-    if (filesDone % 25 === 0) {
+    // never in append mode: the state file's purpose is to let an interrupted
+    // FULL build resume, and one written by a two-file append would tell the
+    // next full build that those two files are the only ones done.
+    if (!append && filesDone % 25 === 0) {
       await writeState(outputDir, {
         fingerprint,
         filesDone: [...done],
@@ -455,7 +687,10 @@ export async function buildIndex({
 
   const finalManifest = {
     ...manifest,
-    fileCount: files.length,
+    // an append run only walked its own folder, so `files.length` is the count
+    // of what was added, not what the index holds. reporting the smaller number
+    // would make the manifest claim the index shrank.
+    fileCount: (existingManifest?.fileCount ?? 0) + files.length,
     skippedCount: skipped.length,
     schemaFailures: problems.length,
     bm25: { vocabSize: bm25.vocabSize, postings: bm25.postingCount },
@@ -469,10 +704,34 @@ export async function buildIndex({
   // a written record of everything that did not make it in. at this scale
   // "313 files were skipped" is not something anyone should have to discover by
   // noticing an answer is missing.
-  if (skipped.length > 0 || problems.length > 0) {
+  //
+  // in append mode this MERGES rather than replaces. the report is not just a
+  // log -- it is the list bin/textract-pick.js reads to find the 144 scanned
+  // documents this story exists to rescue. overwriting it with a two-file
+  // append run's results would delete that list, and the only way to get it
+  // back is a full rebuild.
+  let report = { skipped, schemaProblems: problems.slice(0, 500) };
+
+  if (append) {
+    const touched = new Set(files.map((file) => path.basename(file)));
+    const earlier = await fsp
+      .readFile(path.join(outputDir, "build-report.json"), "utf8")
+      .then((raw) => JSON.parse(raw))
+      .catch(() => ({ skipped: [], schemaProblems: [] }));
+
+    report = {
+      // a file this run handled gets its new verdict; every other file keeps
+      // the one it had. a document rescued by Textract therefore disappears
+      // from the skipped list, which is exactly the outcome to look for.
+      skipped: [...(earlier.skipped ?? []).filter((entry) => !touched.has(entry.file)), ...skipped],
+      schemaProblems: [...(earlier.schemaProblems ?? []), ...problems].slice(0, 500),
+    };
+  }
+
+  if (report.skipped.length > 0 || report.schemaProblems.length > 0) {
     await fsp.writeFile(
       path.join(outputDir, "build-report.json"),
-      `${JSON.stringify({ skipped, schemaProblems: problems.slice(0, 500) }, null, 2)}\n`,
+      `${JSON.stringify(report, null, 2)}\n`,
     );
   }
 

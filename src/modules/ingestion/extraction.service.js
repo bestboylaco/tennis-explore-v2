@@ -109,6 +109,33 @@ async function extractPdf(filePath) {
     pages = await extractPdfWithPoppler(filePath);
   }
 
+  // a scanned document, then: pdf.js found no text layer and poppler could not
+  // recover one either. there is no separate "is this a scan?" detector because
+  // this IS the detector -- two independent parsers returning nothing is what
+  // being a scan means here, and 144 files in the partner corpus reach this
+  // point.
+  //
+  // textract first, ocr sidecar second. both read a local cache and neither
+  // calls anything: the Textract results were paid for and committed by
+  // bin/textract-extract.js, and this is only the lookup. that ordering is
+  // deliberate -- Textract is the only one of the two that recovers TABLES, and
+  // a document that has been through it should not fall back to a text-only
+  // sidecar that lost them.
+  if (pages.length === 0) {
+    const cached = await readTextractCache(filePath);
+
+    if (cached) {
+      return {
+        pages: cached.pages,
+        tables: cached.tables,
+        rawInfo: {},
+        ocr: true,
+        ocrEngine: "textract",
+        synthetic: cached.synthetic,
+      };
+    }
+  }
+
   // last resort: a text sidecar produced by tools/ocr/ocr_scanned.py. about 5%
   // of this corpus is scanned images with no text layer, and ocr is the only
   // way to read them. it lives outside the node pipeline because it needs
@@ -118,7 +145,55 @@ async function extractPdf(filePath) {
     pages = await readOcrSidecar(filePath);
   }
 
-  return { pages, rawInfo: {}, ocr: pages.length > 0 && (await hasOcrSidecar(filePath)) };
+  const fromSidecar = pages.length > 0 && (await hasOcrSidecar(filePath));
+
+  return {
+    pages,
+    tables: [],
+    rawInfo: {},
+    ocr: fromSidecar,
+    ocrEngine: fromSidecar ? "local" : null,
+  };
+}
+
+/**
+ * reads a Textract extraction that bin/textract-extract.js already paid for.
+ *
+ * strictly a local file read -- no credentials, no network, no cost. that
+ * separation is the point: extraction runs on every build over 2,301 files and
+ * must never be able to spend budget, while the CLI that does spend it is run
+ * deliberately, once, by a human watching the page count.
+ *
+ * `pages` from the cache keeps its blank entries. a page Textract could not
+ * read stays an empty string rather than being dropped, so page 7 is still
+ * index 6 and citations keep pointing at the right page. only the empties are
+ * filtered here, at the point where they would otherwise become empty chunks.
+ */
+async function readTextractCache(filePath) {
+  try {
+    const { readCache } = await import("./textractCache.service.js");
+    const entry = await readCache(filePath);
+
+    if (!entry) return null;
+
+    const pages = (entry.pages ?? []).map((page) =>
+      String(page ?? "").replace(/[ \t]+/g, " ").trim(),
+    );
+
+    // a cached document with no text AND no tables is not worth returning as a
+    // success -- it would stop the ocr sidecar fallback from being tried.
+    if (pages.every((page) => page === "") && (entry.tables ?? []).length === 0) return null;
+
+    // carried out of the cache so it survives into the chunks and, from there,
+    // to the guard in indexBuilder. an entry seeded locally by
+    // bin/textract-seed.js --synthetic holds invented cells, and once the
+    // chunker has stamped them ocr_engine:"textract" there is nothing left to
+    // tell them apart from real extraction except the words in the body text.
+    return { pages, tables: entry.tables ?? [], synthetic: entry.synthetic === true };
+  } catch {
+    // the cache is an optimisation for the build, never a dependency of it.
+    return null;
+  }
 }
 
 /**
@@ -490,6 +565,22 @@ export function guessSourceType(filePath) {
 }
 
 /**
+ * the id a file will carry through the whole pipeline.
+ *
+ * exported rather than inlined because the index builder has to work out
+ * whether a document is ALREADY indexed before it opens the writer, and it can
+ * only do that by deriving the same id this function assigns. two copies of
+ * this one-liner drifting apart would make that check quietly wrong -- it would
+ * report nothing as a duplicate and go back to writing second copies of every
+ * chunk, which is exactly the failure it exists to prevent.
+ */
+export function docIdFor(filePath) {
+  return path
+    .basename(filePath, path.extname(filePath))
+    .replace(/[^A-Za-z0-9._-]+/g, "_");
+}
+
+/**
  * extracts one file into the common shape.
  *
  * unsupported extensions return null rather than throwing, so pointing the
@@ -497,7 +588,7 @@ export function guessSourceType(filePath) {
  */
 export async function extractFile(filePath) {
   const extension = path.extname(filePath).toLowerCase();
-  const docId = path.basename(filePath, extension).replace(/[^A-Za-z0-9._-]+/g, "_");
+  const docId = docIdFor(filePath);
   const base = {
     docId,
     title: titleFromFileName(filePath),
@@ -510,10 +601,28 @@ export async function extractFile(filePath) {
   };
 
   if (extension === ".pdf") {
-    const { pages, rawInfo } = await extractPdf(filePath);
+    const { pages, rawInfo, tables, ocr, ocrEngine, synthetic } = await extractPdf(filePath);
 
     // the title comes from the page, not the filename -- see deriveTitle.
-    return { ...base, kind: "document", title: deriveTitle(pages, filePath), pages, rawInfo };
+    return {
+      ...base,
+      kind: "document",
+      title: deriveTitle(pages, filePath),
+      pages,
+      // empty for every ordinary pdf. only a scanned document that has been
+      // through Textract carries any, and the index builder chunks them
+      // separately from the prose because a table must not be split by
+      // character count.
+      tables: tables ?? [],
+      ocr: ocr ?? false,
+      ocrEngine: ocrEngine ?? null,
+      // true only for a locally seeded cache entry. everything downstream marks
+      // its chunks with it, and the index build refuses them by default -- the
+      // chunker stamps ocr_engine:"textract" on these, so without this flag
+      // invented cells enter the index making a claim that is not true.
+      synthetic: synthetic === true,
+      rawInfo,
+    };
   }
 
   if (extension === ".csv") {

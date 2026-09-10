@@ -17,7 +17,14 @@
     "check:models": "node bin/check-models.js",
     "eval:answers": "node bin/eval-answers.js",
     "eval:refusal": "node bin/e5-18-refusal-test.mjs",
-    "seed:users": "node bin/seed-users.js"
+    "seed:users": "node bin/seed-users.js",
+    "textract": "node bin/textract-extract.js",
+    "textract:preflight": "node bin/textract-preflight.js",
+    "textract:pick": "node bin/textract-pick.js",
+    "textract:seed": "node bin/textract-seed.js",
+    "textract:checklist": "node bin/textract-checklist.js",
+    "textract:eval": "node bin/textract-eval.js",
+    "textract:cloudtrail": "node bin/textract-cloudtrail.js"
   },
   "keywords": [
     "tennis",
@@ -28,6 +35,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@aws-sdk/client-textract": "^3.1119.0",
     "adm-zip": "^0.5.16",
     "bcryptjs": "^3.0.3",
     "connect-mongo": "^6.0.0",

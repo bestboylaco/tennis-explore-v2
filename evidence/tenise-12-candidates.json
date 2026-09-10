@@ -1,0 +1,80 @@
+{
+  "generatedAt": "2026-09-03T07:36:41.185Z",
+  "corpusDir": "C:/IFN736-project/document-sources",
+  "skippedUnreadable": 144,
+  "examined": 89,
+  "candidates": [
+    {
+      "file": "halep-dexa-23-12-2016-pdf.pdf",
+      "filePath": "C:\\IFN736-project\\document-sources\\halep-dexa-23-12-2016-pdf.pdf",
+      "pages": 1,
+      "density": 669
+    },
+    {
+      "file": "elite-habits-in-profes-sional-sports-women.pdf",
+      "filePath": "C:\\IFN736-project\\document-sources\\elite-habits-in-profes-sional-sports-women.pdf",
+      "pages": 1,
+      "density": 445
+    },
+    {
+      "file": "applied-research-warm-up-timeline-copy.pdf",
+      "filePath": "C:\\IFN736-project\\document-sources\\applied-research-warm-up-timeline-copy.pdf",
+      "pages": 1,
+      "density": 444
+    },
+    {
+      "file": "fixed-vs-growth-mindset.pdf",
+      "filePath": "C:\\IFN736-project\\document-sources\\fixed-vs-growth-mindset.pdf",
+      "pages": 1,
+      "density": 344
+    },
+    {
+      "file": "presentation4.pdf",
+      "filePath": "C:\\IFN736-project\\document-sources\\presentation4.pdf",
+      "pages": 1,
+      "density": 298
+    },
+    {
+      "file": "singles-numeric-1986.pdf",
+      "filePath": "C:\\IFN736-project\\document-sources\\singles-numeric-1986.pdf",
+      "pages": 1,
+      "density": 257
+    },
+    {
+      "file": "article1.pdf",
+      "filePath": "C:\\IFN736-project\\document-sources\\article1.pdf",
+      "pages": 1,
+      "density": 217
+    },
+    {
+      "file": "catapult-r-code-serve-examples90.pdf",
+      "filePath": "C:\\IFN736-project\\document-sources\\catapult-r-code-serve-examples90.pdf",
+      "pages": 1,
+      "density": 209
+    },
+    {
+      "file": "dirk-spits-shoulder-injury-prevention.pdf",
+      "filePath": "C:\\IFN736-project\\document-sources\\dirk-spits-shoulder-injury-prevention.pdf",
+      "pages": 1,
+      "density": 206
+    },
+    {
+      "file": "discovery-phase-ta-applied-science-2022.pdf",
+      "filePath": "C:\\IFN736-project\\document-sources\\discovery-phase-ta-applied-science-2022.pdf",
+      "pages": 1,
+      "density": 140
+    },
+    {
+      "file": "height-revised.pdf",
+      "filePath": "C:\\IFN736-project\\document-sources\\height-revised.pdf",
+      "pages": 1,
+      "density": 136
+    },
+    {
+      "file": "utr-benchmarks-plot.pdf",
+      "filePath": "C:\\IFN736-project\\document-sources\\utr-benchmarks-plot.pdf",
+      "pages": 1,
+      "density": 99
+    }
+  ]
+}

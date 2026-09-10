@@ -1,0 +1,80 @@
+{
+  "ranAt": "2026-09-03T22:59:12.235Z",
+  "region": "ap-southeast-2",
+  "dpi": 300,
+  "api": "AnalyzeDocument (synchronous, Bytes)",
+  "featureTypes": [
+    "TABLES"
+  ],
+  "twoPass": false,
+  "tableThreshold": null,
+  "documents": [
+    {
+      "file": "halep-dexa-23-12-2016-pdf.pdf",
+      "pageCount": 1,
+      "pagesSent": 1,
+      "apiCalls": 1,
+      "detectPages": 0,
+      "pageModes": [
+        "tables"
+      ],
+      "tables": 2,
+      "lowConfidenceCells": 4,
+      "failures": [],
+      "complete": true,
+      "cached": true,
+      "modelVersion": "1.0",
+      "detectModelVersion": null
+    },
+    {
+      "file": "wimbledon-player-report-2021wimbledon-qs112-playerreport.pdf",
+      "pageCount": 11,
+      "pagesSent": 11,
+      "apiCalls": 11,
+      "detectPages": 0,
+      "pageModes": [
+        "tables",
+        "tables",
+        "tables",
+        "tables",
+        "tables",
+        "tables",
+        "tables",
+        "tables",
+        "tables",
+        "tables",
+        "tables"
+      ],
+      "tables": 24,
+      "lowConfidenceCells": 28,
+      "failures": [],
+      "complete": true,
+      "cached": true,
+      "modelVersion": "1.0",
+      "detectModelVersion": null
+    }
+  ],
+  "totals": {
+    "documents": 2,
+    "pagesSent": 12,
+    "apiCalls": 12,
+    "detectPages": 0,
+    "tablePagesSaved": 0,
+    "tables": 26,
+    "durationMs": 47929
+  },
+  "budget": {
+    "month": "2026-09",
+    "used": 14,
+    "budget": 100,
+    "remaining": 86,
+    "detectUsed": 2,
+    "detectBudget": 1000,
+    "detectRemaining": 998
+  },
+  "telemetry": {
+    "recordId": "873bb331-2c54-49d9-a735-1dac015dd7ca",
+    "persisted": true,
+    "textractPages": 12
+  }
+}

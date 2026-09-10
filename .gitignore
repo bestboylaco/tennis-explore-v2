@@ -28,6 +28,23 @@ npm-debug.log*
 # classified internal or above, and the repo is not the right place for it.
 data/raw/
 
+# the scanned pdfs fed to Textract. same rule as data/raw/ and the same reason:
+# they are partner scans, not ours to publish.
+#
+# note what is NOT ignored: data/textract-cache/, which holds what Textract read
+# out of them. that is committed on purpose -- see the note there and in
+# docs/TEXTRACT.md. Textract output costs money against a hard 100-page monthly
+# cap, so a teammate who clones this repo must inherit the pages we already paid
+# for rather than spending their own allowance re-extracting the same files.
+# data/ocr-cache/ is ignored instead because re-running local OCR is free.
+data/scanned/
+
+# locally seeded cache entries from bin/textract-seed.js. the exact opposite of
+# data/textract-cache/: nothing here was paid for and nothing here came from
+# Textract, so committing it would put invented cells beside real ones in the
+# one directory whose whole value is that everything in it is real.
+data/textract-cache-dev/
+
 # python bytecode from the ingestion tools
 __pycache__/
 *.pyc
