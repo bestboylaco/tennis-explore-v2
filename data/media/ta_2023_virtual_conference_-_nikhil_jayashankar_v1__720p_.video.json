@@ -1,0 +1,257 @@
+{
+  "videos": [
+    {
+      "video_id": "ta_2023_virtual_conference_-_nikhil_jayashankar_v1__720p_",
+      "url": null,
+      "source_path": "C:\\IFN736-project\\video\\ta_2023_virtual_conference_-_nikhil_jayashankar_v1 (720p).mp4",
+      "title": "ta 2023 virtual conference   nikhil jayashankar v1 (720p)",
+      "source": "transcript",
+      "language": "en",
+      "segments": [
+        {
+          "start": "0:00",
+          "end": "0:45",
+          "description": "On screen: The image shows a man standing in front of a promotional poster for a tennis event. The poster features a photograph of two individuals on a tennis court, one of whom is holding a racquet. There are texts on the poster, including \"COACHES' CONFERENCE\" and \"17-18 JANUARY 2018.\" The man in front of the poster appears to be an announcer or presenter, as suggested by his microphone and the logo of a sports organization visible on his shirt. The image is a photograph taken indoors, likely at a sports event or conference.",
+          "tags": [
+            "slide"
+          ]
+        },
+        {
+          "start": "0:05",
+          "end": "1:42",
+          "description": "In the spirit of reconciliation, Tennis Australia acknowledges all the traditional custodians of country throughout Australia and their connection to land, sea and community. We pay our respects to their elders past and present and extend that respect to all Aboriginal and Torres Strait Islander peoples today. Hi coaches, Nikhil Jayashankar leads business development for Swing Vision. He's based in San Francisco and is a lifelong tennis player that grew up in the Bay Area and played college tennis at UC Berkeley. His responsibilities at Swing Vision include partnership and sales with clubs, academies and colleges. Nikhil works closely with coaches, clubs and college teams to enhance their services with Swing Vision. He's extremely passionate about the sport and how technology can benefit coaches and players alike. Please join me in welcoming Nikhil as he talks us through the use of Swing Vision and how it can benefit coaches, clubs and academies. Over to you Nikhil. Thanks Scott and thanks everyone for taking the time to watch this presentation. In the next 30 minutes I'll explain what Swing Vision is, the analysis the app provides and how coaches and clubs can leverage the app to create an improved experience for members and generate more revenue. Swing Vision is a mobile app that uses artificial intelligence to analyze your video in real time. It provides a variety of stats like shot placement, court positioning, shot speed and consistency",
+          "tags": []
+        },
+        {
+          "start": "0:45",
+          "end": "1:30",
+          "description": "On screen: The image shows a man sitting in front of a screen displaying an advertisement for a tennis coaching conference. The man appears to be speaking or presenting, as suggested by his open mouth and gesturing hand. The advertisement features a photograph of two individuals on a tennis court, one of whom is holding a racquet. There are texts visible in the image; however, they are not entirely clear due to the resolution and angle of the photo.",
+          "tags": [
+            "slide"
+          ]
+        },
+        {
+          "start": "1:30",
+          "end": "2:15",
+          "description": "On screen: The image displays a graphic that appears to be an advertisement for a product or service related to sports analytics or performance tracking. It features a smartphone interface with various statistics and data visualizations, including graphs and charts. There is text overlaying the image that reads \"Solution\" at the top left corner, followed by \"Automated stats quality highlights\" in smaller font. Below this, there are three smartphones displaying different screens: one showing a dashboard with sports-related statistics such as player performance metrics, another with a live feed of a tennis match, and the third with a social media interface that includes posts related to sports. The overall style of the image is promotional and informative, designed to showcase the capabilities of the product or service being advertised.",
+          "tags": [
+            "slide"
+          ]
+        },
+        {
+          "start": "1:42",
+          "end": "3:06",
+          "description": "by stroke type. It also automatically removes all the dead time between points so your two hour recording is played back in 20 minutes or less. It allows you to filter to particular points and strokes and generates highlights of your best points. Swing Vision provides cloud storage so you can save your videos without taking up storage on your phone and allows you to share videos with others remotely. The app also allows you to challenge line calls using an Apple Watch or another iPhone or iPad. Just tap the challenge button and you can pick any shot to see a slow-mo zoomed in replay along with the app's call of whether it was in or out. Our biggest differentiator is that we're able to do all of this with just an iPhone instead of requiring dedicated camera infrastructure on your court. Using Swing Vision is the most portable, easy to use and affordable solution. To use the app, mount your phone behind one of the baselines on court, start recording and the app will analyze your video in real time without any cellular data or wifi. We suggest putting your phone in airplane mode or do not disturb so incoming calls don't interrupt your recording. When you're done playing, just take the phone down, end the recording and all the stats and video are immediately accessible. To mount your phone, we sell this extendable phone mount that sits on top of the fence and provides a good viewing angle of both the near and far side.",
+          "tags": []
+        },
+        {
+          "start": "3:06",
+          "end": "4:47",
+          "description": "Optionally, you can see a preview of the camera and start the recording from an Apple Watch or spare iPhone. We also have permanent mounting solutions for clubs that make it easy for players to simply slide in their phone and use the app. Now let's talk about what you can record at Swing Vision and the analysis the app provides. To record a session in the app, visit the record tab. You'll see there are four session types to choose from. Rally is meant for live ball drills or hitting without structured point play. You can choose either singles or doubles but note that the app can only accurately track one ball being hit at a time. Match is meant for recording singles or doubles matches and can be customized to various scoring formats. Serve practice is a dedicated mode to analyze your serves, for example if you're hitting out of a basket. Finally, ball machine mode can be used if your student is hitting with a ball machine or you're feeding balls to them out of a basket. It's important to note that if you're feeding out of a basket to multiple players on the opposite side, Swing Vision doesn't currently break out the stats for each player but aggregates them instead. When choosing your session, you can tag the participating players as well as a coach. The session will then show up on each tagged person's profile under the me tab. You can also tag players or a coach after the session is complete.",
+          "tags": []
+        },
+        {
+          "start": "4:47",
+          "end": "6:15",
+          "description": "After you've chosen your session type, tap the start button and you'll be taken to the recording screen. We suggest recording with the main cameras on the back of your phone for optimal results. The app will ask you to align the near service line to be inside the pink rectangle before you start recording. This is a guideline to provide the best playback angle on most courts but isn't mandatory. Ultimately, the most important consideration is to keep the court lines in view of the camera. It's okay if the edges of the near side alleys are cut off, particularly for single sessions. There are a few controls on the recording screen worth pointing out. At the top right, you'll see a slider that toggles between audio guided and manual setup. Pressing start with manual setup selected will start your recording right away. This is suggested if you know that your camera is set to the right angle. If you're unsure of the recording angle, audio guided mode provides audible feedback that lets you know if the camera needs to be adjusted. At the bottom right, you'll see a zoom control that allows you to zoom out if you need to capture more of the court. At the bottom left is a remote button that allows you to pair another iPhone or iPad to your recording device in order to see a preview of the recording screen and start the recording remotely. This will also allow you to challenge line calls on your remote device.",
+          "tags": []
+        },
+        {
+          "start": "5:15",
+          "end": "6:00",
+          "description": "On screen: The image appears to be a screenshot from a smartphone displaying a photo of a tennis court with an overlay of a digital interface showing a camera preview. The interface includes a timer indicating \"10 seconds\" and a button labeled \"START.\" There is also text that reads \"OpenSwing on Apple Watch and wait for the camera to show up automatically.\" Below this, there's a message saying \"Align the near service line to be inside the pink rectangle for best results.\" The image does not provide any information about figures from a sports science archive.",
+          "tags": [
+            "slide"
+          ]
+        },
+        {
+          "start": "6:15",
+          "end": "7:53",
+          "description": "Finally, on the bottom left if you're recording a serve practice or ball machine practice is goal mode. Goal mode allows you to select zones on the court for your student to aim into and create a more interactive drilling experience. The app will give audible feedback when these zones are hit, keep track of your streaks and overall success rate and announce the shot speed. Now let's see what you'd get if you were to record a session. In this case, I've recorded a singles match pro set. What's awesome is that the moment I finish recording, the stats and video are immediately available for me to view. The main video player is in the middle of the screen. You can tap in to view your recording with the dead time removed, filter to particular points or strokes, and access additional playback controls. Below the main video player are a variety of pre-cut video clips that the app automatically generates like your 5 most tiring rallies, 5 longest rallies, rallies above 5 shots, break points, game points, and either player's forehands, backhands and serves. You can tap in to any of these thumbnails to view them. When you enter the main video player, the recording will play from beginning to end and remove all of the time in between points. This allows you to see a 2 hour match in 30 minutes or less. The app is plotting the shot placement, shot type, and shot speed on the right side of the screen.",
+          "tags": []
+        },
+        {
+          "start": "6:45",
+          "end": "7:30",
+          "description": "On screen: The image appears to be a screenshot of a video game interface, specifically from a sports simulation game. It shows a virtual tennis court with a character on it, holding a tennis racket and preparing to serve. There is text overlaying the image that reads \"NO DEAD TIME POINTS AND STROKES FILTERS PLAYBACK CONTROLS.\" The text is in yellow font against a black background. The game interface includes a mini-map at the top left corner, and there are icons for different controls on the right side of the screen. The image does not provide any numerical data or specific details about the player's position or movement.",
+          "tags": [
+            "slide"
+          ]
+        },
+        {
+          "start": "7:30",
+          "end": "8:15",
+          "description": "On screen: The image appears to be a screenshot from a video game, specifically one that simulates tennis matches. It shows an in-game view of a tennis court with two players on it. One player is positioned near the baseline, holding a racket and ready to return a serve. The other player is at the net, also holding a racket and waiting for the ball.\n\nThe game interface includes a scoreboard displaying \"12\" points in favor of the player at the net, indicating that they have won the point. There are also icons and text on the screen, such as a \"serve\" button and a \"swing\" button, which suggest interactive elements for controlling the game.\n\nThe court itself is marked with standard tennis lines and has a blue surface, typical of many outdoor tennis courts. The image does not provide any specific information about the players or their performance, nor does it show any text that could be used to catalog figures from a sports science archive.",
+          "tags": [
+            "slide"
+          ]
+        },
+        {
+          "start": "7:53",
+          "end": "10:07",
+          "description": "It's also keeping track of the score automatically and generates a scoreboard for you at the top left. At the bottom left, you'll see a variety of playback controls that allow you to pause or play the video, filter to certain points or shots, adjust the replay settings, adjust the replay speed, and favorite points for review or to create a highlight clip. Tapping on filter allows you to granularly filter your video to just the points or shots you want to see. Up top, you'll see two ways to filter your video, point by point and shot by shot. In shot by shot, you can filter based on who hit the shot, what stroke type was being hit, the spin type of the shot, the direction of the shot, the shot type, result of the shot, and score. Click done and the app will automatically play just the shots that met your filter criteria. In this case, I filtered to just my serve, the return, and my plus one for ad for serves out wide that I made in. In point by point, you can filter based on rally type, rally length, finishing shot, score, who won the point, and who was serving. In this case, I'll filter to game points that I won with a forehand winner on my opponent's serve. Tapping left from the video player pulls up the first of three heatmaps shown in the app. This shot placement heatmap shows where all of your shots landed on the court. You can tap on the filters underneath the heatmap to compare your placement by stroke.",
+          "tags": []
+        },
+        {
+          "start": "8:15",
+          "end": "9:00",
+          "description": "On screen: The image appears to be a screenshot of a mobile device displaying a user interface for a sports science application. It shows a graphical representation of a dashboard or control panel with various icons and text fields. The central part of the screen displays a chart titled \"Shot by Point,\" which seems to measure some aspect of shooting performance in basketball, possibly related to free throws or other types of shots. The x-axis is labeled \"Stroke\" with numerical values ranging from 0 to 10, and the y-axis is labeled \"Show me\" with numerical values ranging from 0 to 5. There are also icons representing different sports or activities such as tennis, baseball, volleyball, and others, each accompanied by text labels. The overall design suggests a data visualization tool for analyzing athletic performance.",
+          "tags": [
+            "slide"
+          ]
+        },
+        {
+          "start": "9:45",
+          "end": "10:30",
+          "description": "On screen: The image displays a screenshot of a mobile device displaying a sports science application interface. It features a chart titled \"Shot placement\" with a subtitle \"20%\". The chart shows a scatter plot with dots representing shot placements, and there are numerical values indicating the percentage of shots placed in each quadrant of the court. There is also a legend on the right side of the screen that explains the color coding for different types of shots. The bottom part of the screen shows a player's statistics with columns labeled \"Shot placement\", \"20%\", and \"3PT\". The numbers visible include 19, 20, 21, and 22, which likely represent the percentage of shots placed in each quadrant. There is also a column titled \"FG%\" with numerical values ranging from 5 to 8. The player's name is not fully visible due to the image resolution.",
+          "tags": [
+            "slide"
+          ]
+        },
+        {
+          "start": "10:07",
+          "end": "11:39",
+          "description": "In this case, I can see that I'm hitting with similar depth on both my forehand and backhand side with 70% of my shots landing beyond the service line. However, I can see that on my backhand, I'm hitting most of my shots down the middle or cross court and rarely changing direction down the line, which can make things predictable for my opponent. You can also tap the in out filters to see where you missed most often. In the net, wide, or deep. Underneath, you can also filter by shot spin. Tap the view shot spin button and the dots will change depending on the spin type. You can filter based on spin, and as an example, see where your backhand slices landed on the court, and whether you were hitting a good neutral ball or a shot your opponent could attack. You'll see at the top of the heatmap, there's a circular image of me, as well as one of my opponent. Tap on your opponent's circle to see their shots, and use the app for a bit of scouting. The app splits out both player shots and singles, and all four player shots independently in doubles. Swipe left on the shot placement heatmap, and you'll see a new heatmap depicting hitting position. This shows where you were when you hit each shot. The same filters for stroke, in out, and shot spin apply here. Swipe left one more time, and you'll see a heatmap dedicated to serve placement, with each service box broken up into thirds, so you can easily see most common serve locations.",
+          "tags": []
+        },
+        {
+          "start": "10:30",
+          "end": "11:15",
+          "description": "On screen: The image displays a screenshot of a mobile device displaying a graphical user interface (GUI) of a sports science application. The GUI shows a chart that appears to be tracking some form of data over time, possibly related to athletic performance or training metrics. The chart has a title at the top that reads \"Shopping,\" but this is likely a mislabeled or unrelated element within the app.\n\nThe chart itself includes two axes: one labeled \"X-axis\" with numbers ranging from 0 to 10, and another labeled \"Y-axis\" with numbers ranging from 0 to 50. The data points on the chart are represented by small dots or markers, but there is no visible text or labels within the image that provide specific information about the data being tracked.\n\nThe bottom of the screenshot shows a status bar with various icons and indicators, including signal strength, battery level, time, and other standard smartphone interface elements. The overall style of the image suggests it is a digital screenshot intended to showcase the app's functionality or design.",
+          "tags": [
+            "slide"
+          ]
+        },
+        {
+          "start": "11:15",
+          "end": "12:00",
+          "description": "On screen: The image appears to be a screenshot of a mobile device displaying a chart or graph. The chart shows some form of data, possibly related to sports science, given the context provided by the text overlay. The text reads \"EASILY SEE MOST COMMON SERVICE LOCATIONS S\" which suggests that the chart is meant to highlight the most common locations for service within a particular system or organization.\n\nThe chart itself seems to be a bar graph, with each bar representing a different location. However, due to the resolution and angle of the image, it's difficult to read the specific details such as the axis labels, the numbers on the bars, or any additional text that might provide context for the data. The background of the chart is white, and there are no visible logos or decorative elements that would indicate a particular brand or organization.",
+          "tags": [
+            "slide"
+          ]
+        },
+        {
+          "start": "11:39",
+          "end": "13:23",
+          "description": "You can also filter by first or second serve on the deuce or ad side, by whether the serve was in or out, or by spin type. Finally, below the video in heatmaps, you'll see a variety of stats. The match stats tab provides a readout of traditional stats you'd typically see in a professional match, like winners, errors, breakpoint conversion rate, and serve points You can use the scrubber at the top to see what your stats were at any point during the match. Tapping on point history pulls up a log of how each point was won or lost throughout the match. You can see how long each game was in terms of points and minutes, and tap the play button next to any point to see it on video. The shot stats tab shows combined stats such as the percentage of rallies under 5 shots, between 5 and 8 shots, and above 8 shots. Underneath, you'll see individual stats broken out by player, like your percentage of cross court and down the line forehands and backhands in, average shot speed, shots beyond the service box, first and second serve percentages on the deuce and ad side, and average first and second serve speed. One thing to note regarding speeds is that swing vision calculates the average speed of the ball from when it was hit to when it bounced. This measurement is roughly 20% slower than a radar gun, which measures the ball's initial trajectory off the racket. The red and green percentages next to each metric show how much they've increased or",
+          "tags": []
+        },
+        {
+          "start": "12:00",
+          "end": "12:45",
+          "description": "On screen: The image displays a screenshot of a mobile device displaying a table with various statistics related to sports performance. The table appears to be from a sports science application or database, and it includes columns such as \"Points,\" \"Double Faults,\" \"Backhand Unforced Errors,\" and \"Forehand Unforced Errors.\" There are numerical values in the table, but they are not fully visible due to the resolution of the image. The interface suggests that this is a user-friendly application designed for analyzing sports data, possibly related to tennis given the terms used.",
+          "tags": [
+            "slide"
+          ]
+        },
+        {
+          "start": "13:23",
+          "end": "14:54",
+          "description": "decreased compared to your last session. You can also tap on the opponent circle to view your opponent's stats. Underneath the shot stats, you'll see charts of shot distribution, spin distribution, and ball speed. You can tap on any stroke within the shot distribution chart, and the graphs underneath will update accordingly. Now that we know what swing vision does, let's talk about how coaches are using it. Coaches have started to use swing vision in numerous ways to enhance their services to students and generate more revenue. One of the most common use cases we see is for remote coaching. Coaches who have students that participate in junior tournaments or adult league matches are increasingly encouraging their students to record their match plate through swing vision, enabling coaches to provide feedback remotely during a tournament or after the event has ended. While it's not practical to travel to every tournament as a coach, it takes less than 30 minutes to review a student's match video and stats. Coaches recording their match can simply text or email a link to their coach for access. This saves hours of time and allows coaches to charge for remote analysis by interpreting a player's video and stats and providing feedback before their next match or practice session. Coaches are even creating their own match reports with swing vision and offering them to students as an additional service.",
+          "tags": []
+        },
+        {
+          "start": "13:30",
+          "end": "14:15",
+          "description": "On screen: The image displays a graphic with text that reads \"COACHING OPPORTUNITIES SWING.\" Below this title, there are two columns of numbers: one column lists numbers from 1 to 5, and the other column lists numbers from 6 to 10. The style of the image is informational and appears to be a screenshot or a digital graphic with a plain background. There are no logos, decorative elements, or any figures that can be identified as players or athletes. The text and numbered columns suggest it may be related to sports coaching opportunities, possibly in a sports science context.",
+          "tags": [
+            "slide"
+          ]
+        },
+        {
+          "start": "14:15",
+          "end": "15:00",
+          "description": "On screen: The image appears to be a screenshot of a mobile device displaying a social media interface. It shows a user's profile page with various elements such as a profile picture, username, and a list of posts or interactions. There is also a navigation bar at the bottom with icons that suggest different sections of the app, including a camera icon, a home icon, and others. The content on the screen includes text, images, and possibly some form of data visualization, but it's not clear enough to provide specific details about the chart type or what it measures. There are no numbers visible in this image.",
+          "tags": [
+            "slide"
+          ]
+        },
+        {
+          "start": "14:54",
+          "end": "16:20",
+          "description": "In 2023, we will take remote coaching a step further by leveraging our automatic distribution of match and session data to enable players anywhere in the world to connect with a network of qualified coaches. Coaches are also increasingly leveraging video and stats to provide in-person tactical lessons as a separate service to on-court coaching. Gather your student around an iPad, laptop, or TV and walk through recordings of match play or practice sessions. Swing vision makes it easy to look at point construction and matches and identify successful strategies for your student. Conversely, you'll also be able to more easily see how your player is losing points. As a coach, you'll have a better understanding of what to work on with the student in an on-court lesson. Your players will also gain helpful context in knowing what parts of their game they need to improve and why. While the concept of providing lesson videos to students as a premium package has existed for years, swing vision makes it easier than ever. Not only can you tag your student in a recording so that they have access to the video and stats, you can also filter to particular shots and provide targeted feedback. For example, if serves were a focus during a lesson, you could filter to all missed serves and send that clip to your student with some points of feedback. Conversely, you could send them their made serves and point out what they did well or",
+          "tags": []
+        },
+        {
+          "start": "15:00",
+          "end": "15:45",
+          "description": "On screen: The image displays a slide from a presentation, which appears to be related to sports coaching. It features a title \"COACHING OPPORTUNITIES\" followed by bullet points that list various benefits of coaching, such as providing remote coaching services and offering club memberships. There is also a mention of strategies for coaches, including access to training sessions and more relevant text. The slide has a plain background with the text in white font.",
+          "tags": [
+            "slide"
+          ]
+        },
+        {
+          "start": "16:20",
+          "end": "17:48",
+          "description": "favorite particular ones that exhibited proper technique. As we continue to build out swing vision in 2023, we will add features to improve the in-app coaching experience like the ability to leave comments, voice notes, and annotations. Clubs can also take advantage of swing vision to increase sales and foster a better experience for members. One way is through video analysis of tournament play. Clubs that host competitions at their facility can offer video and stats packages for players and charge per match. You record a player's match and tag them or share the session link afterwards to allow them to get their trimmed video and stats. The share link function allows players who don't have the app to access their video and stats on our website. Swing vision also allows clubs to create their own tournaments with unique benefits for players. For example, all matches could be recorded through swing vision and each player can be tagged in their matches along with their coach. To further enhance their experience, players can receive the ability to challenge line calls through swing vision. As we progress in 2023, we'll also release a real timeline calling feature like Hawkeye Live that can be used to bring the pro experience to your events. Clubs can also bundle in one tactical video review session as part of the entry fee. If you're interested in hosting this type of event at your club, please email me and",
+          "tags": []
+        },
+        {
+          "start": "16:30",
+          "end": "17:15",
+          "description": "On screen: The image displays a graphic with text that reads \"OPPORTUNITIES FOR CLUBS\" at the top. Below this title, there are two columns of data. The left column is labeled \"Tournament Video Analysis,\" and the right column is labeled \"Swing Analysis.\" There are numerical values listed under each category, but they are not fully visible in the image provided. The bottom part of the image shows a logo with the text \"SWING ANALYSIS\" beneath it, followed by a subtitle that says \"Tournament Video Analysis.\"",
+          "tags": [
+            "slide"
+          ]
+        },
+        {
+          "start": "17:15",
+          "end": "18:00",
+          "description": "On screen: The image displays a screenshot of a webpage or digital advertisement for a club named \"SWING.\" It features a logo on the left side, which appears to be a stylized letter 'S' followed by the word \"SWING\" in lowercase letters. Below the logo is a list of opportunities for clubs, including \"Tournament Video Analysis,\" \"Host Swing Tournaments,\" and \"Create Tournaments with unique benefits.\" The text on the right side of the image indicates that players can participate in tournaments by creating their own lineups. There are no visible numbers or specific details about the chart type or movement of a player.",
+          "tags": [
+            "slide"
+          ]
+        },
+        {
+          "start": "17:48",
+          "end": "19:13",
+          "description": "I'd be happy to help. With the launch of live streaming in January 2023, clubs can livestream their events to a national or global audience. These streams can be free to access or set behind a paywall for viewers. Our solution will support streams up to 1080p and 30 frames per second, providing higher playback quality compared to most fixed camera solutions at a lower cost. If your club would like to get set up with live streaming access, please reach out over email. In order to make it easy for club members to use swing vision without bringing their own mount, we offer fixed mounts for clubs that allow players to simply slide in their phone to use the app. We also include a plaque that has a QR code directing to our app store page. These mounts have been installed across hundreds of courts in the US and with the help of TA we've started bringing them to Australia. If you'd like to get your club set up with mounts, please reach out over email. Clubs can also use swing vision to foster more play and competition amongst members. Swing vision has leaderboards that allows users to see how they stack up against other players in a variety of categories. An example is a club in the US which hosted a competition to see which member could track the most shots on a ball machine in a given month, with the winner getting a free swing vision pro subscription. This resulted in more members renting out the ball machine from the club and additional",
+          "tags": []
+        },
+        {
+          "start": "18:45",
+          "end": "19:30",
+          "description": "On screen: The image displays a list of opportunities for clubs under various categories such as Tournament Video Analysis, Hosting Swing Tournaments, Live Stream Events, Mountaintop Infrastructure for Members, and Member Contests & Leaderboards. It is a textual graphic with a plain background and no decorative elements or logos. The text is clear and legible, providing information about the opportunities offered by the club.",
+          "tags": [
+            "slide"
+          ]
+        },
+        {
+          "start": "19:13",
+          "end": "20:51",
+          "description": "court time booked. If you'd like to organize a competition for your club with swing vision prizes, please reach out and I'm happy to help. Now you might be wondering how much swing vision costs. The app is actually free to download and provides users the option to choose either our basic or pro plan. Basic is free and allows users to record up to two hours a month. The pro subscription costs $130 a year for tennis Australia members and is free for all tennis Australia accredited coaches. It allows users to record up to 30 hours a month with lifetime cloud storage and gives access to higher recording quality and additional stats. If your players would like to take advantage of the $20 tennis Australia discount and free 45 day pro trial, please have them visit this link shown on screen. Beyond our individual subscriptions, we also have teams plans for academies, clubs and colleges. Our team plans provide the same analysis as pro and also include customized dashboards so coaches can see all of their player sessions in one place and track their progress over time. Each team plan comes with six QM1 phone mounts included. If you think the team plan could be a fit for your program, please fill out the team's form on our website or email me. If you're ready to start using swing vision but don't have a mount to set up your phone on court, we recommend the QM1 phone mount which works on any court with a fence or a",
+          "tags": []
+        },
+        {
+          "start": "19:30",
+          "end": "20:15",
+          "description": "On screen: The image displays a screenshot of a pricing model for a service called \"Swing\". It shows a comparison between two plans: Basic and Pro. The Basic plan costs $2 per month and includes 30 hours of video quality, 700 cloud storage, and basic video editing. The Pro plan costs $10 per month and includes all the features of the Basic plan plus additional benefits such as 3000 hours of video quality, 100000 cloud storage, and advanced video editing. There is a checkmark next to \"All lights are on\" under the Pro plan, indicating that this feature is included in the Pro plan. The image also includes a price list for additional services such as video coaching, which costs $300 per year.",
+          "tags": [
+            "slide"
+          ]
+        },
+        {
+          "start": "20:51",
+          "end": "22:25",
+          "description": "curtain. QM1 can be purchased directly from our website through this link or within the app store at the top of the homepage. Finally, let's address and frequently ask questions about swing vision. Where are the videos stored? After recording from an iPhone or iPad, the video is stored locally on your device. Once you're connected to Wi-Fi, leave the app open on the me tab and your videos will upload to the cloud. Once the videos have finished uploading, you can remove them from your device to save space and still always access previously recorded videos through the app. Videos will need to upload to the cloud before they can be viewed on remote devices. Does the app require cellular or Wi-Fi connection? No, your video is analyzed on device without internet. We suggest putting your phone in do not disturb or airplane mode so incoming calls don't interrupt your recording. How much battery life does swing vision use? A two hour recording on low battery mode takes about 40-50% of a phone's battery. External battery packs or portable chargers are an easy solution to extend battery life if it's a concern. Can I analyze footage recorded from other devices on swing vision? Yes, you can import pre-existing footage from a GoPro, Android or smart court into the app and receive the same output analysis. However, this process is not recommended as the default approach because the app will",
+          "tags": []
+        },
+        {
+          "start": "21:45",
+          "end": "22:30",
+          "description": "On screen: The image displays a screenshot of a social media post with a question posed to followers. The question asks for help in finding videos on a specific topic related to sports science. Below the question, there are several bullet points providing information about where to find these videos and what types of devices or connections might be required. The text is clear and legible, and the image appears to be informative in nature.",
+          "tags": [
+            "slide"
+          ]
+        },
+        {
+          "start": "22:25",
+          "end": "23:59",
+          "description": "take a few hours to process the video depending on its length. Imported videos should ideally be recorded at 1080p 60fps in order to receive the most accurate analysis. What devices support swing vision? Swing vision is supported on iPhone 8 or newer or any iPad updated to iPad OS. What devices support real time analysis? Real time analysis is supported on all devices with the A13 chip or newer. This includes the iPhone SE 2nd generation, iPhone 11 and newer, as well as any iPad Pro, iPad Air and iPad Mini released since the beginning of 2020. Older devices will process the video after it's been recorded. When will swing vision be available on Android and what can I do in the meantime? We begin development on an Android app and will launch it in summer 2023. The initial release will focus on flagship devices that are capable of running our AI in real time like the Google Pixel 6 and 7 and Samsung Galaxy S22. If you'd like to get started using swing vision right away but don't have an iPhone or an iPad, we recommend the iPhone SE 2nd generation which is currently $160 on Amazon. Thanks for tuning in. If you have any questions or feedback about the app with this presentation, please email me at nakilatswing.tennis. We hope that swing vision will be a valuable tool for all of your future coaching endeavors. Bye.",
+          "tags": []
+        }
+      ]
+    }
+  ],
+  "_keyframes_done": true
+}

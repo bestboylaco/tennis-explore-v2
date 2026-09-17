@@ -671,6 +671,90 @@
     {
       "file": "womens-tennis-key-priorities-oct20151.pptx",
       "reason": "195 MB, over the size limit"
+    },
+    {
+      "file": "dr_nicholas_busuttil_-_hold_the_grip__coach_perceptions__stroke_production_and_training_methods__1080p_.video.json",
+      "reason": "Input file is missing: data\\media\\.tennisexplore-frames\\dr_nicholas_busuttil_-_hold_the_grip__coach_perceptions__stroke_production_and_training_methods__1080p_.video\\dr_nicholas_busuttil_-_hold_the_gr"
+    },
+    {
+      "file": "emma_wells__1080p_.video.json",
+      "reason": "Interpretability reason must be provided."
+    },
+    {
+      "file": "eva_borras_-_2024_coaches_conference_v1__1080p_.video.json",
+      "reason": "Interpretability reason must be provided."
+    },
+    {
+      "file": "fernando_segal_-_2024_coaches_conference_v1__1080p_.video.json",
+      "reason": "Interpretability reason must be provided."
+    },
+    {
+      "file": "mark_taylor_session_v1__1080p_.video.json",
+      "reason": "Interpretability reason must be provided."
+    },
+    {
+      "file": "martin_rocca___nick_jacques_-_adapting_your_lesson_to_maximise_player_potential_v1__1080p_.video.json",
+      "reason": "Input file is missing: data\\media\\.tennisexplore-frames\\martin_rocca___nick_jacques_-_adapting_your_lesson_to_maximise_player_potential_v1__1080p_.video\\martin_rocca___nick_jacques_-_adapting_your_les"
+    },
+    {
+      "file": "mitchell_turner_-_2024_coaches_conference_v1__1080p_.video.json",
+      "reason": "Interpretability reason must be provided."
+    },
+    {
+      "file": "nick_jacques__1080p_.video.json",
+      "reason": "Interpretability reason must be provided."
+    },
+    {
+      "file": "philippe_vergeylen_-_coordination_training__balance__orientation__reaction___rhythm__1080p_.video.json",
+      "reason": "Input file is missing: data\\media\\.tennisexplore-frames\\philippe_vergeylen_-_coordination_training__balance__orientation__reaction___rhythm__1080p_.video\\philippe_vergeylen_-_coordination_training__ba"
+    },
+    {
+      "file": "rebecca_mcdonald_session_v1__1080p_.video.json",
+      "reason": "Interpretability reason must be provided."
+    },
+    {
+      "file": "rick_macci_-_2024_coaches_conference_v1__1080p_.video.json",
+      "reason": "Interpretability reason must be provided."
+    },
+    {
+      "file": "ruben_neyens_session_v1__1080p_.video.json",
+      "reason": "Interpretability reason must be provided."
+    },
+    {
+      "file": "samuel_lopez__1080p_.video.json",
+      "reason": "Caption grounding model returned invalid JSON: {\n  \"claims\": [\n    {\n      \"claim\": \"The image shows a man seated at a table with trophies and plaques behind him.\",\n      \"status\": \"supported\",\n      "
+    },
+    {
+      "file": "severine_tamborero_-_2024_coaches_conference_v1__1080p_.video.json",
+      "reason": "Interpretability reason must be provided."
+    },
+    {
+      "file": "shaun_malcolm_-_using_the_constraints-led-approach_to_design_activities_for_beginner_players__1080p_.video.json",
+      "reason": "Input file is missing: data\\media\\.tennisexplore-frames\\shaun_malcolm_-_using_the_constraints-led-approach_to_design_activities_for_beginner_players__1080p_.video\\shaun_malcolm_-_using_the_constraints"
+    },
+    {
+      "file": "simon_jones_-_2024_coaches_conference_v1__1080p_.video.json",
+      "reason": "Interpretability reason must be provided."
+    },
+    {
+      "file": "simon_wheatley_-_return_of_serve_on_court_drills_for_group_coaching__1080p_.video.json",
+      "reason": "Caption grounding model returned invalid JSON: {\n  \"claims\": [\n    {\n      \"claim\": \"The image shows a slide from a presentation with the title 'PRESENTATION OBJECTIVES'.\",\n      \"status\": \"supported\""
+    },
+    {
+      "file": "simon_wheatley__1080p_.video.json",
+      "reason": "Interpretability reason must be provided."
+    },
+    {
+      "file": "ta_2023_virtual_conference_-_lawrence_robertson_and_luke_bourgeious_v1__1080p_.video.json",
+      "reason": "Caption grounding model returned invalid JSON: {\n  \"claims\": [\n    {\n      \"claim\": \"The image shows two men in front of a background featuring the Tennis Court Logo and a crowd, suggesting they are a"
+    },
+    {
+      "file": "ta_2023_virtual_conference_-_nikita_sayle____marita_morgan_v1__1080p_.video.json",
+      "reason": "Caption grounding model returned invalid JSON: {\n  \"claims\": [\n    {\n      \"claim\": \"The image shows two people who appear to be in a video call or interview.\",\n      \"status\": \"supported\",\n      \"rea"
+    },
+    {
+      "file": "tim_hill_session_v1__1080p_.video.json",
+      "reason": "Caption grounding model returned invalid JSON: {\n  \"claims\": [\n    {\n      \"claim\": \"The image shows a screenshot of a video.\",\n      \"status\": \"supported\",\n      \"reason\": \"The image has the appearan"
     }
   ],
   "schemaProblems": [],

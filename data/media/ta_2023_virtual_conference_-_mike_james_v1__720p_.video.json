@@ -1,0 +1,323 @@
+{
+  "videos": [
+    {
+      "video_id": "ta_2023_virtual_conference_-_mike_james_v1__720p_",
+      "url": null,
+      "source_path": "C:\\IFN736-project\\video\\ta_2023_virtual_conference_-_mike_james_v1 (720p).mp4",
+      "title": "ta 2023 virtual conference   mike james v1 (720p)",
+      "source": "transcript",
+      "language": "en",
+      "segments": [
+        {
+          "start": "0:00",
+          "end": "0:45",
+          "description": "On screen: The image shows a man standing in front of a presentation screen. On the screen, there is a poster for a coaches' conference featuring a photograph of two tennis players on a court and a background image of a tennis net. The text on the poster includes the name \"Coaches Conference\" and mentions \"Virtual Grand Slam.\" The man appears to be speaking or presenting at this event.",
+          "tags": [
+            "slide"
+          ]
+        },
+        {
+          "start": "0:04",
+          "end": "1:52",
+          "description": "In the spirit of reconciliation, Tennis Australia acknowledges all the traditional custodians of country throughout Australia and their connection to land, sea and community. We pay our respects to their elders past and present and extend that respect to all Aboriginal and Torres Strait Islander peoples today. Hey Coaches, our next speaker is Michael James from the Moratoglu Academy. Michael is currently the Chief Tennis Analyst at the Moratoglu Academy based in the south of France and specialises in performance analytics supporting coaches and players support teams with Data Insight. Michael is currently working with a number of teams including world number one, Ega Swantech and world number 11, Holger Ruhn. Today he is going to join us to talk about using analytics in your coaching. Welcome. My name is Mike James and I'm the Chief Tennis Analyst at Moratoglu Analytics. I'd like to thank Tennis Australia for inviting me and I'm super looking forward to presenting in person during the Australian Open. So today's content, we're going to look back at the data timeline in our sport, why use an analysis in your coaching and what areas to chart and why. So a little bit about my role on the ATP and WTA tour. The most important job I have is to provide the coaching team and the player support team with analysis that is digestible and easy to understand. This is so important when you think about as a sport, we're playing 11 months of the",
+          "tags": []
+        },
+        {
+          "start": "1:30",
+          "end": "2:15",
+          "description": "On screen: The image appears to be a screenshot of a presentation slide from a sports science archive. It features a photograph of four individuals standing on a stage or podium, each holding a trophy. The slide has text that reads \"Tennis Analyst Role on the ATP Tour\" and provides information about the role's responsibilities, which include providing analysis for the coaching team with the understanding that it is not possible to understand everything. There are no visible logos or title-page artwork in this image.",
+          "tags": [
+            "slide"
+          ]
+        },
+        {
+          "start": "1:52",
+          "end": "3:29",
+          "description": "year, if the player is winning they are playing almost every day and when they lose they are getting on a plane and travelling to another time zone. So our ability to provide the information easy and quickly is probably our strength and the way we digest the information is super important. So this is a huge area in what we're doing day in, day out. Most players think that we're looking for weaknesses all the time but our philosophy is to show the player their strength and build their strengths and this is the philosophy at the academy and this is our philosophy in marotogluar analytics to build the player's strengths and to of course we need to look at the weaknesses and build on them but the strength is the key area that we're looking at and the reinforcements and to build the player's mentalities is huge. It's a team approach as we know on this photo here we have Patrick Marotogluar's Christensen, Annika Roon, Felipe West the agent and myself there's also we have great physios and conditioning coaches involved in the team of Holger so all these top players have teams and the team approach is the best way to build a professional tennis player that's for sure. Scouting opponents is becoming more and more detailed and in depth of what we can get the information looking at trends and patterns and I think the days are going of getting the the note pad out and watching a player for four, five, six games and then we know",
+          "tags": []
+        },
+        {
+          "start": "2:15",
+          "end": "3:00",
+          "description": "On screen: The image appears to be a screenshot of a presentation slide from a sports science archive. It features a photograph of four individuals posing for a picture on what seems to be a stage or podium. The background is blurred but suggests an indoor setting, possibly a conference or event venue.\n\nAt the top of the slide, there's text that reads \"Tennis Analyst Role on the ATP Tour.\" Below this title, there are bullet points providing information about the role: \"Provide the coaching team with analysis that is understandable to non-technical people,\" \"Find clear solutions to problems,\" and \"Improvements in performance.\"\n\nThe slide also includes a logo at the top left corner, which seems to be related to the ATP Tour. The overall style of the image suggests it's part of an educational or informational presentation, likely used to explain the role of a tennis analyst within the context of professional tennis on the Association of Tennis Professionals (ATP) tour.",
+          "tags": [
+            "slide"
+          ]
+        },
+        {
+          "start": "3:00",
+          "end": "3:45",
+          "description": "On screen: The image appears to be a screenshot of a presentation slide from a sports science archive. It features a photograph of a group of people on a stage, likely at an event or conference. The slide has a title \"Tennis Analyst Role on the ATP Tour\" and includes bullet points outlining the responsibilities of a tennis analyst in a sports science context. There are no visible numbers or specific measurements on this slide.",
+          "tags": [
+            "slide"
+          ]
+        },
+        {
+          "start": "3:29",
+          "end": "5:14",
+          "description": "how to play that player. I think the the ability and information we have today is more sophisticated and we can really help the players and the coaches find the areas to exploit during the matches and of course over communicating is really really important for us to not get any situation where anybody is misinterpreting what we've said and we're really working day in day out to help the player support teams. So if we go back and look at a data timeline within tennis in our sport it's quite crazy to think about the first basic stats we're starting to come out in 1991 when you think about baseball, soccer and a fail of in collecting data since the 70s so we're behind in a sport already with collecting this information. However in 2002 Hawkeye came along and provided a laser video system that is really really changed the way we look at data and interpret data from a a fans point of view from broadcast and also from an analyst point of view. In 2009 the WTA introduced on court coaching which was a real step forward in our sport when you think about it before then it was the only sport where officially you could not coach during the match. Then in 2017 SAP and WTA partnered to provide the coaches with iPads and the data live during the match so the coaches had this rich level of information during the match and they had the ability to use that with their players if they wanted to. Then in 2018 we had the next gen on court analytics as you can see with this photo there",
+          "tags": []
+        },
+        {
+          "start": "3:45",
+          "end": "4:30",
+          "description": "On screen: The image displays a digital graphic that appears to be a screenshot from a video game or simulation interface. It features a title \"A TIMELINE IN TENNIS\" and a subtitle \"FIRST BASIC STATS IN 1991.\" Below this, there is a chart with two axes: one labeled \"YEAR\" ranging from 1991 to 2021, and the other labeled \"POINTS,\" which shows numerical values for each year. The chart includes a line graph that represents some form of data or points accumulated over time. There are no visible logos, title-page artwork, decorative photographs, headshots, backgrounds, or stock imagery in this image.",
+          "tags": [
+            "slide"
+          ]
+        },
+        {
+          "start": "4:30",
+          "end": "5:15",
+          "description": "On screen: The image displays a digital screen showing a chart titled \"A timeline of tennis.\" It lists several milestones in tennis history, including the first basic statistics in 1902, the introduction of Hawkeye in 2002, and the use of WTA Analytics in 2017. The chart is a line graph with a time axis ranging from 1902 to 2017, and it shows a general upward trend in data collection and analysis over time. There are no specific numbers or details about the movement of the line on the graph. The text is clear and legible, providing factual information about the history of tennis analytics.",
+          "tags": [
+            "slide"
+          ]
+        },
+        {
+          "start": "5:14",
+          "end": "6:57",
+          "description": "are caps with the headset on the iPad on the desk to his right. The coaching team also had the same and I think for me this is the most exciting form of on court coaching. We've gone back now to on both tours to coaching on the sidelines when the player gets the tower box but for me this is the most exciting for broadcast for fan engagement and also for the coaching teams to see the data in real time and actually to have that communication. Then in 2020 we saw this for the first time the strategy room for the ATP Cup and again if you look at soccer and FL baseball these teams these team sports have always done this whereas in tennis we're still behind on this. We have a room here dedicated at the academy where we do the same. This for me should become more normal in clubs and academies to have a video room where we can watch back and look at the data and match footage. So using analysis within your coaching. So the process that we go through and I think this is what I would recommend everybody to do is to first of all capture some form of data or information whether this is raw video just data just charting on the phone then analyzing that information and looking at what trends or information are we finding that is interesting for the player to see or understand or learn and then sharing it back. So how do you present it back? You present it back in a room like we just saw at ATP Cup or you doing it on court during",
+          "tags": []
+        },
+        {
+          "start": "6:00",
+          "end": "6:45",
+          "description": "On screen: The image appears to be a screenshot from a video game or simulation, showing an in-game interface with a tennis court scene. On the left side of the screen, there is a graph titled \"Using Analysis in Your Coaching,\" which seems to measure some form of performance metric, possibly related to sports analytics. The graph has two axes: one labeled \"X\" and another labeled \"Y,\" but no numbers are visible on the axes. There is also a player character on the court, holding a tennis racket and preparing to serve or return a ball. The player's movement suggests they are in the process of executing an action, likely related to gameplay. On the right side of the screen, there is text that reads \"FIRST decide whether this image carries information.\"",
+          "tags": [
+            "slide"
+          ]
+        },
+        {
+          "start": "6:45",
+          "end": "7:30",
+          "description": "On screen: The image appears to be a screenshot of a presentation slide. It features a title \"Using Analysis in Your Coaching\" followed by bullet points that mention capturing and analyzing data, sharing content off court, and providing support through content. There is an illustration of a tennis player on the court with a ball, suggesting a focus on sports analysis or coaching strategies related to tennis. The slide also includes a logo at the bottom left corner, but the text is too small to read clearly.",
+          "tags": [
+            "slide"
+          ]
+        },
+        {
+          "start": "6:57",
+          "end": "8:35",
+          "description": "the session that also is important and how you deliver that information. Once you're starting to collect data or video this is providing off court content. So how is this helpful for club coaches? Well I come from the UK where it's raining a lot and there's a lot of outdoor club programs so to actually not cancel the session and bring the session indoors to the video I think is a great way for the juniors to learn. Also if you think about the next generation of players that are always on the iPhones and iPads so actually giving them the opportunity to use that in a classroom I think is great if the weather is bad but also if the weather is not bad building that into your program I think is a great idea. It also creates an archive and you have the ability to review data so if you're looking at video or match data in 2021 and then you're reviewing it in 2022 you can see the progression of the player and not just measure the player by winning or losing or the ranking going up or down. Also if I was a head coach of a club this would help with coach education and the ability to have discussions around player techniques, game styles, how are the player base doing at the club or academy and you can really create content to help coaches develop and we have to remember that 65% of the population are visual learners so most people do best by watching and viewing so we see kids copying, Cristiano Ronaldo are messy on the football",
+          "tags": []
+        },
+        {
+          "start": "7:30",
+          "end": "8:15",
+          "description": "On screen: The image appears to be a screenshot of a presentation slide. It features a title \"Using Analysis in Your Coaching\" followed by bullet points that mention capturing content from an archive and creating an analysis share. There is a visual aid on the right side of the slide, which seems to be a graph or chart with a title \"Analysis of your coaching.\" The chart includes a horizontal axis labeled \"Capture/Share,\" a vertical axis labeled \"Create an archive to review,\" and a line graph that shows two data points: one at 0.5 and another at 1.0. There is also a small inset image on the left side of the slide, which appears to be a photograph of a person playing tennis, but the details are not clear due to the resolution. The overall style of the image suggests it is part of an educational or instructional presentation.",
+          "tags": [
+            "slide"
+          ]
+        },
+        {
+          "start": "8:15",
+          "end": "9:00",
+          "description": "On screen: The image appears to be a screenshot of a presentation slide. It features a title \"Using Analysis in Your Coaching\" followed by bullet points that mention capturing content, creating an archive, and providing 60% of the population with visual learners. There is also a subtitle stating \"Helps with Coach Education.\" The slide includes a small image of a tennis court with a player in action, but no specific details about the player or the game are visible. The overall style of the image suggests it is part of an educational or informational presentation.",
+          "tags": [
+            "slide"
+          ]
+        },
+        {
+          "start": "8:35",
+          "end": "10:30",
+          "description": "pitch and I think we see the same good and bad with tennis players as well. This photo for me is really powerful this is the Mercedes F1 team a few years ago and we have my favourite F1 driver Lewis Hamilton on the photo there and he's surrounded by the team that allows him to drive the car. He's the only one driving the car, he's the only one holding the trophy at the end but the reality is he has a team of 200 people that are supporting him in that process to be the best driver in the world. So this is also how I think tennis is going there are more and more support team members around players in 2023. So what to chart and look for using basic stats and video. So I wanted to put together a few bullet points and metrics of for me what the best servers do and you might disagree but from a numbers point of view and how we're using our analysis to help coaches develop players these are the areas for me that are the most important. Accuracy for me accuracy beats power every time the more accurate we are the more accomplished we are as a serve with our serve directions and our ability in the second phase of play to dominate the point. Having the same ball toss is hugely important for young players today and being able to hit different serves off the same ball toss this is something if you remember famously Samplash used to do in the 90s and now we're filtering down to the best juniors in the",
+          "tags": []
+        },
+        {
+          "start": "9:45",
+          "end": "10:30",
+          "description": "On screen: The image appears to be a screenshot of a computer interface displaying a tennis match on a monitor. There are two main sections visible:\n\n1. On the left side of the screen, there is a text box with the title \"What do the best servers do?\" and below it, a list that includes \"Accuracy\" as one of the bullet points. The text suggests an analysis or comparison of tennis players' serving techniques.\n\n2. On the right side of the screen, there is a video feed showing a male tennis player in action, likely serving the ball during a match. He is wearing a red shirt and white shorts, which are typical attire for a tennis player. The player is captured mid-motion, with his racket raised above his head, indicating that he has just thrown the ball up into the air to serve it.\n\nThe interface also includes a logo in the top left corner, but the text is too small to read clearly. The overall style of the image suggests it might be from a sports analysis software or a digital platform used for analyzing and comparing athletes' performance metrics.",
+          "tags": [
+            "slide"
+          ]
+        },
+        {
+          "start": "10:30",
+          "end": "12:26",
+          "description": "world doing this. For me with what we're seeing with our database we see the best servers sticking to their game plan at game ending points so we don't see a change of game style or something or coming away from how they know best they're playing their optimum serve patterns and serves during game ending points and at the biggest moments. On return serves is another great metric for players to and coaches to be looking at so the best ATP players are probably getting around 50% of on return serves on a good day and at Tarbs level under 14 level you're looking at between 20 and 25% WTA can range between 25% and 40% depending on who's serving and the conditions so the on return serve stat for me is a really really important one to look at because it's as good as an ace at the end of the day. So we call this the first phase of play and the reality we're just changing the name to serve plus one to the first phase of play so this is the phase where okay we know we're going to serve and we're going to hit the plus one how do we do that and how effective is that. So firstly what do you need to be charting and looking at what situation is your player most often after their first serve and their second serve is it attack neutral or defense is it necessarily the best thing for your player to be using the forehand as much as possible after the serve plus one we're hearing that all the time that we need to be playing",
+          "tags": []
+        },
+        {
+          "start": "10:30",
+          "end": "11:15",
+          "description": "On screen: The image appears to be a screenshot of a video game interface, specifically from a sports simulation game. It shows a character on the screen who seems to be a player or coach in a sports setting, likely a tennis match given the context. There is a text overlay that reads \"WHAT DO THE BEST SERVERS DO?\" with bullet points listing \"ACCURACY,\" \"BALL TRAJECTORY,\" and \"GAME PLAN.\" The game interface includes a player's statistics at the bottom, which include \"ACCURACY\" and \"BALL TRAJECTORY\" metrics. There is also a text box that says \"STICK TO THE GAME PLAN ONLY.\" The character on the screen is holding a microphone, suggesting they are addressing an audience or making a speech during the game.",
+          "tags": [
+            "slide"
+          ]
+        },
+        {
+          "start": "11:15",
+          "end": "12:00",
+          "description": "On screen: The image displays a computer screen showing a tennis match in progress on a television program. The screen also features an overlay of a sports statistics chart that includes various metrics related to the player's performance during the match. The chart is titled \"THE FIRST PHASE\" and includes numerical data such as \"BALLS PLAYED ON 3,\" \"FOREHANDS PLAYED ON 3,\" \"BACKHANDS PLAYED ON 3,\" \"VOLLEYS PLAYED ON 1,\" \"SERVES PLAYED ON 2,\" \"ACES PLAYED ON 0,\" and \"WIN/LOSS.\" The player is shown in the foreground, holding a tennis racket and preparing to hit a ball. There are also some text elements on the screen, such as \"40 (Euros)\" and \"15 (Euros),\" which likely refer to the score or points won during the match.",
+          "tags": [
+            "slide"
+          ]
+        },
+        {
+          "start": "12:00",
+          "end": "12:45",
+          "description": "On screen: The image displays a screenshot of a tennis match being broadcast on television. At the top of the screen, there's a title that reads \"THE FIRST PHASE.\" Below this, there is a question posed: \"WHAT SITUATION AFTER THE SERVE?\" followed by an answer: \"USE THE FOREHAND.\"\n\nThe image shows a tennis player in action, holding a racquet and preparing to hit the ball. The player's position on the court is indicated by a green dot labeled \"Ball 3.\" There are two bars on the right side of the screen, one labeled \"Forehand\" with a value of 94% and another labeled \"Backhand\" with a value of 6%.\n\nThe image also contains text at the bottom that reads \"FITNESS,\" \"STRENGTH,\" \"SPEED,\" \"AGILITY,\" \"ENDURANCE,\" \"COORDINATION,\" \"BALANCE,\" \"REACTION TIME,\" and \"MUSCLE ACTIVITY.\" These terms are likely related to the sports science archive mentioned.",
+          "tags": [
+            "slide"
+          ]
+        },
+        {
+          "start": "12:26",
+          "end": "14:02",
+          "description": "the forehand after the serve plus one but if you look at the data sheet below you see that we have three top ten male players compared here one of them on the first serve is playing up to 81% forehands on serve plus one the other two at most are playing 61% and even on the second serve it's dropping to 36% on forehand serve plus one. They're all top ten players they're all very close with each other two of them have world class backhands the other one the backhand isn't so good so maybe they're hiding the backhand by playing the forehand etc so my point is don't necessarily think that your player has to be playing as many forehands on serve plus one as possible. Then the direction for me is the most important area where do we direct the ball and then within that direction are we looking at the depth are we looking at breaking the tram lines what flight path are we using we have several players in the top ten now and the top 100 the rhythm break is naturally if you think about Kamnori his flight path of his forehand compared to his backhand Medvedev these players eager with her backhand and her forehand flight path so all of these ingredients need to come into when you're building the players game style and last but not least the court position of where they're playing from are they playing like a Medvedev and Zverev deep behind the baseline or are you playing like a rune or an Alcaraz or an eager on top of the baseline again all this ingredients",
+          "tags": []
+        },
+        {
+          "start": "12:45",
+          "end": "13:30",
+          "description": "On screen: The image displays a screenshot of a television broadcasting a tennis match. On the screen, there is a graphic overlay that includes a chart titled \"THE FIRST PHASE 1.\" This chart appears to be related to sports science and measures various statistics such as \"FITNESS,\" \"ENDURANCE,\" \"SPEED,\" \"AGILITY,\" \"POWER,\" \"RECOVERY,\" and \"TECHNIQUE.\" The specific numbers and details of the chart are not clearly visible due to the image's resolution. There is also a text box with a question: \"What situation after the serve?\" followed by an answer: \"Use the forehand.\" Additionally, there is a player on the court who seems to be in motion, possibly serving or returning a ball. The player is wearing a tennis outfit and holding a racquet.",
+          "tags": [
+            "slide"
+          ]
+        },
+        {
+          "start": "13:30",
+          "end": "14:15",
+          "description": "On screen: The image displays a screenshot of a tennis match being broadcast on television. It shows a tennis court with players in action, and there's an overlay of a graphical interface with various statistics related to the game. The interface includes a chart titled \"The first phase,\" which appears to measure some form of performance or progression during the match. There are numerical values displayed on the chart, such as 100% for one player and 95% for another, indicating their respective levels of completion or success in this phase. The interface also includes a question \"What situation after the serve?\" with an answer \"Use the forehand.\" Additionally, there's a text box that reads \"Direction: Ball 3,\" suggesting a strategic direction for the ball during the match. The court is marked with lines indicating boundaries and service boxes. The image does not contain any visible logos or decorative elements.",
+          "tags": [
+            "slide"
+          ]
+        },
+        {
+          "start": "14:02",
+          "end": "15:57",
+          "description": "and these metrics help you understand your players game style and their strengths and their weaknesses what do the best returners do in the game well first of all they touch the ball more than any other player secondly they get the ball in and thirdly they can then do something with the tennis ball so for me the best returners in the game find that optimum return position so they know how many meters behind the baseline or inside the baseline they need to be to to have the most touches on the tennis ball the most in play and then ultimately start to change the rally and turn the rally around and their toolkit is bigger than most players so their ability to block slice or drive their ability to play deep or play inside the baseline you know all of these areas need to be considered when you're looking at return of serve and then if you look at these two data sheets here of a WTA female top 10 stats for the season and an ATP top 10 for the season you see that the numbers are only within roughly a 10% difference on all of them but you can see the female player is winning more second serve returns than their opponent is winning more second serves so the second serve for me is a hugely important area for players to focus on and look to break particularly as we're getting into more senior levels okay the first phase of play off return so the return plus one as you can see here in the",
+          "tags": []
+        },
+        {
+          "start": "14:15",
+          "end": "15:00",
+          "description": "On screen: The image displays a screenshot of a television screen showing a sports science chart related to tennis performance metrics. The chart is titled \"What do the best returners do?\" and includes a table with columns for \"They find their optimal position,\" \"They hit 10,500 balls per session,\" \"They play 20,000 points per match,\" \"They have a 96% success rate in serving,\" and \"They have a 78% success rate in returning.\" The chart also shows a graph with two lines representing the number of serves and returns for two players, one labeled \"Player A\" and the other \"Player B.\" The axes are labeled \"Number of Serves/Returns\" on the left and \"Time (s)\" on the right. There is a small image of a tennis player in action at the bottom left corner of the chart.",
+          "tags": [
+            "slide"
+          ]
+        },
+        {
+          "start": "15:00",
+          "end": "15:45",
+          "description": "On screen: The image displays a screenshot of a sports science archive, specifically a table from a tennis match analysis. The chart type appears to be a bar graph or a similar type of data visualization, measuring some form of performance metric for tennis players. The x-axis is labeled \"ATP 10,\" and the y-axis is labeled \"WTA RANK.\" There are three bars visible on the graph, each representing a different player's ranking in terms of ATP points.\n\nThe text overlaying the image provides context for the data presented. It reads: \"WHAT DO THE BEST RETURNERS DO? They find their optimal position and drive the ball with precision.\" Below this statement is a list of statistics related to tennis players' performance, including the number of games won (10), the number of points won (95), the number of service games won (87), and the percentage of first serves that were successful (63%).\n\nThe image also shows a screenshot of a tennis match in progress. The player on the right side of the screen is holding a racquet, ready to return the ball. The scoreboard indicates that the game is tied at 40-40, and the server has won the previous point. The text \"ATP 10\" is visible on the scoreboard, suggesting that the match is part of an ATP (Association of Tennis Professionals) event.\n\nThe image does not contain any logos, title-page artwork, decorative photographs, headshots, backgrounds, or stock imagery. It focuses solely on the data and the tennis match screenshot.",
+          "tags": [
+            "slide"
+          ]
+        },
+        {
+          "start": "15:45",
+          "end": "16:30",
+          "description": "On screen: The image displays a screenshot of a sports science archive interface. It shows a graphical representation of a tennis match in progress, with two players on the court. There is a scoreboard at the top right corner indicating \"ATP 10\" and \"WTA 9\". Below the scoreboard, there are statistics for each player: \"ATP 10\" has a pie chart showing percentages of different types of shots (e.g., \"ACES\", \"WINNERS\", \"UNFORCED ERRORS\"), with numerical values next to each category. The \"WTA 9\" section also includes a pie chart and numerical values, but the specific details are not clearly visible due to the image's resolution. The interface is designed to provide real-time data analysis for tennis matches.",
+          "tags": [
+            "slide"
+          ]
+        },
+        {
+          "start": "15:57",
+          "end": "17:45",
+          "description": "two data sheets we've got ATP top 10 and then we've got WTA female top 10 we have the WTA player playing a little bit more middle than the ATP player but the reality there's splits of where they're hitting the ball is very similar so it then comes down to where's the optimum zone for the player to return to statistically we know middle deep gives us the best chance of getting a good strong attacking ball on the return plus one but you know it depends on our return position if we're returning super deep and we go middle deep maybe it's giving our opponent more time so there are many factors again to consider and think about when we're looking at this return plus one phase and how we effectively turn the rally around after the return and the return plus one and the reason I call this the first phase of play on the serve plus one and the return plus one is that after shot five we're getting into then playing just out of the hand so these two areas are you know the serve and the return have an impact in the rally after that it doesn't so much so I've took this video here to all these points are going to be after shot five so we're going to see the point played effectively out of the hand and as you can see we're starting the point there with Rune with the left leg on the single side line and then Novak slightly off centre crosscourt on the backhand side and this is where the volume training the pattern drills",
+          "tags": []
+        },
+        {
+          "start": "16:30",
+          "end": "17:15",
+          "description": "On screen: The image displays a screenshot of a tennis match being broadcast on television. There are two players visible on the court, one on each side. On the right side of the screen, there is an overlay graphic that appears to be a sports analytics dashboard. This dashboard includes various statistics and charts related to the tennis match. The chart at the top left corner of the dashboard shows a line graph with two lines representing different players or teams, labeled \"ATP 10\" and \"ATP 20.\" Below this graph, there is a table with columns titled \"ATP 10,\" \"ATP 20,\" \"WTA 10,\" \"WTA 20,\" \"FED CUP 10,\" \"FED CUP 20,\" and \"OVERALL RANKINGS.\" The numbers in the table are not fully visible, but they seem to represent some form of ranking or score. There is also a small circular icon with a green checkmark next to \"ATP 10\" on the right side of the dashboard. The image does not contain any text that provides additional context about the match or the analytics being displayed.",
+          "tags": [
+            "slide"
+          ]
+        },
+        {
+          "start": "17:15",
+          "end": "18:00",
+          "description": "On screen: The image displays a screenshot of a sports science archive interface. It features a graphical representation of a tennis match in progress, with a scoreboard showing the current set at 6 to 4. There is a player's name and statistics on the right side of the screen, including a list of serves and points won or lost during the match. The interface also includes a calendar icon indicating the date of the match, which appears to be August 1st. The scoreboard shows that the server has won 6 games and is currently serving, with the receiver having won 4 games. There are no visible logos or title-page artwork in this image.",
+          "tags": [
+            "slide"
+          ]
+        },
+        {
+          "start": "17:45",
+          "end": "21:41",
+          "description": "that you're doing on court are really really important to have your player working on defensive skills and attacking skills and the movement side is huge so like I say after five shots is where we need to see the second phase of play in the tennis match the tennis point the system of play I look at a lot with players so is it best to move the player side to side mostly is it best to hit to them or is it best to hit into a corner into the juice or the ad side these areas to consider when we are training our players and looking at what our strengths are and also how to attack the opponent and then lastly when do my players winners and errors come so we can see on the data sheet on the right this players winners come later in the rally but the unforced errors come earlier in the rally and this is something to to consider about your player you know are they more dominant during the longer rallies or are they more dominant off the serve plus one and return plus one so what do we see during this point and these few points coming up and look at the players position particularly so if you'd have watched those three points closer you would see that most of the point was played by the player in control of the rally from what I call zone C and I think a lot of people are familiar with this ABC and D nowadays and I think if you look at this heat map here and I was to take a hundred heat maps on the tour you would see this red",
+          "tags": []
+        },
+        {
+          "start": "18:00",
+          "end": "18:45",
+          "description": "On screen: The image displays a screenshot of a sports science archive interface. On the left side of the screen, there's a video feed showing a tennis match in progress. On the right side, there is a chart titled \"During the point,\" which appears to be a statistical analysis tool used by coaches or analysts to evaluate player performance during a game. The chart includes various metrics such as \"Rally,\" \"Serve,\" and \"Volley,\" with numerical values indicating the frequency of each action during a match. There are also graphs showing the distribution of these actions over time, with specific points marked on the graph. The interface also shows a calendar view at the bottom, which seems to be used for selecting dates or matches to analyze.",
+          "tags": [
+            "slide"
+          ]
+        },
+        {
+          "start": "18:45",
+          "end": "19:30",
+          "description": "On screen: The image displays a screenshot of a video game interface during a tennis match. On the left side of the screen, there's a graph titled \"During the point,\" which shows a player's performance metrics such as \"After shots\" and \"System of play.\" The graph includes a timeline with numbers indicating points scored or lost, and it appears to track the player's performance over time. On the right side, there is a scoreboard with the names of two players, their respective scores, and a visual representation of the tennis court with a player in action.",
+          "tags": [
+            "slide"
+          ]
+        },
+        {
+          "start": "20:15",
+          "end": "21:00",
+          "description": "On screen: The image displays a screenshot of a tennis match being broadcast on television. It shows a tennis court with two players engaged in a game. There are spectators visible in the stands. On the screen, there is text that reads \"WHAT DO WE SEE DURING THE POINT\" and below it, there's a scoreboard indicating \"15-0.\" The image also contains a logo for the Paris Masters tournament at the bottom right corner.",
+          "tags": [
+            "slide"
+          ]
+        },
+        {
+          "start": "21:41",
+          "end": "23:23",
+          "description": "zone being from just cross court inside the ad part of the court for the right handers and this is an area of the court that basically where the match is played from so what do we see normally during a tennis point on the professional tour so seven out of ten ground strokes of forehands on average 81 percent of shots go past the service line 40 percent of all ground strokes come from position C as we just mentioned and 70 percent of the match is made up of errors and 30 percent made up of winners so again I think a lot of us are familiar with the winners and the errors understanding but when you're getting into your drilling and your volume training I think it's important to practice these drills from where you can see Rubel have playing the point from here and actually you know can we dominate the court from zone C and how can how well can we defend when we're covering the whole court so I think all of these type of drills are super important on the practice court to build the players so again if we break it down visually and we just break the lines and we do ABCD we can see Ketmanovich here in the point loading up his forehand exactly into zone C and he's about to control the point and play the ball you have a guess where he's going to play but the reality is you know this is where the sport is played from not just a professional level but we're also seeing that at the high level juniors",
+          "tags": []
+        },
+        {
+          "start": "21:45",
+          "end": "22:30",
+          "description": "On screen: The image appears to be a screenshot from a presentation slide. It features a tennis court with two players engaged in a match. On the right side of the screen, there is a graph titled \"What do we see during the point.\" The graph shows a line representing the player's movement and another line representing the ball's trajectory. There are numerical values on both axes: the x-axis indicates time in seconds, ranging from 0 to 2.5 seconds, while the y-axis represents distance in meters, ranging from 0 to 10 meters. The text on the slide reads \"On average, 2.5 out of 3 strokes are forehands.\" There is also a small icon indicating that the service line has been passed. The image does not contain any logos or decorative elements; it seems to be a straightforward educational or informational slide about tennis analysis.",
+          "tags": [
+            "slide"
+          ]
+        },
+        {
+          "start": "23:23",
+          "end": "25:23",
+          "description": "as well from 14 so again from position C watch Roon and see how much he's playing the point from position C here so what does the future look like in our sport and where do I think it's going this is just my opinion so I think it's quite clear to see on court coaching will become normal I think the the levels of smart court technology and streaming will filter down to the juniors and I can see at ITF and tennis Europe events coaches on court with with video footage and replays and iPads in the next five to ten years easy I think also coaching you know analysts my role will be feature more in player support teams we have some great guys on tour at the moment Shane Leonage, Kregor Shenisey, Fabrice Sabaro other guys operating at a really really high level so I think this is going to become more normal and it will again filter down to the juniors physical data will be introduced and I think will be looked at and reviewed before and after matches to aid the player development and the physicality this is an area that we've not explored yet in our sport again in soccer they're wearing the the catapult vests and I think this will become more normal within tennis so a little summary to cover the last 30 minutes using analysis can aid player development and for me speed up the learning curve of the player technology in tennis is developing fast and we need to be up to speed with what's going on and hopefully you've agreed with",
+          "tags": []
+        },
+        {
+          "start": "24:00",
+          "end": "24:45",
+          "description": "On screen: The image appears to be a screenshot of a presentation slide. It features a title \"WHAT DOES THE FUTURE LOOK LIKE\" followed by bullet points that mention \"COURT COACHING,\" \"NORMALIZATION OF ANALYSTS & INNOVATIONS,\" and \"FEATURE MORE IN SP.\" The slide also includes a logo for \"APEX\" and mentions \"ANALYSTS WILL BECOME NORMAL.\" There are icons representing different roles or functions, such as a person with a microphone, a person with a clipboard, and a person with a laptop. The background of the slide is dark with light text and graphics.",
+          "tags": [
+            "slide"
+          ]
+        },
+        {
+          "start": "24:45",
+          "end": "25:30",
+          "description": "On screen: The image appears to be a screenshot of a computer interface displaying a graphical representation of sports analytics data. It shows a chart titled \"SUMMARY\" with a subtitle that reads \"Using analytics can aid player development.\" The chart is a bar graph, and it measures some form of performance metric across different players or categories, as indicated by the labels on the x-axis: \"PLAYER,\" \"OPPOSITION,\" \"TEAMMATES,\" and \"SURFACE.\" There are four bars visible in the image. The y-axis label is \"PERFORMANCE METRIC,\" but no specific numbers are readable from this angle. The interface also includes a button labeled \"TOGGLE\" with an icon of a lightbulb, suggesting that it may be used to turn on or off certain features or data points.",
+          "tags": [
+            "slide"
+          ]
+        },
+        {
+          "start": "25:23",
+          "end": "25:54",
+          "description": "me today to split your coaching in phases of play the first phase being serve plus one and return plus one and the second phase being from ball five thank you for your time wherever you are in the world I'd love all of you to getting touch with me and to give feedback our website is on here and all of my social channels that Mike James tennis thanks for your time guys and stay healthy stay safe and see you all in Australia.",
+          "tags": []
+        },
+        {
+          "start": "25:30",
+          "end": "26:15",
+          "description": "On screen: The image appears to be a screenshot of a social media post featuring a person standing on what looks like a sports court with a scoreboard in the background. There is a thank you message at the top of the post that reads \"THANK YOU FOR YOUR TIME.\" Below this, there are several icons representing different social media platforms: Facebook, Instagram, Twitter, and YouTube. The text \"Mouratoglu Analytics\" is visible, suggesting that the post may be related to sports analytics or performance analysis. There is also a website address provided: \"www.mouratogluanalytics.com.\" Additionally, there is a phone number listed at the bottom of the post. The image has been shared by someone named \"James\" and includes a logo for \"Takes Sports.\"",
+          "tags": [
+            "slide"
+          ]
+        }
+      ]
+    }
+  ],
+  "_keyframes_done": true
+}

@@ -1,0 +1,431 @@
+{
+  "videos": [
+    {
+      "video_id": "simon_rea_-_2024_coaches_conference_v1__1080p_",
+      "url": null,
+      "source_path": "C:\\IFN736-project\\video\\simon_rea_-_2024_coaches_conference_v1 (1080p).mp4",
+      "title": "simon rea   2024 coaches conference v1 (1080p)",
+      "source": "transcript",
+      "language": "en",
+      "segments": [
+        {
+          "start": "0:00",
+          "end": "1:25",
+          "description": "Coaches, our next presenter is Simon Ray. Simon is currently the Senior Manager of Game Analytics at Tennis Australia. Prior to this role, Simon has held a multitude of high-performance coaching jobs across our sport, working for Tennis Australia as a national academy coach, where he spent time with the likes of Nick Curios in his developmental years, and also on tour with the likes of Sam Stozer. Today, Simon joins us here as he shares some of the analytics that he's been able to capture over the past years and talks about the return of serve and some of the trends he sees within our game. Simon, over to you. Hi everyone, Simon Ray's my name in Tennis Australia's Game Analysis Department. It's a pleasure and a privilege to be talking Tennis with you today, and the focus really from our perspective today is to uncover some of the terrific work and I'm biased so it's hard for me to be objective about it, but I think it's terrific work, the terrific work that the team here at Tennis Australia have unveiled or uncovered in terms of what really is going on at the pinnacle or peak levels of our sport from an Australian open perspective year on year, so what kind of trends are we seeing in our sport, be it on the men's side of the sport, the women's side of the sport, and we track backwards from that down, right down to a junior level and what might be the implications, ramifications,",
+          "tags": []
+        },
+        {
+          "start": "0:00",
+          "end": "0:45",
+          "description": "On screen: The image shows a man sitting in front of a banner that reads \"VIRTUAL GRAND SLAM'S COACHES CONFERENCE.\" The man appears to be speaking or presenting at an event related to tennis coaching. He is wearing a dark shirt with a logo on the left side, which seems to be associated with a sports brand or organization. There are no visible numbers or specific measurements in the image.",
+          "tags": [
+            "slide"
+          ]
+        },
+        {
+          "start": "0:45",
+          "end": "1:30",
+          "description": "On screen: The image appears to be a screenshot of a presentation slide. It features a title \"WHAT'S REALLY GOING ON OUT THERE?\" followed by bullet points that seem to discuss trends in sports science and technology. There is a list of topics such as \"Trends,\" \"Player Technology,\" and \"Coach Technology.\" The slide also includes a logo at the bottom left corner, but the text is too small to read clearly. The style of the image suggests it's from a professional presentation or lecture.",
+          "tags": [
+            "slide"
+          ]
+        },
+        {
+          "start": "1:25",
+          "end": "2:46",
+          "description": "potentially learnings for us as coaches and as students of the game in terms of what we're uncovering through the team taking a really deep granular look at the data in recent years at the Australian Open. So hopefully there's something in this for all of you that have been good enough to listen in today. As I said, the focus is going to be trends of the game. We take a look at the Australian Open and how that might marry up with some of the key metrics coming out of the French Open just as an interesting way of comparison and primarily what we're hoping is that somewhere in here there's something that's relevant for all of you and certainly appreciate you taking the time to join in the conference and to listen in on the presentation today. So from a shot load perspective, first of all, what we've done here is take a look at four different pinnacle events, if you like, or key events across the tennis calendar and primarily a lot of this data is naturally enough got an Australian bent to it. So the December showdown is our kind of peak or pinnacle gathering of our leading Australian juniors that occurs in December, funnily enough, as the name suggests. And it's almost a master's style format. We're across the different age groups, 12s, 14s, 16s and 18s. The best players across the calendar year all convene on, converge on Melbourne Park in December and it's, as I said, a master's style runway",
+          "tags": []
+        },
+        {
+          "start": "1:30",
+          "end": "2:15",
+          "description": "On screen: The image appears to be a screenshot of a presentation slide. It features a title \"WHAT'S REALLY GOING ON OUT THERE?\" followed by bullet points that seem to discuss trends in sports science and technology. There is a list of topics such as \"Trends,\" \"Player Technology,\" and \"Coach Technology.\" The slide also includes a logo at the bottom left corner, but the text is too small to read clearly. The style of the image suggests it's from a professional presentation or lecture.",
+          "tags": [
+            "slide"
+          ]
+        },
+        {
+          "start": "2:15",
+          "end": "3:00",
+          "description": "On screen: The image displays a computer screen showing a presentation slide with a chart titled \"Shot Load.\" The chart appears to be a bar graph that measures some form of load or effort associated with shots in a sporting context. There are four bars on the graph, each representing a different category: \"Shoot,\" \"Pass,\" \"Dribble,\" and \"Turnover.\" The x-axis is labeled \"Load (kg),\" but no numbers are visible. The y-axis is labeled \"Shot Load (kg),\" with values ranging from 0 to 10, although the specific numbers are not legible. There is a legend on the right side of the chart that explains the meaning of each bar. The slide also contains text at the top left corner that reads \"FIRST decide whether this image carries information.\" The overall style of the image suggests it is a screenshot from a presentation or analysis software used in sports science to visualize data.",
+          "tags": [
+            "slide"
+          ]
+        },
+        {
+          "start": "2:46",
+          "end": "4:05",
+          "description": "where there's only one player left holding the trophy at the end of their respective campaigns. We've compared that with La Petite de Tabes, so widely internationally acknowledged as the pinnacle event for 14-year-olds across the globe. We've had a look at the AO juniors both from a boys and girls perspective and then gone right to the top of the sport. So from an Australian Open men's and women's perspective, what trends of the game can we observe or what type of data might be interesting to us and how are those data points shifting over time? So really basically here at an introductory level, from a shot load perspective, and I guess the key question or consideration here might be for a coach, how many balls did I actually hit in that session with that youngster? You know, I've got an aspiring junior player that's really keen, really hungry to improve and showing a lot of positive signs, certainly committed and on time for training and working really hard, got a great attitude. How many balls? I think for a lot of us it would be a question that perhaps we may not instantly or readily know the answer to. So I think one of the points of comparison here that is interesting, when you look at the December showdown from an Australian perspective, some of those numbers are perhaps a little more than half on the male side, but on the female side, not far off being half as much as the shot load,",
+          "tags": []
+        },
+        {
+          "start": "3:00",
+          "end": "3:45",
+          "description": "On screen: The image displays a computer screen showing a presentation slide with a chart titled \"Shot Load.\" The chart appears to be a bar graph comparing different players' shot load percentages across various categories such as \"Pass,\" \"Shooting,\" and \"Rebound.\" Each category has multiple bars, each representing a player. The axes are labeled \"Percentage\" on the y-axis and \"Categories\" on the x-axis, with visible numbers indicating specific values for each bar. There is no visible text or movement of a player in this image.",
+          "tags": [
+            "slide"
+          ]
+        },
+        {
+          "start": "3:45",
+          "end": "4:30",
+          "description": "On screen: The image displays a computer screen showing a presentation slide with a chart titled \"Shot Load.\" The chart appears to be a bar graph that measures some form of load or effort associated with shots in a sporting context. There are four bars on the graph, each representing a different category: \"Shoot,\" \"Pass,\" \"Dribble,\" and \"Carry.\" The x-axis is labeled \"Load (kg),\" but no numbers are visible. The y-axis is labeled \"Distance (m),\" with numbers ranging from 0 to 10 meters, indicating the distance of each shot. There is a legend on the right side of the slide that explains the meaning of each bar. The background of the slide is white, and there is no text or additional imagery present.",
+          "tags": [
+            "slide"
+          ]
+        },
+        {
+          "start": "4:05",
+          "end": "5:45",
+          "description": "so that's just a pure shot count required to win a match at those events. So in the December showdown, male and female respectively, 335 or 314 shots to win a match. At La Petita Tubs, at a pinnacle event, as I mentioned across the globe for that age group, 478 or 530 on the female side. And you can see the AO data both across the junior events, 348 shots, 467 on the girls, so a big spike there in terms of rally duration or length of matches or perhaps more competitive matches on the girls side than on the boys side. And then the men's, naturally enough, best of five set format is compared to best of three. So typically we're seeing across that event, 524 shots required per match at the event in the Australian Open Men's 2023, 298 at the Australian Open Women's event in 2023. Now breaking that down even further, I thought this was interesting and this really resonated with me from the perspective of a coach hoping to prepare an athlete for competition. If you had a look at the average of Raphael Nadal in the 2022, that unmistakable, incredibly memorable run to the title and that match with the Neil Mivitev that finished it all hours of the morning and what an incredible spectacle it was, his average shot count across the event was 498 shots per match until he got to the final where he was required to play 1,212 shots that night. So I think, and I'll cover off on Caroline Wozniaki",
+          "tags": []
+        },
+        {
+          "start": "4:30",
+          "end": "5:15",
+          "description": "On screen: The image displays a computer screen showing a presentation slide with a chart titled \"Shot Load.\" The chart appears to be a bar graph that measures some form of load or effort associated with shots in a sporting context. There are four bars on the graph, each representing a different category: \"Shoot,\" \"Pass,\" \"Dribble,\" and \"Carry.\" Each bar is labeled with a specific type of shot: \"Shoot,\" \"Pass,\" \"Dribble,\" and \"Carry.\" The x-axis label is \"Load (kg),\" but the numbers on the axis are not fully visible. There is no visible text or player movement in this image.",
+          "tags": [
+            "slide"
+          ]
+        },
+        {
+          "start": "5:15",
+          "end": "6:00",
+          "description": "On screen: The image displays a computer screen showing a dashboard with various charts and graphs. There are three main sections visible:\n\n1. A bar chart titled \"SHOT LOAD\" with bars representing different categories such as \"Shot Load,\" \"Shot Distance,\" and \"Shot Angle.\" Each category has numerical values associated with it, but the specific numbers are not clearly legible.\n\n2. A line graph labeled \"PLAYER MOVEMENT\" with a line representing some form of movement or performance metric over time. The axis labels for this graph are \"Time (s)\" and \"Value,\" but the exact values are not clear.\n\n3. A pie chart titled \"SHOT LOAD\" with segments representing different categories such as \"Shot Load,\" \"Shot Distance,\" and \"Shot Angle.\" Similar to the bar chart, the specific numerical values for each segment are not clearly visible.\n\nThe dashboard also includes a section labeled \"PLAYER MOVEMENT\" with a line graph that shows movement or performance metrics over time. The axis labels for this graph are \"Time (s)\" and \"Value,\" but the exact values are not legible.\n\nThere is no readable text other than the titles of the charts and graphs, which are \"SHOT LOAD\" and \"PLAYER MOVEMENT.\"",
+          "tags": [
+            "slide"
+          ]
+        },
+        {
+          "start": "5:45",
+          "end": "7:15",
+          "description": "before I state my hypothesis if you like, 370 shots for her again until she arrives at the final and she's really reaching back deep into the kit bag really having to empty all of her reserves and all of her capacity because she's at 633 shots in the final. So that notion of it's one thing to be prepared for the event as a whole and what might I need from an average perspective to serve me well in my training and how well planned can I be and considering all of the factors that might go into giving myself the best possible chance to be holding up the trophy at the end of the fortnight. But I think it's another consideration altogether to perhaps consider when you do reach those pinnacle moments so a fortnight in fatigue, exhaustion, anxiety, nerves, tension, pressure the whole lot that you might need to reach back inside of yourself and find not just a little bit more in the actual final itself but to hold the trophy, the evidence here would be really clear that you're going to need to find a whole lot more should you wish to claim a Grand Slam Champion in certain circumstances in the final event of the Grand Slam Championship. Similarly, I think this was not something that is likely to be far into a lot of the coaches tuning in today but I think might provoke conversation and consideration all the same. So the ball is in play across the singles events, men's and women's combined here",
+          "tags": []
+        },
+        {
+          "start": "6:00",
+          "end": "6:45",
+          "description": "On screen: The image displays a screenshot of a computer interface showing a dashboard with various charts and graphs. There are three main sections visible:\n\n1. A bar chart titled \"SHOT LOAD\" with bars representing different categories such as \"SHOOT,\" \"LOAD,\" and \"RECOVERY.\" Each category has numerical values associated with it, but the specific numbers are not clearly legible in this image.\n\n2. Below the title \"SHOT LOAD,\" there is a horizontal bar chart that appears to represent some form of data over time, with each bar corresponding to a different day or period. The bars are labeled with dates and numerical values, but the exact figures are not entirely clear due to the resolution of the image.\n\n3. To the right of the \"SHOT LOAD\" title, there is a vertical bar chart with three bars, each representing a different category: \"SHOOT,\" \"LOAD,\" and \"RECOVERY.\" The numerical values associated with these bars are not entirely clear due to the resolution of the image.\n\nThe interface also includes a navigation menu on the left side with options such as \"Dashboard,\" \"Shot Load,\" \"Recovery,\" and \"Player.\" There is also a search bar at the top right corner of the interface, but no text is visible within it. The overall style of the image suggests that it is a screenshot from a software application used for analyzing sports performance data.",
+          "tags": [
+            "slide"
+          ]
+        },
+        {
+          "start": "6:45",
+          "end": "7:30",
+          "description": "On screen: The image displays a screenshot of a computer interface showing a graphical representation of a sports science statistic. The chart type appears to be a pie chart, which is used to illustrate the distribution of a particular variable. The text on the chart reads \"15%,\" indicating that 15% of match duration is spent in play. There are no visible axis labels or numbers, and there is no player shown with any stroke or movement. The image also contains a title at the top that says \"Percentage of match duration the ball is in play.\" Additionally, there is a text overlay on the right side of the image that states \"15%,\" which seems to be an error or misinterpretation as it does not correspond to any part of the chart.",
+          "tags": [
+            "slide"
+          ]
+        },
+        {
+          "start": "7:15",
+          "end": "8:43",
+          "description": "and we'd have to do some slightly different work or explore some different avenues to split this out but the ball is in play 15% of the time across those singles draws at the professional level of the game. So clearly 85% of the time that time can be really well used and well managed and effectively used or conversely used in perhaps a manner or a fashion that might allow for further improvement for a coach to work through with an athlete how they're using that 85% of the time when the actual ball is not in play. And I think speaks to that notion of great competitors being external and great problem solvers and being composed under pressure and thinking their way through really challenging situations versus the converse of that or the flip of that and what pressure can do to all of us at times and as this graphics really clearly illustrating 85% of the time to potentially get trapped in one's own thoughts is something worth considering in and of itself. Rally length, so this is not a new one and I think in recent years there's been a lot of discourse as to the shortening of points in the professional game and the importance of serve and return versus perhaps how frequently we may be training or which parts of our training sessions we may be training those skills. So what we wanted to do here was take a slightly different look at this and perhaps break it down in terms of the men's game, the women's game",
+          "tags": []
+        },
+        {
+          "start": "7:30",
+          "end": "8:15",
+          "description": "On screen: The image displays a screenshot of a computer interface showing a graphical representation of data. The chart type appears to be a pie chart, which is used to illustrate the proportions of different categories. The text on the chart reads \"15%\" and \"85%,\" indicating the percentage breakdown of two categories: \"Match duration the ball is in play\" and \"Other.\" There are no visible axis labels or numbers, and there is no player shown with a stroke or movement.",
+          "tags": [
+            "slide"
+          ]
+        },
+        {
+          "start": "8:15",
+          "end": "9:00",
+          "description": "On screen: The image displays a screenshot of a computer interface showing a graph titled \"RALLY LENGTH.\" The graph measures the length of rallies in a sport, likely tennis or badminton, as indicated by the labels on the axes: \"MEN\" and \"WOMEN.\" The x-axis is labeled with the names of players, while the y-axis indicates the number of points played. There are numerical values along both axes, but they are not fully legible due to the resolution of the image. The graph shows a series of bars representing the length of rallies for each player, with the height of each bar corresponding to the number of points played during that rally.",
+          "tags": [
+            "slide"
+          ]
+        },
+        {
+          "start": "8:43",
+          "end": "10:06",
+          "description": "you can see the breakdowns there, fairly self-explanatory. But when we introduce pressure and straight away I can imagine a whole bunch of coaches listening in want to know immediately well what's your definition of pressure and I suspect if we surveyed every person that is tuning in today there'd be a whole bunch of different definitions of pressure. Our one here for the purposes of the numbers you're seeing is all break points, so when a serve is facing a break point that's a pressure point or a point that could lead to a break point so I think 15, 30, 30 all juice. And tie breakers, what we did with breakers was we classed pressure as all points where two players within a tie break were within two points of each other. So 6-4 serving feels like pressure, 5-3 serving certainly feels like pressure but 6-1 serving doesn't factor in in our minds anyway to the same degree of pressure. That's the definition, all break points, points that could lead to a break point or tie break points where the two players are within two points of each other. And what you can discover here is that the metrics or the breakdowns certainly changing on both the sides of the gender equation from a male and female perspective but particularly on the men's side when you introduce pressure and you have a look at the 9 plus shots category you've got a spike of plus 5% of those points under pressure as compared to no pressure just 12%.",
+          "tags": []
+        },
+        {
+          "start": "9:00",
+          "end": "9:45",
+          "description": "On screen: The image displays a screenshot of a computer interface showing a graphical representation of a sports science data chart. The chart is titled \"RALLY LENGTH\" and includes two axes: one labeled \"MEN\" and the other labeled \"WOMEN.\" There are numerical values along both axes, but they are not fully legible due to the image's resolution. The chart appears to be a scatter plot with data points connected by lines, indicating some form of tracking or measurement over time.",
+          "tags": [
+            "slide"
+          ]
+        },
+        {
+          "start": "9:45",
+          "end": "10:30",
+          "description": "On screen: The image displays a screenshot of a computer interface showing a graphical representation of a sports science data chart. The chart is titled \"RALLY LENGTH\" and includes two axes: one labeled \"MEN\" and the other labeled \"WOMEN.\" There are numerical values along both axes, but they are not fully legible due to the image's resolution. The chart appears to be a scatter plot with data points connected by lines, indicating some form of tracking or measurement over time. The text within the interface is too small and blurry to read clearly.",
+          "tags": [
+            "slide"
+          ]
+        },
+        {
+          "start": "10:06",
+          "end": "11:28",
+          "description": "And you might imagine the number of data points or number of rallies across an entire event that are going into this. So this is any type of shift where you're seeing a 5% movement in the dial I think is really quite significant. And so I thought it was an interesting or perhaps slightly different bent to take to this conversation that we've heard a lot about in recent years. And drilling down a little further, getting a little more specific and we wanted to map the two most recent champions of the Australian Open in terms of their specific approaches to... What do they want to do under pressure? How do we find them stacking up in terms of short points, medium points, long points? What's their preference? How do they measure up with the average if you like of the field? And you can see Irina Sabalenka, 72% of her points are short as compared to the women's field as a whole where 65% of them. So she wants to play more short points. That wouldn't be a surprise to any of you. She wants to capitalise on her weapons, her ball striking, her ability to make life uncomfortable for her opponent by really taking the point by the scruff of the neck and taking command and control of the point. Whereas Novak, again, this wouldn't be a surprise but I think it's interesting or I'm hopeful that it's interesting to see it born out in the data. He's different again. He's quite happy to extend points",
+          "tags": []
+        },
+        {
+          "start": "10:30",
+          "end": "11:15",
+          "description": "On screen: The image displays a screenshot of a computer interface showing a graphical representation of a sports science data chart. The chart is titled \"RALLY LENGTH\" and includes two lines representing different categories: \"MEN\" and \"WOMEN.\" Each line has a series of bars, each bar corresponding to a specific time interval on the x-axis labeled \"TIME IN SECONDS.\" The y-axis is labeled \"STROKE RATE,\" with numbers ranging from 0 to 10. There are no visible logos or decorative elements in this image.",
+          "tags": [
+            "slide"
+          ]
+        },
+        {
+          "start": "11:15",
+          "end": "12:00",
+          "description": "On screen: The image displays a screenshot of a computer interface showing a graphical representation of a sports science data chart. The chart is titled \"RALLY LENGTH\" and includes a bar graph that compares the lengths of rallies between men and women in a sport, with each rally represented by a horizontal bar. The x-axis label is \"TIME (SECONDS)\" and there are numerical values ranging from 0 to 12 seconds, indicating the duration of each rally. The y-axis label is \"RALLY LENGTH,\" and there are numerical values ranging from 0 to 100, which likely represent the length of each rally in millimeters or a similar unit. There are also two lines on the graph, one for men and one for women, with the men's line being slightly higher than the women's line throughout the rally lengths shown. The interface also includes a legend that explains the symbols used to represent the data points on the chart.",
+          "tags": [
+            "slide"
+          ]
+        },
+        {
+          "start": "11:28",
+          "end": "12:58",
+          "description": "and for the best of five set nature of Grand Saint Tennis to become not just a physical battle but a mental battle. And we know the immovable object that Novak is and in terms of how nigh on impossible it is to find weaknesses in the Djokovic arsenal. So where the field might be 12% of points at nine plus shots, he's at 18. So I think that's really statistically significant when you compare and contrast the approaches of the two most recent champions. Serve speed over time. I think the team have looked really hard at 2020 and what might have caused the decline in 2020 but as you can see, relatively speaking, perhaps not exactly, but relatively speaking it's certainly been growing year on year thereafter. So on the left hand side of the screen, percentage of the male playing group averaging greater than 190 kilometres on their first serve and you can see that number steadily climbing as a reference from 2020-2021. And on the female side, on the right hand side of the screen, the percentage of the playing group averaging more than 160 kilometres on first serve. So that was down below 50% in 2020. It's now a lot closer to 60% and perhaps reaches, I guess, the unknown question at this point of time. What does it reach in 2024? Or does it go over that 60% threshold? And I guess the consideration or following up questions that all of the curious coaches today would be, where does this number or where do these numbers start to get to in 2027?",
+          "tags": []
+        },
+        {
+          "start": "12:00",
+          "end": "12:45",
+          "description": "On screen: The image displays a computer screen showing a graphical user interface (GUI) of a software application. The GUI includes a chart titled \"Faster Service Speeds,\" which measures service speeds in milliseconds. There are two vertical axes labeled \"Service Speeds\" and \"Percentage of Players.\" The horizontal axis is not fully visible, but it appears to represent time or some other variable. The chart shows a line graph with data points indicating the service speed over time. The numbers on the y-axis range from 0 to 100 milliseconds, and there are several data points plotted along the line graph. There is also text visible in the GUI that reads \"Faster Service Speeds.\" The overall style of the image suggests it is a screenshot of a software application being used for analyzing sports science data.",
+          "tags": [
+            "slide"
+          ]
+        },
+        {
+          "start": "12:45",
+          "end": "13:30",
+          "description": "On screen: The image displays a computer screen showing a presentation slide with a graph titled \"RETURN POSITION - WOMEN.\" The graph appears to be a line chart with two lines representing different categories or groups. The x-axis is labeled \"TIME\" and shows numerical values ranging from 0 to 12, although the specific numbers are not clearly visible. The y-axis is labeled \"DISTANCE,\" but the actual distances are not legible due to the image's resolution. There is a legend on the right side of the graph with two symbols, one representing a player and the other a ball, accompanied by text that reads \"RETURN POSITION - WOMEN\" and \"PLAYER.\" The slide also contains a subtitle that says \"DISTANCE,\" and there are two pie charts at the bottom of the slide. One pie chart is labeled \"RETURN POSITION - WOMEN\" with percentages indicating 50% for one category, 25% for another, and 25% for a third. The other pie chart is labeled \"PLAYER,\" showing similar percentages as the first. There are also two bar charts at the bottom of the slide, but the details of these charts are not clear due to the image's quality. The overall style of the image suggests it is a screenshot from a presentation or lecture about sports science data analysis.",
+          "tags": [
+            "slide"
+          ]
+        },
+        {
+          "start": "12:58",
+          "end": "14:31",
+          "description": "2032, 2037. So what's the future of the sport look like from a weapons and data perspective? So I was talking about the serve and the natural enough counter to that is the return and I think some of the data here in the female game would support what we've seen there from a serving perspective. So on the right hand side of the screen, the second serve return mapped out across the various years, as you can see there. And the black line being inside the baseline, you can see in perhaps 2018, 75% or near enough to 75% of second serves were taken inside the baseline, whereas down in 2023, that was a lot closer to almost 50%. So three and four down to two and four or one and two. So that's been a significant shift. And almost in parallel with that or alongside that, you've seen the increase in players returning from within two metres of the baseline. And there's no real evidence yet in the female side of the game or certainly not a lot of data in terms of players making impact with the second serve return more than two metres behind the baseline. And on first serve return on the left hand side of your screen, well, again, perhaps a slight growth or a slight increase in terms of players making contact with first serve returns from more than two metres behind the baseline. That was almost non-existent in 2018 and is starting to become more apparent in 2023. Inside the baseline, naturally enough, is decreasing and deteriorating over time.",
+          "tags": []
+        },
+        {
+          "start": "13:30",
+          "end": "14:15",
+          "description": "On screen: The image displays a computer screen showing a presentation slide with a graph titled \"RETURN POSITION - WOMEN.\" The graph appears to be a line chart with two lines representing different categories or groups. The x-axis is labeled \"TIME\" and includes numerical values ranging from 0 to 12, although the specific numbers are not entirely clear due to the image's resolution. The y-axis is labeled \"RETURN,\" but the actual numbers on this axis are too small to read clearly. There is a legend or key at the bottom of the slide with three symbols and corresponding text that reads \"START,\" \"END,\" and \"MOVEMENT.\" The background of the slide is white, and there is a blue header at the top with the text \"RETURN POSITION - WOMEN\" in bold black letters.",
+          "tags": [
+            "slide"
+          ]
+        },
+        {
+          "start": "14:15",
+          "end": "15:00",
+          "description": "On screen: The image displays a computer screen showing a presentation slide with a chart titled \"RETURN POSITION - WOMEN.\" The chart appears to be a line graph with two lines representing different categories or groups. The x-axis is labeled \"TIME\" and includes numerical values ranging from 0 to 12, although the specific numbers are not entirely clear due to the image's resolution. The y-axis is labeled \"RETURN POSITION,\" but the exact numbers on this axis are also not clearly visible. There is a legend or key at the bottom of the slide with three different symbols and corresponding text: \"STARTING POSITION,\" \"MOVEMENT,\" and \"ENDING POSITION.\" The text in the image is too small to read accurately, but it seems to be part of the presentation's content.",
+          "tags": [
+            "slide"
+          ]
+        },
+        {
+          "start": "14:31",
+          "end": "16:06",
+          "description": "We're not seeing that anywhere near as much as we were six years ago. And within two metres of the baseline, by far and from a contact position or an impact position, by far the preferred methodology of the female cohort in recent years. In terms of the men and what they're doing on return, first serve return, fairly self-explanatory. You can see there's certainly that significant trend on first serve return to be greater than two metres behind the baseline and anyone that witnessed the Nadal Medvedev final in 2022 wouldn't be surprised to recall that. So far back in the court, they're almost out of camera shot at times, those two individuals. And in terms of second serve return, that's where there is such a stark, noticeable difference in comparison to the female returning position where greater than two metres behind the baseline on second serve return in the men's game is really on the march, up to close to 25% of the playing group are making impact with that ball greater than two metres behind the baseline. And you can see inside the baseline, black metric and within two metres of the baseline blue metric mapped just above that data. The physical load to win a Grand Slam. Well, I think this is a really powerful and pertinent tale. There's almost linear growth here from a men's perspective year on year. Time on court, you can see obviously the outlier there and by quite some distance is the 2022 Australian Open,",
+          "tags": []
+        },
+        {
+          "start": "15:00",
+          "end": "15:45",
+          "description": "On screen: The image displays a screenshot of a computer interface showing a dashboard with various charts and graphs. There are three main sections visible:\n\n1. A line graph titled \"RETURN POSITION - MEN\" with two lines representing different data sets, one in blue and the other in red. The x-axis is labeled \"TIME,\" and the y-axis is labeled \"VALUE.\" The numbers on the y-axis range from 0 to 5, but specific values are not clearly visible.\n\n2. A bar graph titled \"MOVEMENT\" with two bars, one in blue and the other in red, representing different data sets. The x-axis is labeled \"TIME,\" and the y-axis is labeled \"VALUE.\" The numbers on the y-axis range from 0 to 5, but specific values are not clearly visible.\n\n3. A scatter plot with a title that reads \"RETURN POSITION - MEN\" and two sets of data points represented by blue and red dots. The x-axis is labeled \"TIME,\" and the y-axis is labeled \"VALUE.\" The numbers on the y-axis range from 0 to 5, but specific values are not clearly visible.\n\nThe interface also includes a text box with the title \"RETURN POSITION - MEN\" and some numerical data points that are too small to read clearly. There is no visible text or logos in this image that provide additional context or information about the content displayed.",
+          "tags": [
+            "slide"
+          ]
+        },
+        {
+          "start": "15:45",
+          "end": "16:30",
+          "description": "On screen: The image displays a graphical representation of data, specifically a bar chart. It measures physical load in men and women across different sports. The x-axis labels are \"Physical Load to a Grand Slam\" and \"Men,\" \"Women.\" The y-axis is labeled \"Load (kg)\" with numerical values ranging from 0 to 100 kg. There are bars for each sport, but the specific sports or their corresponding loads are not legible in this image. The text on the chart reads \"Physical Load to a Grand Slam\" and includes a legend explaining that the data is presented as a percentage of the total load experienced by a player during a match.",
+          "tags": [
+            "slide"
+          ]
+        },
+        {
+          "start": "16:06",
+          "end": "17:27",
+          "description": "claimed by Raphael Nadal. He had to spend 22.5 hours on the court to claim the trophy. But even Novak in the dominance that we've seen from him down under in recent years, he's spending more time on court in 2023 than he has almost anywhere else, certainly more than in 2020, 2019 and 2018 when Roger Federer claimed the crown. Distance is a linear progression year on year. So that's represented in kilometres there and speaks to the physicality of the game. The number of sprints, so for those of you out there that might be curious as to what it is exactly that represents a sprint. There's a threshold there, four and a half metres a second and that speed rating needs to be maintained for basically half the distance of the court. So I think from the centre hash mark to the single sideline, can they hit a high speed and maintain it for at least that distance? You can see certainly plenty of growth in terms of that sprint metric over time. Hitting load, this was our attempt to reference what the upper body does. So it's a combination of the number of shots hit and how hard those shots have been hit. So a combination, you can have high hitting load because you've had to hit a lot of balls or you can have high hitting load because you hit the ball very hard. So naturally enough, if you've hit a lot of balls to claim the crown and you hit the ball hard, you're going to have very high hitting load.",
+          "tags": []
+        },
+        {
+          "start": "16:30",
+          "end": "17:15",
+          "description": "On screen: The image displays a graphical representation of data, specifically a bar chart. The chart is titled \"Physical load to a grandslam men\" and includes a subtitle \"WIN A GRANDSLAM.\" It shows a series of bars representing different players, each labeled with the name of the player. The x-axis is labeled \"WEEK,\" and the y-axis is labeled \"LOAD.\" There are numerical values on both axes, but they are not fully legible due to the image's resolution. The chart appears to be a visualization of some sort of physical load measurement related to tennis players competing in grandslam tournaments.",
+          "tags": [
+            "slide"
+          ]
+        },
+        {
+          "start": "17:15",
+          "end": "18:00",
+          "description": "On screen: The image displays a graphical representation of data, specifically a bar chart. It measures physical load in men and women across different sports. The x-axis labels are \"Physical Load to a Grand Slam,\" \"Men\" and \"Women.\" The y-axis is labeled \"Load (kg).\" There are numerical values on the y-axis ranging from 0 to 10, with increments of 5 kg. The bars represent the load experienced by athletes in each sport. The text visible in the image includes \"Physical Load to a Grand Slam,\" \"Men,\" and \"Women.\" The chart is part of a larger infographic that also includes a title and additional information about the data presented.",
+          "tags": [
+            "slide"
+          ]
+        },
+        {
+          "start": "17:27",
+          "end": "18:52",
+          "description": "And whereas a lot of the other physical stats that we talk about cover what the lower body's doing, distance covered, sprints, high intensity changes in that direction is another one. Hitting load refers really or is an attempt to refer to what the upper body's doing in the sport. And I thought really interestingly, as you can see, there's a comparison there to the Australian open time on court, French open time on court, and perhaps the French open time on court to claim the crown anyway, to be the victor at the end of the fortnight, doesn't leap off the page as being enormously more demanding or the longevity required there as perhaps not what I would have, I'll just speak for myself, considered it to be in terms of not being all that different to what we see at Melbourne Park in January. Now from a women's perspective, I think this is more individualised. So some of the fantastic champions that we've seen there in terms of Naomi Osaka, a two time champion, Ashley Barty was really dominant in 2022, I think when claimed the crown without dropping a set and then obviously the aggressive game style of Irina Sabalenka in 2023. I think a talking point or a discussion point, even in and of itself in so far as how different it is to the men's game, and you can see the game style correlation here. So Caroline Wozniaki, very physical, outstanding athlete, wants to turn matches into physical battles,",
+          "tags": []
+        },
+        {
+          "start": "18:00",
+          "end": "18:45",
+          "description": "On screen: The image displays a computer screen showing a graphical representation of data. It appears to be a screenshot from a software interface used for analyzing sports performance metrics. The chart is titled \"Physical load to a grandslam women\" and includes a bar graph with bars representing different players, each labeled with the name of the player. The x-axis is labeled \"Months,\" and there are numerical values ranging from 0 to 12, indicating time periods. The y-axis is labeled \"Physical load,\" but the specific numbers on the axis are not clearly visible. There is a legend at the bottom left corner of the screen that seems to explain the data represented by the bars. The interface also includes a toolbar with various options and tools for manipulating the data visualization.",
+          "tags": [
+            "slide"
+          ]
+        },
+        {
+          "start": "18:45",
+          "end": "19:30",
+          "description": "On screen: The image displays a screenshot of a computer interface showing a graphical representation of data. It appears to be a chart or graph that measures physical load in a sporting context, specifically for women in a grand slam event. The chart is titled \"Physical Load to a Grand Slam Women,\" and it includes various bars representing different players or teams. Each bar has a label indicating the name of the player or team, such as \"Women,\" \"Serena Williams,\" \"Venus Williams,\" \"Martina Hingis,\" \"Svetlana Kuznetsova,\" \"Justine Henin,\" and others. The x-axis is labeled with the names of the players or teams, while the y-axis is labeled with numerical values ranging from 0 to 100, indicating some form of measurement for physical load. There are also additional text elements that include the words \"Physical Load\" and \"Grand Slam Women.\" The image does not show any logos, title-page artwork, decorative photographs, headshots, backgrounds, or stock imagery; it is a straightforward representation of data.",
+          "tags": [
+            "slide"
+          ]
+        },
+        {
+          "start": "18:52",
+          "end": "20:18",
+          "description": "a battle of will over the duration and hoping to turn every match she plays into a physical and mental battle, and you can see that reflected in the physical numbers that you're looking at on the screen. So yeah, I think a couple of considerations here, it's very much individual dependent in terms of the game styles of those individuals and how they want to stamp those game styles onto their opponents, and correspondingly the event as a whole. So I think perhaps a consideration for us as coaches to be acutely aware of what type of player we're working with at what age and stage and phase on the journey and how that might marry up with where we're hoping to take them in coming years or where they're hoping to take themselves in coming years and what the demands of the sport may be as a whole, as a cohort in future years from now. Match duration, so you can see there's been an increase in match duration at both the Australian Open and the French Open in recent years, certainly a noticeable increase up toward the three hour mark as an average from 2021, which I think, again, perhaps not overnight for the majority of us that may not be working with this level of athlete in the right here and now, but we're certainly hoping to in the future. I think it promotes some questions around length of training sessions and that old coaching maxim, if you like, that at times the training environment",
+          "tags": []
+        },
+        {
+          "start": "19:30",
+          "end": "20:15",
+          "description": "On screen: The image displays a screenshot of a presentation slide with a chart titled \"INCREASE IN MEN'S MATCH DURATION.\" The chart shows a line graph with two lines representing different categories: \"Herpes\" and \"France.\" The x-axis is labeled \"AC AND FRANCE,\" indicating the time in minutes, with numbers ranging from 0 to 120. The y-axis is labeled \"INCREASE IN MATCH DURATION,\" but no specific numbers are visible on this axis. There is a text box at the top of the slide that reads \"INCREASE IN MEN'S MATCH DURATION.\" The background of the slide is white, and there is a blue header with the title in white text.",
+          "tags": [
+            "slide"
+          ]
+        },
+        {
+          "start": "20:15",
+          "end": "21:00",
+          "description": "On screen: The image displays a graphical representation of data related to sports science. It shows a line chart titled \"INCREASE IN MEN'S MATCH DURATION.\" The x-axis is labeled \"AC,\" which likely stands for \"Age Classification\" or a similar metric, and the y-axis is labeled \"DURATION IN MINUTES.\" There are two lines on the graph, one in blue and one in orange. The blue line represents the duration of matches for men aged 18 to 25 years old, while the orange line represents the duration of matches for men aged 26 to 35 years old. The chart indicates that there is an increase in match duration as age increases. There are no visible numbers on the axes or any text providing additional context about the data. The image appears to be a screenshot from a presentation or report, given the presence of a toolbar at the bottom with icons for zooming and other functions.",
+          "tags": [
+            "slide"
+          ]
+        },
+        {
+          "start": "20:18",
+          "end": "21:50",
+          "description": "needs to be more demanding than the match environment, and I think that promotes some questions in terms of, well, it's tough to do that if your longest session with an aspiring professional is no longer than perhaps an hour and a half or two hours, and this is just, you know, the median match duration. So there's going to be matches that go a lot longer than the three hour mark, and we've seen plenty of evidence of that in recent years, so I think that's a coaching consideration, and the woman's data's relatively consistent around that hour and a half mark from a median perspective at both the Australian Open and the French Open, interestingly enough. I really like the work the team have done here, so I think if someone were to ask me why explore data in any capacity, I think a slide like this gives a really powerful example of perhaps how this can be helpful to a coach. So Dominic Teem, we know he's been off the scene more than any of us would have liked in recent years with long-term injuries, but I think really important to see how the data might inform that return to peak performance. So 2021 is obviously the outer limits of the web that you're looking at there. So in 2021, he was at 200 kilometres an hour at the Australian Open from a first-serve perspective. In 2023, he was at 190. In 2021, in terms of spin on his forehand, he's over 3,000 revs per minute as an average across every forehand hit at the event.",
+          "tags": []
+        },
+        {
+          "start": "21:00",
+          "end": "21:45",
+          "description": "On screen: The image displays a computer screen showing a presentation slide with a chart titled \"Using Data to Benchmark Performance.\" The chart appears to be a scatter plot with two axes labeled \"Theme\" and \"Score,\" though the specific numbers or values are not clearly visible due to the resolution of the image. There is no player depicted in this image, as it focuses on the presentation slide content.",
+          "tags": [
+            "slide"
+          ]
+        },
+        {
+          "start": "21:45",
+          "end": "22:30",
+          "description": "On screen: The image displays a computer screen showing a presentation slide with a chart titled \"Using Data to Benchmark Performance.\" The chart appears to be a scatter plot with two axes labeled \"Theme\" and \"Score,\" though the specific numbers or values are not clearly visible due to the resolution of the image. There is no player depicted on this particular slide.",
+          "tags": [
+            "slide"
+          ]
+        },
+        {
+          "start": "21:50",
+          "end": "23:16",
+          "description": "2023 is at 2,800. Backhand speed, backhand spin. Marginal declines, but declines all the same. Sorry, backhand speed and forehand speed. Marginal declines, but declines all the same. And second-serve speed, you can see there's nine kilometres an hour less in 2023 than we saw from him in 2021. So I think a really powerful case study in terms of exploring and examining and understanding the data in terms of how we might feed that back to the individual athletes that we're working with. And similarly here, we wanted to take a look at Beatrice Haddad-Mayer, obviously had an outstanding 2023 campaign and see what we could discover. And we're seeing more heat on serve 2023 as compared to prior years. We're seeing a greater percentage of balls taken on the rise in the lower right-hand corner of the triangle there. 54% versus 49% previously. So perhaps speaks to that determination to dictate the point and to play from on top of the point and to do less defending and certainly have our opponents do more defending. And then second-serve speed, that's a big jump, isn't it? So 10 kilometres an hour difference in 2023 than the cumulative average that we'd seen from her previously down here in Australia at 126. So clearly someone's been doing a superb job in terms of identifying areas for growth and scope for improvement in the Haddad-Mayer game in 2023, and we see that borne out in the data.",
+          "tags": []
+        },
+        {
+          "start": "22:30",
+          "end": "23:15",
+          "description": "On screen: The image displays a screenshot of a computer screen showing a presentation slide with a title that reads \"Using Data to Benchmark Performance.\" Below the title, there is a chart titled \"HADDAD PRIOR TO 2023 VS 2023,\" which appears to be a line graph comparing two sets of data over time. The x-axis label is \"WEEK,\" and the y-axis label is \"PERFORMANCE.\" There are three lines on the chart, each representing different data points. The text in the image is too small to read clearly, but it seems to be part of a larger presentation or document related to sports science or performance analysis.",
+          "tags": [
+            "slide"
+          ]
+        },
+        {
+          "start": "23:15",
+          "end": "24:00",
+          "description": "On screen: The image displays a computer screen showing a graphical user interface of a software application. The software appears to be a sports science analysis tool, as indicated by the labels on the axes and the data points plotted on the graph. The graph is a scatter plot with two axes labeled \"X\" and \"Y,\" but the specific units or measurements are not visible. There are also some text annotations on the graph, including what seems to be a player's name and various statistics such as \"Speed,\" \"Acceleration,\" and \"Deceleration.\" The software interface includes a menu bar at the top with options like \"File,\" \"Edit,\" \"View,\" \"Insert,\" \"Arrange,\" \"Tools,\" \"Add-ons,\" and \"Window.\" There is also a toolbar on the left side of the screen with icons for different functions or tools. The overall style of the image suggests it is a screenshot from a computer program being used to analyze sports data, possibly related to tennis given the context provided by the labels on the graph.",
+          "tags": [
+            "slide"
+          ]
+        },
+        {
+          "start": "23:16",
+          "end": "24:50",
+          "description": "So this is a serve dictionary, and I think, again, just wanted to give an example of how the data may be used and what possibilities kind of exist here in the data. So the best way I could describe this is, you know, most of us I suspect have played the game in some way, shape or form at various levels. If someone were to ask you how many different serves did you have on the juice court, what I'm showing you here is a data-driven breakdown of the Neal-Mevvedev serves across both first and second on the juice court. So the data would say, using a clustering type approach, that there's five serves that the Neal possesses on the juice court, and the different characteristics of those serves you see for yourself there. So serve type one at wide at 198 kilometres an hour. Serve type two also at wide at 183 kilometres an hour, but you can see from the ball path that's been drawn there, there's perhaps more movement on that serve. Serve type three, 169 kilometres an hour, so perhaps more of a second serve at wide on the juice court. Number four is the bomb down the tee at 208 kilometres an hour, and number five is obviously more of the second serve down the tee, typically. 150 kilometres an hour in that instance. Again, just drawing your attention to what's possible here from a science or a data perspective, the ball toss centroid. So you can see that's from the perspective of the returner.",
+          "tags": []
+        },
+        {
+          "start": "24:00",
+          "end": "24:45",
+          "description": "On screen: The image displays a computer screen showing a graphical user interface of a software application. The software appears to be a sports science analysis tool, as indicated by the title \"Sports Science\" and the various charts and graphs displayed on the screen. One of the visible charts is labeled \"Pitch Distance,\" with numerical values ranging from 0 to 15 meters along the horizontal axis, which represents distance, and from 0 to 20 degrees along the vertical axis, which likely represents angle or direction. There are also two lines on the chart, one in red and one in blue, representing different data sets or variables being measured. The software interface includes a menu bar at the top with options such as \"File,\" \"Edit,\" \"View,\" \"Insert,\" \"Arrange,\" \"Tools,\" \"Add-ons,\" and \"Window.\" There is also a status bar at the bottom of the screen displaying various icons and text, but the specific details are not clear due to the resolution of the image. The overall style of the image suggests it is a screenshot taken from a computer or mobile device.",
+          "tags": [
+            "slide"
+          ]
+        },
+        {
+          "start": "24:45",
+          "end": "25:30",
+          "description": "On screen: The image displays a computer screen showing a graph with a title that reads \"D MEDVEDOV SERVICE DICTIONARY.\" The graph appears to be a line chart with two lines representing different data sets. One line is labeled \"T1,\" and the other is labeled \"T2.\" There are numerical values along both axes, but they are not fully legible due to the image's resolution. The x-axis is labeled \"TIME (S),\" and the y-axis is labeled \"SPEED (M/S).\" The graph includes a legend with symbols representing different types of data points. There is also a text box on the screen that contains a list of items, but it is not fully legible due to the image's resolution.",
+          "tags": [
+            "slide"
+          ]
+        },
+        {
+          "start": "24:50",
+          "end": "26:15",
+          "description": "So unsurprisingly, serve type five, the kicker down the tee. Take a look at that trajectory of the ball toss. So it starts from one metre wide of the centre hash mark. I imagine that's where the ball gets released from, and impact is made a lot closer to the centre hash mark itself, which I think is really interesting from the perspective of left-right, but also from the perspective of, if you really wanted to drill in and be curious as a coach, how much the ball may be dropping before impact, which is another consideration that we all have as coaches along the way. Now, I wanted to finish on a couple of slides that I thought really told a powerful story in this final. So serve type four, that was the one that Daniel brings plenty of heat on in terms of delivering that serve down in the middle of the court. And you can see the speed histogram in the upper right-hand corner of the slide. This is over 210 kilometres an hour. So plenty of heat on the serve. Unsurprisingly, relatively low spin rate on that serve. I mean, you can see the locations plotted in the lower left. And then he's attempted that serve in the final of the AO 2022. He's attempted that serve 15 times on the first serve, known as a second serve. That won't surprise anyone. He's made it 53% of the time. So he hasn't made it certainly by no means all of the time, but he's hardly lost a point across the first two sets.",
+          "tags": []
+        },
+        {
+          "start": "25:30",
+          "end": "26:15",
+          "description": "On screen: The image displays a computer screen showing a dashboard with various charts and graphs. There are two main types of charts visible: a line chart titled \"Daily Medvedev Service Type\" and a bar chart titled \"Final Sets.\" The line chart shows data points for different service types, such as \"Serve,\" \"Volley,\" and \"Return,\" over time, with the x-axis labeled \"Date\" and the y-axis labeled \"Service Type.\" The bar chart is a stacked bar graph comparing two sets of data, with the x-axis labeled \"Final Sets 1-2\" and the y-axis labeled \"Total Points.\" There are also some numerical values visible on the charts. The text at the bottom of the screen reads \"Final Sets 1-2,\" indicating that this is a view of the final sets of a tennis match, specifically focusing on the performance of a player named Medvedev.",
+          "tags": [
+            "slide"
+          ]
+        },
+        {
+          "start": "26:15",
+          "end": "27:35",
+          "description": "87% of the time he's gone on to win the point. And in fact, 37% of the time he's delivered an ace. So clearly when he has landed, it's been highly effective for him across the first two sets. But if you check out the comparison here across sets three to five, so paying attention to the lower middle of the screen, you'll see across those three sets, he's attempted to serve 31 times. He's made the serve 64% of the time, but he's only won 50% of those points. So clearly something changed. Sets one to two and the superb outcome he was getting with that serve sets three to five. Now, the job, I guess, of the coach is to use the data to start to understand, well, is that a predictability thing? So is that a tactical thing where Raphael Nadal's cottoned on to the effectiveness of that serve and decided, made a decision, I'm not going to get beaten by that one. He's going to have to beat me with another one today if he wants to get past me. Is it the mechanics or the technique of the meditative serve? Is there a fatigue element that's changing over time? You can see back up here to sets one and two, you can see some of the ball toss centroids plotted of that particular serve. No doubt there's a difference in terms of sets three to five. I suspect that's natural enough under fatigue, but perhaps interesting, all the same. So really, just wanted to take the opportunity to, again, say thank you to Scott Rawlins and the coach development team",
+          "tags": []
+        },
+        {
+          "start": "26:15",
+          "end": "27:00",
+          "description": "On screen: The image appears to be a screenshot of a computer interface displaying a graphical representation of data. It shows a line chart with two lines, one labeled \"Final\" and the other \"Sets 2-5.\" The x-axis is labeled \"Time (s)\" and the y-axis is labeled \"Median Type,\" with numerical values ranging from 0 to 10. There are also dots on the graph indicating data points. The chart seems to be related to sports science, possibly tracking some form of performance or measurement over time. The interface includes a title that reads \"Final - Sets 2-5\" and there is a legend explaining the meaning of the lines. Additionally, there is a table with columns labeled \"Time (s)\" and \"Median Type,\" displaying numerical values for each data point. The image also contains text that says \"SKIP.\"",
+          "tags": [
+            "slide"
+          ]
+        },
+        {
+          "start": "27:00",
+          "end": "27:45",
+          "description": "On screen: The image appears to be a screenshot of a computer interface displaying various charts and graphs related to sports science data analysis. There are two main types of charts visible:\n\n1. A line graph titled \"Medvedes service type\" on the left side of the screen, which seems to measure some form of service type over time, with axes labeled \"Service Type\" and \"Time.\" The graph shows a series of peaks and valleys, indicating fluctuations in the service type metric.\n\n2. A bar chart titled \"Final - sets 5-6\" on the right side of the screen, which appears to compare data across different sets (5-6). The bars are labeled with numbers that likely represent some form of performance or score for each set.\n\nThe interface also includes a text box at the bottom left corner with the title \"Final,\" and there is a small icon resembling a trophy, suggesting this might be related to a competition or award. Additionally, there's a pie chart in the top right corner, but the details of this chart are not clearly visible due to the resolution of the image.",
+          "tags": [
+            "slide"
+          ]
+        },
+        {
+          "start": "27:35",
+          "end": "28:07",
+          "description": "at Tennis Australia for the opportunity. Thank you to my team in the game analysis space at Tennis Australia. Thank you for your enormous work across 2023 and also all the years prior. And we're gearing up for another huge summer here and looking forward to listening in and following along the conference with all of you. And fingers crossed for another hugely exciting summer of tennis down here in Australia or across the month of January in 2024. So thank you for the opportunity and thanks for listening in.",
+          "tags": []
+        }
+      ]
+    }
+  ],
+  "_keyframes_done": true
+}
