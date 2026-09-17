@@ -57,12 +57,20 @@ jobs:
       # itself from env vars, no command needed), but Broadcom discontinued
       # bitnami/minio:latest on Docker Hub in 2025, so this runs the real
       # image directly instead, with its command spelled out explicitly.
+      #
+      # Pulled from quay.io, not Docker Hub: MinIO has since removed the
+      # minio/minio and minio/mc repositories from Docker Hub entirely (the
+      # Hub API 404s on both, and an anonymous pull gets "pull access denied
+      # ... repository does not exist or may require 'docker login'"), and
+      # publishes to quay.io instead. quay.io/minio/minio:latest is a
+      # multi-arch manifest list including linux/amd64, which is what the
+      # ubuntu-latest runner needs.
       - name: Start MinIO
         run: |
           docker run -d --name minio -p 9000:9000 -p 9001:9001 \
             -e MINIO_ROOT_USER=minioadmin \
             -e MINIO_ROOT_PASSWORD=minioadmin \
-            minio/minio server /data --console-address ":9001"
+            quay.io/minio/minio server /data --console-address ":9001"
 
           for i in $(seq 1 30); do
             if curl -sf http://localhost:9000/minio/health/live > /dev/null; then
@@ -78,7 +86,7 @@ jobs:
 
       - name: Create MinIO bucket
         run: |
-          docker run --rm --network host --entrypoint /bin/sh minio/mc -c "
+          docker run --rm --network host --entrypoint /bin/sh quay.io/minio/mc -c "
             mc alias set local http://localhost:9000 minioadmin minioadmin &&
             mc mb --ignore-existing local/tennis-explore-assets
           "
