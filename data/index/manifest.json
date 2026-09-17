@@ -14,9 +14,10 @@
     "C:\\Users\\User\\Desktop\\TA_S2\\document-resources\\match-data",
     "data\\video",
     "data/media",
-    "data/media (wayne_elderton x3)"
+    "data/media (wayne_elderton x3)",
+    "data\\media"
   ],
-  "chunkCount": 100063,
+  "chunkCount": 103708,
   "dimension": 1024,
   "quantisation": "int8",
   "quantScale": 127,
@@ -31,16 +32,16 @@
     },
     {
       "index": 2,
-      "count": 21531
+      "count": 25176
     }
   ],
-  "builtAt": "2026-09-09T12:28:53.510Z",
-  "fileCount": 2630,
-  "skippedCount": 168,
+  "builtAt": "2026-09-12T04:35:54.639Z",
+  "fileCount": 2760,
+  "skippedCount": 21,
   "schemaFailures": 0,
-  "uploadFailureCount": 31,
+  "uploadFailureCount": 0,
   "bm25": {
-    "vocabSize": 360213,
-    "postings": 12001704
+    "vocabSize": 363129,
+    "postings": 12324530
   }
 }
