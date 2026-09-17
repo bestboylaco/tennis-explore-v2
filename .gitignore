@@ -64,6 +64,9 @@ __pycache__/
 # this work doesn't mean re-running a 17-minute GPU transcribe for nothing.)
 data/ocr-cache/
 
+data/media/frames/
+data/media/.tennisexplore-frames/
+
 .venv/
 mnt/
 .profile
