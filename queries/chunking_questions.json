@@ -1,0 +1,144 @@
+[
+  {
+    "id": "CQ-01",
+    "query": "What is the mean duration of a tennis point summarised across previous studies?",
+    "fileType": "prose",
+    "docId": "kovacs-2006-applied-physiology-of-tennis-performance-bjsm-40",
+    "answerSpan": "The mean (SD) duration of points summarised in previous studies was 8.00 (2.58) s.",
+    "role": "admin",
+    "tag": "numeric-fact"
+  },
+  {
+    "id": "CQ-02",
+    "query": "How long are the high-intensity bouts and the recovery periods that make up tennis match play?",
+    "fileType": "prose",
+    "docId": "fernandez-et-al-2006-intensity-of-tennis-match-play-bjsm-405",
+    "answerSpan": "alternating short (4–10 second) bouts of high intensity and short (10–20 second) recovery bouts, interrupted by several periods of longer duration (60–90 seconds).",
+    "role": "admin",
+    "tag": "numeric-fact"
+  },
+  {
+    "id": "CQ-03",
+    "query": "What about the professional tennis calendar makes optimal player preparation harder?",
+    "fileType": "prose",
+    "docId": "reid-schneiker-2008-strength-and-conditioning-in-tennis-current-research-and-practice-jsams-113",
+    "answerSpan": "Further confounding optimal player preparation are the intensive professional tennis calendars, punctuated by weekly inter-continental travel and uncertain playing times.",
+    "role": "admin",
+    "tag": "paraphrase"
+  },
+  {
+    "id": "CQ-04",
+    "query": "How many litres of water does a fully hydrated average-sized male tennis player contain?",
+    "fileType": "prose",
+    "docId": "kovacs-2008-brief-review-of-fluid-and-hydration-in-tennis-ijspp",
+    "answerSpan": "A fully hydrated, average-sized male tennis player (mass ~80 kg) contains approximately 48 L of water.",
+    "role": "admin",
+    "tag": "numeric-fact"
+  },
+  {
+    "id": "CQ-05",
+    "query": "Which physiological stressors are identified as common challenges to sustained performance in tennis?",
+    "fileType": "prose",
+    "docId": "hornery-et-al-2007-fatigue-in-tennis-mechanisms-of-fatigue-and-effect-on-performance-sports-med-3873",
+    "answerSpan": "Hyperthermia, dehydration and hypoglycaemia have all been identified as common challenges to sustained performance proficiency in tennis",
+    "role": "admin",
+    "tag": "paraphrase"
+  },
+  {
+    "id": "CQ-06",
+    "query": "What age and profile of player are the strength and conditioning periodisation examples written for?",
+    "fileType": "prose",
+    "docId": "reid-et-al-2009-planning-and-periodisation-for-the-elite-junior-tennis-player",
+    "answerSpan": "provide some practical examples of macro and micro strength and conditioning planning delimited to a 17- to 18-year-old male professional tennis aspirant",
+    "role": "admin",
+    "tag": "paraphrase"
+  },
+  {
+    "id": "CQ-07",
+    "query": "What dose of caffeine gives an ergogenic benefit for tennis match play?",
+    "fileType": "prose",
+    "docId": "ranchordas-et-al-2013-nutrition-for-tennis-practical-recommendations",
+    "answerSpan": "Caffeine in doses of 3 mg.kg-1 provides ergogenic benefit when taken before and/or during tennis match play.",
+    "role": "admin",
+    "tag": "numeric-fact"
+  },
+  {
+    "id": "CQ-08",
+    "query": "How many junior players took part in the treadmill and tennis-specific incremental fitness tests?",
+    "fileType": "prose",
+    "docId": "girard-et-al-2006-specific-incremental-field-test-for-aerobic-fitness-in-tennis",
+    "answerSpan": "Nine junior competitive tennis players randomly performed two incremental protocols to exhaustion: a treadmill test (TT) and a tennis specific fitness test (FT).",
+    "role": "admin",
+    "tag": "numeric-fact"
+  },
+  {
+    "id": "CQ-09",
+    "query": "Who beat the player in the second round of the 2025 Wimbledon singles and what was the score?",
+    "fileType": "records",
+    "docId": "match-data-example",
+    "answerSpan": "match round code 64. win loss status L. match type S. score 6-2 7-5 6-4. best of 5 TRUE.",
+    "sourceRowIndex": 41,
+    "role": "admin",
+    "tag": "score-lookup"
+  },
+  {
+    "id": "CQ-10",
+    "query": "What was the score of the 2025 Wimbledon men's doubles final that the player and David Pel lost to Julian Cash?",
+    "fileType": "records",
+    "docId": "match-data-example",
+    "answerSpan": "match round code FR. win loss status L. match type D. score 6-2 7-6(3).",
+    "sourceRowIndex": 47,
+    "role": "admin",
+    "tag": "score-lookup"
+  },
+  {
+    "id": "CQ-11",
+    "query": "Who was the player's doubles partner in the 2025 Davis Cup match against Sander Gille?",
+    "fileType": "records",
+    "docId": "match-data-example",
+    "answerSpan": "partner name Jordan Thompson. partner nationality AUS. partner singles ranking 77. partner doubles ranking 43. opponent name Sander Gille.",
+    "sourceRowIndex": 85,
+    "role": "admin",
+    "tag": "partner-lookup"
+  },
+  {
+    "id": "CQ-12",
+    "query": "What was the score when the player retired against Murphy Cassone in the Washington qualifying draw?",
+    "fileType": "records",
+    "docId": "match-data-example",
+    "answerSpan": "result status RET. win loss status L. match type S. score 7-6(4) 1-2 RET.",
+    "sourceRowIndex": 39,
+    "role": "admin",
+    "tag": "retirement"
+  },
+  {
+    "id": "CQ-13",
+    "query": "How did the first-round match against Reilly Opelka at the 2025 French Open finish?",
+    "fileType": "records",
+    "docId": "match-data-example",
+    "answerSpan": "match round code 128. win loss status L. match type S. score 1-6 6-3 7-5 7-6(3).",
+    "sourceRowIndex": 54,
+    "role": "admin",
+    "tag": "score-lookup"
+  },
+  {
+    "id": "CQ-14",
+    "query": "How did the Madrid 2025 qualifying match against Lloyd Harris end?",
+    "fileType": "records",
+    "docId": "match-data-example",
+    "answerSpan": "score 6-4 6-7(11) 4-1 RET. best of 5 FALSE. deciding set FALSE. had tiebreak TRUE.",
+    "sourceRowIndex": 62,
+    "role": "admin",
+    "tag": "retirement"
+  },
+  {
+    "id": "CQ-15",
+    "query": "What was the result against James McCabe at the Brisbane Challenger in January 2025?",
+    "fileType": "records",
+    "docId": "match-data-example",
+    "answerSpan": "player singles ranking 73. player doubles ranking 98. partner singles ranking 0. partner doubles ranking 0. opponent name James McCabe. opp singles ranking 225.",
+    "sourceRowIndex": 87,
+    "role": "admin",
+    "tag": "score-lookup"
+  }
+]

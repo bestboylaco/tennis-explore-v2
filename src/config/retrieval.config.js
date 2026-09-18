@@ -26,6 +26,27 @@ function bool(value, fallback) {
   return value === "true" || value === "1";
 }
 
+// `num` above only falls back when the value is NaN, so "0", "-3" and "2.5" all
+// pass through it untouched. for a count of rows that is not a tuning choice,
+// it is a broken index: 0 rows per chunk produces no chunks at all and 2.5
+// silently truncates part of a row out of the corpus. so this one throws at
+// load rather than quietly accepting a value that cannot mean anything.
+function intAtLeast(value, fallback, { name, min }) {
+  if (value === undefined || value === "") return fallback;
+
+  const parsed = Number(value);
+
+  if (!Number.isInteger(parsed) || parsed < min) {
+    throw new Error(
+      `${name}=${JSON.stringify(value)} is not valid -- it must be an integer >= ${min}. ` +
+        `a non-integer or out-of-range value here changes what is indexed rather than how ` +
+        `it is ranked, so it fails now instead of producing a subtly wrong index.`,
+    );
+  }
+
+  return parsed;
+}
+
 export const retrievalConfig = Object.freeze({
   // ---------------------------------------------------------------------
   // where the built index lives on disk.
@@ -81,6 +102,17 @@ export const retrievalConfig = Object.freeze({
   // fix for context lost at a boundary is the contextual header below, not
   // more overlap. 200 chars is enough to keep a sentence from being cut in
   // half and no more.
+  //
+  // everything below `minChars` is per-file-type, and every one of these values
+  // used to be a bare literal inside chunking.service.js. they are here because
+  // E2-07 has to be able to vary them per file type from the outside, and
+  // because a per-file-type value hidden in the code is a value nobody ever
+  // measured. the defaults are byte-for-byte the literals they replaced, so the
+  // default configuration chunks exactly as it did before.
+  //
+  // they are kept FLAT under `chunking` rather than nested per file type on
+  // purpose: the append guard and the build fingerprint both read this one
+  // object, and a second object is a second place to forget.
   // ---------------------------------------------------------------------
   chunking: Object.freeze({
     targetChars: num(process.env.CHUNK_TARGET_CHARS, 1600),
@@ -88,6 +120,32 @@ export const retrievalConfig = Object.freeze({
     // fragments shorter than this are page numbers, running headers and
     // stray footnote markers. they match everything weakly and nothing well.
     minChars: num(process.env.CHUNK_MIN_CHARS, 120),
+
+    // records (csv/xlsx): how many verbalised rows go into one chunk.
+    //
+    // one row per chunk was never a decision, it was the only thing the code
+    // could do. it has a real cost -- a single 98-row csv floods the candidate
+    // pool with near-identical neighbours and crowds prose out of the top k --
+    // and a real benefit, which is that a row's citation points at that row.
+    // exposing it is what turns that into a question evidence can answer.
+    rowsPerChunk: intAtLeast(process.env.CHUNK_ROWS_PER_CHUNK, 1, {
+      name: "CHUNK_ROWS_PER_CHUNK",
+      min: 1,
+    }),
+    // the per-row truncation inside verbaliseRow. a row longer than this is
+    // cut and suffixed with "...", so it bounds one row, not one chunk.
+    recordMaxChars: num(process.env.CHUNK_RECORD_MAX_CHARS, 1400),
+    // the floor used by chunkDocument's whole-document fallback, for documents
+    // whose every page is shorter than minChars -- conference handouts and
+    // slide printouts routinely carry ~90 characters a page. deliberately far
+    // below minChars: at that point the alternative is indexing nothing at all.
+    fallbackMinChars: num(process.env.CHUNK_FALLBACK_MIN_CHARS, 40),
+    // slides are never split, so this only drops section-divider slides that
+    // hold nothing but a number or a stray label.
+    slideMinChars: num(process.env.CHUNK_SLIDE_MIN_CHARS, 40),
+    // budget left over in a table chunk after the heading and the repeated
+    // header row, so a row is not cut in half by a rounding error.
+    tableHeadroomChars: num(process.env.CHUNK_TABLE_HEADROOM_CHARS, 32),
   }),
 
   // ---------------------------------------------------------------------

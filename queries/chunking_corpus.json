@@ -1,0 +1,249 @@
+{
+  "corpusRoot": "env:CHUNK_EVAL_CORPUS_ROOT",
+  "note": "the files themselves are partner data and are not committed. set CHUNK_EVAL_CORPUS_ROOT to the folder that holds them; preflight refuses to run if any file is missing, has a different sha256, or if two entries share a sha256. match-data-example[74].csv is a byte-identical duplicate of match-data-example.csv and is deliberately excluded.",
+  "files": [
+    {
+      "relPath": "kovacs-2006-applied-physiology-of-tennis-performance-bjsm-40.pdf",
+      "sha256": "134cf01a0dd35ef86fe90ec2a0cc00c40e2724730ff27decf86d3f6c4d7a27d9",
+      "bytes": 147779,
+      "docId": "kovacs-2006-applied-physiology-of-tennis-performance-bjsm-40",
+      "fileType": "prose",
+      "title": "Applied physiology of tennis performance Competitive tennis play requires a combination of the major physiological variables; however, the specifics of",
+      "pageCount": 6
+    },
+    {
+      "relPath": "fernandez-et-al-2006-intensity-of-tennis-match-play-bjsm-405.pdf",
+      "sha256": "41ac419f2cf4b7eef44e8597389aa9923bcf6ad8a15b2dc687fdd8d24873799a",
+      "bytes": 139169,
+      "docId": "fernandez-et-al-2006-intensity-of-tennis-match-play-bjsm-405",
+      "fileType": "prose",
+      "title": "Intensity of tennis match play",
+      "pageCount": 5
+    },
+    {
+      "relPath": "reid-schneiker-2008-strength-and-conditioning-in-tennis-current-research-and-practice-jsams-113.pdf",
+      "sha256": "72ee818944f2fc57f1d47f0ad9473fc6583caa9b2950305b2acef0d94706ae97",
+      "bytes": 114534,
+      "docId": "reid-schneiker-2008-strength-and-conditioning-in-tennis-current-research-and-practice-jsams-113",
+      "fileType": "prose",
+      "title": "Strength and conditioning in tennis: Current research and practice Machar Reid ∗, Knut Schneiker",
+      "pageCount": 9
+    },
+    {
+      "relPath": "kovacs-2008-brief-review-of-fluid-and-hydration-in-tennis-ijspp.pdf",
+      "sha256": "fb18921535a86c62fe54b4a7fa58c64b245a9ac80209d5440dd81fa1f973fabb",
+      "bytes": 149255,
+      "docId": "kovacs-2008-brief-review-of-fluid-and-hydration-in-tennis-ijspp",
+      "fileType": "prose",
+      "title": "A Review of Fluid and Hydration in Competitive Tennis Hypohydration is known to impair performance and increases the risk of heat injury.",
+      "pageCount": 11
+    },
+    {
+      "relPath": "hornery-et-al-2007-fatigue-in-tennis-mechanisms-of-fatigue-and-effect-on-performance-sports-med-3873.pdf",
+      "sha256": "29618647e8af4e82dc905261b9d43d05fbf57ddba382052bef6353b517a9c899",
+      "bytes": 243123,
+      "docId": "hornery-et-al-2007-fatigue-in-tennis-mechanisms-of-fatigue-and-effect-on-performance-sports-med-3873",
+      "fileType": "prose",
+      "title": " 2007 Adis Data Information BV. All rights reserved.",
+      "pageCount": 14
+    },
+    {
+      "relPath": "reid-et-al-2009-planning-and-periodisation-for-the-elite-junior-tennis-player.pdf",
+      "sha256": "6c54309da7c058783aabd11fac58dedf83bc6a7b4a4334ff25abcf006a9569f0",
+      "bytes": 350023,
+      "docId": "reid-et-al-2009-planning-and-periodisation-for-the-elite-junior-tennis-player",
+      "fileType": "prose",
+      "title": "Periodization for the Elite Junior Tennis Player",
+      "pageCount": 8
+    },
+    {
+      "relPath": "ranchordas-et-al-2013-nutrition-for-tennis-practical-recommendations.pdf",
+      "sha256": "72c754cda8fc08ad5e561df2f2caabe3481da81ad2efaccc2bd30ebed0bd63a2",
+      "bytes": 413125,
+      "docId": "ranchordas-et-al-2013-nutrition-for-tennis-practical-recommendations",
+      "fileType": "prose",
+      "title": "Nutrition for Tennis: Practical Recommendations Mayur K. Ranchordas 1, David Rogerson 1, Alan Ruddock 1, Sophie, C. Killer 2 and Edward M.",
+      "pageCount": 14
+    },
+    {
+      "relPath": "girard-et-al-2006-specific-incremental-field-test-for-aerobic-fitness-in-tennis.pdf",
+      "sha256": "a7973b03d2eabaa6b458a910df2e9fc858f6df09b9173e9f6eff2533bd7a0c57",
+      "bytes": 211867,
+      "docId": "girard-et-al-2006-specific-incremental-field-test-for-aerobic-fitness-in-tennis",
+      "fileType": "prose",
+      "title": "Specific incremental field test for aerobic fitness in",
+      "pageCount": 6
+    },
+    {
+      "relPath": "maquirriain-2013-the-interaction-between-the-tennis-court-and-the-player-how-does-surface-affect-leg-stiffness.pdf",
+      "sha256": "0074a0acec82f99530b757e5f542b54e1197173d4a933849755d4092bded0c8f",
+      "bytes": 136384,
+      "docId": "maquirriain-2013-the-interaction-between-the-tennis-court-and-the-player-how-does-surface-affect-leg-stiffness",
+      "fileType": "prose",
+      "title": "Publisher: Routledge Informa Ltd Registered in England and Wales Registered Number: 1072954 Registered office: Mortimer House, 37-41 Mortimer Street, London W1T 3JH, UK",
+      "pageCount": 7
+    },
+    {
+      "relPath": "pluim-et-al-2015-a-one-season-prospective-study-of-injuries-and-illness-in-elite-junior-tennis.pdf",
+      "sha256": "287948ddfa5f04fd480108546ef872f1c3d7afb9cb7d48c094269b5ddfbfc97a",
+      "bytes": 313307,
+      "docId": "pluim-et-al-2015-a-one-season-prospective-study-of-injuries-and-illness-in-elite-junior-tennis",
+      "fileType": "prose",
+      "title": "A one-season prospective study of injuries and illness in elite 1 Royal Netherlands Lawn Tennis Association, Amersfoort, The Netherlands, 2",
+      "pageCount": 8
+    },
+    {
+      "relPath": "fernandez-fernandez-et-al-2009-a-review-of-the-activity-profile-and-physiological-demands-of-tennis-match-play.pdf",
+      "sha256": "cd43e96d64d8c99657ba148285794ecd82523c8da74b42a31404e855440fb5cf",
+      "bytes": 635876,
+      "docId": "fernandez-fernandez-et-al-2009-a-review-of-the-activity-profile-and-physiological-demands-of-tennis-match-play",
+      "fileType": "prose",
+      "title": "A Review of the Activity Profile and Physiological Demands of Tennis",
+      "pageCount": 12
+    },
+    {
+      "relPath": "bergeron-et-al-2006-a-voluntary-fluid-intake-and-core-temperature-responses-in-tennis-bjsm.pdf",
+      "sha256": "9798c38d315bc70887583812e78230b7d6f590b7972477cac0fccc75ca6d5f85",
+      "bytes": 200870,
+      "docId": "bergeron-et-al-2006-a-voluntary-fluid-intake-and-core-temperature-responses-in-tennis-bjsm",
+      "fileType": "prose",
+      "title": "Voluntary fluid intake and core temperature responses in adolescent tennis players: sports beverage versus water",
+      "pageCount": 5
+    },
+    {
+      "relPath": "kovacs-baker-2014-recvoery-interventions-and-strategies-for-improved-tennis-performance.pdf",
+      "sha256": "e7d6be18a2b79710355a4a5421d685c031a958d77265e892909e81360be2f4b7",
+      "bytes": 360702,
+      "docId": "kovacs-baker-2014-recvoery-interventions-and-strategies-for-improved-tennis-performance",
+      "fileType": "prose",
+      "title": "Recovery interventions and strategies for improved tennis performance",
+      "pageCount": 5
+    },
+    {
+      "relPath": "reid-duffield-2014-the-development-of-fatigue-during-match-play-tennis.pdf",
+      "sha256": "1082d34dfdc007ccd8db424f1b2fe330aebf91f548804ec0d97075928e5a3d47",
+      "bytes": 426379,
+      "docId": "reid-duffield-2014-the-development-of-fatigue-during-match-play-tennis",
+      "fileType": "prose",
+      "title": "The development of fatigue during match-play tennis",
+      "pageCount": 7
+    },
+    {
+      "relPath": "gomes-et-al-2011-physiological-demands-of-match-play-in-elite-tennis-a-case-study.pdf",
+      "sha256": "19483c5dfac1f029cfbd14062745461ffba6073f02d070f67eeed86c797a17a3",
+      "bytes": 152465,
+      "docId": "gomes-et-al-2011-physiological-demands-of-match-play-in-elite-tennis-a-case-study",
+      "fileType": "prose",
+      "title": "PLEASE SCROLL DOWN FOR ARTICLE [Charles Sturt University Subscription Services] Access details",
+      "pageCount": 6
+    },
+    {
+      "relPath": "fernandez-fernandez-et-al-2011-physiological-responses-to-on-court-vs-running-interval-training-in-competitive-tennis-players.pdf",
+      "sha256": "1c2dd05e58c859081268044e076a99dd1ea2db9210c54c85224f0d9f05feb089",
+      "bytes": 306585,
+      "docId": "fernandez-fernandez-et-al-2011-physiological-responses-to-on-court-vs-running-interval-training-in-competitive-tennis-players",
+      "fileType": "prose",
+      "title": "Physiological responses to on-court vs running interval training in competitive Jaime Fernandez –Fernandez 1,2, David Sanz-Rivas 2,3, Cristobal Sanchez-Muñoz 2,4, Jose Gonzalez",
+      "pageCount": 6
+    },
+    {
+      "relPath": "coutts-et-al-2010-monitoring-training-loads-in-elite-tennis.pdf",
+      "sha256": "8ff42e450c7a47fbae5225fe6dcee9379f5b3593e94c7f11e5d05baebb3d8e07",
+      "bytes": 382202,
+      "docId": "coutts-et-al-2010-monitoring-training-loads-in-elite-tennis",
+      "fileType": "prose",
+      "title": "A precise understanding of the TLs completed during training is crucial to achieve desirable training outcomes and to avoid overtraining. TL can be monitored in many different ways",
+      "pageCount": 4
+    },
+    {
+      "relPath": "girard-millet-2004-effects-of-ground-surface-on-physiological-and-technical-responses-in-young-tennis-players.pdf",
+      "sha256": "a72fa270029378b560f8355c6c89e824505b915a3aed97692b2d82525d2928cf",
+      "bytes": 848038,
+      "docId": "girard-millet-2004-effects-of-ground-surface-on-physiological-and-technical-responses-in-young-tennis-players",
+      "fileType": "prose",
+      "title": "girard millet 2004 effects of ground surface on physiological and technical responses in young tennis players",
+      "pageCount": 6
+    },
+    {
+      "relPath": "hoppe-et-al-2014-running-activity-profile-of-adolescent-tennis-players-during-match-play.pdf",
+      "sha256": "081f7c8c4410e29e4d2f3f0b3996aec5705531c71436bd4c6262196bdb8d35a6",
+      "bytes": 310469,
+      "docId": "hoppe-et-al-2014-running-activity-profile-of-adolescent-tennis-players-during-match-play",
+      "fileType": "prose",
+      "title": "Hoppe, Baumgart, Bornefeld, and Freiwald are with the Depart- ment of Movement Science, University of Wuppertal, Wupper- tal, Germany. Sperlich is with the Institute of Sport Science",
+      "pageCount": 11
+    },
+    {
+      "relPath": "baiget-et-al-2014-on-court-endurance-and-performance-testing-in-competitive-male-tennis-players.pdf",
+      "sha256": "e3cf871e35526f8784b98f3a28624ed146186517d97b67e556ef36d4407980b4",
+      "bytes": 402926,
+      "docId": "baiget-et-al-2014-on-court-endurance-and-performance-testing-in-competitive-male-tennis-players",
+      "fileType": "prose",
+      "title": "O n-court endurance and performance testing in competitive male tennis players ernest baiget, 1,2 jaime ferna´ ndez-ferna´ ndez,3 xavier iglesias,2 lisi´maco vallejo,2 and",
+      "pageCount": 9
+    },
+    {
+      "relPath": "kondric-et-al-2013-sport-nutrition-and-doping-in-tennis-an-analysis-of-athletes-attitudes-and-knowledge.pdf",
+      "sha256": "231f95630973f4135da5ee3ca01db600f2c9a626123fb12749b34c599384dc56",
+      "bytes": 317082,
+      "docId": "kondric-et-al-2013-sport-nutrition-and-doping-in-tennis-an-analysis-of-athletes-attitudes-and-knowledge",
+      "fileType": "prose",
+      "title": "Sport Nutrition and Doping in Tennis: An Analysis of Athletes’ Attitudes and Miran Kondric 1, Damir Sekulic 2,3, Ognjen Uljevic 2, Goran Gabrilo 2 and Milan Zvan 1",
+      "pageCount": 8
+    },
+    {
+      "relPath": "johnson-mchugh-2006-performance-demands-of-professional-male-tennis-players.pdf",
+      "sha256": "87ac0f03846855351cf908269a2872928f2f09242e143dbcf50a9eae14d69284",
+      "bytes": 110409,
+      "docId": "johnson-mchugh-2006-performance-demands-of-professional-male-tennis-players",
+      "fileType": "prose",
+      "title": "Performance demands of professional male tennis players",
+      "pageCount": 5
+    },
+    {
+      "relPath": "ellenbecker-et-al-2007-a-descriptive-profile-of-age-specific-knee-extension-flexion-strength-in-elite-junior-tennis-players.pdf",
+      "sha256": "0d9947e120d1a0901bd6ffb81128a355ee18affd72c410fefc8b8fee1d677cf9",
+      "bytes": 116816,
+      "docId": "ellenbecker-et-al-2007-a-descriptive-profile-of-age-specific-knee-extension-flexion-strength-in-elite-junior-tennis-players",
+      "fileType": "prose",
+      "title": "A descriptive profile of age-specific knee extension flexion strength in elite junior tennis players",
+      "pageCount": 5
+    },
+    {
+      "relPath": "murphy-a-2013-methods-of-external-and-internal-training-load-monitoring-in-elite-tennis-environments.pdf",
+      "sha256": "c0bd2f0689f8b8420a4d452364cecd5a045c87ebfb2dcc4312ddea73b41bc280",
+      "bytes": 335804,
+      "docId": "murphy-a-2013-methods-of-external-and-internal-training-load-monitoring-in-elite-tennis-environments",
+      "fileType": "prose",
+      "title": "Review of the literature - Methods of external and internal training load monitoring in elite tennis environments .",
+      "pageCount": 7
+    },
+    {
+      "relPath": "smart-et-al-2011-the-effect-of-core-training-on-tennis-serve-velocity.pdf",
+      "sha256": "4d0772fa3c8feeb424e59d7dd5e97352ba92414bc3f66dea19aee099c163a0b5",
+      "bytes": 57979,
+      "docId": "smart-et-al-2011-the-effect-of-core-training-on-tennis-serve-velocity",
+      "fileType": "prose",
+      "title": "THE EFFECT OF CORE TRAINING ON TENNIS Health and Human Performance, Texas State University, PURPOSE: This study investigated the effect of an 8-week core",
+      "pageCount": 2
+    },
+    {
+      "relPath": "duffield-et-al-2014-recovery-from-repeated-on-court-tennis-sessions-combining-cold-water-immersion-compression-and-sleep-interventions.pdf",
+      "sha256": "4af25dac961a48b96d911e9d80782e56b6f918cf3eb43f0e18bf9fc52d35f076",
+      "bytes": 226973,
+      "docId": "duffield-et-al-2014-recovery-from-repeated-on-court-tennis-sessions-combining-cold-water-immersion-compression-and-sleep-interventions",
+      "fileType": "prose",
+      "title": "ORIGINAL INVESTIGATION Recovery From Repeated On-Court Tennis Sessions: Combining Cold-Water Immersion",
+      "pageCount": 11
+    },
+    {
+      "relPath": "match-data/match-data-example.csv",
+      "sha256": "713108522a57f173c560c374946e636b0e856c30abfa1b688888badf4129cd11",
+      "bytes": 53944,
+      "docId": "match-data-example",
+      "fileType": "records",
+      "title": "match data example",
+      "rowCount": 98
+    }
+  ]
+}
