@@ -42,6 +42,16 @@ before(async () => {
 
   process.env.OLLAMA_BASE_URL = `http://127.0.0.1:${server.address().port}`;
 
+  // this suite tests the batched llm-scoring strategy specifically -- the stub
+  // above stands in for the chat model, not for a real cross-encoder. pin the
+  // strategy and window explicitly rather than trusting whatever a local .env
+  // happens to have set (RERANK_STRATEGY=cross-encoder, RERANK_INPUT=20 are
+  // both realistic local overrides that would otherwise silently point this
+  // suite at a different code path than the one it is meant to exercise).
+  process.env.RERANK_STRATEGY = "llm";
+  process.env.RERANK_INPUT = "24";
+  process.env.RERANK_BATCH_SIZE = "12";
+
   // imported here rather than at the top of the file on purpose. the config
   // reads the environment once, the first time it is imported, so a normal
   // import would have frozen the real ollama url before the line above ran.
