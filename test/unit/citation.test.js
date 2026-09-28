@@ -5,6 +5,7 @@ import {
   bindCitations,
   extractCitationMarkers,
   findUnsupportedNumbers,
+  normaliseCitationPhrasing,
 } from "../../src/modules/retrieval/citation.service.js";
 
 const evidence = [
@@ -61,9 +62,70 @@ describe("citation binding", () => {
   });
 });
 
+describe("normalising citation phrasing", () => {
+  it("converts a trailing bracketed sources list", () => {
+    assert.equal(
+      normaliseCitationPhrasing("The ratio matters most. [Sources: 4, 6]"),
+      "The ratio matters most. [4][6]",
+    );
+  });
+
+  it("converts a trailing parenthesised sources list", () => {
+    assert.equal(
+      normaliseCitationPhrasing("The ratio matters most. (Sources: 4 and 6)"),
+      "The ratio matters most. [4][6]",
+    );
+  });
+
+  it("converts 'evidence block N' inline", () => {
+    assert.equal(
+      normaliseCitationPhrasing("This is the danger zone (evidence block 6)."),
+      "This is the danger zone ([6]).",
+    );
+  });
+
+  it("converts 'sources N and M' inline", () => {
+    assert.equal(
+      normaliseCitationPhrasing("Winners hit faster serves (sources 6 and 9)."),
+      "Winners hit faster serves ([6][9]).",
+    );
+  });
+
+  it("converts 'document N' inline", () => {
+    assert.equal(
+      normaliseCitationPhrasing("This is discussed further (document 8)."),
+      "This is discussed further ([8]).",
+    );
+  });
+
+  it("leaves ordinary text alone", () => {
+    const text = "Load rose 24% [1]. Nothing else changed.";
+
+    assert.equal(normaliseCitationPhrasing(text), text);
+  });
+
+  it("converts bracketed 'Evidence N' without doubling the brackets", () => {
+    assert.equal(
+      normaliseCitationPhrasing("This is stated in [Evidence 1] and clarified in [Evidence 5]."),
+      "This is stated in [1] and clarified in [5].",
+    );
+  });
+});
+
 describe("unsupported numbers", () => {
   it("flags a figure that appears in no source", () => {
-    assert.deepEqual(findUnsupportedNumbers("Load rose 60% [1].", evidence), ["60"]);
+    assert.deepEqual(findUnsupportedNumbers("Load rose 60% [1].", evidence), ["60%"]);
+  });
+
+  it("flags a figure whose only source glues a unit straight onto the number", () => {
+    // "≈900m" in source prose -- no space before the unit letter -- must
+    // still register as the value 900, or a real figure with exactly this
+    // number reads as unsupported (observed live, 2026-09-18).
+    const gluedEvidence = [
+      { ...evidence[0], text: "The ≈900m disparity between players was notable." },
+    ];
+
+    assert.deepEqual(findUnsupportedNumbers("The gap was 900 metres [1].", gluedEvidence), []);
   });
 
   it("accepts a figure that is in the evidence", () => {

@@ -16,12 +16,26 @@
 <body class="chat-page">
     <div class="chat-application">
         <header class="chat-topbar">
-            <a class="chat-brand" href="/" aria-label="TennisExplore home">
-                <span class="chat-brand__mark" aria-hidden="true">
-                    <span class="chat-brand__ball"></span>
-                </span>
-                <span class="chat-brand__text"><strong>Tennis</strong>Explore</span>
-            </a>
+            <div class="chat-topbar__start">
+                <button id="sidebar-toggle-button"
+                        class="sidebar-toggle"
+                        type="button"
+                        aria-expanded="true"
+                        aria-controls="left-sidebar"
+                        aria-label="Hide sidebar"
+                        title="Hide sidebar">
+                    <span aria-hidden="true"></span>
+                    <span aria-hidden="true"></span>
+                    <span aria-hidden="true"></span>
+                </button>
+
+                <a class="chat-brand" href="/" aria-label="TennisExplore home">
+                    <span class="chat-brand__mark" aria-hidden="true">
+                        <span class="chat-brand__ball"></span>
+                    </span>
+                    <span class="chat-brand__text"><strong>Tennis</strong>Explore</span>
+                </a>
+            </div>
 
             <div class="chat-topbar__actions">
                 <!--
@@ -29,6 +43,18 @@
                     the AI Coach top bar. Their page remains available for later
                     product decisions; see docs/UI-NAVIGATION-NOTES.md.
                 -->
+                <button id="quick-start-toggle-button"
+                        class="sidebar-toggle sidebar-toggle--right"
+                        type="button"
+                        aria-expanded="true"
+                        aria-controls="right-sidebar"
+                        aria-label="Hide quick start"
+                        title="Hide quick start">
+                    <span aria-hidden="true"></span>
+                    <span aria-hidden="true"></span>
+                    <span aria-hidden="true"></span>
+                </button>
+
                 <div id="user-badge" class="user-badge" hidden>
                     <span id="user-badge-role" class="user-badge__role"></span>
                     <button id="logout-button" class="user-badge__logout" type="button">
@@ -40,7 +66,7 @@
 
         <main class="workspace">
             <!-- Product navigation mirrors the earlier three-column interface. -->
-            <aside class="sidebar sidebar--left">
+            <aside id="left-sidebar" class="sidebar sidebar--left">
                 <div class="sidebar__heading">Workspace</div>
 
                 <nav class="navigation" aria-label="Product capabilities">
@@ -133,10 +159,7 @@
 
             <section class="chat-panel" aria-label="AI Coach chat">
                 <header class="chat-panel__header">
-                    <div>
-                        <p class="chat-panel__eyebrow">TennisExplore intelligence</p>
-                        <h1>AI Coach</h1>
-                    </div>
+                    <h1 class="visually-hidden">AI Coach</h1>
 
                     <div id="processing-status"
                          class="status-indicator"
@@ -205,13 +228,9 @@
                         +
                     </button>
                 </form>
-
-                <p class="composer-hint">
-                    Ask naturally. TennisExplore decides how to handle the question.
-                </p>
             </section>
 
-            <aside class="sidebar sidebar--right"
+            <aside id="right-sidebar" class="sidebar sidebar--right"
                    aria-label="Quick questions">
                 <section class="explore-panel"
                          aria-labelledby="explore-heading">

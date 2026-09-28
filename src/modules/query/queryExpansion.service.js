@@ -79,6 +79,13 @@ export async function expandQuery(
         model: retrievalConfig.query.expansionModel,
         stream: false,
         format: EXPANSION_SCHEMA,
+        // a reasoning model spends part of its budget on a hidden thinking
+        // pass before the real output -- measured directly against
+        // evidenceGrader's 3-token call, where it consumed the entire budget
+        // and left nothing for the answer. 250 tokens is enough headroom that
+        // this call was probably degrading rather than failing outright, but
+        // there is no reason to pay for reasoning on a rephrasing task.
+        think: false,
         // temperature 0 keeps the rewritings reproducible, so a question that
         // worked yesterday works today. variety comes from the instruction to
         // vary the angle, not from sampling.

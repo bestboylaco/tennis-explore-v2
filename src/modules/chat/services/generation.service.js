@@ -94,6 +94,51 @@ async function runGeneration(messages) {
 }
 
 /**
+ * Loads the generation model into Ollama's memory ahead of the first real
+ * request, so that request pays the normal generation latency instead of
+ * also paying the one-off cost of Ollama reading the model off disk into
+ * VRAM (reported directly: the first query after a restart runs far slower
+ * than every one after it).
+ *
+ * An empty prompt is the documented way to make Ollama load a model without
+ * generating anything -- `/api/generate` returns immediately once the model
+ * is resident, rather than running inference. `keep_alive` is set generously
+ * so it survives the gap between server startup and the first real user
+ * request, which on this deployment can be minutes (login, reading the
+ * page) rather than seconds.
+ *
+ * Best-effort and non-blocking: Ollama being unreachable at boot should not
+ * stop the server from starting, only mean the first real query is as slow
+ * as it would have been anyway.
+ */
+export async function warmupGenerationModel() {
+  const startedAtMs = Date.now();
+
+  try {
+    const response = await fetch(`${chatConfig.ollamaBaseUrl}/api/generate`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        model: chatConfig.generationModel,
+        prompt: "",
+        stream: false,
+        keep_alive: "30m",
+      }),
+    });
+
+    if (!response.ok) {
+      return { warmed: false, durationMs: Date.now() - startedAtMs };
+    }
+
+    await response.json().catch(() => null);
+
+    return { warmed: true, durationMs: Date.now() - startedAtMs };
+  } catch {
+    return { warmed: false, durationMs: Date.now() - startedAtMs };
+  }
+}
+
+/**
  * Generates an answer grounded in the given evidence set.
  *
  * evidence is passed explicitly (rather than fetched here) so this stage is
