@@ -9,6 +9,7 @@
 // so: classify first, then spend accordingly.
 
 import { retrievalConfig } from "../../config/retrieval.config.js";
+import { MULTI_HOP_SIGNALS } from "../../shared/constants/multiHopSignals.js";
 
 export const QUERY_KINDS = Object.freeze({
   ENTITY_LOOKUP: "entity_lookup", // "score against Kumasaka", "M-CH-AUS-2025-005"
@@ -20,16 +21,6 @@ export const QUERY_KINDS = Object.freeze({
 // things that only ever appear in an exact-handle query. if one of these is
 // present the user typed a literal string and wants that literal string back.
 const EXACT_HANDLE = /\b([A-Z]{1,3}-[A-Z0-9-]{4,}|\d{4}-\d{2}-\d{2}|\d{1,2}[-/]\d{1,2}[-/]\d{4}|\d{6,})\b/;
-
-// phrasing that means the answer lives in two places and has to be joined.
-const MULTI_HOP_SIGNALS = [
-  /\bcompare\b/i,
-  /\bversus\b|\bvs\.?\b/i,
-  /\bdifference between\b/i,
-  /\bboth\b/i,
-  /\band (also|then)\b/i,
-  /\bhow (do|does) .+ (compare|differ)/i,
-];
 
 const CONCEPTUAL_SIGNALS = [/\bwhy\b/i, /\bhow\b/i, /\bexplain\b/i, /\beffect\b/i, /\bimpact\b/i, /\brelationship\b/i];
 
@@ -129,6 +120,12 @@ async function callOllamaChat(model, messages, { signal, maxTokens = 200 } = {})
       model,
       messages,
       stream: false,
+      // a reasoning model's hidden thinking pass eats into num_predict
+      // before the real output -- see evidenceGrader.service.js's
+      // gradeChunk, where this measurably emptied the response entirely.
+      // defensive here since decompositionModel/hydeModel are pinned to a
+      // non-reasoning model today, but the config is swappable.
+      think: false,
       options: { temperature: 0, num_predict: maxTokens },
     }),
     signal,

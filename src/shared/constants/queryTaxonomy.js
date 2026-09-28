@@ -1,20 +1,30 @@
-// the query taxonomy the partner asked for, written down in one place.
+// the query taxonomy, v2.
 //
-// this comes straight from al's brief, and the names are his rather than ours on
-// purpose -- when he asks "how are we doing on multi-hop", the answer should
-// come from a field literally called multi_hop rather than from someone
-// translating in their head.
+// v1 came straight from al's brief and named intents after retrieval mechanics
+// he asked to track (single_hop, multi_hop, analytical, comparative,
+// aggregation). the brief has since been revised: al no longer wants "how many
+// sources did this need" as a category a question is filed under -- that is a
+// retrieval-strategy detail, not something a question is ABOUT -- and wants
+// comparison to mean comparing content (two papers, two findings), not only
+// comparing rows in a table.
 //
-// the shape of the whole thing:
+// the shape is still:
 //
 //   what the question IS  ->  where the answer LIVES  ->  what the answer LOOKS LIKE
 //        (intent)                    (route)                     (contract)
 //
-// the important design decision is that the CONTRACT is chosen by the route and
-// the intent, not by the language model. the model decides what a question is
-// asking for; it never decides whether the reply contains a table. otherwise the
-// same question gets prose one day and a table the next, and nothing downstream
-// can rely on the shape.
+// but intent and route are now independent. v1 conflated them (an intent's
+// route was a fixed lookup), which is exactly what produced categories like
+// "analytical" and "single_hop" that were really naming a source type, not a
+// question type. route is decided separately, from what the question's
+// vocabulary is actually about -- see classifyRoute in queryPlanner.service.js.
+// the same intent (a fact, a comparison) can resolve to either route.
+//
+// chitchat is deliberately NOT one of these. it never reaches this taxonomy at
+// all -- see chitchat.service.js -- because it has no route and no contract to
+// choose; making it an intent here would mean every consumer of INTENTS has to
+// handle a case that carries no evidence, which is a different kind of thing
+// than the other three.
 
 // ---------------------------------------------------------------------------
 // where the answer lives
@@ -30,22 +40,19 @@ export const ROUTES = Object.freeze({
 // what the question is asking for
 // ---------------------------------------------------------------------------
 export const INTENTS = Object.freeze({
-  // --- unstructured -------------------------------------------------------
-  // one fact, in one place. "what year was the cardio tennis paper published"
-  SINGLE_HOP: "single_hop",
-  // needs two or more separate lookups joined together. "how do the findings of
-  // the periodisation paper compare with what the catapult deck recommends"
-  MULTI_HOP: "multi_hop",
+  // one specific answer -- a fact from a document, a value from a table, or
+  // several lookups joined together (what v1 called multi_hop). whether that
+  // takes one retrieval pass or several, and whether it reads prose or a
+  // table, is decided elsewhere: it is not part of what makes a question a
+  // fact-retrieval question.
+  FACT_RETRIEVAL: "fact_retrieval",
   // condense a lot of material. "summarise the recovery research"
   SUMMARISATION: "summarisation",
-
-  // --- structured ---------------------------------------------------------
-  // a precise lookup of one entity's value. "what is player x's best ranking"
-  ANALYTICAL: "analytical",
-  // set against set. "men's versus women's serve speed at the australian open"
-  COMPARATIVE: "comparative",
-  // maths over many rows. "median change in serve speed year on year"
-  AGGREGATION: "aggregation",
+  // set two or more things against each other -- two papers' findings, two
+  // players' records, men's vs women's serve speed. v1 split this by source
+  // (comparative for tables, an unlabelled corner of multi_hop for documents);
+  // the question "compare X and Y" is the same question either way.
+  COMPARISON: "comparison",
 });
 
 // ---------------------------------------------------------------------------
@@ -67,38 +74,47 @@ export const CONTRACTS = Object.freeze({
   CODE_SQL: "code_sql",
 });
 
-// which contracts each intent produces. an intent can produce several -- a
-// comparison returns a table AND the json behind it AND the sql that made it,
-// because al asked for the number, the picture and the audit trail.
+// which contracts each intent CAN produce -- the actual shape for one answer is
+// narrowed further by the route it resolved to (see answerContract.service.js).
 export const CONTRACTS_FOR_INTENT = Object.freeze({
-  [INTENTS.SINGLE_HOP]: [CONTRACTS.ATTRIBUTED, CONTRACTS.EXTRACTIVE],
-  [INTENTS.MULTI_HOP]: [CONTRACTS.ATTRIBUTED],
+  [INTENTS.FACT_RETRIEVAL]: [
+    CONTRACTS.ATTRIBUTED,
+    CONTRACTS.EXTRACTIVE,
+    CONTRACTS.TABULAR,
+    CONTRACTS.STRUCTURED_JSON,
+    CONTRACTS.CODE_SQL,
+  ],
   [INTENTS.SUMMARISATION]: [CONTRACTS.ABSTRACTIVE, CONTRACTS.ATTRIBUTED],
-  [INTENTS.ANALYTICAL]: [CONTRACTS.TABULAR, CONTRACTS.STRUCTURED_JSON, CONTRACTS.CODE_SQL],
-  [INTENTS.COMPARATIVE]: [CONTRACTS.TABULAR, CONTRACTS.STRUCTURED_JSON, CONTRACTS.CODE_SQL],
-  [INTENTS.AGGREGATION]: [CONTRACTS.TABULAR, CONTRACTS.STRUCTURED_JSON, CONTRACTS.CODE_SQL],
+  [INTENTS.COMPARISON]: [
+    CONTRACTS.ATTRIBUTED,
+    CONTRACTS.TABULAR,
+    CONTRACTS.STRUCTURED_JSON,
+    CONTRACTS.CODE_SQL,
+  ],
 });
 
-export const ROUTE_FOR_INTENT = Object.freeze({
-  [INTENTS.SINGLE_HOP]: ROUTES.UNSTRUCTURED,
-  [INTENTS.MULTI_HOP]: ROUTES.UNSTRUCTURED,
-  [INTENTS.SUMMARISATION]: ROUTES.UNSTRUCTURED,
-  [INTENTS.ANALYTICAL]: ROUTES.STRUCTURED,
-  [INTENTS.COMPARATIVE]: ROUTES.STRUCTURED,
-  [INTENTS.AGGREGATION]: ROUTES.STRUCTURED,
+// how many chunks/rows each intent needs, by the route it resolved to. a table
+// lookup and a document lookup are not the same amount of context, which a flat
+// per-intent number used to quietly assume.
+export const TOP_N_FOR_INTENT_ROUTE = Object.freeze({
+  [INTENTS.FACT_RETRIEVAL]: Object.freeze({
+    [ROUTES.UNSTRUCTURED]: 8,
+    [ROUTES.STRUCTURED]: 6,
+  }),
+  [INTENTS.SUMMARISATION]: Object.freeze({
+    [ROUTES.UNSTRUCTURED]: 20,
+    [ROUTES.STRUCTURED]: 10,
+  }),
+  [INTENTS.COMPARISON]: Object.freeze({
+    [ROUTES.UNSTRUCTURED]: 12,
+    [ROUTES.STRUCTURED]: 10,
+  }),
 });
 
-// how many chunks each intent needs. a summary genuinely needs breadth; a single
-// fact does not, and giving a local 8b model thirty chunks to find one date in
-// makes the answer worse, not better.
-export const TOP_N_FOR_INTENT = Object.freeze({
-  [INTENTS.SINGLE_HOP]: 8,
-  [INTENTS.MULTI_HOP]: 14,
-  [INTENTS.SUMMARISATION]: 20,
-  [INTENTS.ANALYTICAL]: 6,
-  [INTENTS.COMPARATIVE]: 10,
-  [INTENTS.AGGREGATION]: 6,
-});
+// widened topN once a question turns out to need more than one retrieval pass
+// (what v1 called multi_hop) -- decided from plan.subQuestions.length, not from
+// intent, so it applies under fact-retrieval or comparison equally.
+export const DECOMPOSED_TOP_N = 14;
 
 export const ALL_INTENTS = Object.freeze(Object.values(INTENTS));
 export const ALL_ROUTES = Object.freeze(Object.values(ROUTES));
