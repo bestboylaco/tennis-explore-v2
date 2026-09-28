@@ -4,6 +4,27 @@ import {
 } from "../config.js";
 
 /**
+ * Static facts (how many documents this can answer from) shown in the
+ * greeting a fresh conversation opens with. Best-effort: if this fails, the
+ * greeting is still shown, just without a source count.
+ */
+export async function getChatInfo() {
+    const response = await fetch(`${getChatEndpoint()}/info`, {
+        credentials: "same-origin",
+    });
+
+    if (!response.ok) {
+        throw new ChatApiError(`The request failed with status ${response.status}.`, {
+            status: response.status,
+        });
+    }
+
+    const body = await readResponseBody(response);
+
+    return body?.data ?? {};
+}
+
+/**
  * Represents an expected API or network failure.
  */
 export class ChatApiError extends Error {
