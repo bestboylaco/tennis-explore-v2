@@ -5,7 +5,11 @@ services:
   # to the partner's own AWS account is only ever an env change (S3_ENDPOINT,
   # S3_BUCKET, credentials), never a code change. See .env.example.
   minio:
-    image: minio/minio:latest
+    # quay.io, not Docker Hub: MinIO removed minio/minio and minio/mc from
+    # Docker Hub, so `docker compose up` on a machine without a cached layer
+    # fails with "pull access denied ... repository does not exist". quay.io
+    # is where MinIO publishes these images now.
+    image: quay.io/minio/minio:latest
     command: server /data --console-address ":9001"
     ports:
       - "9000:9000" # S3 API
@@ -25,7 +29,7 @@ services:
   # is enough, no manual console step needed before running anything against
   # STORAGE_PROVIDER=s3.
   minio-init:
-    image: minio/mc:latest
+    image: quay.io/minio/mc:latest
     depends_on:
       minio:
         condition: service_healthy

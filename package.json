@@ -15,6 +15,7 @@
     "search": "node bin/search.js",
     "ask": "node bin/ask.js",
     "eval": "node bin/eval.js",
+    "eval:chunking": "node bin/eval-chunking.js",
     "check:models": "node bin/check-models.js",
     "eval:answers": "node bin/eval-answers.js",
     "eval:refusal": "node bin/e5-18-refusal-test.mjs",

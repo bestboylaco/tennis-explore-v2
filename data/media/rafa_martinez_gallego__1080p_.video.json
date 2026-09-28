@@ -1,0 +1,315 @@
+{
+  "videos": [
+    {
+      "video_id": "rafa_martinez_gallego__1080p_",
+      "url": null,
+      "source_path": "C:\\IFN736-project\\video\\rafa_martinez_gallego (1080p).mp4",
+      "title": "rafa martinez gallego (1080p)",
+      "source": "transcript",
+      "language": "en",
+      "segments": [
+        {
+          "start": "0:00",
+          "end": "0:45",
+          "description": "On screen: The image appears to be a screenshot of a presentation slide. It features a title that reads \"Decoding the USER'S AND GIRLS' PATTERNS\" and below it is a subtitle that says \"What to look for in boys' and girls' patterns.\" There are two logos at the top left corner, one resembling a globe with a checkmark through it and the other featuring a stylized letter 'G'. The slide includes a graph with a title that reads \"Data Martinez Gallen\" and an x-axis labeled \"Stroke\" with numbers ranging from 0 to 10. There is also a y-axis labeled \"Movement\" with numbers ranging from -5 to 5. The graph shows two lines, one in blue and the other in red, representing different patterns or data sets. The slide has a plain white background with black text and graphics.",
+          "tags": [
+            "slide"
+          ]
+        },
+        {
+          "start": "0:02",
+          "end": "2:15",
+          "description": "Hello, my name is Rafa Mart\u00ednez Gallego, I'm from Spain and I'm working as a professor at the University of Valencia in this GI-TT group, a research group, and first of all I would like to say thank you to Tennis Australia for the opportunity of presenting here and also I would like to thank all my research group, especially Manrique Rodr\u00edguez, that you can see him as an author because he's working on his PhD on the project that is related with this presentation that I'm going to present. So the title of this presentation is The Coding the Under 12 Self, What to Look for in Voice and Girls Patterns. So in this presentation I'm going to discuss about the gap between traditional coaching and the tactical reality of these under 12 tennis players, 12 under, and I'm going to explain also our data driven approach, so the research that we are doing based on data for this particular group of players, then we're going to reflect about the differences between first and second serve patterns in both voice and girls in 12 under, and finally we're going to try to offer some evidence-based takeaways for the coaches who are working with these particular players. So the first reflection that I wanted to do with you is about what do we know about 12 under tactics, because basically all the information that we have is based on our experience or based on the experience of coaches, because it's very difficult to find research about tactics for",
+          "tags": []
+        },
+        {
+          "start": "0:45",
+          "end": "1:30",
+          "description": "On screen: The image displays a presentation slide with a title that reads \"In this presentation we will...\" followed by bullet points discussing the gap between traditional coaching and tactical U13 matches, explaining the data-driven approach to U13s, comparing the first and second serve patterns of boys and girls, and mentioning the use of clear evidence for effective training. The slide also includes a photograph of a person in the bottom right corner.",
+          "tags": [
+            "slide"
+          ]
+        },
+        {
+          "start": "1:30",
+          "end": "2:15",
+          "description": "On screen: The image appears to be a slide from a presentation, possibly related to sports science or performance analysis. It features a title \"What do we know about U12 tactics?\" followed by bullet points that mention various aspects of understanding and analyzing youth soccer tactics, such as focusing on scientific studies, the importance of professional players' input, and the use of technology like video analysis. The slide also includes a photograph of a tennis player in action, which is likely used to illustrate the concept of sports tactics or performance analysis.",
+          "tags": [
+            "slide"
+          ]
+        },
+        {
+          "start": "2:15",
+          "end": "3:00",
+          "description": "On screen: The image appears to be a slide from a presentation, likely used in an educational or informational context. It features a title \"What do we know about U12 tactics?\" followed by a list of bullet points that describe various aspects related to youth soccer strategies. The text on the slide is partially obscured, but it seems to discuss topics such as scientific studies, professional players' focus, and the use of sports science in tennis. There are also images of a tennis player holding a racket and a person taking a selfie with the slide displayed behind them.",
+          "tags": [
+            "slide"
+          ]
+        },
+        {
+          "start": "2:16",
+          "end": "4:40",
+          "description": "these players. Most of the research that have been done has focused on basically professional players, so high performance players. So all the information about tactics is mainly focused on these high performance. Then another aspect important related with the research is that most of the studies have analyzed tactics, but basically just focusing on the different strokes in isolation, so we can find data about the direction of the serve or percentage of points one with the serve or forehand backhand, but usually the these research have not related these strokes in isolation with the following strokes with more global perspectives. So basically as a conclusion we don't have evidence-based information about tactics for 12 under players. And what about the serve? So if we think about the serve, here you have this question, so what are the most typical drills that we use during tennis trainings to practice the serve? So we think about it probably for most of us the first drill that came to our mind is the a basket drill or a basket of balls and the players doing repetitions of serves. So in order to reflect about that I wanted to share with you this interesting study that was done in Australia and the title is assessment of elite junior tennis serve and return practice across sectional observation. And here they basically they analyzed junior players during trainings and they observed what the players were doing for the serve and for the return.",
+          "tags": []
+        },
+        {
+          "start": "3:00",
+          "end": "3:45",
+          "description": "On screen: The image appears to be a slide from a presentation, possibly related to sports science or performance analysis. It features a title \"What do we know about U12 tactics?\" followed by bullet points that list various aspects of understanding and analyzing under-12 soccer tactics. These include the importance of not relying solely on scientific studies, focusing on professional players' research, and considering the role of sports science in player performance. The slide also includes a photograph of a tennis player holding a racket, which is likely used to illustrate the concept of sports science or performance analysis in a different sport. There are no visible numbers or specific details about the player's movement or position on the court.",
+          "tags": [
+            "slide"
+          ]
+        },
+        {
+          "start": "3:45",
+          "end": "4:30",
+          "description": "On screen: The image displays a screenshot of a webpage from \"Journal of Sports Sciences.\" It features an article titled \"Assessment of elite junior tennis players' return practice.\" The chart on the page shows the relationship between the number of strokes and the movement of a player, with axes labeled \"Number of strokes\" and \"Movement.\" There are no visible numbers or specific details about the player's movements.",
+          "tags": [
+            "slide"
+          ]
+        },
+        {
+          "start": "4:30",
+          "end": "5:15",
+          "description": "On screen: The image displays a table with statistical data related to sports science. It appears to be a screenshot from a presentation or report, as indicated by the presence of a person's head in the bottom right corner, suggesting that this is being viewed on a computer screen.\n\nThe table has two columns: \"Characteristics\" and \"Training.\" The characteristics listed are \"Jumping,\" \"Running,\" \"Bouncing,\" \"Service,\" and \"More.\" Each characteristic has a corresponding percentage under the training column, which ranges from 0% to 75%. There is also a row labeled \"Body Mass,\" with percentages ranging from 1% to 3%.\n\nThe table uses a bar chart format to represent the data. The x-axis labels are \"Characteristics\" and \"Training,\" while the y-axis labels are \"Percentage.\" The numbers visible in the image include 0%, 75%, 1%, 3%, 70%, 25%, and 90%.\n\nThe text on the table is too small to read clearly, but it seems to be providing additional context or information about the data presented. The overall style of the image suggests an academic or professional setting focused on sports performance analysis.",
+          "tags": [
+            "slide"
+          ]
+        },
+        {
+          "start": "4:43",
+          "end": "7:06",
+          "description": "And here we have some of the data that I took from this study. So as you can see they observed that only 10% of times during trainings the players were switching side from serving to the new side to the advantage side or the opposite. So what happens during matches? So the players are switching the side around 60% of times. Then about bouncing before the serve, so doing the rituals or the routines of the serve, they observed that during trainings the players were bouncing the ball 76% of the times. And in matches it happens always 100% of times. Then about having a returner on the on the opposite side during trainings only 20% percent of times it was a returner. And in match obviously it happens 100% of times. So in every serve there is a returner. Then they observed how many times the players were hitting one ball after the serve. So they count the number of times that the player hit the ball after the after the serve and it happened 13% of times. And during matches it is around 75%. And then about the serve direction most of the times the players were serving to the body and during matches they serve more to the team and wide. So what is the conclusion of this? So basically we are training in a very different way what happens during matches. So maybe we are preparing our players to something that is not the realistic, so it's not the reality of the of the game. And then another",
+          "tags": []
+        },
+        {
+          "start": "5:15",
+          "end": "6:00",
+          "description": "On screen: The image displays a table with statistical data related to sports science. It appears to be a screenshot from a presentation slide, as indicated by the presence of a person's head in the bottom right corner, which is likely that of the presenter. The chart is titled \"What the studies said...\" and it lists various statistics such as \"Characteristics,\" \"Training,\" \"Bouncing before the service,\" \"Returning after the serve,\" \"Service speed,\" \"More than 3 bodies,\" and \"Body direction.\"\n\nThe table shows percentages for each category, with numbers ranging from 0 to 100. For example, under \"Characteristics,\" there is a 75% figure next to \"Training,\" indicating that 75% of the studies mentioned training as a characteristic. The chart also includes a column titled \"Service speed,\" which has a value of 90%.\n\nThe table uses a bar graph format with horizontal bars representing the percentages for each category. There is no visible movement or stroke, and there are no logos, title-page artwork, decorative photographs, headshots, backgrounds, or stock imagery present in the image. The text is clear and legible, providing specific information about the studies referenced in the presentation slide.",
+          "tags": [
+            "slide"
+          ]
+        },
+        {
+          "start": "6:00",
+          "end": "6:45",
+          "description": "On screen: The image displays a table with statistical data related to sports science. It appears to be a screenshot from a presentation or report, as indicated by the presence of a person's head in the bottom right corner, suggesting that this is being viewed on a computer screen.\n\nThe table has two columns: \"Characteristics\" and \"Percentage.\" The characteristics listed are \"Training,\" \"Bouncing before the server,\" \"Returning,\" and \"More than 3 bodies.\" Each characteristic has a corresponding percentage value next to it, which range from 70% to 10%.\n\nThe table also includes a row with the title \"What the studies said...\" followed by a series of percentages that seem to correspond to different types of players or actions. The numbers are not fully visible due to the resolution and angle of the image.\n\nThere is no visible text in the image, and the background is plain white, which does not provide any additional context or information about the content of the table.",
+          "tags": [
+            "slide"
+          ]
+        },
+        {
+          "start": "7:06",
+          "end": "9:35",
+          "description": "important aspect is how much time do you think the players were practicing the serve during training sessions? So the answer of this question is only 20% of times. And we know also that there is a high percentage of points where the duration is four or less shots. So serve and return plus one is something that is very, very important. And in all the points the players are hitting or the serve or the return. So probably this percentage is very low. So to sum up, we have observed that serve and return practice is a small portion of the total training time. Most serve practice is done in isolation, so doing only the serve, no serve plus one, any decision making related with the serve and the following strokes. And practice often lacks this rally context. So basically if we want to improve our trainings and if we want to prepare our players in a better way, we need more data on developing players to make our training and strategies more realistic and specific. That's why we decided to conduct this research in which we have analyzed the best 12 and under, arm 14 and under players from the best tournaments in the world. And in this presentation, I'm going to show you especially data related with 12 and under. So in order to analyze the serve situation, we analyze the direction of the serve, so wide body anti, then the zone, the area where the players were hitting the following stroke, so serve plus one, and then where the ball was landing. So basically",
+          "tags": []
+        },
+        {
+          "start": "7:30",
+          "end": "8:15",
+          "description": "On screen: The image displays a screenshot of a social media post featuring a meme. The meme shows a chart with a title that reads \"What the studies tell us...\" followed by a question: \"How much time do you think was devoted to practice during the training sessions?\" Below the question, there is a percentage value of 20%. The text on the image also includes a caption that says \"20%\" and a hashtag \"#studies.\" There is an emoji of a man with a beard at the bottom right corner. The background of the post is plain white.",
+          "tags": [
+            "slide"
+          ]
+        },
+        {
+          "start": "9:00",
+          "end": "9:45",
+          "description": "On screen: The image displays a screenshot of a tennis match being played on a court. There are two players visible in the image, one on each side of the net. The scoreboard shows that the player on the left is leading 9 to 6. The court has a red clay surface and there are no visible texts or logos that provide additional information about the event or the players. The image does not contain any decorative elements or stock imagery, and it appears to be a straightforward representation of a tennis match in progress.",
+          "tags": [
+            "slide"
+          ]
+        },
+        {
+          "start": "9:35",
+          "end": "11:57",
+          "description": "the direction of this shot. So as you can see here, we are collecting the player who is serving the side with the player is serving, the type of the serve, the direction, the type of the shot, this is a forehand or backhand, in which area where the ball is bouncing, and then the duration of the point. So here we can see that this is a first serve wide, then it's a forehand in zone number nine, and the bounce was in the area two. So from this study, here we have general statistics, and probably the main one was this difference that you have in red between 12 and under and front and under. That we found that 12 and under were winning only around 40% of points. And in 14 and under, this percentage is more than 50%. So this is the biggest difference. So that's why it gives us an idea on how important would be to work on second serve patterns with these 12 and under players for them to improve and to be able to transition to the next category. And then about the specific patterns. So here we have the patterns for the first serve on the new side. And then we can see also the different areas. So let's say the darker the color is the higher the frequency. So for boys on the left side, we can observe that they mainly serve wide and unburied. And then serve plus one was most of the times in the middle of the court and the deep. And then usually the direction was to the backhand of the opponent. For girls,",
+          "tags": []
+        },
+        {
+          "start": "9:45",
+          "end": "10:30",
+          "description": "On screen: The image shows a screenshot of a computer screen displaying a tennis match in progress on a court. There is a chart overlaying the image that appears to be tracking some sort of data related to the game, such as points or serves. The chart has numerical values along its axes and includes a title \"What happened about it?\" which suggests that it might be analyzing the performance or strategy of one of the players. There is also a small thumbnail image in the bottom right corner showing a person's face, but no text is visible in the image. The tennis court has white lines marking the boundaries and service boxes, and there are two players on the court, one on each side.",
+          "tags": [
+            "slide"
+          ]
+        },
+        {
+          "start": "10:30",
+          "end": "11:15",
+          "description": "On screen: The image displays a bar chart titled \"General Statistics.\" It shows percentages for various age groups in different sports: boys' soccer, girls' soccer, double faults in tennis, and U14, U16, and U18 service wins in badminton. The x-axis labels are \"Age\" with the numbers 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, and 14. The y-axis is labeled \"Percentage.\" There are no visible player strokes or movements in the image. The text on the chart indicates that boys' soccer has a 5% service win rate, girls' soccer has a 6% service win rate, tennis has a 3% double fault rate, and badminton U14s have a 9% service win rate, while U16s and U18s have a 7% service win rate. The chart also includes a red line indicating a threshold of 5%, with the text \"Very important to work on second serve patterns in U12 players.\" There is a person's head visible at the bottom right corner of the image, but no other text or information about them is provided.",
+          "tags": [
+            "slide"
+          ]
+        },
+        {
+          "start": "11:15",
+          "end": "12:00",
+          "description": "On screen: The image displays a graphical representation of data, specifically a bar chart. It appears to be related to sports science, as indicated by the title \"SPECIFIC PATTERNS 1: SERVE DECE SIDE.\" The chart shows three bars, each representing a different player or category, with the bars varying in height and color. There are no visible axis labels or numbers on the axes. The background is plain white, and there is a watermark or logo at the bottom left corner of the image.",
+          "tags": [
+            "slide"
+          ]
+        },
+        {
+          "start": "11:57",
+          "end": "14:22",
+          "description": "was different. Girls mainly serve to the wide direction. Then serve plus one was on the forehand side, deep. And then usually the direction was cross court looking for the forehand of the opponent or to the middle. So for boys, they usually serve wide unburied to force a central and defensive return. The third zone basically was forehand from the middle. And usually they try to move the opponent or to exploit this open court. For girls, they serve wide. Then they are forced to play to the forehand deep position. Usually the returns are more aggressive than in boys. And that's why usually they decide to play cross court avoiding risk. And here we have several examples of boys where we can observe these patterns. Okay, and what about the first serve on the advantage side? So as you can see here, boys usually serve wide. Then serve plus one is usually on the backhand side deep. And the direction of this shot usually is down the line. But also you can observe that there is a high percentage of forehand. So it means that these players are using a lot the inside out, but especially the inside in forehand. Then for girls, they prefer to serve to the team. And then usually the third shot is on the backhand side, mainly and then also from the middle in a deep position. And there is a lot of variation in the direction. Most of them are to the middle, but as you can see the colors, there is a high variability there. So for the first serve advantage",
+          "tags": []
+        },
+        {
+          "start": "12:00",
+          "end": "12:45",
+          "description": "On screen: The image displays a slide from a presentation, which appears to be related to sports science or performance analysis. It features two flowcharts or diagrams, each with a title and a series of steps or decisions represented by rectangles connected by arrows.\n\nThe top chart is titled \"Specific patterns 1st side\" and includes a sequence of steps such as \"Very wide a body to force the opponent to move,\" \"Central position,\" and \"2nd shot.\" The bottom chart is titled \"Server side\" and shows a different sequence of actions, including \"Serve very wide a body to force the opponent to move,\" \"Central position,\" and \"3rd shot.\"\n\nThe slide also contains text that reads \"Deuce side\" at the top left corner. There are two images on the slide: one is a cartoon-style illustration of a person with a speech bubble, and the other is a photograph of a man who appears to be recording or taking a picture of the slide. The background of the slide is white, and there are no visible numbers or axes labels.",
+          "tags": [
+            "slide"
+          ]
+        },
+        {
+          "start": "12:45",
+          "end": "13:30",
+          "description": "On screen: The image appears to be a screenshot of a video call or a social media post featuring a tennis court. There are two individuals visible in the image: one on the left side of the screen and another on the right. The person on the left is partially obscured, but it seems like they are engaged in a conversation with the individual on the right.\n\nThe tennis court has a distinctive pattern on its surface, which could be related to the specific type of tennis court or the branding associated with it. There are no visible texts or logos that provide additional context about the location or event taking place. The image does not contain any numerical data or graphs that would indicate specific measurements or statistics.\n\nThe person on the right is wearing a white shirt and has their face partially obscured by the camera angle. They seem to be actively participating in the conversation, as suggested by their posture and facial expression. The overall setting suggests an informal discussion about tennis, possibly related to sports science or coaching strategies.",
+          "tags": [
+            "slide"
+          ]
+        },
+        {
+          "start": "13:30",
+          "end": "14:15",
+          "description": "On screen: The image displays a graphical representation of data, specifically a bar chart. It shows three bars, each representing a different service advantage side. The axes are labeled \"1st serve advantage\" and \"2nd serve advantage,\" but the numbers on the axes are not fully visible. There is no text or additional information provided in the image.",
+          "tags": [
+            "slide"
+          ]
+        },
+        {
+          "start": "14:15",
+          "end": "15:00",
+          "description": "On screen: The image displays a slide from a presentation, which appears to be related to sports science or performance analysis. It features two diagrams side by side, each illustrating a different concept or pattern.\n\nThe left diagram is labeled \"1st SERVE ADVANTAGE SIDE\" and includes a series of specific patterns that are likely related to the serve in tennis. The right diagram is titled \"SERIES WORK WITH THE OPPOSITE SERVE,\" suggesting it discusses strategies for working against an opponent's serve.\n\nThe slide also contains text that seems to be part of a larger discussion or explanation, but the specific content of the text is not fully visible in the image provided. The overall style of the slide suggests it is educational or informative, possibly used in a coaching or training context for tennis players or coaches.",
+          "tags": [
+            "slide"
+          ]
+        },
+        {
+          "start": "14:22",
+          "end": "17:10",
+          "description": "side, boys, they say why to pull the opponent off court. The third shot usually is from the backhand corner, but they use a lot of forehands. So it's very common to see inside in forehands with this high risk down the line. Then for girls, they usually serve to the team, because probably they feel more comfortable using the slide serve. If you remember on the deep side, the most common direction was wide, because probably the same aspect. They use a lot the slide serve. So the third shot is from a central position. It's quite variable also. And the direction is usually playing to the center, but there is also a high variability. And here we can observe seven examples. Here we can see how these players are using the inside in forehand. We cannot see here, but there are also a lot of mistakes in this. Okay, and girls, and we select the key of the body, and then from the middle to the end. Okay, and related with the second serve, we can see for both boys and girls, the most preferred direction is to the body. Boys use also some serves to the team. And then in the case of boys, there is a lot of variability for the serve plus one, but the most common one is on the forehand side, and then playing this shot to the middle. For girls, most of the serve, the vast majority of the serves are to the team, then also for the forehand side, and playing again to the middle. So boys mainly serve mainly to the body or team, then they are defending, so the return is attacking",
+          "tags": []
+        },
+        {
+          "start": "15:00",
+          "end": "15:45",
+          "description": "On screen: The image appears to be a screenshot of a video call or presentation slide. It shows a tennis court with a person standing on it, holding a racquet. There are spectators in the stands, and the court has markings for singles and doubles play. On the right side of the screen, there is a text overlay that reads \"Specific patterns: 1st serve advantage side.\" The image also includes a logo at the top left corner, which seems to be related to tennis or sports science, but the specific details are not clear due to the resolution and angle of the photo. There is no visible text on the court itself.",
+          "tags": [
+            "slide"
+          ]
+        },
+        {
+          "start": "15:45",
+          "end": "16:30",
+          "description": "On screen: The image shows a tennis court with a player in action, captured from an elevated angle. There are two figures visible: one is the tennis player, who appears to be in the middle of a swing or movement, and the other is a person taking a photograph or recording the scene. The court has markings typical for a tennis match, including service boxes and baseline. In the foreground, there's a text overlay that reads \"Specific patterns 1st serve advantage side,\" suggesting an analysis of the player's serving technique in relation to their dominant side. There is also a logo or emblem at the top left corner of the image, but it is not clear enough to identify. The background includes spectator seating and what appears to be a scoreboard or advertisement banner.",
+          "tags": [
+            "slide"
+          ]
+        },
+        {
+          "start": "16:30",
+          "end": "17:15",
+          "description": "On screen: The image displays a graphical representation of specific patterns in a sports science context. It shows two charts side by side, each measuring different aspects of performance or data.\n\nThe chart on the left is labeled \"SPECIFIC PATTERNS 2nd SERVE\" and includes a grid with various colored squares, each representing a different pattern or category. The numbers visible in this chart are 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, and 14.\n\nThe chart on the right is labeled \"SPECIFIC PATTERNS 2nd SERVE\" as well, but it has a different layout with colored rectangles instead of squares. The numbers visible in this chart are 0.5, 0.6, 0.7, 0.8, and 0.9.\n\nThere is a person's face in the bottom right corner of the image, but no text or additional information about them is provided. The style of the image suggests it may be from a presentation or report related to sports analytics or performance tracking.",
+          "tags": [
+            "slide"
+          ]
+        },
+        {
+          "start": "17:10",
+          "end": "19:38",
+          "description": "with high variability, and usually they try to neutralize this return, playing the third shot to the middle. So for girls, they serve to the body, usually they play the third shot on the forehand side, and they use a similar pattern to repeat the first serve pattern that we saw before, that is playing a cross court to the middle to build up the rally, or basically to defend. Here we have some examples, the body, then defending, the body, defending with the forehand. And for girls, they serve to the body, from the forehand side, cross court, or to the middle. And finally, second serve to the advantage side, they are still serving mainly to the body. In the case of boys, usually the third shot is on the backhand side, deep, and again this shot, usually they play to the middle. So basically they are defending, and they try to neutralize the attack of the return. In the case of girls, serving to the body, there is a high variability on the return direction, but also a high variability on the direction of this third shot, but mainly to the middle of the court. So for boys, this second serve advantage side is a safe body serve, then from the backhand side, they try to neutralize to the middle. In the case of girls, they serve also a body serve, then the return is attacking with high variability, and they try to neutralize to the middle, or depending on the direction of the return, they usually play more",
+          "tags": []
+        },
+        {
+          "start": "17:15",
+          "end": "18:00",
+          "description": "On screen: The image displays a screenshot of a digital document that appears to be a chart or graph related to sports science. It shows two graphs side by side, each with different data points and axes labels. The left graph is titled \"Specific patterns 2nd serve\" and includes a series of vertical bars representing some form of measurement or count for each point on the horizontal axis, which seems to be labeled with numbers from 1 to 5. The right graph is titled \"Deuce side S\" and features a similar structure with vertical bars corresponding to data points along the horizontal axis, which ranges from 0 to 6. There are no visible texts or logos that provide additional context or information about the content of the document. The style of the image suggests it may be a screenshot taken from a computer or mobile device displaying the document on a screen.",
+          "tags": [
+            "slide"
+          ]
+        },
+        {
+          "start": "18:00",
+          "end": "18:45",
+          "description": "On screen: The image displays a graphical representation of specific patterns in a dataset, which appears to be related to sports science or performance analysis. It shows two charts side by side, each representing different data points.\n\nThe chart on the left is labeled \"3rd SERVE ADVANTAGE SIDE\" and includes a series of vertical bars with varying heights, indicating some form of measurement for each pattern in the dataset. The horizontal axis is labeled \"SPECIFIC PATTERNS,\" but the specific patterns are not legible due to the image's resolution.\n\nThe chart on the right is titled \"4th SERVE ADVANTAGE SIDE\" and also features vertical bars of varying heights, suggesting a similar measurement system as the first chart. The horizontal axis here is labeled \"SPECIFIC PATTERNS,\" but again, the specific patterns are not clearly visible due to the image's quality.\n\nThere is a person in the bottom right corner of the image, but they are not the focus of the image and their presence does not provide any additional information about the charts.",
+          "tags": [
+            "slide"
+          ]
+        },
+        {
+          "start": "18:45",
+          "end": "19:30",
+          "description": "On screen: The image displays a graphical representation of data, specifically a heat map charting specific patterns in a 3rd serve advantage side. The x-axis label is \"Specific Patterns,\" and the y-axis label is \"Server Advantage Side.\" There are four quadrants with different shades of green, red, yellow, and blue, indicating varying degrees of server advantage. The numbers on the axes are not fully visible, but it appears to be a percentage scale ranging from 0% to 100%. The image also contains a watermark or logo in the bottom right corner, which is partially obscured by a person's face. There is no text that can be confidently read from this angle and distance.",
+          "tags": [
+            "slide"
+          ]
+        },
+        {
+          "start": "19:30",
+          "end": "20:15",
+          "description": "On screen: The image appears to be a screenshot of a video call or a social media post featuring a tennis court. There are two individuals visible in the image: one person is on the left side of the screen, and another person is on the right side. The tennis court has markings for a doubles match, with service boxes and a center service line visible. The background shows spectator stands with some people seated. There is text overlaying the image that reads \"6 specific patterns: 3rd serve advantage side.\" Additionally, there are two logos in the top left corner of the image, but they are not clearly legible. The image does not provide any numerical data or specific details about the tennis court or players.",
+          "tags": [
+            "slide"
+          ]
+        },
+        {
+          "start": "19:38",
+          "end": "22:19",
+          "description": "cross court. The body, and then from the backhand, try to neutralize the attack of the return. And for girls, we can see that the third direction is very similar to the middle of the court, or cross court. Okay, so what are the tactical implications of this analysis? So for boys, we've seen that there is a high variability, depending on the type of the serve, depending on the on the side, most of the returns, sorry, most of the first shots are deep, so they are not able usually to take advantage of the of the serve, and they rely on the opponent's errors. So it could be very interesting to build a structure from more from reactive to proactive play. So work on different patterns that gradually allow the players to take more the the initiative of the of the point, and also for them for them to recognize we return and to be able to step in and taking advantage. And then related with the with the second serve, to use this serve to the to the body, because probably, technically, they are not enough developed, for example, to serve with a with a wood kick serve to the T on the right side, or a wide second serve to the to the advantage. So use the body serve to neutralize the return the return attacking. And about girls, very important to work on this white serve plus forehand pattern, because this is the most common one. Also, as we said for boys, to work on the second serve body serve to neutralize the",
+          "tags": []
+        },
+        {
+          "start": "20:15",
+          "end": "21:00",
+          "description": "On screen: The image displays a slide from a presentation, which appears to be related to sports science or performance analysis. It features a chart titled \"Tactical implications,\" which seems to illustrate the relationship between various factors and their impact on an agent's performance in a game. The chart is labeled with axes that include \"High-variance game\" and \"Low-variance game.\" There are numerical values along the axes, but they are not fully visible. The slide also contains text that mentions \"high-variance game,\" \"low-variance game,\" \"reliance on agent's positioning,\" \"structure from receipt to active play,\" and \"development through practice.\" There is a photograph of a person in the bottom right corner, but their identity or role is not clear. The slide seems to be part of an academic or professional presentation discussing strategies for improving performance in games with high variance.",
+          "tags": [
+            "slide"
+          ]
+        },
+        {
+          "start": "21:00",
+          "end": "21:45",
+          "description": "On screen: The image displays a slide from a presentation, which appears to be related to sports science or performance analysis. It features a chart titled \"Tactical implications,\" which seems to illustrate the relationship between various factors and their impact on an agent's performance in a game. The chart is labeled with axes that include \"High-variance game\" and \"Low-variance game,\" but the specific values or numbers are not clearly visible. There is also text that mentions \"high-variance game,\" \"low-variance game,\" \"reliance on agent's positioning,\" \"structure from receipt to point of attack,\" \"40% chance of success,\" and \"development through practice.\" The slide includes a photograph of a person, but the individual is not the focus of the image.",
+          "tags": [
+            "slide"
+          ]
+        },
+        {
+          "start": "21:45",
+          "end": "22:30",
+          "description": "On screen: The image appears to be a slide from a presentation, specifically one that discusses \"Tactical Implications.\" It features a quote in Italian, which translates to: \"Constructive criticism and dominance, and predictable name studies.\" Below the quote, there is a list of bullet points outlining strategies for handling constructive criticism. The slide also includes a photograph of a person on the right side, but their identity or role is not clear from the image provided.",
+          "tags": [
+            "slide"
+          ]
+        },
+        {
+          "start": "22:20",
+          "end": "24:07",
+          "description": "the attacking of the other return and also to prepare them for the 14 and under that we saw that they use more patterns using the backhand. So it would be important to work with with these players also by using the the backhand and not only relying on on the forehand side. So about methodological implications, important to train patterns and not just the the serve in isolation and isolation. That's why we should focus on serve plus one to connect the serve with the following stroke. Try to use tactics that are age specific. So now with this information, we know about the the tactics and the tactical intentions for these 12 and under players. So try to take this information to design our our trainings. And then the last one that is very important for me is to personalize the patterns. So taking into account the the individual characteristics of our players, because this information that I gave you is general information about the best players. But it doesn't mean that all the players, they have to use this exactly these patterns of this tactical intention. So it's very important to know your players are to individualize the the patterns and the tactical intentions. So thank you very much for for your attention. Thank you tennis Australia for this this opportunity. And here you have my contact details in case you need further information or you need to to contact me. Thank you very much.",
+          "tags": []
+        },
+        {
+          "start": "22:30",
+          "end": "23:15",
+          "description": "On screen: The image displays a slide from a presentation, which appears to be educational or informative in nature. It features a title \"METHODS\" followed by bullet points that describe various methods related to sports science. There is an illustration of a tennis player on the court, indicating the sport being discussed. The text on the slide includes phrases such as \"not just serve,\" \"single shot,\" and \"three shots in a row.\" Additionally, there are instructions for the viewer to focus on the server's position, the ball's trajectory, and the player's movement. The slide seems to be part of an educational or instructional presentation, possibly related to tennis coaching or analysis.",
+          "tags": [
+            "slide"
+          ]
+        },
+        {
+          "start": "23:15",
+          "end": "24:00",
+          "description": "On screen: The image displays a slide from a presentation, which appears to be related to sports science or performance analysis. It features a screenshot of a video game interface showing a tennis court with a player in action. The slide has text that reads \"METHODS\" and lists bullet points such as \"Train the server,\" \"Focus on the serve,\" and \"Develop the serve.\" There is also a reference to a specific player's serve, mentioning \"the third of the six shots.\" The slide seems to be discussing strategies for improving a tennis player's serve.",
+          "tags": [
+            "slide"
+          ]
+        }
+      ]
+    }
+  ],
+  "_keyframes_done": true
+}

@@ -1,0 +1,2466 @@
+{
+  "generatedAt": "2026-09-17T23:05:46.111Z",
+  "gitCommit": "9466c18d156c4aaccea45cd7bad97ac2f6f11db4",
+  "node": "v22.17.1",
+  "embedding": {
+    "provider": "ollama",
+    "model": "bge-m3",
+    "dimension": 1024,
+    "ollamaVersion": "0.32.6"
+  },
+  "retrievalSetting": {
+    "mode": "hybrid rrf, reranker off",
+    "why": "the llm reranker reorders the top 24 into the top 10 non-deterministically; at n=15 that noise can exceed the chunking effect under measurement. routing, decomposition, hyde and expansion are off for the same reason: one variable per comparison.",
+    "env": {
+      "STORAGE_PROVIDER": "local",
+      "STRUCTURED_SOURCE_DIRS": "",
+      "OLLAMA_BASE_URL": "http://localhost:11434",
+      "EMBEDDING_PROVIDER": "ollama",
+      "EMBEDDING_MODEL": "bge-m3",
+      "EMBEDDING_DIMENSION": "1024",
+      "EMBEDDING_BATCH_SIZE": "16",
+      "CHUNK_EVAL_CORPUS_ROOT": "C:/IFN736-project/document-sources",
+      "CHUNK_EVAL_QUESTIONS": "queries/chunking_questions.json",
+      "CHUNK_EVAL_SKIP_IDS": "",
+      "CHUNK_TARGET_CHARS": "1600",
+      "CHUNK_OVERLAP_CHARS": "200",
+      "CHUNK_MIN_CHARS": "120",
+      "CHUNK_ROWS_PER_CHUNK": "1",
+      "CHUNK_RECORD_MAX_CHARS": "1400",
+      "CHUNK_FALLBACK_MIN_CHARS": "40",
+      "CHUNK_SLIDE_MIN_CHARS": "40",
+      "CHUNK_TABLE_HEADROOM_CHARS": "32",
+      "CONTEXTUAL_ENABLED": "true",
+      "CONTEXTUAL_MODE": "template",
+      "RERANK_ENABLED": "false",
+      "ROUTING_ENABLED": "false",
+      "HYDE_ENABLED": "false",
+      "DECOMPOSITION_ENABLED": "false",
+      "EXPANSION_ENABLED": "false",
+      "PLANNER_ENABLED": "false",
+      "TOP_N": "10",
+      "BM25_K": "50",
+      "DENSE_K": "50",
+      "RRF_K": "60"
+    }
+  },
+  "corpus": {
+    "manifest": "queries/chunking_corpus.json",
+    "corpusRoot": "C:/IFN736-project/document-sources",
+    "fileCount": 27,
+    "files": [
+      {
+        "relPath": "kovacs-2006-applied-physiology-of-tennis-performance-bjsm-40.pdf",
+        "docId": "kovacs-2006-applied-physiology-of-tennis-performance-bjsm-40",
+        "fileType": "prose",
+        "sha256": "134cf01a0dd35ef86fe90ec2a0cc00c40e2724730ff27decf86d3f6c4d7a27d9",
+        "bytes": 147779,
+        "pageCount": 6
+      },
+      {
+        "relPath": "fernandez-et-al-2006-intensity-of-tennis-match-play-bjsm-405.pdf",
+        "docId": "fernandez-et-al-2006-intensity-of-tennis-match-play-bjsm-405",
+        "fileType": "prose",
+        "sha256": "41ac419f2cf4b7eef44e8597389aa9923bcf6ad8a15b2dc687fdd8d24873799a",
+        "bytes": 139169,
+        "pageCount": 5
+      },
+      {
+        "relPath": "reid-schneiker-2008-strength-and-conditioning-in-tennis-current-research-and-practice-jsams-113.pdf",
+        "docId": "reid-schneiker-2008-strength-and-conditioning-in-tennis-current-research-and-practice-jsams-113",
+        "fileType": "prose",
+        "sha256": "72ee818944f2fc57f1d47f0ad9473fc6583caa9b2950305b2acef0d94706ae97",
+        "bytes": 114534,
+        "pageCount": 9
+      },
+      {
+        "relPath": "kovacs-2008-brief-review-of-fluid-and-hydration-in-tennis-ijspp.pdf",
+        "docId": "kovacs-2008-brief-review-of-fluid-and-hydration-in-tennis-ijspp",
+        "fileType": "prose",
+        "sha256": "fb18921535a86c62fe54b4a7fa58c64b245a9ac80209d5440dd81fa1f973fabb",
+        "bytes": 149255,
+        "pageCount": 11
+      },
+      {
+        "relPath": "hornery-et-al-2007-fatigue-in-tennis-mechanisms-of-fatigue-and-effect-on-performance-sports-med-3873.pdf",
+        "docId": "hornery-et-al-2007-fatigue-in-tennis-mechanisms-of-fatigue-and-effect-on-performance-sports-med-3873",
+        "fileType": "prose",
+        "sha256": "29618647e8af4e82dc905261b9d43d05fbf57ddba382052bef6353b517a9c899",
+        "bytes": 243123,
+        "pageCount": 14
+      },
+      {
+        "relPath": "reid-et-al-2009-planning-and-periodisation-for-the-elite-junior-tennis-player.pdf",
+        "docId": "reid-et-al-2009-planning-and-periodisation-for-the-elite-junior-tennis-player",
+        "fileType": "prose",
+        "sha256": "6c54309da7c058783aabd11fac58dedf83bc6a7b4a4334ff25abcf006a9569f0",
+        "bytes": 350023,
+        "pageCount": 8
+      },
+      {
+        "relPath": "ranchordas-et-al-2013-nutrition-for-tennis-practical-recommendations.pdf",
+        "docId": "ranchordas-et-al-2013-nutrition-for-tennis-practical-recommendations",
+        "fileType": "prose",
+        "sha256": "72c754cda8fc08ad5e561df2f2caabe3481da81ad2efaccc2bd30ebed0bd63a2",
+        "bytes": 413125,
+        "pageCount": 14
+      },
+      {
+        "relPath": "girard-et-al-2006-specific-incremental-field-test-for-aerobic-fitness-in-tennis.pdf",
+        "docId": "girard-et-al-2006-specific-incremental-field-test-for-aerobic-fitness-in-tennis",
+        "fileType": "prose",
+        "sha256": "a7973b03d2eabaa6b458a910df2e9fc858f6df09b9173e9f6eff2533bd7a0c57",
+        "bytes": 211867,
+        "pageCount": 6
+      },
+      {
+        "relPath": "maquirriain-2013-the-interaction-between-the-tennis-court-and-the-player-how-does-surface-affect-leg-stiffness.pdf",
+        "docId": "maquirriain-2013-the-interaction-between-the-tennis-court-and-the-player-how-does-surface-affect-leg-stiffness",
+        "fileType": "prose",
+        "sha256": "0074a0acec82f99530b757e5f542b54e1197173d4a933849755d4092bded0c8f",
+        "bytes": 136384,
+        "pageCount": 7
+      },
+      {
+        "relPath": "pluim-et-al-2015-a-one-season-prospective-study-of-injuries-and-illness-in-elite-junior-tennis.pdf",
+        "docId": "pluim-et-al-2015-a-one-season-prospective-study-of-injuries-and-illness-in-elite-junior-tennis",
+        "fileType": "prose",
+        "sha256": "287948ddfa5f04fd480108546ef872f1c3d7afb9cb7d48c094269b5ddfbfc97a",
+        "bytes": 313307,
+        "pageCount": 8
+      },
+      {
+        "relPath": "fernandez-fernandez-et-al-2009-a-review-of-the-activity-profile-and-physiological-demands-of-tennis-match-play.pdf",
+        "docId": "fernandez-fernandez-et-al-2009-a-review-of-the-activity-profile-and-physiological-demands-of-tennis-match-play",
+        "fileType": "prose",
+        "sha256": "cd43e96d64d8c99657ba148285794ecd82523c8da74b42a31404e855440fb5cf",
+        "bytes": 635876,
+        "pageCount": 12
+      },
+      {
+        "relPath": "bergeron-et-al-2006-a-voluntary-fluid-intake-and-core-temperature-responses-in-tennis-bjsm.pdf",
+        "docId": "bergeron-et-al-2006-a-voluntary-fluid-intake-and-core-temperature-responses-in-tennis-bjsm",
+        "fileType": "prose",
+        "sha256": "9798c38d315bc70887583812e78230b7d6f590b7972477cac0fccc75ca6d5f85",
+        "bytes": 200870,
+        "pageCount": 5
+      },
+      {
+        "relPath": "kovacs-baker-2014-recvoery-interventions-and-strategies-for-improved-tennis-performance.pdf",
+        "docId": "kovacs-baker-2014-recvoery-interventions-and-strategies-for-improved-tennis-performance",
+        "fileType": "prose",
+        "sha256": "e7d6be18a2b79710355a4a5421d685c031a958d77265e892909e81360be2f4b7",
+        "bytes": 360702,
+        "pageCount": 5
+      },
+      {
+        "relPath": "reid-duffield-2014-the-development-of-fatigue-during-match-play-tennis.pdf",
+        "docId": "reid-duffield-2014-the-development-of-fatigue-during-match-play-tennis",
+        "fileType": "prose",
+        "sha256": "1082d34dfdc007ccd8db424f1b2fe330aebf91f548804ec0d97075928e5a3d47",
+        "bytes": 426379,
+        "pageCount": 7
+      },
+      {
+        "relPath": "gomes-et-al-2011-physiological-demands-of-match-play-in-elite-tennis-a-case-study.pdf",
+        "docId": "gomes-et-al-2011-physiological-demands-of-match-play-in-elite-tennis-a-case-study",
+        "fileType": "prose",
+        "sha256": "19483c5dfac1f029cfbd14062745461ffba6073f02d070f67eeed86c797a17a3",
+        "bytes": 152465,
+        "pageCount": 6
+      },
+      {
+        "relPath": "fernandez-fernandez-et-al-2011-physiological-responses-to-on-court-vs-running-interval-training-in-competitive-tennis-players.pdf",
+        "docId": "fernandez-fernandez-et-al-2011-physiological-responses-to-on-court-vs-running-interval-training-in-competitive-tennis-players",
+        "fileType": "prose",
+        "sha256": "1c2dd05e58c859081268044e076a99dd1ea2db9210c54c85224f0d9f05feb089",
+        "bytes": 306585,
+        "pageCount": 6
+      },
+      {
+        "relPath": "coutts-et-al-2010-monitoring-training-loads-in-elite-tennis.pdf",
+        "docId": "coutts-et-al-2010-monitoring-training-loads-in-elite-tennis",
+        "fileType": "prose",
+        "sha256": "8ff42e450c7a47fbae5225fe6dcee9379f5b3593e94c7f11e5d05baebb3d8e07",
+        "bytes": 382202,
+        "pageCount": 4
+      },
+      {
+        "relPath": "girard-millet-2004-effects-of-ground-surface-on-physiological-and-technical-responses-in-young-tennis-players.pdf",
+        "docId": "girard-millet-2004-effects-of-ground-surface-on-physiological-and-technical-responses-in-young-tennis-players",
+        "fileType": "prose",
+        "sha256": "a72fa270029378b560f8355c6c89e824505b915a3aed97692b2d82525d2928cf",
+        "bytes": 848038,
+        "pageCount": 6
+      },
+      {
+        "relPath": "hoppe-et-al-2014-running-activity-profile-of-adolescent-tennis-players-during-match-play.pdf",
+        "docId": "hoppe-et-al-2014-running-activity-profile-of-adolescent-tennis-players-during-match-play",
+        "fileType": "prose",
+        "sha256": "081f7c8c4410e29e4d2f3f0b3996aec5705531c71436bd4c6262196bdb8d35a6",
+        "bytes": 310469,
+        "pageCount": 11
+      },
+      {
+        "relPath": "baiget-et-al-2014-on-court-endurance-and-performance-testing-in-competitive-male-tennis-players.pdf",
+        "docId": "baiget-et-al-2014-on-court-endurance-and-performance-testing-in-competitive-male-tennis-players",
+        "fileType": "prose",
+        "sha256": "e3cf871e35526f8784b98f3a28624ed146186517d97b67e556ef36d4407980b4",
+        "bytes": 402926,
+        "pageCount": 9
+      },
+      {
+        "relPath": "kondric-et-al-2013-sport-nutrition-and-doping-in-tennis-an-analysis-of-athletes-attitudes-and-knowledge.pdf",
+        "docId": "kondric-et-al-2013-sport-nutrition-and-doping-in-tennis-an-analysis-of-athletes-attitudes-and-knowledge",
+        "fileType": "prose",
+        "sha256": "231f95630973f4135da5ee3ca01db600f2c9a626123fb12749b34c599384dc56",
+        "bytes": 317082,
+        "pageCount": 8
+      },
+      {
+        "relPath": "johnson-mchugh-2006-performance-demands-of-professional-male-tennis-players.pdf",
+        "docId": "johnson-mchugh-2006-performance-demands-of-professional-male-tennis-players",
+        "fileType": "prose",
+        "sha256": "87ac0f03846855351cf908269a2872928f2f09242e143dbcf50a9eae14d69284",
+        "bytes": 110409,
+        "pageCount": 5
+      },
+      {
+        "relPath": "ellenbecker-et-al-2007-a-descriptive-profile-of-age-specific-knee-extension-flexion-strength-in-elite-junior-tennis-players.pdf",
+        "docId": "ellenbecker-et-al-2007-a-descriptive-profile-of-age-specific-knee-extension-flexion-strength-in-elite-junior-tennis-players",
+        "fileType": "prose",
+        "sha256": "0d9947e120d1a0901bd6ffb81128a355ee18affd72c410fefc8b8fee1d677cf9",
+        "bytes": 116816,
+        "pageCount": 5
+      },
+      {
+        "relPath": "murphy-a-2013-methods-of-external-and-internal-training-load-monitoring-in-elite-tennis-environments.pdf",
+        "docId": "murphy-a-2013-methods-of-external-and-internal-training-load-monitoring-in-elite-tennis-environments",
+        "fileType": "prose",
+        "sha256": "c0bd2f0689f8b8420a4d452364cecd5a045c87ebfb2dcc4312ddea73b41bc280",
+        "bytes": 335804,
+        "pageCount": 7
+      },
+      {
+        "relPath": "smart-et-al-2011-the-effect-of-core-training-on-tennis-serve-velocity.pdf",
+        "docId": "smart-et-al-2011-the-effect-of-core-training-on-tennis-serve-velocity",
+        "fileType": "prose",
+        "sha256": "4d0772fa3c8feeb424e59d7dd5e97352ba92414bc3f66dea19aee099c163a0b5",
+        "bytes": 57979,
+        "pageCount": 2
+      },
+      {
+        "relPath": "duffield-et-al-2014-recovery-from-repeated-on-court-tennis-sessions-combining-cold-water-immersion-compression-and-sleep-interventions.pdf",
+        "docId": "duffield-et-al-2014-recovery-from-repeated-on-court-tennis-sessions-combining-cold-water-immersion-compression-and-sleep-interventions",
+        "fileType": "prose",
+        "sha256": "4af25dac961a48b96d911e9d80782e56b6f918cf3eb43f0e18bf9fc52d35f076",
+        "bytes": 226973,
+        "pageCount": 11
+      },
+      {
+        "relPath": "match-data/match-data-example.csv",
+        "docId": "match-data-example",
+        "fileType": "records",
+        "sha256": "713108522a57f173c560c374946e636b0e856c30abfa1b688888badf4129cd11",
+        "bytes": 53944,
+        "rowCount": 98
+      }
+    ],
+    "scope": "prose = pdf only in practice: the corpus root holds no .txt/.md, .docx is unsupported by extractFile, and there are no .pptx so chunkSlides (slideMinChars) is not evaluated. pdfs with textract tables are excluded because chunkTables' budget also depends on targetChars."
+  },
+  "questionSet": {
+    "path": "queries/chunking_questions.json",
+    "sha256": "c75a48a677c8b2cd13e1278ed79527a498ad34034e19785aff246172d130e592",
+    "count": 15,
+    "byFileType": {
+      "prose": 8,
+      "records": 7
+    },
+    "spanRules": {
+      "minChars": 40,
+      "maxChars": 180,
+      "why": "<= overlapChars (200) so a span straddling a boundary is rescued whole under any overlapping setting"
+    },
+    "gate": [
+      {
+        "id": "CQ-01",
+        "fileType": "prose",
+        "ok": true,
+        "where": "page 1",
+        "elsewhere": []
+      },
+      {
+        "id": "CQ-02",
+        "fileType": "prose",
+        "ok": true,
+        "where": "page 1",
+        "elsewhere": []
+      },
+      {
+        "id": "CQ-03",
+        "fileType": "prose",
+        "ok": true,
+        "where": "page 2",
+        "elsewhere": []
+      },
+      {
+        "id": "CQ-04",
+        "fileType": "prose",
+        "ok": true,
+        "where": "page 2",
+        "elsewhere": []
+      },
+      {
+        "id": "CQ-05",
+        "fileType": "prose",
+        "ok": true,
+        "where": "page 1",
+        "elsewhere": []
+      },
+      {
+        "id": "CQ-06",
+        "fileType": "prose",
+        "ok": true,
+        "where": "page 1",
+        "elsewhere": []
+      },
+      {
+        "id": "CQ-07",
+        "fileType": "prose",
+        "ok": true,
+        "where": "page 1",
+        "elsewhere": []
+      },
+      {
+        "id": "CQ-08",
+        "fileType": "prose",
+        "ok": true,
+        "where": "page 1",
+        "elsewhere": []
+      },
+      {
+        "id": "CQ-09",
+        "fileType": "records",
+        "ok": true,
+        "where": "row 41",
+        "elsewhere": []
+      },
+      {
+        "id": "CQ-10",
+        "fileType": "records",
+        "ok": true,
+        "where": "row 47",
+        "elsewhere": []
+      },
+      {
+        "id": "CQ-11",
+        "fileType": "records",
+        "ok": true,
+        "where": "row 85",
+        "elsewhere": []
+      },
+      {
+        "id": "CQ-12",
+        "fileType": "records",
+        "ok": true,
+        "where": "row 39",
+        "elsewhere": []
+      },
+      {
+        "id": "CQ-13",
+        "fileType": "records",
+        "ok": true,
+        "where": "row 54",
+        "elsewhere": []
+      },
+      {
+        "id": "CQ-14",
+        "fileType": "records",
+        "ok": true,
+        "where": "row 62",
+        "elsewhere": []
+      },
+      {
+        "id": "CQ-15",
+        "fileType": "records",
+        "ok": true,
+        "where": "row 87",
+        "elsewhere": []
+      }
+    ]
+  },
+  "tieBreakRule": [
+    "1. span recall@5 (a hit is a single top-5 chunk whose `text` wholly contains the normalised span).",
+    "2. if the recall@5 gap is under 10 percentage points, compare span-MRR (reciprocal rank of the first top-10 chunk containing the span), again with a 10-point threshold.",
+    "3. if still under 10 points, compare index cost for that file type: chunk count first, then total index bytes; the smaller wins.",
+    "4. if still tied, keep the status quo setting -- shards are append-only and changing a live default means rebuilding everything.",
+    "n=15 means one question is 6.7 points, so the 10-point threshold is 1.5 questions and the tie-break will fire often. this harness measures direction, not effect size: a Wilson interval at n=15 is roughly +/-25 points."
+  ],
+  "decisionGapPp": 10,
+  "excluded": [],
+  "knownConfounds": [
+    "minChars is applied after the overlap tail is prepended (chunking.service.js, splitText's final filter), so a short trailing fragment survives at overlap=200 and is dropped at overlap=0; the overlap cell biases against overlap=0 by removing content.",
+    "bm25 corpus statistics differ between cells because the prose chunk population differs; record-question ranks in the control pair may shift by a place for that reason alone.",
+    "authors.slice(0, 3) and detectSection's slice(0, 200) are not per-file-type and were deliberately left hardcoded; both feed context_header and therefore the vectors, but are outside the append guard.",
+    "STRUCTURED_SOURCE_DIRS / manifest.sourceDirs affect answerFromTables, not retrieve(); the records arm here goes through retrieve() and is unaffected."
+  ],
+  "control": {
+    "cells": [
+      "t1600-o200-r1",
+      "t800-o200-r1"
+    ],
+    "identicalOutcomesAndRanks": true,
+    "sameSpanChunkIds": true,
+    "differences": [],
+    "note": "record chunks are byte-identical between these two cells. identical outcomes and ranks are expected; a rank shift with the same chunk id is explainable by bm25 corpus statistics differing with the prose chunking; a different chunk id is a harness defect."
+  },
+  "cells": [
+    {
+      "id": "t1600-o200-r1",
+      "params": {
+        "targetChars": 1600,
+        "overlapChars": 200,
+        "rowsPerChunk": 1
+      },
+      "purpose": "status quo baseline for BOTH prose and records",
+      "rationale": "the committed data/index was built with exactly these values, so every other cell is measured as a change from what is live.",
+      "indexDir": "data\\index-eval\\t1600-o200-r1",
+      "chunkCount": 812,
+      "chunkCountByModality": {
+        "document": 714,
+        "record": 98
+      },
+      "chunkStats": {
+        "document": {
+          "chunkCount": 714,
+          "maxChunkChars": 1801,
+          "meanChunkChars": 1466
+        },
+        "record": {
+          "chunkCount": 98,
+          "maxChunkChars": 1064,
+          "meanChunkChars": 978
+        }
+      },
+      "indexBytes": 3675568,
+      "buildSeconds": 58.3,
+      "builtAt": "2026-09-17T12:09:37.433Z",
+      "manifestChunking": {
+        "fallbackMinChars": 40,
+        "minChars": 120,
+        "overlapChars": 200,
+        "recordMaxChars": 1400,
+        "rowsPerChunk": 1,
+        "slideMinChars": 40,
+        "tableHeadroomChars": 32,
+        "targetChars": 1600
+      },
+      "byFileType": {
+        "prose": {
+          "n": 8,
+          "recall5": {
+            "k": 8,
+            "n": 8,
+            "value": 1
+          },
+          "recall10": {
+            "k": 8,
+            "n": 8,
+            "value": 1
+          },
+          "spanMrr": 0.6563,
+          "docHit5": {
+            "k": 8,
+            "n": 8,
+            "value": 1
+          },
+          "splitAcrossRetrieved": 0,
+          "outcomes": {
+            "intact_retrieved": 8,
+            "intact_not_retrieved": 0,
+            "not_intact_anywhere": 0,
+            "absent": 0
+          }
+        },
+        "records": {
+          "n": 7,
+          "recall5": {
+            "k": 6,
+            "n": 7,
+            "value": 0.8571
+          },
+          "recall10": {
+            "k": 6,
+            "n": 7,
+            "value": 0.8571
+          },
+          "spanMrr": 0.7857,
+          "docHit5": {
+            "k": 7,
+            "n": 7,
+            "value": 1
+          },
+          "splitAcrossRetrieved": 0,
+          "outcomes": {
+            "intact_retrieved": 6,
+            "intact_not_retrieved": 1,
+            "not_intact_anywhere": 0,
+            "absent": 0
+          }
+        }
+      },
+      "perQuestion": [
+        {
+          "id": "CQ-01",
+          "fileType": "prose",
+          "docId": "kovacs-2006-applied-physiology-of-tennis-performance-bjsm-40",
+          "outcome": "intact_retrieved",
+          "rank": 1,
+          "chunkId": "kovacs-2006-applied-physiology-of-tennis-performance-bjsm-40#p0000_2",
+          "splitAcross": null,
+          "docRank": 1,
+          "docChunkCount": 29,
+          "top5": [
+            "kovacs-2006-applied-physiology-of-tennis-performance-bjsm-40#p0000_2",
+            "fernandez-et-al-2006-intensity-of-tennis-match-play-bjsm-405#p0003_3",
+            "fernandez-et-al-2006-intensity-of-tennis-match-play-bjsm-405#p0000_2",
+            "fernandez-et-al-2006-intensity-of-tennis-match-play-bjsm-405#p0000_3",
+            "kovacs-2006-applied-physiology-of-tennis-performance-bjsm-40#p0001_3"
+          ],
+          "ms": 5131
+        },
+        {
+          "id": "CQ-02",
+          "fileType": "prose",
+          "docId": "fernandez-et-al-2006-intensity-of-tennis-match-play-bjsm-405",
+          "outcome": "intact_retrieved",
+          "rank": 2,
+          "chunkId": "fernandez-et-al-2006-intensity-of-tennis-match-play-bjsm-405#p0000_2",
+          "splitAcross": null,
+          "docRank": 2,
+          "docChunkCount": 23,
+          "top5": [
+            "fernandez-fernandez-et-al-2009-a-review-of-the-activity-profile-and-physiological-demands-of-tennis-match-play#p0001_0",
+            "fernandez-et-al-2006-intensity-of-tennis-match-play-bjsm-405#p0000_2",
+            "ranchordas-et-al-2013-nutrition-for-tennis-practical-recommendations#p0005_2",
+            "fernandez-fernandez-et-al-2009-a-review-of-the-activity-profile-and-physiological-demands-of-tennis-match-play#p0002_3",
+            "fernandez-fernandez-et-al-2009-a-review-of-the-activity-profile-and-physiological-demands-of-tennis-match-play#p0007_1"
+          ],
+          "ms": 609
+        },
+        {
+          "id": "CQ-03",
+          "fileType": "prose",
+          "docId": "reid-schneiker-2008-strength-and-conditioning-in-tennis-current-research-and-practice-jsams-113",
+          "outcome": "intact_retrieved",
+          "rank": 4,
+          "chunkId": "reid-schneiker-2008-strength-and-conditioning-in-tennis-current-research-and-practice-jsams-113#p0001_0",
+          "splitAcross": null,
+          "docRank": 3,
+          "docChunkCount": 36,
+          "top5": [
+            "ranchordas-et-al-2013-nutrition-for-tennis-practical-recommendations#p0006_1",
+            "murphy-a-2013-methods-of-external-and-internal-training-load-monitoring-in-elite-tennis-environments#p0000_2",
+            "reid-schneiker-2008-strength-and-conditioning-in-tennis-current-research-and-practice-jsams-113#p0005_0",
+            "reid-schneiker-2008-strength-and-conditioning-in-tennis-current-research-and-practice-jsams-113#p0001_0",
+            "gomes-et-al-2011-physiological-demands-of-match-play-in-elite-tennis-a-case-study#p0002_0"
+          ],
+          "ms": 560
+        },
+        {
+          "id": "CQ-04",
+          "fileType": "prose",
+          "docId": "kovacs-2008-brief-review-of-fluid-and-hydration-in-tennis-ijspp",
+          "outcome": "intact_retrieved",
+          "rank": 1,
+          "chunkId": "kovacs-2008-brief-review-of-fluid-and-hydration-in-tennis-ijspp#p0001_1",
+          "splitAcross": null,
+          "docRank": 1,
+          "docChunkCount": 29,
+          "top5": [
+            "kovacs-2008-brief-review-of-fluid-and-hydration-in-tennis-ijspp#p0001_1",
+            "fernandez-fernandez-et-al-2009-a-review-of-the-activity-profile-and-physiological-demands-of-tennis-match-play#p0008_1",
+            "kovacs-2008-brief-review-of-fluid-and-hydration-in-tennis-ijspp#p0005_2",
+            "bergeron-et-al-2006-a-voluntary-fluid-intake-and-core-temperature-responses-in-tennis-bjsm#p0003_2",
+            "kovacs-2008-brief-review-of-fluid-and-hydration-in-tennis-ijspp#p0002_1"
+          ],
+          "ms": 458
+        },
+        {
+          "id": "CQ-05",
+          "fileType": "prose",
+          "docId": "hornery-et-al-2007-fatigue-in-tennis-mechanisms-of-fatigue-and-effect-on-performance-sports-med-3873",
+          "outcome": "intact_retrieved",
+          "rank": 1,
+          "chunkId": "hornery-et-al-2007-fatigue-in-tennis-mechanisms-of-fatigue-and-effect-on-performance-sports-med-3873#p0000_1",
+          "splitAcross": null,
+          "docRank": 1,
+          "docChunkCount": 52,
+          "top5": [
+            "hornery-et-al-2007-fatigue-in-tennis-mechanisms-of-fatigue-and-effect-on-performance-sports-med-3873#p0000_1",
+            "hornery-et-al-2007-fatigue-in-tennis-mechanisms-of-fatigue-and-effect-on-performance-sports-med-3873#p0001_0",
+            "baiget-et-al-2014-on-court-endurance-and-performance-testing-in-competitive-male-tennis-players#p0000_1",
+            "hornery-et-al-2007-fatigue-in-tennis-mechanisms-of-fatigue-and-effect-on-performance-sports-med-3873#p0001_2",
+            "kovacs-2006-applied-physiology-of-tennis-performance-bjsm-40#p0003_1"
+          ],
+          "ms": 475
+        },
+        {
+          "id": "CQ-06",
+          "fileType": "prose",
+          "docId": "reid-et-al-2009-planning-and-periodisation-for-the-elite-junior-tennis-player",
+          "outcome": "intact_retrieved",
+          "rank": 2,
+          "chunkId": "reid-et-al-2009-planning-and-periodisation-for-the-elite-junior-tennis-player#p0000_1",
+          "splitAcross": null,
+          "docRank": 2,
+          "docChunkCount": 21,
+          "top5": [
+            "reid-schneiker-2008-strength-and-conditioning-in-tennis-current-research-and-practice-jsams-113#p0005_0",
+            "reid-et-al-2009-planning-and-periodisation-for-the-elite-junior-tennis-player#p0000_1",
+            "reid-et-al-2009-planning-and-periodisation-for-the-elite-junior-tennis-player#p0000_2",
+            "ellenbecker-et-al-2007-a-descriptive-profile-of-age-specific-knee-extension-flexion-strength-in-elite-junior-tennis-players#p0004_0",
+            "baiget-et-al-2014-on-court-endurance-and-performance-testing-in-competitive-male-tennis-players#p0001_2"
+          ],
+          "ms": 512
+        },
+        {
+          "id": "CQ-07",
+          "fileType": "prose",
+          "docId": "ranchordas-et-al-2013-nutrition-for-tennis-practical-recommendations",
+          "outcome": "intact_retrieved",
+          "rank": 2,
+          "chunkId": "ranchordas-et-al-2013-nutrition-for-tennis-practical-recommendations#p0000_1",
+          "splitAcross": null,
+          "docRank": 1,
+          "docChunkCount": 60,
+          "top5": [
+            "ranchordas-et-al-2013-nutrition-for-tennis-practical-recommendations#p0009_1",
+            "ranchordas-et-al-2013-nutrition-for-tennis-practical-recommendations#p0000_1",
+            "ranchordas-et-al-2013-nutrition-for-tennis-practical-recommendations#p0009_4",
+            "ranchordas-et-al-2013-nutrition-for-tennis-practical-recommendations#p0009_3",
+            "ranchordas-et-al-2013-nutrition-for-tennis-practical-recommendations#p0009_2"
+          ],
+          "ms": 535
+        },
+        {
+          "id": "CQ-08",
+          "fileType": "prose",
+          "docId": "girard-et-al-2006-specific-incremental-field-test-for-aerobic-fitness-in-tennis",
+          "outcome": "intact_retrieved",
+          "rank": 2,
+          "chunkId": "girard-et-al-2006-specific-incremental-field-test-for-aerobic-fitness-in-tennis#p0000_0",
+          "splitAcross": null,
+          "docRank": 1,
+          "docChunkCount": 26,
+          "top5": [
+            "girard-et-al-2006-specific-incremental-field-test-for-aerobic-fitness-in-tennis#p0000_3",
+            "girard-et-al-2006-specific-incremental-field-test-for-aerobic-fitness-in-tennis#p0000_0",
+            "girard-et-al-2006-specific-incremental-field-test-for-aerobic-fitness-in-tennis#p0005_0",
+            "girard-et-al-2006-specific-incremental-field-test-for-aerobic-fitness-in-tennis#p0000_4",
+            "girard-et-al-2006-specific-incremental-field-test-for-aerobic-fitness-in-tennis#p0001_0"
+          ],
+          "ms": 563
+        },
+        {
+          "id": "CQ-09",
+          "fileType": "records",
+          "docId": "match-data-example",
+          "outcome": "intact_not_retrieved",
+          "rank": null,
+          "chunkId": null,
+          "splitAcross": null,
+          "docRank": 1,
+          "docChunkCount": 98,
+          "top5": [
+            "match-data-example#r000003",
+            "match-data-example#r000048",
+            "match-data-example#r000000",
+            "match-data-example#r000002",
+            "match-data-example#r000052"
+          ],
+          "ms": 584
+        },
+        {
+          "id": "CQ-10",
+          "fileType": "records",
+          "docId": "match-data-example",
+          "outcome": "intact_retrieved",
+          "rank": 1,
+          "chunkId": "match-data-example#r000047",
+          "splitAcross": null,
+          "docRank": 1,
+          "docChunkCount": 98,
+          "top5": [
+            "match-data-example#r000047",
+            "match-data-example#r000044",
+            "match-data-example#r000040",
+            "match-data-example#r000042",
+            "match-data-example#r000043"
+          ],
+          "ms": 530
+        },
+        {
+          "id": "CQ-11",
+          "fileType": "records",
+          "docId": "match-data-example",
+          "outcome": "intact_retrieved",
+          "rank": 1,
+          "chunkId": "match-data-example#r000085",
+          "splitAcross": null,
+          "docRank": 1,
+          "docChunkCount": 98,
+          "top5": [
+            "match-data-example#r000085",
+            "match-data-example#r000026",
+            "match-data-example#r000035",
+            "match-data-example#r000011",
+            "match-data-example#r000010"
+          ],
+          "ms": 544
+        },
+        {
+          "id": "CQ-12",
+          "fileType": "records",
+          "docId": "match-data-example",
+          "outcome": "intact_retrieved",
+          "rank": 1,
+          "chunkId": "match-data-example#r000039",
+          "splitAcross": null,
+          "docRank": 1,
+          "docChunkCount": 98,
+          "top5": [
+            "match-data-example#r000039",
+            "match-data-example#r000038",
+            "match-data-example#r000065",
+            "match-data-example#r000029",
+            "match-data-example#r000012"
+          ],
+          "ms": 505
+        },
+        {
+          "id": "CQ-13",
+          "fileType": "records",
+          "docId": "match-data-example",
+          "outcome": "intact_retrieved",
+          "rank": 2,
+          "chunkId": "match-data-example#r000054",
+          "splitAcross": null,
+          "docRank": 1,
+          "docChunkCount": 98,
+          "top5": [
+            "match-data-example#r000061",
+            "match-data-example#r000054",
+            "johnson-mchugh-2006-performance-demands-of-professional-male-tennis-players#p0001_0",
+            "johnson-mchugh-2006-performance-demands-of-professional-male-tennis-players#p0000_2",
+            "johnson-mchugh-2006-performance-demands-of-professional-male-tennis-players#p0001_1"
+          ],
+          "ms": 506
+        },
+        {
+          "id": "CQ-14",
+          "fileType": "records",
+          "docId": "match-data-example",
+          "outcome": "intact_retrieved",
+          "rank": 1,
+          "chunkId": "match-data-example#r000062",
+          "splitAcross": null,
+          "docRank": 1,
+          "docChunkCount": 98,
+          "top5": [
+            "match-data-example#r000062",
+            "match-data-example#r000038",
+            "match-data-example#r000065",
+            "match-data-example#r000030",
+            "match-data-example#r000029"
+          ],
+          "ms": 422
+        },
+        {
+          "id": "CQ-15",
+          "fileType": "records",
+          "docId": "match-data-example",
+          "outcome": "intact_retrieved",
+          "rank": 1,
+          "chunkId": "match-data-example#r000087",
+          "splitAcross": null,
+          "docRank": 1,
+          "docChunkCount": 98,
+          "top5": [
+            "match-data-example#r000087",
+            "match-data-example#r000002",
+            "match-data-example#r000007",
+            "kondric-et-al-2013-sport-nutrition-and-doping-in-tennis-an-analysis-of-athletes-attitudes-and-knowledge#p0005_3",
+            "johnson-mchugh-2006-performance-demands-of-professional-male-tennis-players#p0002_3"
+          ],
+          "ms": 408
+        }
+      ]
+    },
+    {
+      "id": "t800-o200-r1",
+      "params": {
+        "targetChars": 800,
+        "overlapChars": 200,
+        "rowsPerChunk": 1
+      },
+      "purpose": "prose challenger (targetChars) AND the deterministic control for records",
+      "rationale": "halving is the largest single-axis step at which the sentence splitter still works comfortably; ~800 chars is ~200 tokens, where most RAG literature converges. minChars stays at 120. because targetChars never reaches chunkRecords, the record chunks in this cell are byte-identical to the baseline's, so the record questions here are a control: a different record chunk holding the span would mean the harness, not the chunking, moved.",
+      "indexDir": "data\\index-eval\\t800-o200-r1",
+      "chunkCount": 1496,
+      "chunkCountByModality": {
+        "document": 1398,
+        "record": 98
+      },
+      "chunkStats": {
+        "document": {
+          "chunkCount": 1398,
+          "maxChunkChars": 1001,
+          "meanChunkChars": 846
+        },
+        "record": {
+          "chunkCount": 98,
+          "maxChunkChars": 1064,
+          "meanChunkChars": 978
+        }
+      },
+      "indexBytes": 5498236,
+      "buildSeconds": 94.9,
+      "builtAt": "2026-09-17T12:11:13.208Z",
+      "manifestChunking": {
+        "fallbackMinChars": 40,
+        "minChars": 120,
+        "overlapChars": 200,
+        "recordMaxChars": 1400,
+        "rowsPerChunk": 1,
+        "slideMinChars": 40,
+        "tableHeadroomChars": 32,
+        "targetChars": 800
+      },
+      "byFileType": {
+        "prose": {
+          "n": 8,
+          "recall5": {
+            "k": 8,
+            "n": 8,
+            "value": 1
+          },
+          "recall10": {
+            "k": 8,
+            "n": 8,
+            "value": 1
+          },
+          "spanMrr": 0.8542,
+          "docHit5": {
+            "k": 8,
+            "n": 8,
+            "value": 1
+          },
+          "splitAcrossRetrieved": 0,
+          "outcomes": {
+            "intact_retrieved": 8,
+            "intact_not_retrieved": 0,
+            "not_intact_anywhere": 0,
+            "absent": 0
+          }
+        },
+        "records": {
+          "n": 7,
+          "recall5": {
+            "k": 6,
+            "n": 7,
+            "value": 0.8571
+          },
+          "recall10": {
+            "k": 6,
+            "n": 7,
+            "value": 0.8571
+          },
+          "spanMrr": 0.7857,
+          "docHit5": {
+            "k": 7,
+            "n": 7,
+            "value": 1
+          },
+          "splitAcrossRetrieved": 0,
+          "outcomes": {
+            "intact_retrieved": 6,
+            "intact_not_retrieved": 1,
+            "not_intact_anywhere": 0,
+            "absent": 0
+          }
+        }
+      },
+      "perQuestion": [
+        {
+          "id": "CQ-01",
+          "fileType": "prose",
+          "docId": "kovacs-2006-applied-physiology-of-tennis-performance-bjsm-40",
+          "outcome": "intact_retrieved",
+          "rank": 1,
+          "chunkId": "kovacs-2006-applied-physiology-of-tennis-performance-bjsm-40#p0000_5",
+          "splitAcross": null,
+          "docRank": 1,
+          "docChunkCount": 59,
+          "top5": [
+            "kovacs-2006-applied-physiology-of-tennis-performance-bjsm-40#p0000_5",
+            "kovacs-2006-applied-physiology-of-tennis-performance-bjsm-40#p0001_8",
+            "reid-schneiker-2008-strength-and-conditioning-in-tennis-current-research-and-practice-jsams-113#p0001_3",
+            "kovacs-2006-applied-physiology-of-tennis-performance-bjsm-40#p0000_6",
+            "fernandez-et-al-2006-intensity-of-tennis-match-play-bjsm-405#p0003_7"
+          ],
+          "ms": 529
+        },
+        {
+          "id": "CQ-02",
+          "fileType": "prose",
+          "docId": "fernandez-et-al-2006-intensity-of-tennis-match-play-bjsm-405",
+          "outcome": "intact_retrieved",
+          "rank": 1,
+          "chunkId": "fernandez-et-al-2006-intensity-of-tennis-match-play-bjsm-405#p0000_5",
+          "splitAcross": null,
+          "docRank": 1,
+          "docChunkCount": 49,
+          "top5": [
+            "fernandez-et-al-2006-intensity-of-tennis-match-play-bjsm-405#p0000_5",
+            "fernandez-fernandez-et-al-2009-a-review-of-the-activity-profile-and-physiological-demands-of-tennis-match-play#p0001_0",
+            "ranchordas-et-al-2013-nutrition-for-tennis-practical-recommendations#p0005_4",
+            "hoppe-et-al-2014-running-activity-profile-of-adolescent-tennis-players-during-match-play#p0000_4",
+            "fernandez-et-al-2006-intensity-of-tennis-match-play-bjsm-405#p0001_6"
+          ],
+          "ms": 473
+        },
+        {
+          "id": "CQ-03",
+          "fileType": "prose",
+          "docId": "reid-schneiker-2008-strength-and-conditioning-in-tennis-current-research-and-practice-jsams-113",
+          "outcome": "intact_retrieved",
+          "rank": 3,
+          "chunkId": "reid-schneiker-2008-strength-and-conditioning-in-tennis-current-research-and-practice-jsams-113#p0001_1",
+          "splitAcross": null,
+          "docRank": 3,
+          "docChunkCount": 68,
+          "top5": [
+            "ranchordas-et-al-2013-nutrition-for-tennis-practical-recommendations#p0006_3",
+            "ranchordas-et-al-2013-nutrition-for-tennis-practical-recommendations#p0006_2",
+            "reid-schneiker-2008-strength-and-conditioning-in-tennis-current-research-and-practice-jsams-113#p0001_1",
+            "reid-schneiker-2008-strength-and-conditioning-in-tennis-current-research-and-practice-jsams-113#p0001_0",
+            "gomes-et-al-2011-physiological-demands-of-match-play-in-elite-tennis-a-case-study#p0002_0"
+          ],
+          "ms": 489
+        },
+        {
+          "id": "CQ-04",
+          "fileType": "prose",
+          "docId": "kovacs-2008-brief-review-of-fluid-and-hydration-in-tennis-ijspp",
+          "outcome": "intact_retrieved",
+          "rank": 1,
+          "chunkId": "kovacs-2008-brief-review-of-fluid-and-hydration-in-tennis-ijspp#p0001_3",
+          "splitAcross": null,
+          "docRank": 1,
+          "docChunkCount": 49,
+          "top5": [
+            "kovacs-2008-brief-review-of-fluid-and-hydration-in-tennis-ijspp#p0001_3",
+            "kovacs-2008-brief-review-of-fluid-and-hydration-in-tennis-ijspp#p0001_4",
+            "fernandez-fernandez-et-al-2009-a-review-of-the-activity-profile-and-physiological-demands-of-tennis-match-play#p0008_2",
+            "kovacs-2008-brief-review-of-fluid-and-hydration-in-tennis-ijspp#p0005_4",
+            "fernandez-fernandez-et-al-2009-a-review-of-the-activity-profile-and-physiological-demands-of-tennis-match-play#p0008_3"
+          ],
+          "ms": 461
+        },
+        {
+          "id": "CQ-05",
+          "fileType": "prose",
+          "docId": "hornery-et-al-2007-fatigue-in-tennis-mechanisms-of-fatigue-and-effect-on-performance-sports-med-3873",
+          "outcome": "intact_retrieved",
+          "rank": 1,
+          "chunkId": "hornery-et-al-2007-fatigue-in-tennis-mechanisms-of-fatigue-and-effect-on-performance-sports-med-3873#p0000_3",
+          "splitAcross": null,
+          "docRank": 1,
+          "docChunkCount": 102,
+          "top5": [
+            "hornery-et-al-2007-fatigue-in-tennis-mechanisms-of-fatigue-and-effect-on-performance-sports-med-3873#p0000_3",
+            "baiget-et-al-2014-on-court-endurance-and-performance-testing-in-competitive-male-tennis-players#p0006_7",
+            "kovacs-2006-applied-physiology-of-tennis-performance-bjsm-40#p0003_3",
+            "gomes-et-al-2011-physiological-demands-of-match-play-in-elite-tennis-a-case-study#p0001_4",
+            "hornery-et-al-2007-fatigue-in-tennis-mechanisms-of-fatigue-and-effect-on-performance-sports-med-3873#p0001_5"
+          ],
+          "ms": 482
+        },
+        {
+          "id": "CQ-06",
+          "fileType": "prose",
+          "docId": "reid-et-al-2009-planning-and-periodisation-for-the-elite-junior-tennis-player",
+          "outcome": "intact_retrieved",
+          "rank": 1,
+          "chunkId": "reid-et-al-2009-planning-and-periodisation-for-the-elite-junior-tennis-player#p0000_3",
+          "splitAcross": null,
+          "docRank": 1,
+          "docChunkCount": 43,
+          "top5": [
+            "reid-et-al-2009-planning-and-periodisation-for-the-elite-junior-tennis-player#p0000_3",
+            "reid-schneiker-2008-strength-and-conditioning-in-tennis-current-research-and-practice-jsams-113#p0005_1",
+            "reid-schneiker-2008-strength-and-conditioning-in-tennis-current-research-and-practice-jsams-113#p0005_0",
+            "ellenbecker-et-al-2007-a-descriptive-profile-of-age-specific-knee-extension-flexion-strength-in-elite-junior-tennis-players#p0004_0",
+            "reid-et-al-2009-planning-and-periodisation-for-the-elite-junior-tennis-player#p0000_6"
+          ],
+          "ms": 512
+        },
+        {
+          "id": "CQ-07",
+          "fileType": "prose",
+          "docId": "ranchordas-et-al-2013-nutrition-for-tennis-practical-recommendations",
+          "outcome": "intact_retrieved",
+          "rank": 2,
+          "chunkId": "ranchordas-et-al-2013-nutrition-for-tennis-practical-recommendations#p0000_2",
+          "splitAcross": null,
+          "docRank": 1,
+          "docChunkCount": 114,
+          "top5": [
+            "ranchordas-et-al-2013-nutrition-for-tennis-practical-recommendations#p0009_3",
+            "ranchordas-et-al-2013-nutrition-for-tennis-practical-recommendations#p0000_2",
+            "ranchordas-et-al-2013-nutrition-for-tennis-practical-recommendations#p0009_8",
+            "ranchordas-et-al-2013-nutrition-for-tennis-practical-recommendations#p0009_4",
+            "ranchordas-et-al-2013-nutrition-for-tennis-practical-recommendations#p0012_6"
+          ],
+          "ms": 558
+        },
+        {
+          "id": "CQ-08",
+          "fileType": "prose",
+          "docId": "girard-et-al-2006-specific-incremental-field-test-for-aerobic-fitness-in-tennis",
+          "outcome": "intact_retrieved",
+          "rank": 1,
+          "chunkId": "girard-et-al-2006-specific-incremental-field-test-for-aerobic-fitness-in-tennis#p0000_1",
+          "splitAcross": null,
+          "docRank": 1,
+          "docChunkCount": 52,
+          "top5": [
+            "girard-et-al-2006-specific-incremental-field-test-for-aerobic-fitness-in-tennis#p0000_1",
+            "girard-et-al-2006-specific-incremental-field-test-for-aerobic-fitness-in-tennis#p0000_8",
+            "girard-et-al-2006-specific-incremental-field-test-for-aerobic-fitness-in-tennis#p0005_0",
+            "girard-et-al-2006-specific-incremental-field-test-for-aerobic-fitness-in-tennis#p0005_1",
+            "girard-et-al-2006-specific-incremental-field-test-for-aerobic-fitness-in-tennis#p0001_0"
+          ],
+          "ms": 488
+        },
+        {
+          "id": "CQ-09",
+          "fileType": "records",
+          "docId": "match-data-example",
+          "outcome": "intact_not_retrieved",
+          "rank": null,
+          "chunkId": null,
+          "splitAcross": null,
+          "docRank": 1,
+          "docChunkCount": 98,
+          "top5": [
+            "match-data-example#r000003",
+            "match-data-example#r000048",
+            "match-data-example#r000000",
+            "match-data-example#r000002",
+            "match-data-example#r000052"
+          ],
+          "ms": 592
+        },
+        {
+          "id": "CQ-10",
+          "fileType": "records",
+          "docId": "match-data-example",
+          "outcome": "intact_retrieved",
+          "rank": 1,
+          "chunkId": "match-data-example#r000047",
+          "splitAcross": null,
+          "docRank": 1,
+          "docChunkCount": 98,
+          "top5": [
+            "match-data-example#r000047",
+            "match-data-example#r000044",
+            "match-data-example#r000040",
+            "match-data-example#r000042",
+            "match-data-example#r000043"
+          ],
+          "ms": 457
+        },
+        {
+          "id": "CQ-11",
+          "fileType": "records",
+          "docId": "match-data-example",
+          "outcome": "intact_retrieved",
+          "rank": 1,
+          "chunkId": "match-data-example#r000085",
+          "splitAcross": null,
+          "docRank": 1,
+          "docChunkCount": 98,
+          "top5": [
+            "match-data-example#r000085",
+            "match-data-example#r000026",
+            "match-data-example#r000035",
+            "match-data-example#r000011",
+            "match-data-example#r000010"
+          ],
+          "ms": 540
+        },
+        {
+          "id": "CQ-12",
+          "fileType": "records",
+          "docId": "match-data-example",
+          "outcome": "intact_retrieved",
+          "rank": 1,
+          "chunkId": "match-data-example#r000039",
+          "splitAcross": null,
+          "docRank": 1,
+          "docChunkCount": 98,
+          "top5": [
+            "match-data-example#r000039",
+            "match-data-example#r000038",
+            "match-data-example#r000065",
+            "match-data-example#r000029",
+            "match-data-example#r000012"
+          ],
+          "ms": 559
+        },
+        {
+          "id": "CQ-13",
+          "fileType": "records",
+          "docId": "match-data-example",
+          "outcome": "intact_retrieved",
+          "rank": 2,
+          "chunkId": "match-data-example#r000054",
+          "splitAcross": null,
+          "docRank": 2,
+          "docChunkCount": 98,
+          "top5": [
+            "johnson-mchugh-2006-performance-demands-of-professional-male-tennis-players#p0001_1",
+            "match-data-example#r000054",
+            "johnson-mchugh-2006-performance-demands-of-professional-male-tennis-players#p0001_0",
+            "match-data-example#r000061",
+            "johnson-mchugh-2006-performance-demands-of-professional-male-tennis-players#p0000_5"
+          ],
+          "ms": 535
+        },
+        {
+          "id": "CQ-14",
+          "fileType": "records",
+          "docId": "match-data-example",
+          "outcome": "intact_retrieved",
+          "rank": 1,
+          "chunkId": "match-data-example#r000062",
+          "splitAcross": null,
+          "docRank": 1,
+          "docChunkCount": 98,
+          "top5": [
+            "match-data-example#r000062",
+            "match-data-example#r000038",
+            "match-data-example#r000030",
+            "match-data-example#r000065",
+            "fernandez-fernandez-et-al-2009-a-review-of-the-activity-profile-and-physiological-demands-of-tennis-match-play#p0000_0"
+          ],
+          "ms": 458
+        },
+        {
+          "id": "CQ-15",
+          "fileType": "records",
+          "docId": "match-data-example",
+          "outcome": "intact_retrieved",
+          "rank": 1,
+          "chunkId": "match-data-example#r000087",
+          "splitAcross": null,
+          "docRank": 1,
+          "docChunkCount": 98,
+          "top5": [
+            "match-data-example#r000087",
+            "match-data-example#r000002",
+            "match-data-example#r000007",
+            "johnson-mchugh-2006-performance-demands-of-professional-male-tennis-players#p0002_8",
+            "kovacs-2006-applied-physiology-of-tennis-performance-bjsm-40#p0000_2"
+          ],
+          "ms": 439
+        }
+      ]
+    },
+    {
+      "id": "t1600-o0-r1",
+      "params": {
+        "targetChars": 1600,
+        "overlapChars": 0,
+        "rowsPerChunk": 1
+      },
+      "purpose": "overlap challenger",
+      "rationale": "directly tests the claim in retrieval.config.js that overlap has no measurable retrieval benefit -- turning a cited finding into a measurement on our own corpus, and it is the cheapest cell to build. known confound: minChars is applied AFTER the overlap tail is prepended (chunking.service.js splitText, the withOverlap filter), so a short trailing fragment that survives at overlap=200 is dropped at overlap=0. the cell therefore biases AGAINST overlap=0 by removing content rather than by failing to retrieve it.",
+      "indexDir": "data\\index-eval\\t1600-o0-r1",
+      "chunkCount": 805,
+      "chunkCountByModality": {
+        "document": 707,
+        "record": 98
+      },
+      "chunkStats": {
+        "document": {
+          "chunkCount": 707,
+          "maxChunkChars": 1600,
+          "meanChunkChars": 1333
+        },
+        "record": {
+          "chunkCount": 98,
+          "maxChunkChars": 1064,
+          "meanChunkChars": 978
+        }
+      },
+      "indexBytes": 3509361,
+      "buildSeconds": 56.7,
+      "builtAt": "2026-09-17T12:12:10.740Z",
+      "manifestChunking": {
+        "fallbackMinChars": 40,
+        "minChars": 120,
+        "overlapChars": 0,
+        "recordMaxChars": 1400,
+        "rowsPerChunk": 1,
+        "slideMinChars": 40,
+        "tableHeadroomChars": 32,
+        "targetChars": 1600
+      },
+      "byFileType": {
+        "prose": {
+          "n": 8,
+          "recall5": {
+            "k": 8,
+            "n": 8,
+            "value": 1
+          },
+          "recall10": {
+            "k": 8,
+            "n": 8,
+            "value": 1
+          },
+          "spanMrr": 0.7813,
+          "docHit5": {
+            "k": 8,
+            "n": 8,
+            "value": 1
+          },
+          "splitAcrossRetrieved": 0,
+          "outcomes": {
+            "intact_retrieved": 8,
+            "intact_not_retrieved": 0,
+            "not_intact_anywhere": 0,
+            "absent": 0
+          }
+        },
+        "records": {
+          "n": 7,
+          "recall5": {
+            "k": 6,
+            "n": 7,
+            "value": 0.8571
+          },
+          "recall10": {
+            "k": 6,
+            "n": 7,
+            "value": 0.8571
+          },
+          "spanMrr": 0.7857,
+          "docHit5": {
+            "k": 7,
+            "n": 7,
+            "value": 1
+          },
+          "splitAcrossRetrieved": 0,
+          "outcomes": {
+            "intact_retrieved": 6,
+            "intact_not_retrieved": 1,
+            "not_intact_anywhere": 0,
+            "absent": 0
+          }
+        }
+      },
+      "perQuestion": [
+        {
+          "id": "CQ-01",
+          "fileType": "prose",
+          "docId": "kovacs-2006-applied-physiology-of-tennis-performance-bjsm-40",
+          "outcome": "intact_retrieved",
+          "rank": 1,
+          "chunkId": "kovacs-2006-applied-physiology-of-tennis-performance-bjsm-40#p0000_2",
+          "splitAcross": null,
+          "docRank": 1,
+          "docChunkCount": 29,
+          "top5": [
+            "kovacs-2006-applied-physiology-of-tennis-performance-bjsm-40#p0000_2",
+            "fernandez-et-al-2006-intensity-of-tennis-match-play-bjsm-405#p0003_3",
+            "fernandez-et-al-2006-intensity-of-tennis-match-play-bjsm-405#p0000_2",
+            "fernandez-et-al-2006-intensity-of-tennis-match-play-bjsm-405#p0000_3",
+            "reid-schneiker-2008-strength-and-conditioning-in-tennis-current-research-and-practice-jsams-113#p0001_1"
+          ],
+          "ms": 472
+        },
+        {
+          "id": "CQ-02",
+          "fileType": "prose",
+          "docId": "fernandez-et-al-2006-intensity-of-tennis-match-play-bjsm-405",
+          "outcome": "intact_retrieved",
+          "rank": 1,
+          "chunkId": "fernandez-et-al-2006-intensity-of-tennis-match-play-bjsm-405#p0000_2",
+          "splitAcross": null,
+          "docRank": 1,
+          "docChunkCount": 23,
+          "top5": [
+            "fernandez-et-al-2006-intensity-of-tennis-match-play-bjsm-405#p0000_2",
+            "fernandez-fernandez-et-al-2009-a-review-of-the-activity-profile-and-physiological-demands-of-tennis-match-play#p0001_0",
+            "ranchordas-et-al-2013-nutrition-for-tennis-practical-recommendations#p0005_2",
+            "fernandez-fernandez-et-al-2009-a-review-of-the-activity-profile-and-physiological-demands-of-tennis-match-play#p0002_3",
+            "reid-duffield-2014-the-development-of-fatigue-during-match-play-tennis#p0000_1"
+          ],
+          "ms": 458
+        },
+        {
+          "id": "CQ-03",
+          "fileType": "prose",
+          "docId": "reid-schneiker-2008-strength-and-conditioning-in-tennis-current-research-and-practice-jsams-113",
+          "outcome": "intact_retrieved",
+          "rank": 4,
+          "chunkId": "reid-schneiker-2008-strength-and-conditioning-in-tennis-current-research-and-practice-jsams-113#p0001_0",
+          "splitAcross": null,
+          "docRank": 4,
+          "docChunkCount": 36,
+          "top5": [
+            "ranchordas-et-al-2013-nutrition-for-tennis-practical-recommendations#p0006_1",
+            "murphy-a-2013-methods-of-external-and-internal-training-load-monitoring-in-elite-tennis-environments#p0000_2",
+            "gomes-et-al-2011-physiological-demands-of-match-play-in-elite-tennis-a-case-study#p0002_0",
+            "reid-schneiker-2008-strength-and-conditioning-in-tennis-current-research-and-practice-jsams-113#p0001_0",
+            "reid-schneiker-2008-strength-and-conditioning-in-tennis-current-research-and-practice-jsams-113#p0005_0"
+          ],
+          "ms": 532
+        },
+        {
+          "id": "CQ-04",
+          "fileType": "prose",
+          "docId": "kovacs-2008-brief-review-of-fluid-and-hydration-in-tennis-ijspp",
+          "outcome": "intact_retrieved",
+          "rank": 1,
+          "chunkId": "kovacs-2008-brief-review-of-fluid-and-hydration-in-tennis-ijspp#p0001_1",
+          "splitAcross": null,
+          "docRank": 1,
+          "docChunkCount": 29,
+          "top5": [
+            "kovacs-2008-brief-review-of-fluid-and-hydration-in-tennis-ijspp#p0001_1",
+            "bergeron-et-al-2006-a-voluntary-fluid-intake-and-core-temperature-responses-in-tennis-bjsm#p0003_2",
+            "fernandez-fernandez-et-al-2009-a-review-of-the-activity-profile-and-physiological-demands-of-tennis-match-play#p0008_1",
+            "fernandez-fernandez-et-al-2009-a-review-of-the-activity-profile-and-physiological-demands-of-tennis-match-play#p0008_0",
+            "bergeron-et-al-2006-a-voluntary-fluid-intake-and-core-temperature-responses-in-tennis-bjsm#p0001_3"
+          ],
+          "ms": 524
+        },
+        {
+          "id": "CQ-05",
+          "fileType": "prose",
+          "docId": "hornery-et-al-2007-fatigue-in-tennis-mechanisms-of-fatigue-and-effect-on-performance-sports-med-3873",
+          "outcome": "intact_retrieved",
+          "rank": 1,
+          "chunkId": "hornery-et-al-2007-fatigue-in-tennis-mechanisms-of-fatigue-and-effect-on-performance-sports-med-3873#p0000_1",
+          "splitAcross": null,
+          "docRank": 1,
+          "docChunkCount": 52,
+          "top5": [
+            "hornery-et-al-2007-fatigue-in-tennis-mechanisms-of-fatigue-and-effect-on-performance-sports-med-3873#p0000_1",
+            "baiget-et-al-2014-on-court-endurance-and-performance-testing-in-competitive-male-tennis-players#p0000_1",
+            "hornery-et-al-2007-fatigue-in-tennis-mechanisms-of-fatigue-and-effect-on-performance-sports-med-3873#p0001_0",
+            "hornery-et-al-2007-fatigue-in-tennis-mechanisms-of-fatigue-and-effect-on-performance-sports-med-3873#p0001_2",
+            "gomes-et-al-2011-physiological-demands-of-match-play-in-elite-tennis-a-case-study#p0001_1"
+          ],
+          "ms": 555
+        },
+        {
+          "id": "CQ-06",
+          "fileType": "prose",
+          "docId": "reid-et-al-2009-planning-and-periodisation-for-the-elite-junior-tennis-player",
+          "outcome": "intact_retrieved",
+          "rank": 2,
+          "chunkId": "reid-et-al-2009-planning-and-periodisation-for-the-elite-junior-tennis-player#p0000_1",
+          "splitAcross": null,
+          "docRank": 2,
+          "docChunkCount": 21,
+          "top5": [
+            "reid-schneiker-2008-strength-and-conditioning-in-tennis-current-research-and-practice-jsams-113#p0005_0",
+            "reid-et-al-2009-planning-and-periodisation-for-the-elite-junior-tennis-player#p0000_1",
+            "ellenbecker-et-al-2007-a-descriptive-profile-of-age-specific-knee-extension-flexion-strength-in-elite-junior-tennis-players#p0004_0",
+            "reid-et-al-2009-planning-and-periodisation-for-the-elite-junior-tennis-player#p0000_2",
+            "ellenbecker-et-al-2007-a-descriptive-profile-of-age-specific-knee-extension-flexion-strength-in-elite-junior-tennis-players#p0003_2"
+          ],
+          "ms": 534
+        },
+        {
+          "id": "CQ-07",
+          "fileType": "prose",
+          "docId": "ranchordas-et-al-2013-nutrition-for-tennis-practical-recommendations",
+          "outcome": "intact_retrieved",
+          "rank": 1,
+          "chunkId": "ranchordas-et-al-2013-nutrition-for-tennis-practical-recommendations#p0000_1",
+          "splitAcross": null,
+          "docRank": 1,
+          "docChunkCount": 60,
+          "top5": [
+            "ranchordas-et-al-2013-nutrition-for-tennis-practical-recommendations#p0000_1",
+            "ranchordas-et-al-2013-nutrition-for-tennis-practical-recommendations#p0009_1",
+            "ranchordas-et-al-2013-nutrition-for-tennis-practical-recommendations#p0009_3",
+            "ranchordas-et-al-2013-nutrition-for-tennis-practical-recommendations#p0009_2",
+            "ranchordas-et-al-2013-nutrition-for-tennis-practical-recommendations#p0010_0"
+          ],
+          "ms": 582
+        },
+        {
+          "id": "CQ-08",
+          "fileType": "prose",
+          "docId": "girard-et-al-2006-specific-incremental-field-test-for-aerobic-fitness-in-tennis",
+          "outcome": "intact_retrieved",
+          "rank": 2,
+          "chunkId": "girard-et-al-2006-specific-incremental-field-test-for-aerobic-fitness-in-tennis#p0000_0",
+          "splitAcross": null,
+          "docRank": 1,
+          "docChunkCount": 26,
+          "top5": [
+            "girard-et-al-2006-specific-incremental-field-test-for-aerobic-fitness-in-tennis#p0000_3",
+            "girard-et-al-2006-specific-incremental-field-test-for-aerobic-fitness-in-tennis#p0000_0",
+            "girard-et-al-2006-specific-incremental-field-test-for-aerobic-fitness-in-tennis#p0001_0",
+            "girard-et-al-2006-specific-incremental-field-test-for-aerobic-fitness-in-tennis#p0005_0",
+            "girard-et-al-2006-specific-incremental-field-test-for-aerobic-fitness-in-tennis#p0004_4"
+          ],
+          "ms": 531
+        },
+        {
+          "id": "CQ-09",
+          "fileType": "records",
+          "docId": "match-data-example",
+          "outcome": "intact_not_retrieved",
+          "rank": null,
+          "chunkId": null,
+          "splitAcross": null,
+          "docRank": 1,
+          "docChunkCount": 98,
+          "top5": [
+            "match-data-example#r000003",
+            "match-data-example#r000048",
+            "match-data-example#r000000",
+            "match-data-example#r000002",
+            "match-data-example#r000052"
+          ],
+          "ms": 505
+        },
+        {
+          "id": "CQ-10",
+          "fileType": "records",
+          "docId": "match-data-example",
+          "outcome": "intact_retrieved",
+          "rank": 1,
+          "chunkId": "match-data-example#r000047",
+          "splitAcross": null,
+          "docRank": 1,
+          "docChunkCount": 98,
+          "top5": [
+            "match-data-example#r000047",
+            "match-data-example#r000044",
+            "match-data-example#r000040",
+            "match-data-example#r000042",
+            "match-data-example#r000043"
+          ],
+          "ms": 494
+        },
+        {
+          "id": "CQ-11",
+          "fileType": "records",
+          "docId": "match-data-example",
+          "outcome": "intact_retrieved",
+          "rank": 1,
+          "chunkId": "match-data-example#r000085",
+          "splitAcross": null,
+          "docRank": 1,
+          "docChunkCount": 98,
+          "top5": [
+            "match-data-example#r000085",
+            "match-data-example#r000026",
+            "match-data-example#r000035",
+            "match-data-example#r000011",
+            "match-data-example#r000010"
+          ],
+          "ms": 463
+        },
+        {
+          "id": "CQ-12",
+          "fileType": "records",
+          "docId": "match-data-example",
+          "outcome": "intact_retrieved",
+          "rank": 1,
+          "chunkId": "match-data-example#r000039",
+          "splitAcross": null,
+          "docRank": 1,
+          "docChunkCount": 98,
+          "top5": [
+            "match-data-example#r000039",
+            "match-data-example#r000038",
+            "match-data-example#r000065",
+            "match-data-example#r000029",
+            "match-data-example#r000012"
+          ],
+          "ms": 430
+        },
+        {
+          "id": "CQ-13",
+          "fileType": "records",
+          "docId": "match-data-example",
+          "outcome": "intact_retrieved",
+          "rank": 2,
+          "chunkId": "match-data-example#r000054",
+          "splitAcross": null,
+          "docRank": 1,
+          "docChunkCount": 98,
+          "top5": [
+            "match-data-example#r000061",
+            "match-data-example#r000054",
+            "johnson-mchugh-2006-performance-demands-of-professional-male-tennis-players#p0001_0",
+            "johnson-mchugh-2006-performance-demands-of-professional-male-tennis-players#p0000_2",
+            "fernandez-et-al-2006-intensity-of-tennis-match-play-bjsm-405#p0001_0"
+          ],
+          "ms": 590
+        },
+        {
+          "id": "CQ-14",
+          "fileType": "records",
+          "docId": "match-data-example",
+          "outcome": "intact_retrieved",
+          "rank": 1,
+          "chunkId": "match-data-example#r000062",
+          "splitAcross": null,
+          "docRank": 1,
+          "docChunkCount": 98,
+          "top5": [
+            "match-data-example#r000062",
+            "match-data-example#r000038",
+            "match-data-example#r000065",
+            "match-data-example#r000030",
+            "match-data-example#r000029"
+          ],
+          "ms": 558
+        },
+        {
+          "id": "CQ-15",
+          "fileType": "records",
+          "docId": "match-data-example",
+          "outcome": "intact_retrieved",
+          "rank": 1,
+          "chunkId": "match-data-example#r000087",
+          "splitAcross": null,
+          "docRank": 1,
+          "docChunkCount": 98,
+          "top5": [
+            "match-data-example#r000087",
+            "match-data-example#r000002",
+            "match-data-example#r000007",
+            "kondric-et-al-2013-sport-nutrition-and-doping-in-tennis-an-analysis-of-athletes-attitudes-and-knowledge#p0005_3",
+            "johnson-mchugh-2006-performance-demands-of-professional-male-tennis-players#p0002_3"
+          ],
+          "ms": 541
+        }
+      ]
+    },
+    {
+      "id": "t1600-o200-r5",
+      "params": {
+        "targetChars": 1600,
+        "overlapChars": 200,
+        "rowsPerChunk": 5
+      },
+      "purpose": "records challenger (rowsPerChunk)",
+      "rationale": "one row per chunk lets a single csv flood the candidate pool with near-identical neighbours and crowd prose out. five rather than three because fifteen questions cannot resolve a three-row difference; five rather than twenty because each row is capped at 1400 chars. known cost: a packed chunk carries ONE event_date (the first row's) and that date drives query-time filtering; event_date_span records the real range it covers.",
+      "indexDir": "data\\index-eval\\t1600-o200-r5",
+      "chunkCount": 734,
+      "chunkCountByModality": {
+        "document": 714,
+        "record": 20
+      },
+      "chunkStats": {
+        "document": {
+          "chunkCount": 714,
+          "maxChunkChars": 1801,
+          "meanChunkChars": 1466
+        },
+        "record": {
+          "chunkCount": 20,
+          "maxChunkChars": 5157,
+          "meanChunkChars": 4796
+        }
+      },
+      "indexBytes": 3502097,
+      "buildSeconds": 59.1,
+      "builtAt": "2026-09-17T12:13:10.681Z",
+      "manifestChunking": {
+        "fallbackMinChars": 40,
+        "minChars": 120,
+        "overlapChars": 200,
+        "recordMaxChars": 1400,
+        "rowsPerChunk": 5,
+        "slideMinChars": 40,
+        "tableHeadroomChars": 32,
+        "targetChars": 1600
+      },
+      "byFileType": {
+        "prose": {
+          "n": 8,
+          "recall5": {
+            "k": 8,
+            "n": 8,
+            "value": 1
+          },
+          "recall10": {
+            "k": 8,
+            "n": 8,
+            "value": 1
+          },
+          "spanMrr": 0.6563,
+          "docHit5": {
+            "k": 8,
+            "n": 8,
+            "value": 1
+          },
+          "splitAcrossRetrieved": 0,
+          "outcomes": {
+            "intact_retrieved": 8,
+            "intact_not_retrieved": 0,
+            "not_intact_anywhere": 0,
+            "absent": 0
+          }
+        },
+        "records": {
+          "n": 7,
+          "recall5": {
+            "k": 5,
+            "n": 7,
+            "value": 0.7143
+          },
+          "recall10": {
+            "k": 6,
+            "n": 7,
+            "value": 0.8571
+          },
+          "spanMrr": 0.5655,
+          "docHit5": {
+            "k": 6,
+            "n": 7,
+            "value": 0.8571
+          },
+          "splitAcrossRetrieved": 0,
+          "outcomes": {
+            "intact_retrieved": 5,
+            "intact_not_retrieved": 2,
+            "not_intact_anywhere": 0,
+            "absent": 0
+          }
+        }
+      },
+      "perQuestion": [
+        {
+          "id": "CQ-01",
+          "fileType": "prose",
+          "docId": "kovacs-2006-applied-physiology-of-tennis-performance-bjsm-40",
+          "outcome": "intact_retrieved",
+          "rank": 1,
+          "chunkId": "kovacs-2006-applied-physiology-of-tennis-performance-bjsm-40#p0000_2",
+          "splitAcross": null,
+          "docRank": 1,
+          "docChunkCount": 29,
+          "top5": [
+            "kovacs-2006-applied-physiology-of-tennis-performance-bjsm-40#p0000_2",
+            "fernandez-et-al-2006-intensity-of-tennis-match-play-bjsm-405#p0003_3",
+            "fernandez-et-al-2006-intensity-of-tennis-match-play-bjsm-405#p0000_2",
+            "fernandez-et-al-2006-intensity-of-tennis-match-play-bjsm-405#p0000_3",
+            "kovacs-2006-applied-physiology-of-tennis-performance-bjsm-40#p0001_3"
+          ],
+          "ms": 621
+        },
+        {
+          "id": "CQ-02",
+          "fileType": "prose",
+          "docId": "fernandez-et-al-2006-intensity-of-tennis-match-play-bjsm-405",
+          "outcome": "intact_retrieved",
+          "rank": 2,
+          "chunkId": "fernandez-et-al-2006-intensity-of-tennis-match-play-bjsm-405#p0000_2",
+          "splitAcross": null,
+          "docRank": 2,
+          "docChunkCount": 23,
+          "top5": [
+            "fernandez-fernandez-et-al-2009-a-review-of-the-activity-profile-and-physiological-demands-of-tennis-match-play#p0001_0",
+            "fernandez-et-al-2006-intensity-of-tennis-match-play-bjsm-405#p0000_2",
+            "ranchordas-et-al-2013-nutrition-for-tennis-practical-recommendations#p0005_2",
+            "fernandez-fernandez-et-al-2009-a-review-of-the-activity-profile-and-physiological-demands-of-tennis-match-play#p0002_3",
+            "fernandez-fernandez-et-al-2009-a-review-of-the-activity-profile-and-physiological-demands-of-tennis-match-play#p0007_1"
+          ],
+          "ms": 577
+        },
+        {
+          "id": "CQ-03",
+          "fileType": "prose",
+          "docId": "reid-schneiker-2008-strength-and-conditioning-in-tennis-current-research-and-practice-jsams-113",
+          "outcome": "intact_retrieved",
+          "rank": 4,
+          "chunkId": "reid-schneiker-2008-strength-and-conditioning-in-tennis-current-research-and-practice-jsams-113#p0001_0",
+          "splitAcross": null,
+          "docRank": 3,
+          "docChunkCount": 36,
+          "top5": [
+            "ranchordas-et-al-2013-nutrition-for-tennis-practical-recommendations#p0006_1",
+            "murphy-a-2013-methods-of-external-and-internal-training-load-monitoring-in-elite-tennis-environments#p0000_2",
+            "reid-schneiker-2008-strength-and-conditioning-in-tennis-current-research-and-practice-jsams-113#p0005_0",
+            "reid-schneiker-2008-strength-and-conditioning-in-tennis-current-research-and-practice-jsams-113#p0001_0",
+            "gomes-et-al-2011-physiological-demands-of-match-play-in-elite-tennis-a-case-study#p0002_0"
+          ],
+          "ms": 613
+        },
+        {
+          "id": "CQ-04",
+          "fileType": "prose",
+          "docId": "kovacs-2008-brief-review-of-fluid-and-hydration-in-tennis-ijspp",
+          "outcome": "intact_retrieved",
+          "rank": 1,
+          "chunkId": "kovacs-2008-brief-review-of-fluid-and-hydration-in-tennis-ijspp#p0001_1",
+          "splitAcross": null,
+          "docRank": 1,
+          "docChunkCount": 29,
+          "top5": [
+            "kovacs-2008-brief-review-of-fluid-and-hydration-in-tennis-ijspp#p0001_1",
+            "fernandez-fernandez-et-al-2009-a-review-of-the-activity-profile-and-physiological-demands-of-tennis-match-play#p0008_1",
+            "kovacs-2008-brief-review-of-fluid-and-hydration-in-tennis-ijspp#p0005_2",
+            "bergeron-et-al-2006-a-voluntary-fluid-intake-and-core-temperature-responses-in-tennis-bjsm#p0003_2",
+            "fernandez-fernandez-et-al-2009-a-review-of-the-activity-profile-and-physiological-demands-of-tennis-match-play#p0008_0"
+          ],
+          "ms": 529
+        },
+        {
+          "id": "CQ-05",
+          "fileType": "prose",
+          "docId": "hornery-et-al-2007-fatigue-in-tennis-mechanisms-of-fatigue-and-effect-on-performance-sports-med-3873",
+          "outcome": "intact_retrieved",
+          "rank": 1,
+          "chunkId": "hornery-et-al-2007-fatigue-in-tennis-mechanisms-of-fatigue-and-effect-on-performance-sports-med-3873#p0000_1",
+          "splitAcross": null,
+          "docRank": 1,
+          "docChunkCount": 52,
+          "top5": [
+            "hornery-et-al-2007-fatigue-in-tennis-mechanisms-of-fatigue-and-effect-on-performance-sports-med-3873#p0000_1",
+            "hornery-et-al-2007-fatigue-in-tennis-mechanisms-of-fatigue-and-effect-on-performance-sports-med-3873#p0001_0",
+            "baiget-et-al-2014-on-court-endurance-and-performance-testing-in-competitive-male-tennis-players#p0000_1",
+            "gomes-et-al-2011-physiological-demands-of-match-play-in-elite-tennis-a-case-study#p0001_1",
+            "hornery-et-al-2007-fatigue-in-tennis-mechanisms-of-fatigue-and-effect-on-performance-sports-med-3873#p0001_2"
+          ],
+          "ms": 492
+        },
+        {
+          "id": "CQ-06",
+          "fileType": "prose",
+          "docId": "reid-et-al-2009-planning-and-periodisation-for-the-elite-junior-tennis-player",
+          "outcome": "intact_retrieved",
+          "rank": 2,
+          "chunkId": "reid-et-al-2009-planning-and-periodisation-for-the-elite-junior-tennis-player#p0000_1",
+          "splitAcross": null,
+          "docRank": 2,
+          "docChunkCount": 21,
+          "top5": [
+            "reid-schneiker-2008-strength-and-conditioning-in-tennis-current-research-and-practice-jsams-113#p0005_0",
+            "reid-et-al-2009-planning-and-periodisation-for-the-elite-junior-tennis-player#p0000_1",
+            "reid-et-al-2009-planning-and-periodisation-for-the-elite-junior-tennis-player#p0000_2",
+            "ellenbecker-et-al-2007-a-descriptive-profile-of-age-specific-knee-extension-flexion-strength-in-elite-junior-tennis-players#p0004_0",
+            "reid-et-al-2009-planning-and-periodisation-for-the-elite-junior-tennis-player#p0006_2"
+          ],
+          "ms": 544
+        },
+        {
+          "id": "CQ-07",
+          "fileType": "prose",
+          "docId": "ranchordas-et-al-2013-nutrition-for-tennis-practical-recommendations",
+          "outcome": "intact_retrieved",
+          "rank": 2,
+          "chunkId": "ranchordas-et-al-2013-nutrition-for-tennis-practical-recommendations#p0000_1",
+          "splitAcross": null,
+          "docRank": 1,
+          "docChunkCount": 60,
+          "top5": [
+            "ranchordas-et-al-2013-nutrition-for-tennis-practical-recommendations#p0009_1",
+            "ranchordas-et-al-2013-nutrition-for-tennis-practical-recommendations#p0000_1",
+            "ranchordas-et-al-2013-nutrition-for-tennis-practical-recommendations#p0009_4",
+            "ranchordas-et-al-2013-nutrition-for-tennis-practical-recommendations#p0009_3",
+            "ranchordas-et-al-2013-nutrition-for-tennis-practical-recommendations#p0009_2"
+          ],
+          "ms": 515
+        },
+        {
+          "id": "CQ-08",
+          "fileType": "prose",
+          "docId": "girard-et-al-2006-specific-incremental-field-test-for-aerobic-fitness-in-tennis",
+          "outcome": "intact_retrieved",
+          "rank": 2,
+          "chunkId": "girard-et-al-2006-specific-incremental-field-test-for-aerobic-fitness-in-tennis#p0000_0",
+          "splitAcross": null,
+          "docRank": 1,
+          "docChunkCount": 26,
+          "top5": [
+            "girard-et-al-2006-specific-incremental-field-test-for-aerobic-fitness-in-tennis#p0000_3",
+            "girard-et-al-2006-specific-incremental-field-test-for-aerobic-fitness-in-tennis#p0000_0",
+            "girard-et-al-2006-specific-incremental-field-test-for-aerobic-fitness-in-tennis#p0005_0",
+            "girard-et-al-2006-specific-incremental-field-test-for-aerobic-fitness-in-tennis#p0000_4",
+            "girard-et-al-2006-specific-incremental-field-test-for-aerobic-fitness-in-tennis#p0001_0"
+          ],
+          "ms": 494
+        },
+        {
+          "id": "CQ-09",
+          "fileType": "records",
+          "docId": "match-data-example",
+          "outcome": "intact_not_retrieved",
+          "rank": 8,
+          "chunkId": "match-data-example#r000040",
+          "splitAcross": null,
+          "docRank": 1,
+          "docChunkCount": 20,
+          "top5": [
+            "match-data-example#r000050",
+            "match-data-example#r000000",
+            "match-data-example#r000090",
+            "match-data-example#r000055",
+            "match-data-example#r000045"
+          ],
+          "ms": 565
+        },
+        {
+          "id": "CQ-10",
+          "fileType": "records",
+          "docId": "match-data-example",
+          "outcome": "intact_retrieved",
+          "rank": 2,
+          "chunkId": "match-data-example#r000045",
+          "splitAcross": null,
+          "docRank": 1,
+          "docChunkCount": 20,
+          "top5": [
+            "match-data-example#r000040",
+            "match-data-example#r000045",
+            "match-data-example#r000035",
+            "match-data-example#r000055",
+            "match-data-example#r000005"
+          ],
+          "ms": 550
+        },
+        {
+          "id": "CQ-11",
+          "fileType": "records",
+          "docId": "match-data-example",
+          "outcome": "intact_retrieved",
+          "rank": 1,
+          "chunkId": "match-data-example#r000085",
+          "splitAcross": null,
+          "docRank": 1,
+          "docChunkCount": 20,
+          "top5": [
+            "match-data-example#r000085",
+            "match-data-example#r000045",
+            "match-data-example#r000040",
+            "match-data-example#r000010",
+            "match-data-example#r000095"
+          ],
+          "ms": 536
+        },
+        {
+          "id": "CQ-12",
+          "fileType": "records",
+          "docId": "match-data-example",
+          "outcome": "intact_retrieved",
+          "rank": 1,
+          "chunkId": "match-data-example#r000035",
+          "splitAcross": null,
+          "docRank": 1,
+          "docChunkCount": 20,
+          "top5": [
+            "match-data-example#r000035",
+            "match-data-example#r000065",
+            "match-data-example#r000030",
+            "match-data-example#r000000",
+            "match-data-example#r000025"
+          ],
+          "ms": 552
+        },
+        {
+          "id": "CQ-13",
+          "fileType": "records",
+          "docId": "match-data-example",
+          "outcome": "intact_not_retrieved",
+          "rank": null,
+          "chunkId": null,
+          "splitAcross": null,
+          "docRank": null,
+          "docChunkCount": 20,
+          "top5": [
+            "fernandez-et-al-2006-intensity-of-tennis-match-play-bjsm-405#p0001_0",
+            "johnson-mchugh-2006-performance-demands-of-professional-male-tennis-players#p0001_0",
+            "johnson-mchugh-2006-performance-demands-of-professional-male-tennis-players#p0001_2",
+            "johnson-mchugh-2006-performance-demands-of-professional-male-tennis-players#p0001_3",
+            "hornery-et-al-2007-fatigue-in-tennis-mechanisms-of-fatigue-and-effect-on-performance-sports-med-3873#p0001_1"
+          ],
+          "ms": 508
+        },
+        {
+          "id": "CQ-14",
+          "fileType": "records",
+          "docId": "match-data-example",
+          "outcome": "intact_retrieved",
+          "rank": 1,
+          "chunkId": "match-data-example#r000060",
+          "splitAcross": null,
+          "docRank": 1,
+          "docChunkCount": 20,
+          "top5": [
+            "match-data-example#r000060",
+            "match-data-example#r000065",
+            "match-data-example#r000030",
+            "match-data-example#r000035",
+            "match-data-example#r000025"
+          ],
+          "ms": 559
+        },
+        {
+          "id": "CQ-15",
+          "fileType": "records",
+          "docId": "match-data-example",
+          "outcome": "intact_retrieved",
+          "rank": 3,
+          "chunkId": "match-data-example#r000085",
+          "splitAcross": null,
+          "docRank": 1,
+          "docChunkCount": 20,
+          "top5": [
+            "match-data-example#r000000",
+            "match-data-example#r000005",
+            "match-data-example#r000085",
+            "match-data-example#r000010",
+            "match-data-example#r000050"
+          ],
+          "ms": 418
+        }
+      ]
+    },
+    {
+      "id": "t800-o0-r1",
+      "params": {
+        "targetChars": 800,
+        "overlapChars": 0,
+        "rowsPerChunk": 1
+      },
+      "purpose": "combination check: both prose winners together",
+      "rationale": "the first run's two prose challengers each beat the baseline on span-MRR while varying one variable apiece. adopting both as the live default would mean building an index nobody had measured, so this cell measures it. it answers only 'do the two gains survive together'; attribution to either variable comes from the single-variable cells, not from this one. the minChars confound compounds here: 800 chars with no overlap tail drops the most short fragments of any cell, so chunk count and not_intact_anywhere should be read alongside the scores.",
+      "indexDir": "data\\index-eval\\t800-o0-r1",
+      "chunkCount": 1471,
+      "chunkCountByModality": {
+        "document": 1373,
+        "record": 98
+      },
+      "chunkStats": {
+        "document": {
+          "chunkCount": 1373,
+          "maxChunkChars": 800,
+          "meanChunkChars": 685
+        },
+        "record": {
+          "chunkCount": 98,
+          "maxChunkChars": 1064,
+          "meanChunkChars": 978
+        }
+      },
+      "indexBytes": 5092644,
+      "buildSeconds": 93.8,
+      "builtAt": "2026-09-17T12:47:21.032Z",
+      "manifestChunking": {
+        "fallbackMinChars": 40,
+        "minChars": 120,
+        "overlapChars": 0,
+        "recordMaxChars": 1400,
+        "rowsPerChunk": 1,
+        "slideMinChars": 40,
+        "tableHeadroomChars": 32,
+        "targetChars": 800
+      },
+      "byFileType": {
+        "prose": {
+          "n": 8,
+          "recall5": {
+            "k": 8,
+            "n": 8,
+            "value": 1
+          },
+          "recall10": {
+            "k": 8,
+            "n": 8,
+            "value": 1
+          },
+          "spanMrr": 0.9167,
+          "docHit5": {
+            "k": 8,
+            "n": 8,
+            "value": 1
+          },
+          "splitAcrossRetrieved": 0,
+          "outcomes": {
+            "intact_retrieved": 8,
+            "intact_not_retrieved": 0,
+            "not_intact_anywhere": 0,
+            "absent": 0
+          }
+        },
+        "records": {
+          "n": 7,
+          "recall5": {
+            "k": 6,
+            "n": 7,
+            "value": 0.8571
+          },
+          "recall10": {
+            "k": 6,
+            "n": 7,
+            "value": 0.8571
+          },
+          "spanMrr": 0.7857,
+          "docHit5": {
+            "k": 7,
+            "n": 7,
+            "value": 1
+          },
+          "splitAcrossRetrieved": 0,
+          "outcomes": {
+            "intact_retrieved": 6,
+            "intact_not_retrieved": 1,
+            "not_intact_anywhere": 0,
+            "absent": 0
+          }
+        }
+      },
+      "perQuestion": [
+        {
+          "id": "CQ-01",
+          "fileType": "prose",
+          "docId": "kovacs-2006-applied-physiology-of-tennis-performance-bjsm-40",
+          "outcome": "intact_retrieved",
+          "rank": 1,
+          "chunkId": "kovacs-2006-applied-physiology-of-tennis-performance-bjsm-40#p0000_5",
+          "splitAcross": null,
+          "docRank": 1,
+          "docChunkCount": 59,
+          "top5": [
+            "kovacs-2006-applied-physiology-of-tennis-performance-bjsm-40#p0000_5",
+            "kovacs-2006-applied-physiology-of-tennis-performance-bjsm-40#p0000_4",
+            "reid-duffield-2014-the-development-of-fatigue-during-match-play-tennis#p0001_2",
+            "fernandez-et-al-2006-intensity-of-tennis-match-play-bjsm-405#p0003_7",
+            "kovacs-2006-applied-physiology-of-tennis-performance-bjsm-40#p0001_8"
+          ],
+          "ms": 579
+        },
+        {
+          "id": "CQ-02",
+          "fileType": "prose",
+          "docId": "fernandez-et-al-2006-intensity-of-tennis-match-play-bjsm-405",
+          "outcome": "intact_retrieved",
+          "rank": 1,
+          "chunkId": "fernandez-et-al-2006-intensity-of-tennis-match-play-bjsm-405#p0000_5",
+          "splitAcross": null,
+          "docRank": 1,
+          "docChunkCount": 48,
+          "top5": [
+            "fernandez-et-al-2006-intensity-of-tennis-match-play-bjsm-405#p0000_5",
+            "fernandez-fernandez-et-al-2009-a-review-of-the-activity-profile-and-physiological-demands-of-tennis-match-play#p0001_0",
+            "ranchordas-et-al-2013-nutrition-for-tennis-practical-recommendations#p0005_4",
+            "hoppe-et-al-2014-running-activity-profile-of-adolescent-tennis-players-during-match-play#p0000_4",
+            "fernandez-fernandez-et-al-2009-a-review-of-the-activity-profile-and-physiological-demands-of-tennis-match-play#p0002_7"
+          ],
+          "ms": 492
+        },
+        {
+          "id": "CQ-03",
+          "fileType": "prose",
+          "docId": "reid-schneiker-2008-strength-and-conditioning-in-tennis-current-research-and-practice-jsams-113",
+          "outcome": "intact_retrieved",
+          "rank": 3,
+          "chunkId": "reid-schneiker-2008-strength-and-conditioning-in-tennis-current-research-and-practice-jsams-113#p0001_0",
+          "splitAcross": null,
+          "docRank": 3,
+          "docChunkCount": 68,
+          "top5": [
+            "ranchordas-et-al-2013-nutrition-for-tennis-practical-recommendations#p0006_3",
+            "ranchordas-et-al-2013-nutrition-for-tennis-practical-recommendations#p0006_2",
+            "reid-schneiker-2008-strength-and-conditioning-in-tennis-current-research-and-practice-jsams-113#p0001_0",
+            "reid-schneiker-2008-strength-and-conditioning-in-tennis-current-research-and-practice-jsams-113#p0005_1",
+            "gomes-et-al-2011-physiological-demands-of-match-play-in-elite-tennis-a-case-study#p0002_0"
+          ],
+          "ms": 570
+        },
+        {
+          "id": "CQ-04",
+          "fileType": "prose",
+          "docId": "kovacs-2008-brief-review-of-fluid-and-hydration-in-tennis-ijspp",
+          "outcome": "intact_retrieved",
+          "rank": 1,
+          "chunkId": "kovacs-2008-brief-review-of-fluid-and-hydration-in-tennis-ijspp#p0001_3",
+          "splitAcross": null,
+          "docRank": 1,
+          "docChunkCount": 49,
+          "top5": [
+            "kovacs-2008-brief-review-of-fluid-and-hydration-in-tennis-ijspp#p0001_3",
+            "fernandez-fernandez-et-al-2009-a-review-of-the-activity-profile-and-physiological-demands-of-tennis-match-play#p0008_2",
+            "bergeron-et-al-2006-a-voluntary-fluid-intake-and-core-temperature-responses-in-tennis-bjsm#p0003_5",
+            "bergeron-et-al-2006-a-voluntary-fluid-intake-and-core-temperature-responses-in-tennis-bjsm#p0001_7",
+            "bergeron-et-al-2006-a-voluntary-fluid-intake-and-core-temperature-responses-in-tennis-bjsm#p0000_1"
+          ],
+          "ms": 467
+        },
+        {
+          "id": "CQ-05",
+          "fileType": "prose",
+          "docId": "hornery-et-al-2007-fatigue-in-tennis-mechanisms-of-fatigue-and-effect-on-performance-sports-med-3873",
+          "outcome": "intact_retrieved",
+          "rank": 1,
+          "chunkId": "hornery-et-al-2007-fatigue-in-tennis-mechanisms-of-fatigue-and-effect-on-performance-sports-med-3873#p0000_3",
+          "splitAcross": null,
+          "docRank": 1,
+          "docChunkCount": 99,
+          "top5": [
+            "hornery-et-al-2007-fatigue-in-tennis-mechanisms-of-fatigue-and-effect-on-performance-sports-med-3873#p0000_3",
+            "baiget-et-al-2014-on-court-endurance-and-performance-testing-in-competitive-male-tennis-players#p0006_7",
+            "gomes-et-al-2011-physiological-demands-of-match-play-in-elite-tennis-a-case-study#p0001_4",
+            "kovacs-2006-applied-physiology-of-tennis-performance-bjsm-40#p0003_3",
+            "hornery-et-al-2007-fatigue-in-tennis-mechanisms-of-fatigue-and-effect-on-performance-sports-med-3873#p0011_3"
+          ],
+          "ms": 563
+        },
+        {
+          "id": "CQ-06",
+          "fileType": "prose",
+          "docId": "reid-et-al-2009-planning-and-periodisation-for-the-elite-junior-tennis-player",
+          "outcome": "intact_retrieved",
+          "rank": 1,
+          "chunkId": "reid-et-al-2009-planning-and-periodisation-for-the-elite-junior-tennis-player#p0000_3",
+          "splitAcross": null,
+          "docRank": 1,
+          "docChunkCount": 42,
+          "top5": [
+            "reid-et-al-2009-planning-and-periodisation-for-the-elite-junior-tennis-player#p0000_3",
+            "reid-schneiker-2008-strength-and-conditioning-in-tennis-current-research-and-practice-jsams-113#p0005_1",
+            "reid-schneiker-2008-strength-and-conditioning-in-tennis-current-research-and-practice-jsams-113#p0005_0",
+            "ellenbecker-et-al-2007-a-descriptive-profile-of-age-specific-knee-extension-flexion-strength-in-elite-junior-tennis-players#p0004_0",
+            "reid-et-al-2009-planning-and-periodisation-for-the-elite-junior-tennis-player#p0000_5"
+          ],
+          "ms": 520
+        },
+        {
+          "id": "CQ-07",
+          "fileType": "prose",
+          "docId": "ranchordas-et-al-2013-nutrition-for-tennis-practical-recommendations",
+          "outcome": "intact_retrieved",
+          "rank": 1,
+          "chunkId": "ranchordas-et-al-2013-nutrition-for-tennis-practical-recommendations#p0000_2",
+          "splitAcross": null,
+          "docRank": 1,
+          "docChunkCount": 113,
+          "top5": [
+            "ranchordas-et-al-2013-nutrition-for-tennis-practical-recommendations#p0000_2",
+            "ranchordas-et-al-2013-nutrition-for-tennis-practical-recommendations#p0009_3",
+            "ranchordas-et-al-2013-nutrition-for-tennis-practical-recommendations#p0009_8",
+            "ranchordas-et-al-2013-nutrition-for-tennis-practical-recommendations#p0009_6",
+            "ranchordas-et-al-2013-nutrition-for-tennis-practical-recommendations#p0009_4"
+          ],
+          "ms": 588
+        },
+        {
+          "id": "CQ-08",
+          "fileType": "prose",
+          "docId": "girard-et-al-2006-specific-incremental-field-test-for-aerobic-fitness-in-tennis",
+          "outcome": "intact_retrieved",
+          "rank": 1,
+          "chunkId": "girard-et-al-2006-specific-incremental-field-test-for-aerobic-fitness-in-tennis#p0000_1",
+          "splitAcross": null,
+          "docRank": 1,
+          "docChunkCount": 51,
+          "top5": [
+            "girard-et-al-2006-specific-incremental-field-test-for-aerobic-fitness-in-tennis#p0000_1",
+            "girard-et-al-2006-specific-incremental-field-test-for-aerobic-fitness-in-tennis#p0000_8",
+            "girard-et-al-2006-specific-incremental-field-test-for-aerobic-fitness-in-tennis#p0004_8",
+            "girard-et-al-2006-specific-incremental-field-test-for-aerobic-fitness-in-tennis#p0001_0",
+            "girard-et-al-2006-specific-incremental-field-test-for-aerobic-fitness-in-tennis#p0005_0"
+          ],
+          "ms": 548
+        },
+        {
+          "id": "CQ-09",
+          "fileType": "records",
+          "docId": "match-data-example",
+          "outcome": "intact_not_retrieved",
+          "rank": null,
+          "chunkId": null,
+          "splitAcross": null,
+          "docRank": 1,
+          "docChunkCount": 98,
+          "top5": [
+            "match-data-example#r000003",
+            "match-data-example#r000048",
+            "match-data-example#r000000",
+            "match-data-example#r000002",
+            "match-data-example#r000052"
+          ],
+          "ms": 501
+        },
+        {
+          "id": "CQ-10",
+          "fileType": "records",
+          "docId": "match-data-example",
+          "outcome": "intact_retrieved",
+          "rank": 1,
+          "chunkId": "match-data-example#r000047",
+          "splitAcross": null,
+          "docRank": 1,
+          "docChunkCount": 98,
+          "top5": [
+            "match-data-example#r000047",
+            "match-data-example#r000044",
+            "match-data-example#r000040",
+            "match-data-example#r000042",
+            "match-data-example#r000043"
+          ],
+          "ms": 408
+        },
+        {
+          "id": "CQ-11",
+          "fileType": "records",
+          "docId": "match-data-example",
+          "outcome": "intact_retrieved",
+          "rank": 1,
+          "chunkId": "match-data-example#r000085",
+          "splitAcross": null,
+          "docRank": 1,
+          "docChunkCount": 98,
+          "top5": [
+            "match-data-example#r000085",
+            "match-data-example#r000026",
+            "match-data-example#r000035",
+            "match-data-example#r000011",
+            "match-data-example#r000010"
+          ],
+          "ms": 512
+        },
+        {
+          "id": "CQ-12",
+          "fileType": "records",
+          "docId": "match-data-example",
+          "outcome": "intact_retrieved",
+          "rank": 1,
+          "chunkId": "match-data-example#r000039",
+          "splitAcross": null,
+          "docRank": 1,
+          "docChunkCount": 98,
+          "top5": [
+            "match-data-example#r000039",
+            "match-data-example#r000038",
+            "match-data-example#r000065",
+            "match-data-example#r000029",
+            "match-data-example#r000012"
+          ],
+          "ms": 447
+        },
+        {
+          "id": "CQ-13",
+          "fileType": "records",
+          "docId": "match-data-example",
+          "outcome": "intact_retrieved",
+          "rank": 2,
+          "chunkId": "match-data-example#r000054",
+          "splitAcross": null,
+          "docRank": 2,
+          "docChunkCount": 98,
+          "top5": [
+            "johnson-mchugh-2006-performance-demands-of-professional-male-tennis-players#p0001_1",
+            "match-data-example#r000054",
+            "johnson-mchugh-2006-performance-demands-of-professional-male-tennis-players#p0001_0",
+            "match-data-example#r000061",
+            "johnson-mchugh-2006-performance-demands-of-professional-male-tennis-players#p0000_5"
+          ],
+          "ms": 527
+        },
+        {
+          "id": "CQ-14",
+          "fileType": "records",
+          "docId": "match-data-example",
+          "outcome": "intact_retrieved",
+          "rank": 1,
+          "chunkId": "match-data-example#r000062",
+          "splitAcross": null,
+          "docRank": 1,
+          "docChunkCount": 98,
+          "top5": [
+            "match-data-example#r000062",
+            "match-data-example#r000038",
+            "match-data-example#r000065",
+            "match-data-example#r000030",
+            "fernandez-fernandez-et-al-2009-a-review-of-the-activity-profile-and-physiological-demands-of-tennis-match-play#p0000_0"
+          ],
+          "ms": 506
+        },
+        {
+          "id": "CQ-15",
+          "fileType": "records",
+          "docId": "match-data-example",
+          "outcome": "intact_retrieved",
+          "rank": 1,
+          "chunkId": "match-data-example#r000087",
+          "splitAcross": null,
+          "docRank": 1,
+          "docChunkCount": 98,
+          "top5": [
+            "match-data-example#r000087",
+            "match-data-example#r000002",
+            "match-data-example#r000007",
+            "johnson-mchugh-2006-performance-demands-of-professional-male-tennis-players#p0002_8",
+            "kondric-et-al-2013-sport-nutrition-and-doping-in-tennis-an-analysis-of-athletes-attitudes-and-knowledge#p0000_2"
+          ],
+          "ms": 506
+        }
+      ]
+    }
+  ],
+  "decisions": [
+    {
+      "fileType": "prose",
+      "parameter": "targetChars",
+      "combination": false,
+      "baseline": {
+        "cell": "t1600-o200-r1",
+        "value": 1600
+      },
+      "challenger": {
+        "cell": "t800-o200-r1",
+        "value": 800
+      },
+      "recall5": {
+        "baseline": {
+          "k": 8,
+          "n": 8,
+          "value": 1
+        },
+        "challenger": {
+          "k": 8,
+          "n": 8,
+          "value": 1
+        }
+      },
+      "spanMrr": {
+        "baseline": 0.6563,
+        "challenger": 0.8542
+      },
+      "gapPp": 0,
+      "mrrGapPp": 19.8,
+      "winner": "t800-o200-r1",
+      "tieBrokenAt": "spanMrr",
+      "reason": "recall@5 gap of 0 points is under 10; span-MRR differs by 19.8 points (0.8542 vs 0.6563)."
+    },
+    {
+      "fileType": "prose",
+      "parameter": "overlapChars",
+      "combination": false,
+      "baseline": {
+        "cell": "t1600-o200-r1",
+        "value": 200
+      },
+      "challenger": {
+        "cell": "t1600-o0-r1",
+        "value": 0
+      },
+      "recall5": {
+        "baseline": {
+          "k": 8,
+          "n": 8,
+          "value": 1
+        },
+        "challenger": {
+          "k": 8,
+          "n": 8,
+          "value": 1
+        }
+      },
+      "spanMrr": {
+        "baseline": 0.6563,
+        "challenger": 0.7813
+      },
+      "gapPp": 0,
+      "mrrGapPp": 12.5,
+      "winner": "t1600-o0-r1",
+      "tieBrokenAt": "spanMrr",
+      "reason": "recall@5 gap of 0 points is under 10; span-MRR differs by 12.5 points (0.7813 vs 0.6563)."
+    },
+    {
+      "fileType": "records",
+      "parameter": "rowsPerChunk",
+      "combination": false,
+      "baseline": {
+        "cell": "t1600-o200-r1",
+        "value": 1
+      },
+      "challenger": {
+        "cell": "t1600-o200-r5",
+        "value": 5
+      },
+      "recall5": {
+        "baseline": {
+          "k": 6,
+          "n": 7,
+          "value": 0.8571
+        },
+        "challenger": {
+          "k": 5,
+          "n": 7,
+          "value": 0.7143
+        }
+      },
+      "spanMrr": {
+        "baseline": 0.7857,
+        "challenger": 0.5655
+      },
+      "gapPp": -14.3,
+      "winner": "t1600-o200-r1",
+      "tieBrokenAt": "recall5",
+      "reason": "span recall@5 differs by -14.3 points (5/7 vs 6/7), at or above the 10-point threshold."
+    },
+    {
+      "fileType": "prose",
+      "parameter": "targetChars+overlapChars",
+      "combination": true,
+      "baseline": {
+        "cell": "t1600-o200-r1",
+        "value": "1600/200"
+      },
+      "challenger": {
+        "cell": "t800-o0-r1",
+        "value": "800/0"
+      },
+      "recall5": {
+        "baseline": {
+          "k": 8,
+          "n": 8,
+          "value": 1
+        },
+        "challenger": {
+          "k": 8,
+          "n": 8,
+          "value": 1
+        }
+      },
+      "spanMrr": {
+        "baseline": 0.6563,
+        "challenger": 0.9167
+      },
+      "gapPp": 0,
+      "mrrGapPp": 26,
+      "winner": "t800-o0-r1",
+      "tieBrokenAt": "spanMrr",
+      "reason": "recall@5 gap of 0 points is under 10; span-MRR differs by 26 points (0.9167 vs 0.6563)."
+    }
+  ]
+}

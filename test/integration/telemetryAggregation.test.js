@@ -37,7 +37,18 @@ dotenv.config();
 
 const mongoUri = process.env.MONGODB_URI;
 const correlationId = `itest:telemetry-aggregation:${randomUUID()}`;
-const startedAt = new Date("2026-07-01T00:00:00.000Z");
+
+// Relative to now, never a hard-coded date. telemetryRecord.model.js puts a TTL
+// index on startedAt (expireAfterSeconds = TELEMETRY_RETENTION_DAYS * 86400, 30
+// days by default), so a fixed date silently rots past the retention window as
+// the calendar moves: this read "2026-07-01" until the seeds were 78 days old,
+// which made every record expired the instant it was inserted. MongoDB's TTL
+// monitor sweeps roughly once a minute, so the suite became a race against it --
+// the assertions that ran before a sweep saw the seed data and everything after
+// it queried an empty collection, surfacing as "Cannot read properties of
+// undefined" out of rows.find() and as counts of 0. That is why it passed
+// locally and failed in CI: same code, opposite side of a sweep.
+const startedAt = new Date(Date.now() - 60 * 60 * 1000);
 
 // Connect once for the whole file, not once per describe block. Each suite
 // used to open its own connection in before() and close it in after() on

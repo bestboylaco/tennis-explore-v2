@@ -208,7 +208,10 @@ function humanise(column) {
  * are kept on the chunk so a later story can hand the real numbers to something
  * that can do arithmetic.
  */
-export function verbaliseRow(row, { label = "Record", maxChars = 1400 } = {}) {
+export function verbaliseRow(
+  row,
+  { label = "Record", maxChars = retrievalConfig.chunking.recordMaxChars } = {},
+) {
   const parts = [];
 
   for (const [column, value] of Object.entries(row)) {
@@ -244,7 +247,7 @@ export function verbaliseRow(row, { label = "Record", maxChars = 1400 } = {}) {
  * file should not be making policy decisions.
  */
 export function chunkDocument(extracted, { authors = [], eventDate = null } = {}) {
-  const { targetChars, overlapChars, minChars } = retrievalConfig.chunking;
+  const { targetChars, overlapChars, minChars, fallbackMinChars } = retrievalConfig.chunking;
   const chunks = [];
 
   let lastSection = null;
@@ -292,8 +295,8 @@ export function chunkDocument(extracted, { authors = [], eventDate = null } = {}
   if (chunks.length === 0) {
     const joined = extracted.pages.join("\n\n").replace(/\s+/g, " ").trim();
 
-    if (joined.length >= 40) {
-      const pieces = splitText(joined, { targetChars, overlapChars, minChars: 40 });
+    if (joined.length >= fallbackMinChars) {
+      const pieces = splitText(joined, { targetChars, overlapChars, minChars: fallbackMinChars });
 
       pieces.forEach((text, index) => {
         const contextHeader = buildContextHeader({
@@ -339,7 +342,7 @@ export function chunkDocument(extracted, { authors = [], eventDate = null } = {}
  * lost. so tables are cut on row boundaries here and never handed over.
  */
 export function chunkTables(extracted, { authors = [], eventDate = null } = {}) {
-  const { targetChars } = retrievalConfig.chunking;
+  const { targetChars, tableHeadroomChars } = retrievalConfig.chunking;
   const tables = extracted.tables ?? [];
   const chunks = [];
 
@@ -371,7 +374,7 @@ export function chunkTables(extracted, { authors = [], eventDate = null } = {}) 
     // rows per part, from what is actually left after the heading and the
     // repeated header. floored at one so a single enormous row still lands
     // somewhere rather than looping forever.
-    const budget = targetChars - heading.length - headerText.length - 32;
+    const budget = targetChars - heading.length - headerText.length - tableHeadroomChars;
     const parts = [];
 
     let current = [];
@@ -437,21 +440,56 @@ export function chunkTables(extracted, { authors = [], eventDate = null } = {}) 
 }
 
 /**
- * chunks a table: one chunk per row, verbalised.
+ * the date columns that are actually populated on one row, in preference order.
+ *
+ * several columns could hold the date and which one is populated varies row by
+ * row -- the partner's match csv has both `match_date` and `Date`, and
+ * `match_date` is literally the string "Not available" on every row we have. so
+ * we collect every candidate and let the caller take the first that parses,
+ * rather than picking one column for the whole file and getting nulls
+ * everywhere.
+ */
+function rowDateCandidates(row, eventDateColumns) {
+  return eventDateColumns
+    .map((column) => row[column])
+    .filter((value) => value !== undefined && value !== null && String(value).trim() !== "");
+}
+
+/**
+ * chunks a table: `chunking.rowsPerChunk` verbalised rows per chunk.
+ *
+ * one row per chunk (the default, and the only thing this could do before) is
+ * the honest choice for citation -- a row's chunk points at exactly that row.
+ * its cost is that a single csv floods the candidate pool with near-identical
+ * neighbours and pushes prose out of the top k. packing rows together is the
+ * other side of that trade, so it is a setting rather than an assumption.
+ *
+ * what is deliberately held fixed so the two settings stay comparable:
+ *
+ *   - the chunk id stays `#r{firstRowIndex}`, NOT a group index. renumbering
+ *     every id would make ids incomparable across settings for no gain.
+ *   - rows are joined with "\n" and each keeps its own "Record." label, so a
+ *     row's verbalised text is byte-for-byte what it is at rowsPerChunk=1.
+ *     that is what lets one set of record ground truth hold across settings.
+ *   - a packed chunk has NO character cap. capping it would reintroduce an
+ *     interaction with targetChars and this would stop being a one-variable
+ *     comparison. the harness reports mean/max chunk chars per cell instead.
  */
 export function chunkRecords(extracted, { label = "Record", eventDateColumns = [] } = {}) {
-  return extracted.records.map((row, rowIndex) => {
-    const text = verbaliseRow(row, { label });
+  const { rowsPerChunk } = retrievalConfig.chunking;
+  const chunks = [];
 
-    // several columns could hold the date and which one is populated varies row
-    // by row -- the partner's match csv has both `match_date` and `Date`, and
-    // `match_date` is literally the string "Not available" on every row we have.
-    // so we collect every candidate in preference order and let the caller take
-    // the first that parses, rather than picking one column for the whole file
-    // and getting nulls everywhere.
-    const eventDateCandidates = eventDateColumns
-      .map((column) => row[column])
-      .filter((value) => value !== undefined && value !== null && String(value).trim() !== "");
+  for (
+    let firstRowIndex = 0;
+    firstRowIndex < extracted.records.length;
+    firstRowIndex += rowsPerChunk
+  ) {
+    const group = extracted.records.slice(firstRowIndex, firstRowIndex + rowsPerChunk);
+
+    const text = group.map((row) => verbaliseRow(row, { label })).join("\n");
+
+    const candidatesByRow = group.map((row) => rowDateCandidates(row, eventDateColumns));
+    const eventDateCandidates = candidatesByRow[0];
 
     const contextHeader = buildContextHeader({
       title: extracted.title,
@@ -465,21 +503,37 @@ export function chunkRecords(extracted, { label = "Record", eventDateColumns = [
       sourceType: extracted.sourceType,
     });
 
-    return {
-      chunk_id: `${extracted.docId}#r${String(rowIndex).padStart(6, "0")}`,
+    chunks.push({
+      chunk_id: `${extracted.docId}#r${String(firstRowIndex).padStart(6, "0")}`,
       doc_id: extracted.docId,
       modality: "record",
       title: extracted.title,
       section: null,
       page: null,
       table_id: extracted.tableId,
-      row_id: String(rowIndex),
+      // the FIRST row's index, still a plain string. assetLink.service.js builds
+      // `#row=${rowId}` from this and reads it back; a null or a group index
+      // would point a citation at the wrong place or at nothing.
+      row_id: String(firstRowIndex),
       text,
       context_header: contextHeader,
       embedding_text: contextHeader ? `${contextHeader}\n${text}` : text,
+      // the first row's candidates, which is what becomes `event_date`.
       raw_event_candidates: eventDateCandidates,
-    };
-  });
+      // how many rows this chunk actually speaks for. `row_id` alone cannot say
+      // it, and a citation that names one row for five is a claim we should be
+      // able to check.
+      row_count: group.length,
+      // every row's candidates, so the caller can record the real date range a
+      // packed chunk covers. a chunk carries ONE event_date and that date drives
+      // query-time filtering, so five rows with five dates means four of them
+      // are being filtered under a date that is not theirs. that is the true
+      // cost of packing and the caller is given what it needs to state it.
+      raw_event_candidates_by_row: candidatesByRow,
+    });
+  }
+
+  return chunks;
 }
 
 /**
@@ -491,11 +545,11 @@ export function chunkRecords(extracted, { label = "Record", eventDateColumns = [
  * also keeps the slide number exact, which is what a citation needs.
  */
 export function chunkSlides(extracted, { authors = [], eventDate = null } = {}) {
-  const { minChars } = retrievalConfig.chunking;
+  const { minChars, slideMinChars } = retrievalConfig.chunking;
 
   return extracted.slides
     // a slide holding only a number or a stray label is a section divider.
-    .filter((slide) => slide.text.length >= Math.min(minChars, 40))
+    .filter((slide) => slide.text.length >= Math.min(minChars, slideMinChars))
     .map((slide) => {
       const contextHeader = buildContextHeader({
         title: extracted.title,

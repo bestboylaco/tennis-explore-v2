@@ -1,0 +1,415 @@
+{
+  "videos": [
+    {
+      "video_id": "tomas_graca_-_2024_coaches_conference_v1__1080p_",
+      "url": null,
+      "source_path": "C:\\IFN736-project\\video\\tomas_graca_-_2024_coaches_conference_v1 (1080p).mp4",
+      "title": "tomas graca   2024 coaches conference v1 (1080p)",
+      "source": "transcript",
+      "language": "en",
+      "segments": [
+        {
+          "start": "0:00",
+          "end": "1:36",
+          "description": "Coaches, please welcome Thomas Gracker to the Virtual Grants and Coaches Conference. Thomas holds a master's degree in tennis coaching and sports science, and he runs Open Pro Tennis Academy based at the Ballarat Regional Tennis Center. He's also the founder of Connect2Coach. Throughout his 20 years of tennis coaching career, Thomas has successfully grown and managed a number of highly successful tennis programs in Slovakia and in Australia, and worked closely with the Tennis Australia Talent Development Hot Shots and Coach Education programs. His experiences working closely with fellow coaches, athletes, and parents highlighted a need for a better program management tool within our industry. Driven by a desire to support coaches like himself, Thomas founded Connect2Coach. Connect2Coach is a cutting edge mobile application designed to streamline communication, enhance organization, and optimize coaching practices within sporting clubs. Connect2Coach provides a comprehensive platform that connects coaches, players, and parents and club administrators in one convenient user-friendly interface. We welcome Thomas to walk us through it. Hi, everyone. My name is Thomas Gracker, and I'm founder of Connect2Coach. I'm very excited to share what Connect2Coach is about and how it will help our coaching industry to streamline our businesses. So let me tell you about the presentation itself",
+          "tags": []
+        },
+        {
+          "start": "0:45",
+          "end": "1:30",
+          "description": "On screen: The image shows a man sitting in front of a banner that reads \"Virtual Grand Slam Coaches' Conference.\" The banner also includes the logos for Tennis and the Virtual Grand Slam logo. The man is wearing a black shirt with a green logo on it, which appears to be related to tennis coaching or an organization associated with tennis. There are no visible numbers or charts in this image.",
+          "tags": [
+            "slide"
+          ]
+        },
+        {
+          "start": "1:30",
+          "end": "2:15",
+          "description": "On screen: The image displays a presentation slide with a title \"AGENDA\" at the top. Below the title are three bullet points, each accompanied by an icon: a question mark, a toolbox, and a speech bubble. Each bullet point contains text that seems to be related to a project or initiative, but the specific details of the text are not clear due to the resolution of the image. The slide has a plain white background with black text and icons. There is no visible data or graphical elements that would indicate a chart type or measurement. The style of the image suggests it is a digital presentation slide commonly used in business or academic settings.",
+          "tags": [
+            "slide"
+          ]
+        },
+        {
+          "start": "1:36",
+          "end": "3:38",
+          "description": "and what we will cover. Presentation has three parts. Now, the first part is about why we build it and how is this going to positively impact our coaching businesses. The second part is how much value Connect2Coach can bring to your businesses. And in the third part, we'll just showcase you the features that are included in Admin Portal, Coach, and ParentsUp, and it shows you how is this going to all work. So let's get into it. I've been just a little bit about myself. I've been a tennis coach for the past 20 years. In the last five years, I've been managing my own tennis academy in the region of Victoria. But before I moved to Ballarat, I was fortunate to manage a number of programs at Kim Warwick's Tennis Academy in Sydney. And Kim has been my mentor ever since. And during that time, I further developed my coaching philosophy as a coach. And that is that we as coaches have a very important role in play development and have a big responsibility to help every player to reach their potential. Whatever that might be, whether it's a club Saturday comp or college tennis, we're just going to make sure we provide that pathway for them as coaches. So after six years with Kim, I moved from Sydney to regional Victoria and started my own academy. When I got there, the program was pretty underdeveloped. We only had a part-time program. And in winter, it was basically non-existing. So it was an amazing opportunity to create a great tennis",
+          "tags": []
+        },
+        {
+          "start": "2:15",
+          "end": "3:00",
+          "description": "On screen: The image appears to be a screenshot of a digital presentation slide. It features a photograph on the left side showing an individual engaged in a sports activity, possibly tennis or badminton, given the presence of rackets and shuttlecock. On the right side, there is text that reads \"My Story\" with a subtitle that says \"SKIP.\" Below this, there are two logos, one resembling a globe and another that seems to be a stylized representation of a sports ball or trophy. The overall style suggests an informational presentation slide, likely used in a professional or educational context to discuss personal experiences or achievements related to sports.",
+          "tags": [
+            "slide"
+          ]
+        },
+        {
+          "start": "3:00",
+          "end": "3:45",
+          "description": "On screen: The image appears to be a screenshot of a video call or presentation slide. It features a person standing on a tennis court holding a tennis racket, with a sports ball in the background. There is text overlaying the image that reads \"MOVING TO BALLARAT\" and a logo at the bottom left corner. The image seems to be related to a discussion or announcement about moving to Ballarat, possibly for sports-related reasons.",
+          "tags": [
+            "slide"
+          ]
+        },
+        {
+          "start": "3:38",
+          "end": "6:02",
+          "description": "program for the community of Ballarat. And we grew quite quickly. But it wasn't only just because of the pathway and quality coaching we provided, but it was also for the quality service and professionalism that we provided off the court as well. And so where we are now, so Open Pro Tennis Academy has a 12-plex equation court, six clay courts, and we have six newly built Red Bull Hot Shots courts. I've got five coaches and 350 weekly students and almost 50 group classes and almost 100 private lessons a week. We've got some junior competition as well. But as I was growing my business and growing participation, there were a number of challenges that we faced. And I think that was just part of growing the business. I think the bigger we grew, the bigger challenges we faced, apart from just weather. So we basically identified two number of problems. For myself as a coach and business operator, as I grew my participation, my admin time obviously grew with me and using outdated and clunky softwares and manually handling email invoicing really started to affect my coaching. But also I got to know the parent side of the coin and for them keeping the track of all school and extracurricular activities after schools for multiple children is quite exhausting and confusing for them. They use a number of apps, a number of communication streams that is quite hard and challenging to keep the track of.",
+          "tags": []
+        },
+        {
+          "start": "3:45",
+          "end": "4:30",
+          "description": "On screen: The image appears to be a screenshot of a presentation slide, possibly from a sports science archive. It features a collage of images related to tennis, including a group photo of people on a tennis court, a child in a yellow dress holding a tennis racket, and a person standing on a tennis court with a sunset in the background. The text overlaying the image includes the title \"About OTP\" followed by bullet points listing various aspects of the organization or event, such as \"10+ Tennis Coaches,\" \"6 Clay Courts,\" \"4 Red Hard Surface Courts,\" and other details about the facilities and services offered by OTP. The slide seems to be informational, providing an overview of what OTP offers in terms of tennis programs and infrastructure.",
+          "tags": [
+            "slide"
+          ]
+        },
+        {
+          "start": "4:30",
+          "end": "5:15",
+          "description": "On screen: The image appears to be a screenshot of a presentation slide. It features a graphic design with a background that resembles a cloudy sky. On the left side of the slide, there is a text overlay that reads \"Challenges we faced.\" Below this text, there is an illustration of a signpost with the words \"WEPACED\" on it. The right side of the slide contains a photograph of a person standing in front of the same signpost. The overall style of the image suggests it is part of a presentation or lecture, possibly related to overcoming challenges or obstacles.",
+          "tags": [
+            "slide"
+          ]
+        },
+        {
+          "start": "5:15",
+          "end": "6:00",
+          "description": "On screen: The image appears to be a slide from a presentation, possibly related to sports coaching or training. It features two photographs side by side: on the left, there is an image of a tennis court with three individuals playing tennis; on the right, there is a photograph of a person standing in front of a podium with a microphone, suggesting they are giving a speech or presentation.\n\nThe slide has text that reads \"COACH 2 COACH\" at the top and \"BUSY PARENTS\" below it. The text also mentions \"CLUBS & COACHES,\" \"SPORTS SCIENCE,\" and \"TRACKING & ANALYSIS.\" There is a logo in the upper right corner that seems to be related to sports coaching or training, but the specific details of the logo are not clear.\n\nThe slide includes bullet points with text that is too small to read clearly. The overall style of the image suggests it is part of an educational or informational presentation, likely discussing topics related to sports coaching and parental involvement in sports clubs.",
+          "tags": [
+            "slide"
+          ]
+        },
+        {
+          "start": "6:00",
+          "end": "6:45",
+          "description": "On screen: The image appears to be a screenshot of a video call or presentation slide. It features an animated character that resembles a cat with a humanoid body, standing next to a figure labeled \"CAT.\" There is text overlaying the image that reads: \"If it's going to come, I'm gonna get it first.\" The text seems to be part of a conversation or explanation. The style of the image suggests it might be related to gaming or technology, as indicated by the presence of a cat character and the context of the conversation.",
+          "tags": [
+            "slide"
+          ]
+        },
+        {
+          "start": "6:02",
+          "end": "8:10",
+          "description": "So basically, I was running a number of different platforms. Each one was built for one and only purpose, whether it was communication via WhatsApp or Facebook or desktop portal to manage invoicing or class management. It was just a way too complicated. And staying on top of things was pretty challenging to say at least. And then it just started really affecting, like using all these inefficient softwares started really affecting the quality of the coaching I was providing. The first one was obviously registering for coaching itself. I had to sort of cut all my morning lessons because I just had to find some admin time for the business. I really felt overwhelmed of all the tasks that I really had to do. And then I started cutting corners on technique development of my players because just my mind was not on the court, but it was just still thinking about what I have to do when I get off the court. And just because I wasn't really able to develop the place to the level that I wanted, it really started to have effect on the job satisfaction. I was chasing unpaid inverses all the time and coaching kids in the afternoon. And then also, we all know how tennis coaches, the work-life balance is quite challenging as it is. And then after that, I sort of started making quite a lot of errors, especially in class bookings, missing things on not following up on inquiries. Or if I followed them up, it was just a little bit too slow.",
+          "tags": []
+        },
+        {
+          "start": "6:45",
+          "end": "7:30",
+          "description": "On screen: The image displays a slide from a presentation, which appears to be educational or informative in nature. It features a list of bullet points that discuss the impact of using inefficient software on productivity and quality. The text is too small to read clearly, but it seems to be outlining various consequences related to software efficiency. There are no visible logos, title-page artwork, decorative photographs, headshots, backgrounds, or stock imagery present in this image.",
+          "tags": [
+            "slide"
+          ]
+        },
+        {
+          "start": "7:30",
+          "end": "8:15",
+          "description": "On screen: The image displays a slide from a presentation, which appears to be educational or informative in nature. It features a title \"HOW USING INEFFICIENT SOFTWARE AFFECTED THE QUALITY OF COACHING VIDEO\" and a subtitle \"Reduced time for coaching lessons.\" Below the subtitle, there is a list of bullet points detailing the impact of using inefficient software on coaching quality. The text mentions reduced stress and burnout, increased job satisfaction, decreased time spent on tasks such as scheduling, communication, and development of materials. It also notes that coaches can now focus on their core competencies, which include teaching, developing relationships with clients, and providing personalized attention. The slide is designed to convey information in a structured manner, using bullet points to highlight key points.",
+          "tags": [
+            "slide"
+          ]
+        },
+        {
+          "start": "8:10",
+          "end": "10:26",
+          "description": "And it was really challenging. So I realized I needed one-stop-shop platform for all the business operations that is simply to use and effective on everything from finance, communication, and class management to player development as well. So there were apps on the market which were expensive and softwares were pretty clunky and couldn't do it all. So we took the plan and built a centralized platform that solved my problems and could therefore solve the problems of tennis coaches too. Every coach and parent that I spoke to was trying to find a way to do less admin and stay on top of things. So the first look after we built our beta version, I opened it up to 50 of my clients within the academy and before we actually opened it up to everyone else. And what I found was when I actually first tested the app with my own business, I found that my time spent on invoicing went down from seven hours a week to 15 minutes. And I also found that cash flow has improved significantly. And I recorded that my invoices were paid much faster with very little input just because of automated invoicing system that we built. And the customers embraced the change as well. So that was a big, significant signal for us to open it up to the entire academy. And also take it to the market. Basically, all these changes and impact that it had on my own business was a great indication that Connect2Coach is going to significantly help coaches",
+          "tags": []
+        },
+        {
+          "start": "9:00",
+          "end": "9:45",
+          "description": "On screen: The image appears to be a digital advertisement or promotional graphic for a product or service related to smartphones. It features two smartphones placed side by side against a white background, with one phone displaying a message on its screen and the other showing a battery icon. Above the phones, there is text that reads \"THE FIRST LOOK\" in bold letters, suggesting that this image may be showcasing a new product or feature for the first time. The overall style of the image is clean and modern, with a focus on the smartphones themselves.",
+          "tags": [
+            "slide"
+          ]
+        },
+        {
+          "start": "9:45",
+          "end": "10:30",
+          "description": "On screen: The image displays a screenshot of a social media post featuring a graphic with text overlaying it. The graphic shows a bar chart with two bars: one labeled \"Invoicing & Admin Time\" and another labeled \"Time spent on voice calls.\" Below the chart, there is a caption that reads, \"15 hours to 7 minutes increased invoice payment's by 25% in just 1 week of using the app. I'm not sure what this means but it sounds impressive.\" The text and numbers are clear and legible.",
+          "tags": [
+            "slide"
+          ]
+        },
+        {
+          "start": "10:26",
+          "end": "12:38",
+          "description": "and business operators just like me. And we took it to the market and then we found that Connect2Coach will save significant amount of messaging alone because we build in-app messaging platform within the app that I'm going to show you later in the presentation. And it just provides unlimited texts. And coaches reported that they can save, on average, just over $2,000 per year on text messaging alone. And this figure is based on average size of 250 weekly students. But if you have a tennis center with more weekly students, this figure will be much higher that you can save. And then also, Connect2Coach not only saves coaches money, but also makes them money and automated invoicing and removed email invoicing can significantly reduce the post-class admin. And that means the coaches save, on average, 200 hours on admin per year, which can generate around $25,000 in revenue. And yet, again, this figure is based on private lessons. So if you put that into group lessons or cardio tennis or anything like that, the amount the coaches can make will be much higher, obviously. And then, yeah, the third very important point was it's not only making money or saving money, but also the Connect2Coach can save coaches time. And I think that's very, very important to bring that time back for us. It's just another challenge that we always seek for ways to save more time. And having a coach allow us coaches",
+          "tags": []
+        },
+        {
+          "start": "10:30",
+          "end": "11:15",
+          "description": "On screen: The image appears to be a screenshot of a digital advertisement or announcement. It features a graphic design with text overlaying an image that seems to be related to sports science or coaching. The text at the top reads \"WE'LL SAVE $3,00 A YEAR ON TEXT MESSAGES TO PARENTS ALONE.\" Below this statement is a message saying \"CONNECT2COACH.COM SAVES YOU MONEY.\" The image also includes a logo or emblem in the upper left corner, but it's not clear what it represents without additional context. The overall style of the image suggests that it is meant to be informative and promotional, likely for a service related to sports coaching or communication with parents.",
+          "tags": [
+            "slide"
+          ]
+        },
+        {
+          "start": "11:15",
+          "end": "12:00",
+          "description": "On screen: The image shows a screenshot of a social media post featuring a meme with a humorous message about saving money by working long hours. The meme includes a caption that reads \"Saving me 600 hours a year on admin. That's $30K in revenue.\" Below the caption, there is a text overlay that says \"HOW C2C MAKE COACHES MONEY.\" The meme also features a graphic of a person with a speech bubble containing the text \"I don't know how to make money.\" The image has a playful and informal style, commonly associated with internet memes.",
+          "tags": [
+            "slide"
+          ]
+        },
+        {
+          "start": "12:00",
+          "end": "12:45",
+          "description": "On screen: The image shows a screenshot of a social media post featuring a meme with a humorous message about tracking attendance using a phone. The meme includes a photo of a person holding a smartphone and a text overlay that reads \"I can track attendance on my phone! How C2C save coaches time.\" The background is plain, and there are no logos or decorative elements visible in the image.",
+          "tags": [
+            "slide"
+          ]
+        },
+        {
+          "start": "12:38",
+          "end": "14:51",
+          "description": "to do their class management tasks so much faster, and with automated invoicing and effective communication within the app with parents and coaches, save not only a lot of their time, but also the client's time and parents' time. And that sort of leads to why we built the app for the parents as well. Parents do really expect more from coaches. And we had to find a way how we can provide the value to the coaches, not only on-court, but also off-court as well. And that was basically our main reason why we did that. And parents are our customers. And providing a value of the court is as important as on the court. And utilizing software that helps parents save time, help them be more efficient and access information fast from one centralized platform, it's just another layer to your service. It's as important as hiring a senior coach to improve the quality of your program. So once and once we started gathering feedback from parents, I think it was overwhelmingly positive. The main key takeaways where it saves time for them as well, like they can track the invoices from one central location. It creates an additional layer of professionalism for the coaches. And accessing information from one place is super helpful, especially when parents have a number of kids doing a number of classes, a number of sports. So it's super clear and effortless for them to stay on top of everything. And so this is just a little case study",
+          "tags": []
+        },
+        {
+          "start": "13:30",
+          "end": "14:15",
+          "description": "On screen: The image appears to be a photograph of a group of people, likely at a sports event or gathering, given the presence of sports equipment such as tennis rackets and a sports ball. There is text overlaying the image that reads \"Why we built opp for parents\" and \"Ensuring great customer engagement is crucial for building & maintaining strong loyal customers.\" The text suggests that the image may be related to a presentation or discussion about customer engagement strategies in the context of sports events or organizations.",
+          "tags": [
+            "slide"
+          ]
+        },
+        {
+          "start": "14:15",
+          "end": "15:00",
+          "description": "On screen: The image appears to be a screenshot of a presentation slide. It features a photograph of two individuals sitting on chairs at what seems to be a tennis court, with one person holding a tennis racket. There is text overlaying the image that reads \"WHY PARENTS LOVE CCB\" and below it, there are bullet points listing benefits such as saving time, looking after children, and creating additional income from one location. The slide also includes a logo for \"TEN Tennis,\" suggesting that this presentation may be related to tennis coaching or services offered by the organization.",
+          "tags": [
+            "slide"
+          ]
+        },
+        {
+          "start": "14:51",
+          "end": "16:55",
+          "description": "of one of the tennis clubs that we've been working with. They have 11 coaches in the program and 550 active users. And this is just some of the feedback that we gathered from one of the parents, Monica. She said the paying, invoicing, and booking classes definitely saved the most of her time. And then Andrew, the head coach, was saying that Connect2Coach provides basically one stop shop for all management tasks that he needs to run his business. So let's get into the features and how I would like to show you how Connect2Coach can save you the time going from seven hours to 15 minutes a week. So we'll go through different features from Admin Portal, coaches' apps, and parents' apps. So let's have a look what Connect2Coach is. So we have a cloud-based Admin Portal, which is accessible from anywhere, whether it's your phone, tablet, or computer. So you basically, there's no computer or laptop app that you have to download. It's simply you just log into the website and there it is. And then we have coaches and parents' profile apps. And all that is included in one monthly subscription fee. So there's no additional fees for any apps or messaging or anything like that, which you will see a little bit later. So this is the video of how you can create a class. There are some additional features that you can, hopefully, you will find helpful. So the first, you basically name the class as normal,",
+          "tags": []
+        },
+        {
+          "start": "15:00",
+          "end": "15:45",
+          "description": "On screen: The image appears to be a screenshot of a presentation slide. It features a title \"CASE STUDY\" at the top, followed by a subtitle \"11 coaches.\" Below this, there are three images:\n\n1. A photo of a person playing tennis on a court.\n2. A quote from an individual named \"Mary Connery & Fish,\" which reads, \"500 active users paying to watch classes and booking coaches for their kids.\"\n3. A quote from another individual named \"Robert Johnson,\" which says, \"100+ active users on the platform.\"\n4. A quote from a third individual named \"Sara Smith,\" which states, \"Connect2Coach an app that connects coaches with clients and manages their schedules.\"\n\nThe slide also includes a background image of a tennis court with players in action. The text is clear and legible, providing information about the case study's subject matter, which seems to be related to tennis coaching and technology platforms used for connecting coaches with clients.",
+          "tags": [
+            "slide"
+          ]
+        },
+        {
+          "start": "15:45",
+          "end": "16:30",
+          "description": "On screen: The image appears to be a screenshot of a video call or presentation slide. It features a laptop screen displaying a dashboard interface with various icons and data points, suggesting it is related to enterprise management or business analytics. There are two individuals visible on the call; one person is shown in a larger window on the right side of the screen, while the other appears as a smaller thumbnail image at the bottom left corner. The individual on the right is wearing a headset with a microphone and has their hands raised near their face, possibly gesturing during the conversation.\n\nThe text overlaying the image includes the title \"Connect2Coach\" and a subtitle that reads \"Enterprise as a Solution.\" Below this, there are two logos: one resembling a stylized letter 'C' with a number '2' next to it, and another logo featuring a globe with a checkmark through it. The overall style of the image suggests it is promotional or informational in nature, likely related to a business or technology service.",
+          "tags": [
+            "slide"
+          ]
+        },
+        {
+          "start": "16:30",
+          "end": "17:15",
+          "description": "On screen: The image displays a computer screen showing a user interface of what appears to be a sports analytics dashboard. The dashboard includes various charts and tables that seem to track performance metrics for athletes or teams. There are graphs displaying numerical data, likely representing statistics such as points scored, goals conceded, or other relevant figures. The specific details of the data are not clear due to the resolution of the image. The interface also has a navigation bar at the top with icons and text that suggest different sections or tools within the software. There is no visible text providing context or labels for the charts. The overall style of the image is utilitarian, focusing on the functionality of the software rather than aesthetics.",
+          "tags": [
+            "slide"
+          ]
+        },
+        {
+          "start": "16:55",
+          "end": "18:53",
+          "description": "but then you will be able to select coaches, the head coach, and then assistant coaches. So then that will bring you clarity of who is doing what within the class. You can have a class description, and you can also add lesson plans that are visible for parents and coaches. Address, if you run multiple venues, I think that's important to have. And once a one's parents see the description of the class, see the lesson plans, I think that cuts a lot of communication going back and forth between coaches and parents, especially when they don't know the class and they don't know whether the class is full or whether they're spout. The parents will be able to see everything before they actually book the class through the app. And obviously, you can set up the student limits. Then with the fees, you can select whether you are registered for GST or not. Then the other very important fee is that you can select the fee type, which is per class or per individual session. So for example, if you go per individual session, then if you have somebody who comes in week three or four, then the invoice is automatically calculated based on the number of weeks that are remaining. So you don't have to manually add the invoice. And then you can manually enroll the students as well. If you like, you can select the coach status. But normally parents would book the class through the app, and then you will just get a notification in the admin",
+          "tags": []
+        },
+        {
+          "start": "17:15",
+          "end": "18:00",
+          "description": "On screen: The image appears to be a screenshot of a computer interface, possibly from a software application related to sports science or data analysis. It shows a user interface with various sections and fields that are likely used for inputting and analyzing data.\n\nThe central part of the screen displays a table with columns labeled \"Class,\" \"Date,\" \"Time,\" \"Name,\" \"Email,\" and \"Phone.\" There is one entry in the table, which includes a name, an email address, and a phone number. The interface also has a navigation bar at the top with icons that suggest different functionalities of the software, such as adding new data, viewing existing data, and possibly other features.\n\nThe design of the interface is utilitarian, with a focus on functionality over aesthetics. There are no visible logos or decorative elements, which supports the idea that this image is not meant to be visually appealing but rather serves a practical purpose in managing sports science data.",
+          "tags": [
+            "slide"
+          ]
+        },
+        {
+          "start": "18:00",
+          "end": "18:45",
+          "description": "On screen: The image displays a computer screen showing a dashboard with various charts and data visualizations. There are two main sections visible:\n\n1. A table with columns labeled \"Name,\" \"Score,\" \"Date,\" and \"Status.\" Each row contains a name, a numerical score, a date, and a status indicator. The scores appear to be related to some form of performance or ranking, but the specific context is not clear from the image.\n\n2. A line chart with two lines representing different entities or teams. The x-axis is labeled \"Date,\" and the y-axis is labeled \"Score.\" There are numerical values along both axes, indicating a quantitative scale for the data represented by the lines. The exact numbers are not fully visible due to the resolution of the image.\n\nThe dashboard also includes a navigation bar at the top with icons that suggest different functionalities or sections within the application. Additionally, there is a watermark or logo in the bottom right corner, but it's too small and blurry to read clearly. The overall style of the image suggests it is a screenshot from a software interface used for data analysis or tracking.",
+          "tags": [
+            "slide"
+          ]
+        },
+        {
+          "start": "18:45",
+          "end": "19:30",
+          "description": "On screen: The image appears to be a screenshot of a presentation slide or a digital advertisement. It features a collage of images related to sports and communication, including smartphones displaying various content pieces such as social media posts, news articles, and a website. There is text overlaying the images that reads \"Connect2Coach as a communication hub\" and \"Categorised News Notifications.\" The slide also includes a logo or emblem in the top left corner, but the specific details of the logo are not clear. The overall style of the image suggests it is meant to showcase a platform or service related to sports coaching and communication tools.",
+          "tags": [
+            "slide"
+          ]
+        },
+        {
+          "start": "18:53",
+          "end": "20:57",
+          "description": "portal that there's a booking you just need to approve it. So just to make sure that everyone is in the right class. So the next one, Connect2Coach, I think for me as a coach, the communication was super important. And the Connect2Coach is kind of like a communication hub. So basically, you have a categorized news. You can set up all the categories that you like from makeup lessons, holiday programs, parents' education, et cetera. And then you have a two-way communication within the app where coaches can send a message directly to the parent, or they can send a message to a group. And obviously notifications are pretty standard. I think that's quite important. So every time you put in your news or send a message, the parents will get notified straight away. And this is how it looks like. Creating a news is pretty simple. So basically, you go to the news, you add news, you can add a picture, you can add a title as well. So then parents will be able to search the news. You can select the category so that, again, creates less time searching for the right information, for both parents and coaches. So then you obviously go to news description, and then you can attach file like PDF flyer for the holiday clinics, or that parents would be able to download. And once a once is done, parents receive your message instantly. This is kind of like a normal text message. They can open it straight away, or they can go back to it",
+          "tags": []
+        },
+        {
+          "start": "19:30",
+          "end": "20:15",
+          "description": "On screen: The image appears to be a screenshot of a presentation slide or an advertisement for a mobile application called \"Connect2Coach.\" It features a collage of images related to sports and communication, including smartphones displaying various content pieces such as news articles, social media posts, and a webpage. There is text overlaying the image that reads \"Connect2Coach as communication hub\" and \"Categorised News Notifications.\" The slide also includes a logo for the application and a call to action with the text \"Two way communications.\" The overall style of the image suggests it is meant to showcase the features and benefits of the Connect2Coach app.",
+          "tags": [
+            "slide"
+          ]
+        },
+        {
+          "start": "20:15",
+          "end": "21:00",
+          "description": "On screen: The image appears to be a screenshot of a computer interface displaying a user profile page. It includes a navigation bar at the top with various menu options such as \"Home,\" \"Add new,\" and \"Profile.\" Below this is a section titled \"User Profile\" with a placeholder image of a person's face, a name field labeled \"Name,\" and a description area that says \"Description.\" There are also fields for \"Email\" and \"Phone number,\" but the actual data is not visible. The bottom part of the screenshot shows a chat interface with two messages; one from the user to another party and one from the other party back to the user, but the text in these messages is not legible due to the image's resolution.",
+          "tags": [
+            "slide"
+          ]
+        },
+        {
+          "start": "20:57",
+          "end": "23:02",
+          "description": "later, or they can see all the news from one spot, basically, from one place. And yeah, this is how it looks like when you send it to parents. And yeah, that's pretty much it. And I think this is quite important, because to save parents time is as important as saving our time. So let's have a look at the. So then you have a connect to coaches getting things that faster, as I was telling or mentioning before that communication is super important, but also the class management and payments. So let's let's have a look at the payment. So basically, you can mark your attendance like each coach has their own classes that are linked to him. They would just go to the calendar, they click on the class, they can see all the all the plays, and then they can just mark the attendance. They can also send a message through the through the app and call the parents as well. So basically, when you go to the contacts, you have a clickable number and you can call them straight away without needing to have their contact details in your phone. And this is how our two-way communication works. You basically send a message to the individual, or this is a hot choice competition that I was doing on Friday, and we just wrapped it up. So that was pretty much it. Then the next one, I would like to show you that how easy it is for parents to book the class. So basically, you go to the app, you see the description,",
+          "tags": []
+        },
+        {
+          "start": "21:45",
+          "end": "22:30",
+          "description": "On screen: The image shows a smartphone displaying a mobile application interface. The app appears to be a social media platform, as indicated by the presence of a user profile picture, a navigation bar at the bottom, and a post feed with a post that includes an image and some text. The post has received likes and comments, suggesting it is part of a social network where users can interact with content shared by others.",
+          "tags": [
+            "slide"
+          ]
+        },
+        {
+          "start": "22:30",
+          "end": "23:15",
+          "description": "On screen: The image appears to be a screenshot of a social media post featuring a meme. The meme features a graphic design with text that reads \"PARENTS CAN BOOK A CLASS IN LESS THAN 25 SECONDS.\" Below this text is an image of a person sitting at a desk, looking at a computer screen. The background of the meme has a dark color and includes a logo or emblem in the upper left corner, which seems to be related to the content of the post. The overall style of the image suggests it is meant to be humorous or satirical, possibly commenting on the ease with which parents can enroll their children in classes compared to the difficulty faced by others.",
+          "tags": [
+            "slide"
+          ]
+        },
+        {
+          "start": "23:02",
+          "end": "24:54",
+          "description": "you can they can download the lesson plans as well. So that brings the clarity of knowing what the kids being taught within the class. They can select their favorite coach, select who is it for, and then just book the class. That's pretty much it. It takes only like 20 seconds, and it's super easy and straight forward. And then once it's done, the coach can process booking instantly. And this is where we are talking about going from seven hours of admin to 15 minutes. So basically, you get a notification that links straight to the class, and then you basically change the status to approve. Once someone's that's approved, then parents will get notification in their phones that Oscar has been approved within the class. And then invoice is basically automatically generated without me doing any admin, and it goes straight to the parents profile. So it's super straight forward. It takes 10, 15 seconds to do. And then once they have invoice, once parents have invoice in their profiles, they can just go to the invoice. They can see all the invoices that they have, whether they are paid or unpaid. You just go to unpaid, you see the invoice right there. You can download the invoice as well to the emails, or then you just go and pay and make a payment through the card. And that's pretty much it. So to process 750 students, which will only take like 10 seconds each, it would take total of like just over two hours of admin,",
+          "tags": []
+        },
+        {
+          "start": "23:15",
+          "end": "24:00",
+          "description": "On screen: The image appears to be a screenshot of a computer screen displaying a webpage with a user interface for managing student records. There are several sections visible on the page:\n\n1. A navigation bar at the top with links to different pages or sections, such as \"Dashboard,\" \"Students,\" and \"Reports.\"\n2. A search bar in the upper right corner of the screen.\n3. A section titled \"Update Student Information\" with a form that includes fields for student name, ID number, and other personal details.\n4. A table below the form displaying a list of students with columns for Name, ID, and various status indicators (e.g., \"Active,\" \"Inactive\"). The table also shows icons indicating different levels of access or permissions for each student.\n5. A red button labeled \"Add New Student\" in the lower right corner of the screen.\n6. A green checkmark icon next to some of the students' names, suggesting they have been marked as active or completed.\n7. The overall style of the image is a digital screenshot with a focus on user interface design for educational management software.",
+          "tags": [
+            "slide"
+          ]
+        },
+        {
+          "start": "24:45",
+          "end": "25:30",
+          "description": "On screen: The image displays a slide from a presentation, which appears to be educational in nature. It features a title that reads \"To process 750 students, with each student taking 10 seconds, it would take a total of 125 minutes.\" Below the title is a text box containing a message that says, \"To process 750 students, with each student taking 10 seconds, it would take a total of 125 minutes.\" The slide has a plain white background and includes a simple graphic element at the bottom. There are no logos or decorative elements present on this slide.",
+          "tags": [
+            "slide"
+          ]
+        },
+        {
+          "start": "24:54",
+          "end": "26:56",
+          "description": "managing bookings for your club. And that's not just a week, that's for the whole term. So this is how great Connect2Coach can be for the business. It's pretty straightforward, and it's done. But also, I would like to talk about coaching tool as well, because I think like me as a coach, I have done quite a lot of video analysis for my students, and I like to educate my parents, educate my clients as well, and just giving them a clarity of what I'm doing. So then they have a piece of mind that what we are doing within our, within the Tennis Center, it's straightforward. So having that communication, again, it's just another layer of service that we provide within our club. So the way how coaches can do the videos, they can just go to the class, they can select the player, they can tap on video, and this is one of my plays that I've been working with. Basically, you take a video straight from your phone, and then you can go faster, you can go slow, you can go slow motion as well. Once I was happy with the video, then you just upload that video to parents profile, that goes straight to the parents profile. You can add your comments as well for future reference, and you can always go back to all the videos that you can, that you can, then you can review. For the coaches, you can upload the videos from admin portal as well. So if you have some old videos of your players, you can upload them to their profiles",
+          "tags": []
+        },
+        {
+          "start": "25:30",
+          "end": "26:15",
+          "description": "On screen: The image appears to be a composite of several elements, including a smartphone displaying a social media post with a video analysis graphic, a screenshot of a mobile app interface, and a photograph of a person holding a tablet with an educational content displayed on it. There is also a text overlay that reads \"CONNECT2COACH as coaching tool\" and includes a logo for the platform. The image seems to be promoting a digital coaching tool, possibly related to sports science or analysis, as indicated by the video analysis graphic and the context of the social media post.",
+          "tags": [
+            "slide"
+          ]
+        },
+        {
+          "start": "26:15",
+          "end": "27:00",
+          "description": "On screen: The image shows a screenshot of a mobile device displaying a social media interface. On the screen, there is a post with a photo of a person and some text that appears to be a comment or caption. The user interface elements include a navigation bar at the bottom with icons for different functions such as home, search, and more. There are also keyboard keys visible on the screen. The image does not provide any information about sports science or figures from an archive.",
+          "tags": [
+            "slide"
+          ]
+        },
+        {
+          "start": "26:56",
+          "end": "29:22",
+          "description": "from the admin portal as well. And so this is how students' video reviews and parents' app work. They go straight to the app, they can select the videos, and this is another student of mine, you just download the videos to their phones. There's an option for that as well for parents, and then they can review and pause or forward the video as they like. So basically, this is again in slow motion, this time, you can easily press stop, pause, going back, forth, and you can really go in deep sort of mode to analyze the technique, but also if you have access to our clubs, you can actually via the app on the big screen, via AirPlay as well. So that's how efficient it is. And I think, again, it creates another layer of professionalism so that the parents can actually see the value of your coaching, they can see the progress the kids are having. So yeah, and then another sort of way how we use Connect to Coaches education tool is parents education. For example, I started my blog there, and I explained why modified equipment is best for developing of young players, they can read it. I started blog for parents guide for developing young players, but you can really do quite well with parents education as well. So yeah, and the second thing is with the lessons, when parents go to the calendar, they can see all the lessons they have currently booked. Once they have, they can read the description of the lesson,",
+          "tags": []
+        },
+        {
+          "start": "27:00",
+          "end": "27:45",
+          "description": "On screen: The image appears to be a screenshot of a mobile device displaying a social media platform interface. On the screen, there is a post with an image of a person playing tennis and a caption that reads \"Tennis player in action.\" Below the main image, there is a smaller thumbnail of the same person. The user interface elements include a navigation bar at the bottom with icons for different sections of the app, such as Home, Explore, Subscriptions, and more. There are also notifications and account information visible on the top right corner. The overall style of the image is that of a digital screenshot, capturing the content displayed on a smartphone screen.",
+          "tags": [
+            "slide"
+          ]
+        },
+        {
+          "start": "27:45",
+          "end": "28:30",
+          "description": "On screen: The image appears to be a screenshot of a mobile device displaying a social media platform interface. On the screen, there is a post featuring an image of a person playing tennis, accompanied by text that seems to be part of a conversation or commentary. The user interface elements include a navigation bar at the bottom with icons for different functions of the app, and a status bar at the top showing signal strength, battery level, and time. There is also a notification badge on one of the icons, indicating an unread message or notification. The text in the post includes a username, a comment, and some emojis. The image quality is low, making it difficult to read specific details.",
+          "tags": [
+            "slide"
+          ]
+        },
+        {
+          "start": "28:30",
+          "end": "29:15",
+          "description": "On screen: The image appears to be a screenshot of a mobile device displaying a social media post. The post contains an image of two individuals walking together, possibly in a park or similar outdoor setting. There is text overlaying the image, which seems to be part of a larger conversation or discussion, but it's not entirely clear due to the resolution and angle of the screenshot. The text includes what appears to be a link or URL, suggesting that the post may be directing viewers to additional information or resources.",
+          "tags": [
+            "slide"
+          ]
+        },
+        {
+          "start": "29:22",
+          "end": "31:31",
+          "description": "but they also can review the lesson plans for the term. So then the parents will see what the children actually learning within the class and they can download the lesson plans to their phones as well. So that's how it all works. There's obviously much more functionality to Connect to Coach. And so let's have a look at the snapshot of the features as I was basically mentioning. This is a snapshot of features that Connect to Coach has versus a couple of well-known softwares in the industry. And what you can see, there's a lot of limitations as what other apps can do. And our goal was to bring everything together in one app that supports end-to-end user interface. So I think that's pretty important to highlight as well. And then in terms of the Connect to Coach and how Connect to Coach is positioned on the market, sometimes coaches don't realize the additional costs that other products have, but when you break it down, there's a significant difference in pricing. So for example, tennis-based onboarding fees are more than a yearly subscription of Connect to Coach. Another massive advantage is that our messaging is unlimited and has no character limit. So basically coaches can save significant amount of money by communicating effectively. So just to summarize how the app looks for the coaches, it is very simple and easy to use dashboard that consists of list of classes that coaches have currently in running.",
+          "tags": []
+        },
+        {
+          "start": "30:00",
+          "end": "30:45",
+          "description": "On screen: The image appears to be a screenshot of a mobile device displaying a webpage or application interface. It features a banner at the top with the text \"Connect2Coach\" and below it is a list of features such as \"Call for Appointment,\" \"Video Call,\" \"Chat,\" \"Profile,\" \"Payment,\" \"Bookings,\" \"Notifications,\" \"Messages,\" \"Settings,\" \"Logout,\" and \"Privacy Policy.\" There are also icons representing different functionalities, including a camera icon, a microphone icon, a chat bubble icon, and a user profile icon. The bottom of the image shows a series of smartphones with their screens displaying various app features, such as a calendar, a messaging interface, and a payment confirmation screen. There is also a person's face visible in the bottom right corner of the image.",
+          "tags": [
+            "slide"
+          ]
+        },
+        {
+          "start": "30:45",
+          "end": "31:30",
+          "description": "On screen: The image displays a financial summary of a sports science project. It features a table with various columns such as \"C2 in the Market,\" \"Student Coaches,\" \"Onboarding,\" and \"Total.\" Each column has numerical values associated with it, indicating costs or expenses related to these categories. There are also logos for two companies at the top of the image: one is \"Innovative Business Solutions\" and the other is \"TennisBiz.\" The table includes a row labeled \"Subtotal,\" which shows a total amount of $1,900. Additionally, there's a note indicating that the onboarding fee for student coaches is $600. The image appears to be a screenshot from a presentation or report related to sports science and business operations.",
+          "tags": [
+            "slide"
+          ]
+        },
+        {
+          "start": "31:30",
+          "end": "32:15",
+          "description": "On screen: The image appears to be a screenshot of a presentation slide. It features a graphic design with text overlaying an illustration of a smartphone displaying a mobile application interface. The text on the slide includes a title \"Centralised platform for parents to find all clubs information in one place\" and bullet points detailing the benefits of using the app, such as access to children's training schedules, communication with coaches, and more. There is also a logo at the top left corner that seems to be related to the content of the slide. The style of the image suggests it is meant for educational or informational purposes, likely used in a presentation or lecture.",
+          "tags": [
+            "slide"
+          ]
+        },
+        {
+          "start": "31:31",
+          "end": "33:44",
+          "description": "Then they have inbox for two-way communication stream, contact list that allows coaches to find all the contacts from one place. You don't have to keep your contact list in your phone. Everything is within the app and then for parents, again, very simple and easy to navigate dashboard. That covers basically everything from invoicing class booking videos and news as well. So we also have a pilot program, which I would like to invite you to. We only have limited sports for 10 clubs to have Connect to Coach for three, four, 12 weeks where we can work together and shape how the Connect to Coach will look like in the future. I think this is a great opportunity for tennis operators to have a say like what is working, what they would like to have within the Connect to Coach. But we only have limited sports. So in terms of the access, the pilot program, you just basically scan the QR code and register. And that's pretty much it. So if the pilot program is full, then you can access our 30 day free trial where you can select your monthly plan and complete your details to get started by simply scanning the QR code. And if you like to contact me directly, my contact details like email and my phone number is on the first slide of this presentation. So I would really like to thank you guys for having a look and what Connect to Coach has to offer. And I would love to work with all of you. So hopefully we'll be in touch very soon.",
+          "tags": []
+        },
+        {
+          "start": "33:00",
+          "end": "33:45",
+          "description": "On screen: The image appears to be a screenshot of a digital advertisement or promotional material for a service related to sports science. It features a QR code at the top right corner and a call to action that says \"Access the 30 day free trial.\" Below this, there is a text that reads \"Select your monthly plan and complete your details to get started.\" The background of the image has a dark color scheme with a pattern that resembles a digital or cybernetic theme. There are no visible charts, graphs, or other data visualizations in the image.",
+          "tags": [
+            "slide"
+          ]
+        }
+      ]
+    }
+  ],
+  "_keyframes_done": true
+}

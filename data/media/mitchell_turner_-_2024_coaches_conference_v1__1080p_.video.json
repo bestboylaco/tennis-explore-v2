@@ -1,0 +1,445 @@
+{
+  "videos": [
+    {
+      "video_id": "mitchell_turner_-_2024_coaches_conference_v1__1080p_",
+      "url": null,
+      "source_path": "C:\\IFN736-project\\video\\mitchell_turner_-_2024_coaches_conference_v1 (1080p).mp4",
+      "title": "mitchell turner   2024 coaches conference v1 (1080p)",
+      "source": "transcript",
+      "language": "en",
+      "segments": [
+        {
+          "start": "0:00",
+          "end": "1:41",
+          "description": "Coaches, please welcome Dr. Mitchell Turner to the Virtual Grants Am Coaches Conference. Dr. Turner is a researcher in the systematic profiling in neurological conditions team at the Edith Cowan University and a sleep consultant at the Mali's Consulting. Mitchell's education background includes exercise and sports science, strength and conditioning and sleep science. Mitchell has recently completed his PhD thesis which aimed to understand the impact sleep-wake behavior and chronotype have on match play and physical performance of tennis players. He is coordinating currently light therapy trials to improve sleep and reduce fatigue for people living with neurological conditions. He has established international collaborations, published numerous peer-reviewed publications and presented at international conferences and invited seminars. Mitchell is passionate about sleep, physical performance and data science. He's a former tennis coach and player but now focuses on improving the performance of others through sleep and chronobiology interventions and education. In today's presentation, Dr. Mitchell talks about the importance of sleep with the tennis performance. Welcome, Dr. Mitchell Turner. Hello, everyone. Thank you for attending my presentation today on the importance of sleep and chronobiology in tennis. First off, I'd like to thank Scott Rawlings and everyone at the Australian Open Coaches Conference",
+          "tags": []
+        },
+        {
+          "start": "0:00",
+          "end": "0:45",
+          "description": "On screen: The image shows a man standing in front of a banner. The banner has text that reads \"VIRTUAL GRAND SLAM COACHES' CONFERENCE\" and includes logos for Tennis and the Virtual Grand Slam. The man is wearing a sports jersey with the word \"Tennis\" on it, suggesting he is associated with the sport of tennis.",
+          "tags": [
+            "slide"
+          ]
+        },
+        {
+          "start": "0:45",
+          "end": "1:30",
+          "description": "On screen: The image shows a man standing in front of a banner. The banner has text that reads \"Virtual Grand Slam Coaches' Conference\" and includes logos for Tennis and the Virtual Grand Slam. The man is wearing a sports jersey with the word \"Tennis\" on it, suggesting he is associated with the sport.",
+          "tags": [
+            "slide"
+          ]
+        },
+        {
+          "start": "1:41",
+          "end": "3:24",
+          "description": "for allowing me to do this presentation today. So, about myself, I'm currently a postdoctoral research fellow at Edith Cowan University and a scientific consultant at Mali's Consulting. So, at Mali's Consulting, we're a scientific consulting company who work with industry and elite athletes to try and improve their sleep and reduce fatigue levels. My background is as a tennis player myself. I've played tennis my whole life and I went into coaching when I was around 15 and actually attended the Australian Open Coaches Conference. I think it was back in 2012. I then went on to do study sports science and strength conditioning before doing my PhD, looking at the importance of sleep and chronobiology in tennis players. And I'm gonna present a lot of those findings here today. So, briefly, I'm gonna cover in today's presentation. Gonna give you a bit of a background of sleep, a bit of a crash course in sleep science. Then I'm gonna talk to you a little bit about some of the research that I did as part of my PhD, looking at sleep in tennis and also chronobiology in tennis. And then we'll finish with some information about some common sleep issues and things we can do to try and address these issues. So, there's two main systems that control when we go to sleep and when we wake up. The first is called the homeostatic sleep drive. And this is quite a fancy way of describing sleep pressure.",
+          "tags": []
+        },
+        {
+          "start": "3:00",
+          "end": "3:45",
+          "description": "On screen: The image displays a presentation slide with a title that reads \"What makes us sleep?\" Below the title, there is a graph titled \"Hypnotic Sleep Drive.\" The graph shows three bars representing different stages of sleep: \"Awake,\" \"Sleep,\" and \"REM.\" Each bar has a corresponding time on the x-axis ranging from 0 to 8 hours. The y-axis represents the level of sleep drive, with numbers ranging from 0 to 100. There is also a text box at the bottom left corner of the slide that contains a URL: \"melius.com.\" In the top right corner, there is a logo for \"Melius,\" and below it, there is a name \"John Doe\" with a title \"CEO.\" The slide appears to be part of an online presentation or webinar.",
+          "tags": [
+            "slide"
+          ]
+        },
+        {
+          "start": "3:24",
+          "end": "4:54",
+          "description": "So, if we think about this as a desire or need to fall asleep and the longer that we're awake for, the more this sleep pressure increases. So, the more we want to fall asleep, the more tired we feel. And what's actually happening is that when we're awake, our body is producing a chemical called a denison. And this makes us feel tired. So, this is what increases that sleep pressure. Funnily enough, actually, when we have caffeine, what is actually happening is that caffeine blocks the adenosine receptors in our body. So, it hides the adenosine in our body and therefore we feel less tired. The other system that's at play is called the circadian system or the circadian drive for wake. And if we think about this as more of a levels of alertness. So, you can see as this line here increases, the more alert and awake we feel and then as it declines, we feel more tired and lethargic. And this process oscillates over roughly 24 hours. I'm gonna get into a bit more detail about it later. But it's a cycle that happens throughout the day and night within the body. And these two systems work together, but they actually oppose each other. So, as sleep pressure is increasing, the reason we don't fall asleep earlier in the day is that our circadian system is actually at its highest point sort of late in the afternoon. So, that's what keeps us awake. And it's not until our circadian system starts to drop down",
+          "tags": []
+        },
+        {
+          "start": "3:45",
+          "end": "4:30",
+          "description": "On screen: The image displays a presentation slide with a title \"What makes us sleep?\" and a subtitle \"Melatonin drive for wake.\" There are three graphs on the slide:\n\n1. A bar graph titled \"Sleep,\" which shows bars representing different stages of sleep, such as \"Wake,\" \"Light Sleep,\" \"Deep Sleep,\" and \"REM Sleep.\" The x-axis is labeled \"Time of day\" with intervals from 2 to 8 hours, and the y-axis is labeled \"Circadian drive for wake.\"\n\n2. A line graph titled \"Awake,\" which shows a line representing the level of melatonin in the body over time, ranging from 0 to 100 units on the y-axis. The x-axis represents time, with intervals from 2 to 8 hours.\n\n3. A third graph titled \"Sleep,\" which is a waveform representation of sleep stages throughout the night. It shows peaks and troughs corresponding to different sleep stages.\n\nThe slide also includes text that reads \"Melatonin\" at the top, indicating the topic of the presentation. The bottom right corner features a logo with the text \"MELUS,\" which is likely the name of the company or organization presenting this information.",
+          "tags": [
+            "slide"
+          ]
+        },
+        {
+          "start": "4:30",
+          "end": "5:15",
+          "description": "On screen: The image displays a presentation slide with a title \"What makes us sleep?\" and a subtitle \"Melatonin drive.\" There are three graphs on the slide:\n\n1. A bar graph titled \"Sleep,\" which shows bars representing different stages of sleep, such as wakefulness, light sleep, deep sleep, and REM sleep. The x-axis is labeled \"Time of day\" with intervals from 2 AM to 8 AM, and the y-axis is labeled \"Circadian drive for wakefulness.\"\n\n2. A line graph titled \"Awake,\" which shows a line representing the level of wakefulness over time, ranging from 0 to 100 on the y-axis. The x-axis is labeled with intervals from 2 AM to 8 AM, and there are two lines representing different conditions or groups: one for \"Circadian drive for wakefulness\" and another for \"Awake.\"\n\n3. A third graph titled \"Sleep,\" which shows a line representing the level of sleep over time, ranging from 0 to 100 on the y-axis. The x-axis is labeled with intervals from 2 AM to 8 AM, and there are two lines representing different conditions or groups: one for \"Circadian drive for wakefulness\" and another for \"Sleep.\"\n\nThe slide also includes a photograph of a person in the bottom right corner, but no text is visible on the slide. The style of the image suggests it is a screenshot from a video conference or presentation software.",
+          "tags": [
+            "slide"
+          ]
+        },
+        {
+          "start": "4:54",
+          "end": "6:22",
+          "description": "and that sleep pressure gets high enough that we'll actually fall asleep. The other thing that's worth noting with a circadian system is that we have this little dip that occurs around, for most people it's around 2 to 3 p.m. in the afternoon. Is that siesta time or that post-lunch slump? And whilst having a big meal can make us feel more tired, this slump in the sort of, I guess mid-afternoon, late afternoon, is actually part of the circadian system. So, regardless if you've eaten a meal or not, you will still have this little dip in performance or this little slump where you're feeling a little bit more tired. And as I stated before, once that sleep pressure builds up high enough and the circadian system starts to drop, that's when we'll fall asleep. Let's fall asleep and then what obviously helps us wake up as well. Now I'm gonna talk a little bit about what happens when we're sleeping. So, it used to be thought that sleep was a very passive state that not much happened during sleep, but that couldn't actually be further from the truth. So, during sleep, there's a lot of processes that are happening in the body to look at both physical and mental recovery and repair. So, during sleep, we have two main states. The first is what's called REM sleep or rapid eye movement sleep. And the second is non-REM or non-rapid eye movement sleep. And non-REM is further broken down into three stages,",
+          "tags": []
+        },
+        {
+          "start": "5:15",
+          "end": "6:00",
+          "description": "On screen: The image displays a presentation slide with a title \"What makes us sleep?\" and a subtitle \"Melatonin drive.\" There are three graphs on the slide:\n\n1. A line graph titled \"Circadian drive for wake\" with two lines representing \"Awake\" and \"Asleep,\" showing a cyclical pattern over time, from 0 to 24 hours. The x-axis is labeled \"Time of day,\" and the y-axis is labeled \"Melatonin drive for wake.\"\n\n2. A second line graph titled \"Circadian drive for sleep\" with two lines representing \"Awake\" and \"Asleep,\" showing a similar cyclical pattern over time, from 0 to 24 hours. The x-axis is labeled \"Time of day,\" and the y-axis is labeled \"Melatonin drive for sleep.\"\n\n3. A third line graph titled \"High altitude drive for sleep\" with two lines representing \"Awake\" and \"Asleep,\" showing a similar cyclical pattern over time, from 0 to 24 hours. The x-axis is labeled \"Time of day,\" and the y-axis is labeled \"Melatonin drive for sleep.\"\n\nThe slide also includes text that reads \"High altitude drive for sleep\" and \"Awake\" and \"Asleep\" are marked on the graphs with arrows pointing to specific times. The background of the slide is white, and there is a watermark or logo in the bottom right corner.",
+          "tags": [
+            "slide"
+          ]
+        },
+        {
+          "start": "6:00",
+          "end": "6:45",
+          "description": "On screen: The image displays a presentation slide with a title \"STAGES OF SLEEP\" and a subtitle \"MELIS\". There is a graph on the slide that shows a line representing sleep stages over time, with labels for each stage such as \"Wake\", \"Light Sleep\", \"Deep Sleep\", and \"REM Sleep\". The x-axis is labeled \"Total Time (s)\" and the y-axis is labeled \"Sleep Time (%)\". There are numbers on the graph indicating percentages at different points in time, with a peak at 7.6% for \"REM Sleep\" at approximately 90 seconds. A man's headshot is visible in the bottom right corner of the slide. The overall style of the image suggests it is a screenshot from a video conference or presentation software.",
+          "tags": [
+            "slide"
+          ]
+        },
+        {
+          "start": "6:22",
+          "end": "7:53",
+          "description": "stage one, two and three. Stage three is often referred to as deep sleep or slow wave sleep. So, if you're using some sort of sleep tracker, you know, maybe a Fitbit watch or something like that, you may see this referred to as the amount of deep sleep that you've had. You can see that throughout the night, we'll oscillate through these stages and in each one of these oscillations, this is called a sleep cycle. But what you'll notice is that during the first half of the night, we tend to have more deep sleep and less REM sleep. Whereas in the second half of the night, we have more REM sleep. And in this example, no deep sleep. Some people may still have some deep sleep, but it is less. The reason this is important is that during REM sleep, this is actually the time where we have most of our mental recovery. So, if we're learning new tasks or new skills, this is where we're consolidating those memories and a lot of, I guess, cognitive or mental recoveries happening. Whereas during deep sleep or this stage three sleep, this is where more of our physical recovery is happening. So, if we've had a hard workout or we're recovering from a really long match, that physical repair is happening during this stage three or deep sleep. So, if we all of a sudden wake up at six hour mark here, we're potentially losing a lot of REM sleep. And this is why we often notice signs of fatigue and lack of sleep more mentally first.",
+          "tags": []
+        },
+        {
+          "start": "6:45",
+          "end": "7:30",
+          "description": "On screen: The image displays a presentation slide with a title \"STAGES OF SLEEP\" and a subtitle \"MELIS\". There is a graph on the slide that shows a line representing sleep stages over time, with labels for each stage such as \"Wake\", \"Light Sleep\", \"Deep Sleep\", and \"REM Sleep\". The x-axis of the graph is labeled \"Time (minutes)\" and the y-axis is labeled \"Total Time (minutes)\". There are numbers on the graph indicating the duration of each sleep stage, with percentages next to them. A person's head is visible in the top right corner of the slide, suggesting they may be presenting or recording the presentation. The bottom left corner of the slide contains a logo and text that reads \"MELIS\", which could indicate the name of the company or organization associated with the presentation.",
+          "tags": [
+            "slide"
+          ]
+        },
+        {
+          "start": "7:30",
+          "end": "8:15",
+          "description": "On screen: The image displays a presentation slide with a title \"STAGES OF SLEEP\" and a subtitle \"MELIS\". There is a graph on the slide that shows a line representing sleep stages over time, with labels for each stage such as \"Wake\", \"Light Sleep\", \"Deep Sleep\", and \"REM Sleep\". The x-axis is labeled \"Total Time (s)\" and the y-axis is labeled \"Sleep Time (%)\". There are numbers on the graph indicating percentages of sleep at different times, with a peak at 7.6% for deep sleep. A person's head is visible in the top right corner of the slide, suggesting they may be presenting or recording the presentation. The slide also contains text that reads \"Total Sleep Time: approximately 8 hours/night\" and \"Sleep Time: 7.6%\". There are no logos, title-page artwork, decorative photographs, headshots, backgrounds, or stock imagery present in this image.",
+          "tags": [
+            "slide"
+          ]
+        },
+        {
+          "start": "7:53",
+          "end": "9:25",
+          "description": "So, we struggle to concentrate, to pay attention to things. That's why we sort of see those signs happening before any sort of physical symptoms start to occur. Starting how much sleep we should have, the current recommendations from the National Sleep Foundation, which is the governing body of sleep research in the world, they're an American based organization, is that for the average adult, we should be looking at around seven to nine hours of sleep. Now, this does differ depending on the age of the individual. And you can see here all the different recommendations in this dark blue cells. I won't go through every single age group here, as we don't have time to go through them. But what you can also see here is these light blue sections above and below the recommended range. And these light blue sections are areas that may be appropriate for some people. So, it's acknowledged that whilst seven to nine hours is the recommended, there are some people that can get away with having six to seven hours of sleep per night. But then there's also should be noted that there's some people that require nine to 10 hours of sleep per night. So there is that individual variability or differences. But what is acknowledged is that anything beyond that 10 hour mark or anything less than that six hour mark really isn't appropriate. A little bit more about sleep and tennis. And to give you a bit of a background,",
+          "tags": []
+        },
+        {
+          "start": "8:15",
+          "end": "9:00",
+          "description": "On screen: The image displays a screenshot of a computer screen showing a bar chart. The chart is titled \"How much sleep do we need?\" and it appears to be measuring the amount of sleep needed by different age groups. The x-axis labels are \"Age\" and the y-axis labels are \"Hours.\" There are bars for each age group, but the numbers on the bars are not clearly visible. In the bottom right corner, there is a logo that reads \"MELUS,\" and below it, there is a text that says \"How much sleep do we need?\" The image also contains a small thumbnail of a person in the bottom left corner, but no additional context or information about this individual is provided.",
+          "tags": [
+            "slide"
+          ]
+        },
+        {
+          "start": "9:00",
+          "end": "9:45",
+          "description": "On screen: The image displays a screenshot of a presentation slide from a video conference call. The slide features a title \"Sleep and Tennis Skills\" followed by a subtitle \"Previous research studies: greater sleep duration + more accurate service and groundstrokes.\" There is an image of a tennis player in action, but the specific details about the player or the game are not clear due to the low resolution. The slide also includes a logo for \"Melius,\" which appears to be related to the content of the presentation.",
+          "tags": [
+            "slide"
+          ]
+        },
+        {
+          "start": "9:25",
+          "end": "10:52",
+          "description": "some of the research that had been done previously had shown that if you have more sleep, so greater sleep durations, that you have better tennis skill performance. So better accuracy with your serve and also your ground strokes. So we wanted to investigate this further. And so we performed a study where we looked at tennis skills of players. And we monitored their sleep over a week, a period of a week. And we actually found there was no association between sleep and tennis skills. Now, this differed from the previous research. And the reason for this is that, well, one of the reasons might be that we actually didn't modify people's sleep. So we didn't restrict their sleep to a duration less than recommended. And we didn't ask them to sleep for longer than they normally would. And what actually happened was that the people that we tested all actually happened to sleep within the seven to nine hours. So they all actually had good sleep duration. And generally, pretty good sleep quality as well. And I'll talk a little bit more about some sleep quality measures in a second. But for the most part, our cohort were good sleepers. So therefore, we didn't really see any difference or we didn't see any relationship between the variations in sleep and their tennis skills. Whereas some of the previous studies had actually restricted people's sleep. So some of these previous research studies",
+          "tags": []
+        },
+        {
+          "start": "9:45",
+          "end": "10:30",
+          "description": "On screen: The image displays a screenshot of a webpage featuring a video thumbnail for a presentation on \"Sleep and Tennis Skills.\" The thumbnail shows a tennis player in action, with a ball in motion near the player's racket. There is text overlaying the image that reads \"Previous research studies: greater sleep duration + more accurate serve and groundstrokes.\" Below this text, there are two bullet points stating \"no associations between sleep and tennis skills\" and \"why? previous studies demonstrated people of sleep extended duration measured performance was significantly improved.\" The webpage's title is \"Sleep and Tennis Skills,\" and the logo for \"Melius\" is visible in the top right corner.",
+          "tags": [
+            "slide"
+          ]
+        },
+        {
+          "start": "10:30",
+          "end": "11:15",
+          "description": "On screen: The image displays a presentation slide from a sports science conference. The slide features a title \"Sleep and Tennis Skills\" followed by a subtitle \"Previous research studies: greater sleep duration + more accurate serve and groundstrokes.\" Below this, there is a bullet point stating \"Our research: no associations between sleep and tennis performance was measured.\" The slide also includes a reference to a study that determined the optimal sleep duration for tennis players.",
+          "tags": [
+            "slide"
+          ]
+        },
+        {
+          "start": "10:52",
+          "end": "12:16",
+          "description": "had actually deprived people of enough sleep and then looked at their tennis skill performance. And then they'd extended people's sleep. So they've given them more sleep and then seen how that affected their performance. So that's why they may have shown some differences in their results. So then we looked at, okay, so that was tennis skills. Now, what about physical attributes? So physical performance of players. And we tested players, junior players, and also adult male tennis players. Hence, I've got a picture of Layton, you and your son here. So we looked at both objective and subjective measures. And objective measures are things like this actograph device here, which is similar to a device like a Fitbit or Apple Watch or Samsung Google Watch that monitors sleep. It's just a more, it's a medical grade device that we use for research, but it does the same thing. And then subjective is referring to things like a sleep diary where people actually rate how well they slept and they also report when they fell asleep and when they woke up. And we found that self-reported restfulness was positively associated with reaction times during a tennis-specific agility test. What this means is that people, when they woke up in the morning, reported on how well rested they felt. So if they, really, if they had a good night's sleep and they felt refreshed. And if they felt refreshed and that they'd had a good night's sleep,",
+          "tags": []
+        },
+        {
+          "start": "11:15",
+          "end": "12:00",
+          "description": "On screen: The image appears to be a screenshot of a video call or presentation slide. It features a person on the left side of the screen who seems to be engaged in a conversation or sharing information. On the right side, there is a slide with text and an image. The slide has a title that reads \"Sleep and physical attributes,\" followed by bullet points stating \"Self-reported sleep duration\" and \"Physical fitness.\" Below these points, there are two images: one of a person wearing a white shirt and headphones, and another of a sports watch with the text \"Melius\" on it. The background of the slide is white, and there is a red box with a white checkmark in the bottom right corner. The overall style of the image suggests that it may be related to a scientific or educational presentation about sleep and its impact on physical fitness.",
+          "tags": [
+            "slide"
+          ]
+        },
+        {
+          "start": "12:00",
+          "end": "12:45",
+          "description": "On screen: The image appears to be a screenshot of a presentation slide from a video conference call. It contains a mix of visual elements:\n\n1. A photograph of a person wearing headphones and a red shirt, seemingly engaged in a video call or recording session.\n2. A graphic with the text \"SLEEP AND PHYSICAL ATTRIBUTES\" at the top, followed by a subtitle that reads \"Self reported restless nights during times of stress.\"\n3. Below this, there is a chart titled \"MELIS,\" which seems to be a type of graph or chart related to sleep and physical attributes. The chart includes a horizontal axis labeled \"Physical Attributes\" with numerical values ranging from 0 to 10, but the specific numbers are not clearly visible.\n4. To the right of the chart, there is an image of a person wearing a white shirt and a cap, standing next to another individual who is partially visible. The setting appears to be outdoors during daylight hours.\n5. At the bottom of the slide, there is a red book with the text \"WATCH YOUR STEPS\" on it, suggesting that this might be related to physical activity or fitness.\n6. In the lower right corner, there is a logo with the text \"MELIS,\" which could indicate the name of the company or organization associated with the presentation.\n7. The overall style of the image suggests an educational or informational context, possibly from a webinar or online seminar related to sports science or health and wellness.",
+          "tags": [
+            "slide"
+          ]
+        },
+        {
+          "start": "12:16",
+          "end": "13:52",
+          "description": "they performed better. They had faster reaction times when doing this tennis-specific agility test compared to those who didn't feel well rested. Then what was interesting though with that is that we found no associations between these objective measures of sleep and physical attributes. So really what this evidence was showing us was that how well rested you felt or how well you felt like you slept was actually a better predictor of how you were gonna perform physically than the objective measures. And this is obviously useful for coaches and players as a sleep diary is much cheaper than having to go by an activity device. We then looked at the impact of sleep on tennis match play. And we found that the players had lower sleep fragmentation. Well, sorry, the players that won had lower sleep fragmentation compared to those who lost. And this was particularly in junior female tennis players. And so to measure match play, what we did was we monitored the players' match performance using GPS devices, which you can see pictured here. Match analytics, like the number of winners they hit, unforced errors and things like that. Their heart rate as well throughout the match. And then we also asked them to give a perceived exertion. So a rate of perceived exertion. And again, this was done in both male senior players and junior players as well. So this sleep fragmentation is an indicator of sleep quality.",
+          "tags": []
+        },
+        {
+          "start": "12:45",
+          "end": "13:30",
+          "description": "On screen: The image appears to be a screenshot of a presentation slide related to sports science. It features a title \"Sleep and Tennis Match Play\" followed by a subtitle \"Low sleep fragmentation was associated with those who lost.\" Below this text, there is an image of a tennis player on the court with a coach, accompanied by a graph showing data points for sleep fragmentation. The graph has a vertical axis labeled \"Sleep Fragmentation,\" and a horizontal axis labeled \"Number of Players.\" There are several data points plotted on the graph, but the specific numbers are not clearly visible. Additionally, there is an image of a coffee cup with the text \"MELUS\" on it, which seems to be a brand or product name. The slide also includes a logo for \"MELUS,\" suggesting that this presentation may be related to a company or organization by that name.",
+          "tags": [
+            "slide"
+          ]
+        },
+        {
+          "start": "13:30",
+          "end": "14:15",
+          "description": "On screen: The image appears to be a screenshot of a presentation slide related to sports science. It features a title \"Sleep and Tennis Match Play\" followed by a subtitle \"Low sleep fragmentation was associated with those who lost.\" Below this text, there is an image of a tennis player on the court with a coach, accompanied by a graph showing various statistics such as sleep duration, sleep fragmentation, and other metrics related to sleep quality. The slide also includes a logo for Melius, which suggests it may be part of a company or organization specializing in sports science or performance enhancement.",
+          "tags": [
+            "slide"
+          ]
+        },
+        {
+          "start": "13:52",
+          "end": "15:28",
+          "description": "So if we have a higher sleep fragmentation, then we're having more, a more restless sleep. So we're tossing and turning a bit more. We're not having that sleep, that really good sleep quality. And so this was shown to be that sleep quality may be more important for these players when it comes to their actual match performance. So in summary, we found that if we do take players to the extreme, so if we start to restrict their sleep below what is recommended, this can negatively affect their skills. But if we keep them within the recommended ranges, if you're sleeping within those appropriate ranges of duration and quality, then really your sleep isn't going to have that bigger impact on your physical or skill performance. However, your sleep quality does appear to have an impact on your overall match performance. So having better sleep quality was associated with better match outcomes. But we really need to do further research to establish exactly what impact that sleep fragmentation is having on match outcomes or how it's affecting match outcomes. So I'm gonna go into a little bit more about chronobiology now, so circadian rhythms. So as I described before, that circadian rhythm is roughly around 24 hours. And in fact, it's actually slightly greater than that, it's 24.2 hours. And the reason this is important is that if we're in complete darkness, you can see here by these black lines,",
+          "tags": []
+        },
+        {
+          "start": "14:15",
+          "end": "15:00",
+          "description": "On screen: The image appears to be a screenshot of a presentation slide. It contains text that reads \"SUMMARY\" at the top, followed by bullet points listing items such as \"EXTREME SLEEP LOSS BELOW THE RECOMMENDED RANGE,\" \"VARIATIONS IN SLEEP QUALITY WITHIN APPROPRIATE RANGES HAVE A LITTLE INFLUENCE ON Tennis Skills OR PHYSICAL ATTRIBUTES,\" and \"FEELING WELL-RESTED AND PERFORMANCE ARE NEED TO EXPLORE THE RELATIONSHIP BETWEEN SLEEP AND TENNIS.\" The slide also includes a logo at the top left corner, which seems to be related to Melius, but the text is too small to read clearly. There are no visible graphs or charts on this slide.",
+          "tags": [
+            "slide"
+          ]
+        },
+        {
+          "start": "15:00",
+          "end": "15:45",
+          "description": "On screen: The image displays a presentation slide with a title \"Setting the Ciradian Rhythm\" and a subtitle \"Without light-dark cycles the circadian rhythm to 24 hours.\" There is a chart that shows a graphical representation of sleep stages over time, with labels for \"Light,\" \"Dark,\" and \"Sleeping Hours.\" The chart indicates that there are 16 sleep stages in total. Additionally, there is a text box on the right side of the slide with bullet points explaining the concept of circadian rhythm and its importance in maintaining health. The slide also includes a logo for \"MELUS\" at the bottom left corner.",
+          "tags": [
+            "slide"
+          ]
+        },
+        {
+          "start": "15:28",
+          "end": "16:53",
+          "description": "these indicate periods of sleep, we would actually start to drift. So we would actually start to go to bed later and wake up later, because that circadian rhythm would start to get later and later and later. So it's not exactly 24 hours. And the reason this doesn't happen to everyone is that our body basically synchronizes that internal body clock or what we call in trains, that circadian system by light. So if we're getting exposure to a lot of light, especially natural light during the day, it basically is resetting that body clock every day to make sure that we don't start to drift like what's been seen here. And that we keep a regular timings of when we go to bed and when we wake up. So it's really important that we get at least 20 minutes of exposure to natural light during the day. And this is really a minimum. We should be looking to get as much exposure to natural light during the day as possible. And then again, before going to bed, we should be looking at avoiding too much light exposure. And we also want to have a regular pre-sleep routine and timings as well. And I'll talk a little bit more about that later. So when, we're not all the same. Okay, so we have a circadian rhythm that's about 24 hours in duration. But there are some people that circadian rhythm is slightly earlier. And these are the people that like to get up earlier in the morning and go to bed earlier at night.",
+          "tags": []
+        },
+        {
+          "start": "15:45",
+          "end": "16:30",
+          "description": "On screen: The image displays a presentation slide with a title \"Setting the Ciradian Rhythm\" and a subtitle \"Without light-dark cycles the circadian rhythm to 24 hours.\" There is a chart that shows a graphical representation of a person's sleep cycle over a 24-hour period, indicating periods of light and dark. The slide also includes text explaining the concept of setting the circadian rhythm without light-dark cycles, which is related to sports science. Additionally, there are two images: one on the left showing a person with headphones, and another on the right depicting a solar panel.",
+          "tags": [
+            "slide"
+          ]
+        },
+        {
+          "start": "16:30",
+          "end": "17:15",
+          "description": "On screen: The image appears to be a screenshot of a video call or presentation slide. It features a person on the right side of the screen, who seems to be engaged in a conversation or giving a presentation. On the left side of the screen, there is a graphic with text and an illustration of a bird. The text includes phrases such as \"Chronotype Morningness,\" \"Sevenness,\" and \"International Journal of Chronobiology.\" There are also some numbers visible on the chart, but they are not fully legible due to the resolution of the image. The overall style of the image suggests it is related to a scientific or academic discussion about chronotypes and morningness.",
+          "tags": [
+            "slide"
+          ]
+        },
+        {
+          "start": "16:53",
+          "end": "18:09",
+          "description": "And we call these people larks, okay? Or morning, morning types is another way of describing it. Then there's the people that want to stay up late and get up late. And we refer to these people as owls or evening types. And the main difference between these is that a lark is someone who can generally wake up early in the morning without the need of an alarm. Or if they do have an alarm, it's just one alarm and they're usually up straight away. They're usually full of energy, ready to hit the ground running. And as soon as they wake up, they're wanting to perform most of their tasks early in the morning. Whereas an owl is someone who will probably need multiple alarms to wake up. Don't talk to them until they've had their morning coffee. They're usually going to be a little bit grumpy. And they're going to take a little while to warm up in the day. Conversely though, when the sun goes down or in the evening, the larks are the people that don't want to go out. They want to go to bed. They're not going to be able to perform any highly cognitive tasks. Whereas the owls are the people that get the second wind that are full of energy at that point, very productive late into the evening. Generally would be happy to go out and socialize late into the evening. Now you can see here that we've got some rough age ranges. This isn't to say that everyone over 60 is a lark and every teenager's an owl.",
+          "tags": []
+        },
+        {
+          "start": "17:15",
+          "end": "18:00",
+          "description": "On screen: The image appears to be a screenshot of a presentation slide from a webinar or online conference. It features a title \"Chronotype Morningness\" and includes a chart titled \"Melius,\" which seems to represent some form of chronotype categorization, possibly related to sleep patterns or morningness-eveningness preferences. The chart is divided into four quadrants with labels such as \"Morningness,\" \"Eveningness,\" \"Neutrality,\" and \"Irregular.\" Each quadrant contains a symbol representing a different chronotype: a sun for \"Morningness,\" a moon for \"Eveningness,\" a clock for \"Neutrality,\" and a question mark for \"Irregularity.\" The slide also includes a small image of a person, presumably the presenter or speaker, in the bottom right corner. There is no visible text providing additional context or information about the chart or the content of the presentation.",
+          "tags": [
+            "slide"
+          ]
+        },
+        {
+          "start": "18:00",
+          "end": "18:45",
+          "description": "On screen: The image appears to be a screenshot of a presentation slide from a video conference call. It features a diagram that seems to represent a flowchart or process map related to \"Chronotype Morningness.\" The chart includes various icons and symbols connected by arrows, suggesting a sequence or pathway. There are also text labels such as \"Melatonin,\" \"Sunlight,\" \"Sleep,\" and \"Caffeine,\" which likely correspond to different stages or factors in the process. Additionally, there is an image of a person on the right side of the slide, possibly indicating the presenter or participant in the call. The overall style of the image suggests it is from a professional or academic presentation.",
+          "tags": [
+            "slide"
+          ]
+        },
+        {
+          "start": "18:09",
+          "end": "19:32",
+          "description": "But what it's saying is that as we get older, we tend to move towards more, to being more of a lark. So we tend to start to go to bed a bit earlier and wake up a bit earlier. Whereas teenagers actually move towards being an owl. This is a natural circadian rhythm that occurs. And that's the period where you will start to see them wanting to stay up later and sleep in longer. So this is something that's not just a lazy teenager wanting to sleep in. It's actually that circadian rhythms. And you can see here, we've just got a bit of a table here. You can work out maybe what your chronotype is or where your circadian rhythm is. And to do this, you basically want to think that if you didn't have to wake up for work, if you're on holiday, you had no alarm clocks, what time would you naturally wake up? And depending on where you wake up here is going to be an indicator of what your chronotype is. So why is this chronotype stuff so important? Well, we actually have differences in performance throughout the day because of the impact of our circadian rhythms. So that circadian rhythm actually impacts a lot of different functions in the body. One being melatonin secretion. Melatonin is a chemical in the body that helps us fall asleep. The other is core body temperature. So core body temperature actually increases throughout the day and then decreases overnight. And it follows that circadian rhythm.",
+          "tags": []
+        },
+        {
+          "start": "18:45",
+          "end": "19:30",
+          "description": "On screen: The image displays a presentation slide with a title \"TIME OF DAY FOR ACTIVITIES\" and a chart that appears to be a pie chart showing the distribution of activities across different times of day. The chart is divided into segments representing various activities, such as sleep, exercise, work, and leisure. Each segment has an icon representing the activity and a label indicating the time of day associated with it. There are also icons for temperature, humidity, and other environmental factors, along with their respective values. The slide includes text that provides additional information about the chart, but the specific details are not clear due to the image's resolution.",
+          "tags": [
+            "slide"
+          ]
+        },
+        {
+          "start": "19:30",
+          "end": "20:15",
+          "description": "On screen: The image displays a presentation slide with a title \"TIME OF DAY FOR ACTIVITIES\" and a chart that appears to be a pie chart showing the distribution of activities across different times of day. The chart is divided into segments representing various time intervals, such as \"0-1 hour,\" \"1-2 hours,\" and so on, up to \"8-9 hours.\" Each segment contains an icon representing a different activity or category, such as \"Sleep,\" \"Exercise,\" \"Work,\" and others. The slide also includes text that seems to be part of the presentation, but it is not fully legible due to the image's resolution.",
+          "tags": [
+            "slide"
+          ]
+        },
+        {
+          "start": "19:32",
+          "end": "20:56",
+          "description": "So similar to that circadian rhythm I showed you earlier, the core body temperature is following a similar trajectory. And what this means is that from the research that's being done, we've shown that peak alertness, and this is cognitive performance, so your mental focus or attention is going to be better in that late morning or mid to late morning. And again, this depends on your chronotype. For some early morning or larks, they might be slightly earlier, it might be around 9 a.m. Whereas an hour might be more towards 11, 11 30. Whereas our physical performance is going to be better later into the evening. And again, still depending on chronotype. And this physical performance, or the reason for this physical performance being better later in the evening is related to that core body temperature. So that increasing core body temperature results in better physical performance. So what we did then was we wanted to go, okay, well, there's a time of day impact our tennis skills. And there hasn't been a lot of research done in this in the past. One study that had performed multiple matches at different time points showed that serve velocity actually increases in the evening compared to the morning. And then in addition to that, accuracy decreases. And this is probably related to the serve accuracy trade-off. So that if you're serving faster, you're more likely to make mistakes. So again, aligning with the previous slide",
+          "tags": []
+        },
+        {
+          "start": "20:15",
+          "end": "21:00",
+          "description": "On screen: The image displays a presentation slide from a sports science conference. It features a chart titled \"Time of Day and Tennis Skills.\" The chart shows a scatter plot with two axes: one labeled \"Service Velocity\" and the other labeled \"Morning.\" There are no numbers visible on the axes, but there is a trend line indicating a positive correlation between service velocity and morning time. The slide also contains text that reads \"Previous research studies: Service velocity, and the morning.\"",
+          "tags": [
+            "slide"
+          ]
+        },
+        {
+          "start": "20:56",
+          "end": "22:30",
+          "description": "that our physical performance is going to be better in the evening. Our research actually showed that serve velocity and backhand consistency was lower in the evening. And again, this is similar in the fact that if we're, whilst we didn't, well, whilst this is contrary to the previous research, the reason for this might be the fact that when we say evening, previous research has used timings of sort of late afternoon. So maybe around 4 p.m. mark. Whereas when we say evening, we're actually looking at times around 8 p.m. So our timings of this study was 8 a.m. for the morning, 2 p.m. for the afternoon, and 8 p.m. for the evening. And the reason we did this was because we know that matches, especially at the professional level, are often played very late into the night, even later than midnight at events like the Australian Open. So we wanted to look at how performance would have be affected at these later times. So whilst both studies here say evening, and the results are kind of contrary to each other, they're in fact very different times. The evening times here are actually more closely aligned with our afternoon around 2 p.m. mark than our evening times, which were actually at 8 p.m. So that's probably a reason for these differences in findings. We then, similar to what we did with the sleep studies, we wanted to look at the impact of time of day on physical performance. And again, previous research showed that physical attributes,",
+          "tags": []
+        },
+        {
+          "start": "21:00",
+          "end": "21:45",
+          "description": "On screen: The image displays a presentation slide with a title \"Time of Day and Tennis Skills.\" Below the title, there's a subtitle that reads \"Previous research studies: service velocity, and backswing.\" A chart is shown on the slide, which appears to be a scatter plot comparing tennis performance metrics (service velocity and backswing) against time of day. The x-axis label is \"Time of Day,\" with specific times marked as 6 AM, 9 AM, 12 PM, 3 PM, and 6 PM. The y-axis label is \"Performance Metrics.\" There are no numbers visible on the axes or in the chart. The slide also includes a photograph of a person, presumably the presenter, at the bottom right corner. The overall style of the image suggests it's a screenshot from a video conference or online presentation.",
+          "tags": [
+            "slide"
+          ]
+        },
+        {
+          "start": "21:45",
+          "end": "22:30",
+          "description": "On screen: The image displays a presentation slide with a title \"Time of Day and Tennis Skills\" and a subtitle \"Previous research studies: service velocity, and backswing.\" There is a graph showing data points for tennis performance at different times of day, with axes labeled \"Service Velocity (m/s)\" and \"Backswing (degrees).\" The slide also includes text that reads \"Why? To test if the test was performed. How? By measuring the performance.\"",
+          "tags": [
+            "slide"
+          ]
+        },
+        {
+          "start": "22:30",
+          "end": "23:58",
+          "description": "such as counter movement jump, service performance, agility, sprints and stuff, all were better in the afternoon compared to the morning. Whereas we actually found that there was no significant difference in physical attributes between the different times of the day. Additionally, we also found there was no significant influence of chronotype on physical attributes. So regardless of what the participant's chronotype was, whether they were in lack or now, it didn't have an impact on how they performed physically. And again, this may go back to the fact of what we were saying earlier on, that if we're losing a bit of sleep, it's gonna be more of a mental, it's gonna affect us probably a little bit more mentally first before it would affect us physically. And again, everyone in this study actually had the recommended amount of sleep. So really there wasn't any reason for them to be any declines in performance because of sleep or an apparent time of day either. So then the final thing we wanted to look at was the effects of time of day on match play. And this is where we did find some, quite a few differences in time of day. I apologize if you can't see all these figures, they may be a little bit small, but there were quite a few different, or variances between the time of day for a number of attributes. And the main ones I wanna focus on though are around the number of winners hit,",
+          "tags": []
+        },
+        {
+          "start": "23:15",
+          "end": "24:00",
+          "description": "On screen: The image displays a computer screen showing a sports science dashboard with various charts and graphs. There are two main types of charts visible: a line chart titled \"Time of Day and Tennis Match Play,\" which appears to measure some form of performance or activity over time, and a scatter plot labeled \"Melius,\" which seems to represent data points related to the same subject matter as the line chart. The axes on the line chart are labeled \"X-axis: Time of Day\" and \"Y-axis: Performance/Activity,\" but no specific numbers or values are visible in the image. There is a person's headshot in the bottom left corner, suggesting that this dashboard might be part of a presentation or video call. The overall content of the image suggests it is related to sports science research or analysis.",
+          "tags": [
+            "slide"
+          ]
+        },
+        {
+          "start": "23:58",
+          "end": "25:18",
+          "description": "which were actually higher in the morning, or the percentage of winners hit were higher in the morning. And then the percentage of unforced errors made, which was higher in the evening. And this kind of aligns with the fact that we saw less consistency, especially with the backhand in the evening. And therefore, and that's kind of showing up in the match play performance here as well, where we're seeing an increase in unforced errors. So the less consistent, more unforced errors being made. Many of the other attributes that you may have seen on the figures behind here are actually relating to GPS numbers and also rate of perceived exertion. And this can be attributed to the fact that if we're having a higher number of unforced errors, we're having shorter point durations, we're moving less, and we're having to exert less energy as well. So these were the two factors that we noticed as being the most evident and important. So in summary, we found that tennis performance at both a skill execution and match play level was diminished in the evening. And again, evening being 8 p.m., so it's quite late at night. This may be due to the fact that your home anesthetic sleep drive or that sleep pressure is increasing and that can contribute to higher levels of fatigue. But then what was interesting as well is that we found no difference with chronotype. However, we really need to be looking at doing larger studies",
+          "tags": []
+        },
+        {
+          "start": "24:00",
+          "end": "24:45",
+          "description": "On screen: The image displays a presentation slide with a title \"Time of day and tennis match play\". There are two bar charts on the slide. The left chart shows data for morning matches, with numbers indicating the frequency of different types of errors: 100% unforced errors, 96% evening matches, and 84% nighttime matches. The right chart represents data for evening matches, with similar percentages for unforced errors (96%) and nighttime matches (84%). There is a text overlay on the slide that reads \"Melius\" at the top left corner. The slide also includes a logo in the bottom left corner, but it's not clear what the logo represents.",
+          "tags": [
+            "slide"
+          ]
+        },
+        {
+          "start": "24:45",
+          "end": "25:30",
+          "description": "On screen: The image appears to be a screenshot of a presentation slide from a video conference call. The slide has a title \"Summary\" at the top and includes bullet points with information related to tennis performance. There is a graph on the slide that shows changes in pressure, temperature, and humidity over time, with specific values for each variable. The graph also indicates an increase in sleep duration and a decrease in stress levels. Additionally, there are notes about the importance of rest and recovery in sports science, as well as the need to consider individual differences when designing training programs. The slide includes a background image of a tennis court with a player in action, suggesting that the presentation is related to tennis performance analysis.",
+          "tags": [
+            "slide"
+          ]
+        },
+        {
+          "start": "25:18",
+          "end": "26:45",
+          "description": "with more variations in chronotype. We had a lot of people in our study that were of similar chronotypes, which makes it difficult to see many differences. But players and coaches should use this information to potentially adjust the times that they're training, leading up to matches. So if you know that you're gonna have to perform in the evening, so if you know you've got a match coming up and it's late into the evening, you should be looking to try and train at that time of day as well and potentially shift your circadian rhythm back slightly. So start going to bed a little bit later and waking up slightly later. That way you're gonna be more inclined to be at your optimal performance for that match rather than trying to go out and perform at a time where you would naturally be trying to wind down to sleep. So just to touch on a couple of common sleep problems, some of the main ones around behavioral habits, so things like potentially medication use. This may be medications for sleep or it might just be other medications that have side effects related to sleep. So it may be like an antihistamine which causes drowsiness. These can negatively impact our ability to fall asleep or to have good sleep quality. Other things like alcohol, caffeine, nicotine, smoking, these can all negatively affect our sleep as well. Whilst we don't recommend ever smoking or drinking alcohol, caffeine can be something that's useful",
+          "tags": []
+        },
+        {
+          "start": "25:30",
+          "end": "26:15",
+          "description": "On screen: The image appears to be a screenshot of a presentation slide from a video conference call. The slide has a title \"Summary\" at the top and includes bullet points with information about tennis performance metrics. There is a graph on the slide that shows a relationship between two variables, but the specifics of the chart are not clear due to the resolution of the image. The text on the slide mentions \"pressure,\" \"execution,\" and \"performance\" in relation to tennis, along with other terms such as \"exercise,\" \"stress,\" and \"sleep.\" There is also a reference to \"chronicity\" and \"acute stress.\" The slide includes a background image of a clock with the hands indicating it's 10:35. The bottom right corner of the slide has a logo that reads \"MELUS.\" The person in the video conference call appears to be a man wearing headphones, but no other details about him are visible.",
+          "tags": [
+            "slide"
+          ]
+        },
+        {
+          "start": "26:15",
+          "end": "27:00",
+          "description": "On screen: The image appears to be a screenshot of a video call or presentation slide. It features a person on the right side of the screen who seems to be engaged in a conversation or giving a presentation. On the left side of the screen is a graphic that includes various icons and text related to sleep problems, such as a bed, a clock, a brain, and other symbols associated with sleep quality and issues. The text on the graphic reads \"SLEEP PROBLEMS\" at the top, followed by a list of items including \"STRESS,\" \"FOOD,\" \"EXERCISE,\" \"SCREEN TIME,\" and \"MEDICATION.\" Below these items are icons representing different aspects of sleep, such as a person sleeping, a clock, a brain, and other symbols. The overall style of the image suggests it is educational or informational in nature, possibly related to health or wellness topics.",
+          "tags": [
+            "slide"
+          ]
+        },
+        {
+          "start": "26:45",
+          "end": "28:08",
+          "description": "if it's taken at the right time of day. So early in the morning or sort of mid-morning is fine to have caffeine. You just don't wanna be having it too close to bed as it does have around a six hour half life. So it can stay in your system for a very long time. Other things about your habits at night, so what you're doing before going to bed and your training times as well. So if you're performing exercise or training late into the afternoon and evening, that can then make it difficult for you to fall asleep because you're increasing your arousal levels. You're increasing what's a chemical called cortisol in your body, which actually makes it very difficult for us to then fall asleep. Other things like playing video games or doing work before going to bed can also make it difficult for us to fall asleep because we're again, causing an increase in arousal levels and it makes it harder for us to wind down and fall asleep. Things like jet lag, stress, pain, or certain medical conditions can also cause negative impacts on our sleep. So trying to adjust if you are having to travel to your new time zone as fast as possible. You may have a day where it's really a struggle to stay awake, but if you can try and push through to your new time zones, normal bedtime, so if you normally go to bed at 9 p.m., try and go to bed at 9 p.m. in your new time zone, it's gonna help you adjust faster.",
+          "tags": []
+        },
+        {
+          "start": "27:00",
+          "end": "27:45",
+          "description": "On screen: The image appears to be a screenshot of a video call or presentation slide. It features a person on the right side of the screen who seems to be engaged in a conversation or giving a presentation. On the left side of the screen is a graphic representation that includes various icons and symbols related to sleep problems, such as a bed, a clock, a brain, and a person with a headache. The text \"SLEEP PROBLEMS\" is prominently displayed at the top of this graphic. There are no visible numbers or specific measurements on the chart. The style of the image suggests it may be related to health or wellness content, possibly from an educational or informational video.",
+          "tags": [
+            "slide"
+          ]
+        },
+        {
+          "start": "27:45",
+          "end": "28:30",
+          "description": "On screen: The image appears to be a screenshot of a video call or presentation slide. It features a person on the right side of the screen who seems to be engaged in a conversation or giving a presentation. On the left side of the screen is a graphic representation that includes various icons and text related to sleep problems, such as a bed, a clock, a brain, and other symbols associated with sleep quality and issues. The text on the graphic reads \"SLEEP PROBLEMS.\" There are no visible numbers or specific measurements in this image. The style of the image suggests it is from an educational or informational context, possibly related to health or wellness.",
+          "tags": [
+            "slide"
+          ]
+        },
+        {
+          "start": "28:08",
+          "end": "29:32",
+          "description": "Things like stress, try and do relaxing, like things like meditation or breathing exercises or listening to music can be a great way of helping wind down and reduce that stress. To further onto that, these are some of the things that we can do during the day to help our sleep. So as I mentioned earlier, regular routine and schedule before going to bed is vitally important. Getting a lot of natural sunlight is really important. Maintaining a healthy lifestyle, reducing alcohol, avoiding stimulants before going to bed. This is things like caffeine. Reducing stress, like I said, meditation, breathing, exercises, it may even be simply watching TV before going to bed. If that helps you wind down and relax, then that's great. You want to just try and reduce the stress levels before going to bed. Be careful with napping. Napping is great, especially if you're doing it in the morning or early afternoon. Try just to not nap too close to your bedtime as this can then make it difficult for you to fall asleep. And the other thing I'll just touch on before we finish is around sleep environment. It's really important that we have a nice cool, dark and quiet environment to sleep in. You should feel like you want to have the covers on you at night. You shouldn't be feeling like you're kicking the covers off. So a cool environment without obviously being freezing is ideal. And then obviously making the room as dark as possible",
+          "tags": []
+        },
+        {
+          "start": "28:30",
+          "end": "29:15",
+          "description": "On screen: The image displays a presentation slide with a title \"HEALTHY SLEEP HABITS\" and a list of items related to sleep hygiene. There are icons representing various aspects such as maintaining a consistent sleep schedule, creating a comfortable sleep environment, and avoiding stimulants before bedtime. The slide also includes text that provides additional information about each icon. The style of the image is informational and educational, typically used in presentations or lectures to convey key points succinctly.",
+          "tags": [
+            "slide"
+          ]
+        },
+        {
+          "start": "29:15",
+          "end": "30:00",
+          "description": "On screen: The image displays a presentation slide with a title \"HEALTHY SLEEP HABITS\" at the top. Below the title, there are 12 bullet points providing tips for improving sleep habits. These include suggestions such as creating a sleep-friendly environment, avoiding stimulants before bedtime, and maintaining a consistent sleep schedule. The slide also includes an image of a person on the right side, likely the presenter or speaker, but their face is not visible in this description. There are no logos, title-page artwork, decorative photographs, headshots, backgrounds, or stock imagery present in the image.",
+          "tags": [
+            "slide"
+          ]
+        },
+        {
+          "start": "29:32",
+          "end": "30:24",
+          "description": "and reducing any potential disruptions from noise is going to be beneficial as well. So the final thing I'll say is, if you do want any more information about sleep or any potential consultation work with either yourself or any of your players, please feel free to contact me at the email here or via social media. We do offer a number of services and we do have a lot of resources that are freely available as well. There's obviously a lot more we could go into. This is a little bit of a crash course on sleep and sleep in tennis. But please reach out to me and get in contact if you think this information or further information may be valuable for you or any of your clients in the future. But thank you very much for listening today and enjoy the rest of the conference.",
+          "tags": []
+        },
+        {
+          "start": "30:00",
+          "end": "30:45",
+          "description": "On screen: The image appears to be a screenshot of a computer screen displaying a presentation slide. The slide contains text and logos, but it does not seem to carry information relevant to sports science or archiving figures from a sports science archive.",
+          "tags": [
+            "slide"
+          ]
+        }
+      ]
+    }
+  ],
+  "_keyframes_done": true
+}

@@ -1,0 +1,325 @@
+{
+  "videos": [
+    {
+      "video_id": "mark_kovacs__1080p_",
+      "url": null,
+      "source_path": "C:\\IFN736-project\\video\\mark_kovacs (1080p).mp4",
+      "title": "mark kovacs (1080p)",
+      "source": "transcript",
+      "language": "en",
+      "segments": [
+        {
+          "start": "0:00",
+          "end": "0:45",
+          "description": "On screen: The image appears to be a screenshot of a webpage or digital document. It features a title \"Quick Tennis Resume\" followed by a list titled \"Topics Discussed.\" Below this list are bullet points that mention various topics such as \"Strength & Conditioning,\" \"Impact on Service Speed,\" and \"Youth Strength Training vs Facts.\" The text is too small to read the specific details of each topic. There is also a logo in the bottom right corner, but it's not clear enough to identify the organization or brand it represents.",
+          "tags": [
+            "slide"
+          ]
+        },
+        {
+          "start": "0:03",
+          "end": "1:38",
+          "description": "Hello, I'm Dr. Mark Kovacs excited to be presenting quick tennis research summaries for coaches and really the purpose of this presentation is to summarize three or four relevant areas of research that have been done in the last few years that I thought was really relevant for tennis coaches at all levels of the game. So let's start with the tennis serve. So as the major shot in the game, there's been quite a bit of research in this area and before we get into a couple of the studies that I thought were really interesting, just to remind folks how I evaluated, I go through this eight stage analysis, so eight steps to every serve and then you're looking to see where people fall. What a style versus what a fundamentals and in the couple studies that I'll be talking about, there's a couple really interesting areas related to it and the big ones are take a look at loading stage three, take a look at stage four, which is cocking, and then you have acceleration, contact and deceleration. So as you can see here, we have eight stages. The ones that we're going to be talking about the most today are going to be stages three, four, five and six. So as we go through, just keep that in mind. So a really, really good study, pretty recently done out of a lab in France, Gorsi et al, did a really nice job of trying to analyze slow and fast service. So just comparing people that serve fast and people that don't serve so fast.",
+          "tags": []
+        },
+        {
+          "start": "1:30",
+          "end": "2:15",
+          "description": "On screen: The image shows a screenshot of a webpage with an article titled \"Slow vs Fast Servers.\" The article discusses the performance differences between slow and fast servers in terms of response times for various tasks such as loading a webpage, downloading files, and running simulations. It mentions that slow servers can cause major delays in performance improvement processes. The text is too small to read specific numbers or details about the chart.",
+          "tags": [
+            "slide"
+          ]
+        },
+        {
+          "start": "1:39",
+          "end": "3:17",
+          "description": "Again, there's always some limitations with these studies, so just interpret these somewhat cautiously, but there were 11 large correlations, some even larger than others, but in general, the biggest ones that I think most of the experience coaches listening here would sort of already know or hopefully be already doing, but this just reinforces a few things that we've been talking about for a long time on working on serve and what areas to focus on. So back leg load stage three was a really important component. The coil, so the rotation of the hip, knee bend is an interesting one because there's obviously needs to be some knee bend. The question is how much and that's where the debate starts and a lot of it isn't necessarily knee bend depth, but how quickly you come out of the knee bend range of motion in the cocking stage. So thoracic as well as shoulder. So you got to keep in mind both of those. And then so the individual center of gravity or center of mass and that vertical velocity. So how quickly does that move up? So the question of that one is stage four through stage six and the need to come out of the legs explosively, which means that the center of gravity moves explosively up. That is also the same as saying vertical hip displacement. It works under a similar concept of just how quickly do we get out of the legs and then elbow flexion. So elbow flexion has a lot to do with the impact of long axis rotation, internal shoulder rotation, followed by forearm pronation.",
+          "tags": []
+        },
+        {
+          "start": "2:15",
+          "end": "3:00",
+          "description": "On screen: The image shows a screenshot of a webpage with an article titled \"Slow vs Fast Servers.\" The article discusses the performance differences between slow and fast servers in terms of response times for various tasks such as loading a page, downloading files, and executing JavaScript code. It also mentions that a major focus for performance improvement is to reduce the time it takes for a server to respond to a request. The text includes a list of factors that can affect server response time, including network latency, server load, and the complexity of the task being performed.",
+          "tags": [
+            "slide"
+          ]
+        },
+        {
+          "start": "3:00",
+          "end": "3:45",
+          "description": "On screen: The image shows a screenshot of a webpage with an article titled \"Slow vs Fast Servers.\" The article discusses the performance differences between slow and fast servers in terms of response times for various tasks such as loading a webpage, downloading files, and running simulations. It mentions that a large number of connections can be made between a slow server and a fast server for performance improvement. The text also highlights the importance of focusing on the right metrics to improve performance.",
+          "tags": [
+            "slide"
+          ]
+        },
+        {
+          "start": "3:18",
+          "end": "4:54",
+          "description": "So that all correlates or is connected with that aspect. So those were the big differences between slow and fast service. So here's a little bit of the data from the paper and really, again, for many of you, this may be an eye chart. So I apologize, but the biggest thing is probably to take away. The slowest serves had about a 10 percent less involvement of that back leg during sort of that loading area. So give or take. And so that's something to keep in mind that there is not engaged as much with the back leg. So that's one aspect, the vertical ground reaction forces of the rear lower limb. So that's the way to determine that and see that in that example. Then if we go to the next one and you've got back and front knee flexion, back knee flexion is the top two graphs, slow versus fast. And front knee flexion is the bottom two graphs. You've got a slow serve option and then the fast serves of the comparison. So you can kind of see the differences here of the slowest serve actually is a little bit lower on a few of those variables as they get into that knee flexion. So you've got some component there of making sure that that knee bend occurs well enough. The question is how deep and that's a bit debatable, depending on the physicality of the athlete, the strength, the stability, the age and the motion. They've got a very long motion. They're going to have usually a deeper knee bend.",
+          "tags": []
+        },
+        {
+          "start": "3:45",
+          "end": "4:30",
+          "description": "On screen: The image displays a graphical representation of a sports science concept, specifically related to knee flexion in a back and front view. It shows a chart with two axes labeled \"Knee Flexion\" and \"Fast Service,\" with numerical values ranging from 0 to 100 on both axes. The chart includes a line graph that appears to represent data points, but the specific numbers are not clearly legible. There is also a text overlay at the top of the image that reads \"Back & Front Knee Flexion,\" and below it, there's a subtitle that says \"Fast Service.\" The background of the image features a person who seems to be presenting or explaining the concept, but their identity is not disclosed.",
+          "tags": [
+            "slide"
+          ]
+        },
+        {
+          "start": "4:30",
+          "end": "5:15",
+          "description": "On screen: The image displays a graphical representation of a scientific chart related to sports science. It appears to be a screenshot from a presentation or an article, as indicated by the presence of a person in the background and the text \"BACK & FRONT KNEE FLEXION\" at the top. The chart is titled \"Knee Flexion,\" suggesting it measures the degree of bending at the knee joint. It shows a line graph with two lines, one labeled \"Fast Service\" and the other \"Slow Service.\" There are numerical values on both axes, but they are not fully legible due to the resolution of the image. The x-axis is labeled \"Knee Flexion,\" and the y-axis is labeled \"Force (N),\" indicating that the chart measures force in newtons. The graph includes a legend with symbols representing different types of data points, such as \"Fast Service\" and \"Slow Service.\" There are also annotations on the graph, but they are not entirely clear due to the image's quality.",
+          "tags": [
+            "slide"
+          ]
+        },
+        {
+          "start": "4:54",
+          "end": "6:28",
+          "description": "If they're going to have a very short motion, they usually have a less of a knee bend. So you've got to really be careful on how you interpret some of this data specifically. Racket velocity, obviously that's a big component of serving is we're all trying to improve racket velocity and we're trying to get as much racket velocity in general as we can with really good mechanics. So there's ways to get high racket velocity with poor mechanics, meaning that you're pulling from the wrong positions and that's where injury risk arguably goes up. So we have to be careful about just trying to find racket velocity. I deal with this a lot in baseball as well, where individuals are just trying to focus on velocity and their technique breaks down. So you have to be careful on how you go about it. But again, racket velocity, we see the differences between the slow serve and the fast serve. And we see that in those last two segments to the right on these graphs and you just see the differences here. So you can easily see that there's a four or five percent difference in racket velocity in the cocking stage and the acceleration stage. So just so you know what these graphs are showing, BI is ball impact. So everything in this graph is leading up to ball impact or stake six of the serve, the contact stage. So hopefully this gives you a sense of what we're looking at from that standpoint. So went into the serve there from a little bit of the biomechanics perspective.",
+          "tags": []
+        },
+        {
+          "start": "5:15",
+          "end": "6:00",
+          "description": "On screen: The image displays a graph titled \"Racquet Velocity.\" It measures the velocity of a racquet in miles per hour (mph) on the y-axis and time in seconds on the x-axis. The graph shows a peak at around 0.5 seconds, with the racquet velocity reaching approximately 28 mph. There is a label indicating \"Best Serve\" at this point. The graph also includes a line representing the baseline or average performance, which is marked as 14 mph. The text \"Racquet Velocity\" is visible, along with the name \"KOVACS.\"",
+          "tags": [
+            "slide"
+          ]
+        },
+        {
+          "start": "6:29",
+          "end": "8:04",
+          "description": "Now let's take a look at this really interesting study that was done pretty recently as well in the last year or two. And this is Deng et al. And they looked at the effects of strength and conditioning interventions on serve speed in tennis players. And they did a systematic review with a meta analysis. So a systematic review first off and a meta analysis are sort of two different things. But many times they're done together. A systematic review is analyzing the papers or the research that has been done on a topic using certain criteria. So these researchers looked at all the papers done on training studies and serve speed to see why their relationships. And there were certain criteria that they included and there were certain criteria they excluded. So that's where systematic reviews usually focus and they focus then on looking at the data summarizing the data somewhat as objectively as possible. But there's a little bit of subjectivity to how it is analyzed based on the criteria. Then you add in a meta analysis which is a statistical procedure on top of that that tries to put statistics on studies that were done differently. Which makes it interesting. But you also got to understand the limitations because all these studies were done very, very differently. Some were done in younger kids. Some were done in in college players. Some were done in pros. We've got individuals that are very high level and then individuals that aren't as high level.",
+          "tags": []
+        },
+        {
+          "start": "8:04",
+          "end": "9:31",
+          "description": "So their serve may have still been developing. You've got males. You've got females. You've got different amounts of training time. Different number of serves that people hit. And then you've got very different strength and conditioning interventions. So there's a lot of limitations in studies like this, especially when you're looking at overall strength and conditioning on one variable, which is serve speed. So we just got to be careful on how we interpret it. However, there was some interesting information that big picture I think is important for coaches to understand. One is the definition of training modes is important. As we can see here, you've got resistance training, core training, multimodal, which is pretty much everything. You're doing resistance training, you're doing core training, you're doing plyometrics, you're doing a lot of different things. So that's typically what you would consider a traditional, well structured, semi well structured, strength and conditioning program would be a multimodal training program. So in this definition, it's a combination of at least two forms of strength and conditioning could be strength and speed, strength and power, things like that. Plyometrics, I think most people know that's just the power of the jumping, predominantly jumping type of activities with the lower body. And then you can also do some plyometric throwing activities as well.",
+          "tags": []
+        },
+        {
+          "start": "9:32",
+          "end": "11:14",
+          "description": "So just to be aware of how this was broken down. So this is a chart from the study itself. Don't worry about the information on the left. But what we want to really focus on here is if you look at the blue bars on the right, we're looking at which ones had the biggest effect size. So it's really practically speaking, which ones had the best statistical analysis or would give us the most confidence that the data is good. The bigger the squares, the better from that standpoint. So that, as they say here, the size of the plotted squares reflect the statistical weight of the study. So we're seeing improvements in pretty much all of these. Anything moving to the right, the more to the right, the better, the bigger the improvement on surf speed. So you can kind of see we've got quite a few there that definitely highlight that there is a correlation there or there is a relationship there. So if we're going to summarize this for coaches, what do we need to understand? The findings from these studies indicated that strength and conditioning interventions, specifically multimodal training, enhance surf speed. The training programs that yielded the largest effect size on surf speed, which gave you the biggest bang for the buck, utilized multimodal exercises targeting both upper and lower extremities. So developing a structured strength and conditioning program with an emphasis of improving surf speed can be achieved with off court effective training.",
+          "tags": []
+        },
+        {
+          "start": "9:45",
+          "end": "10:30",
+          "description": "On screen: The image displays a screenshot of a computer screen showing a table with various columns and rows, which appears to be a spreadsheet or database. The visible part of the table includes numerical data in columns labeled \"Player,\" \"Position,\" \"Team,\" \"Age,\" \"Games Played,\" \"Goals Scored,\" \"Assists,\" \"Shots on Target,\" \"Passes Completed,\" and \"Chances Created.\" There are also numerical values under each column, but the specific numbers are not clearly legible. The table is part of a larger document or presentation, as indicated by the presence of a title bar at the top with the text \"Premier League Football Science Archive\" and a logo that seems to be related to sports science or analytics. There is also a small image of a person in the upper left corner of the screenshot, but no additional context about this individual is provided. The overall style of the image suggests it is a digital document intended for informational or analytical purposes.",
+          "tags": [
+            "slide"
+          ]
+        },
+        {
+          "start": "11:15",
+          "end": "12:54",
+          "description": "However, just court training alone does not show positive effects on surf speed. So that's important to understand that doesn't mean court training is not viable. That's just related to surf speed. So court training obviously can be helpful on stability, on anti rotation. So all the rotation that we do in serving, but also in the ground strokes. And it can also be valuable in managing stability throughout the motion. So it's important to recognize that strengthening and conditioning from this standpoint can be very effective for surf speed that was made somewhat clear by the data here. But court training alone is not just going to get you there. So what were most of these studies? Most of these studies were six to eight weeks. So you've got to be careful about pretty short term studies like this. But they're long enough to show improvement with three sessions per week. So one or two sessions per week aren't necessarily going to be enough and two to eight sets, 10 to 15 repetitions. So pretty high reps, 10 to 15 reps is pretty high. So the argument for the strengthening and conditioning coaches that may be listening would be, well, what would happen if we went a bit more power focused and lower reps with maybe a little heavier weight? Would we likely see a faster surf speed in those scenarios? Then some of the studies that did that showed some better outcomes as well. So there's definitely some opportunity here to improve surf speed with off court physical training, well structured strength and conditioning programming and applying it appropriately.",
+          "tags": []
+        },
+        {
+          "start": "12:45",
+          "end": "13:30",
+          "description": "On screen: The image shows a screenshot of a webpage with an article titled \"Shoulder range of motion in competitive tennis players decreases over time.\" Below the title is a chart that appears to be a scatter plot with two axes labeled \"Age\" and \"Motion Range,\" respectively. There are numerical values on both axes, but they are not fully visible. The chart shows a downward trend in motion range as age increases. In the background, there's a thumbnail of a video featuring a man speaking, with text overlaying the image that reads \"SHOULDER RANGE OF MOTION IN COMPETITIVE TENNIS PLAYERS DECREASES OVER TIME.\" The text is too small to read in detail.",
+          "tags": [
+            "slide"
+          ]
+        },
+        {
+          "start": "12:55",
+          "end": "14:26",
+          "description": "So this study was looking at shoulder range of motion and competitive tennis players and what happens to shoulder range of motion. This was a study by Garrett at all and looked at 25 eligible studies. So that's a good number of studies, which is really good from a standpoint of when you're trying to pool research. Having anything over 20 studies is really positive, really, really helpful. So as you can see here, we've got these dominant and non-dominant sides looking at the range of motion. So when you're comparing dominant and non-dominant shoulders, that's typically what we do. We have a control group in tennis most of the time, because most people's dominant shoulder have significant differences than the non-dominant due to serving and even due to forehand, a little bit due to backhand, but mainly due to forehand. So some of the biggest takeaways here that I think are really important that all coaches should be aware of, that if you pull all these studies together, it doesn't matter age, gender, you just pull them together. They reveal that the dominant shoulders had significant less, so smaller, internal rotation range of motion. So 53 degrees on average compared to 63 degrees on average. So you've got a 10 degree difference between the dominant side and the non-dominant side in the negative. So if they're right-handed, their internal shoulder rotation on the right-hand side is about 10 degrees worse than the left.",
+          "tags": []
+        },
+        {
+          "start": "13:30",
+          "end": "14:15",
+          "description": "On screen: The image shows a screenshot of a webpage with an article titled \"Shoulder range of motion in competetennis players decreases over time.\" Below the title is a chart that appears to be a scatter plot with two axes labeled \"Stroke\" and \"Movement,\" though the specific numbers on the axes are not clearly visible. The chart includes a line graph with a trend line, indicating some sort of relationship between stroke and movement. There is also a text box with a caption that reads \"25% of tennis players have a shoulder range of motion less than 180 degrees.\" Additionally, there is a photograph of a person on the left side of the image, but no other discernible information about the content or context of the image. The style of the image suggests it is a screenshot from a webpage, possibly related to sports science research or analysis.",
+          "tags": [
+            "slide"
+          ]
+        },
+        {
+          "start": "14:15",
+          "end": "15:00",
+          "description": "On screen: The image shows a screenshot of a webpage with an article titled \"Shoulder range of motion in competetennis players decreases over time.\" Below the title is a chart that appears to be a scatter plot with two axes labeled \"Stroke\" and \"Movement,\" though the specific numbers on the axes are not clearly visible. The chart includes a line graph with a trend line, indicating some sort of relationship between stroke and movement. There is also a text box with a caption that reads \"25% of tennis players have a shoulder range of motion less than 180 degrees.\" The image also contains a thumbnail of a video featuring a man speaking about the article.",
+          "tags": [
+            "slide"
+          ]
+        },
+        {
+          "start": "14:26",
+          "end": "16:13",
+          "description": "So some of that is valuable because it's an adaptation to help the arm slow down and protect it. The question in the literature and with all the experts that spend a lot of time on the shoulder is how much is appropriate and how much do we start getting into a risk area for injury. And that's a challenging discussion and there isn't a clear answer on it, but obviously the more difference you see, the more likely you're putting someone into greater risk. The question is, is 10 degrees acceptable? Possibly is 15 or 20 degrees acceptable? That starts to get in that gray area above 20 likely is really risky because you've got significant limitations there. So that's important to recognize. When we're comparing adults and children, that revealed that adults have significantly smaller internal rotation and external rotation. So if adults have 44.5 versus 57.1 on average, that shows you a big, big difference as you age. As you age, restriction occurs and that restriction occurs, which over time becomes a real potential negative. External rotation also, as we see, becomes more and more restricted. So external rotation isn't as usually much of a concern because with the tennis racket, we get a reasonable amount of external rotation. But it is still something that we want to pay attention to and we don't want to let external rotation get too restrictive either because that limits us when we're serving getting into stage four, the cocking stage effectively.",
+          "tags": []
+        },
+        {
+          "start": "15:00",
+          "end": "15:45",
+          "description": "On screen: The image shows a screenshot of a webpage with an article titled \"Shoulder range of motion in competetennis players decreases over time.\" Below the title is a chart that appears to be a scatter plot with two axes labeled \"Stroke\" and \"Movement,\" though the specific numbers on the axes are not clearly visible. The chart includes a line graph with a trend line, indicating some sort of relationship between stroke and movement. There is also a text box with a caption that reads \"25% of tennis players have a shoulder range of motion less than 180 degrees.\" Additionally, there is a photograph of a person on the left side of the image, but no other visible text or information in the image. The style of the image suggests it is a screenshot from a webpage, possibly related to sports science research or analysis.",
+          "tags": [
+            "slide"
+          ]
+        },
+        {
+          "start": "15:45",
+          "end": "16:30",
+          "description": "On screen: The image shows a screenshot of a webpage with an article titled \"Shoulder range of motion in competetennis players decreases over time.\" Below the title is a chart that appears to be a scatter plot with two axes labeled \"Stroke\" and \"Movement,\" though the specific numbers on the axes are not clearly visible. The chart includes a line graph with a trend line, indicating some sort of relationship between stroke and movement. There is also a text box with a caption that reads \"25% of tennis players have a shoulder range of motion less than 180 degrees.\" Additionally, there is a photograph of a person on the left side of the image, but no other discernible information about the content or context of the image. The style of the image suggests it is a screenshot from a webpage, possibly related to sports science research or analysis.",
+          "tags": [
+            "slide"
+          ]
+        },
+        {
+          "start": "16:13",
+          "end": "17:52",
+          "description": "And understand that comparing females to males, we really didn't see a big difference in external rotation or internal rotation between genders based on the same age. So I think this is very valuable because it really just summarizes all the studies that are out there. And this is something that we've known for 20 plus years, but it's really nice to see a pretty well done study. Analyzing this, looking at this over an extended period of time. So I want to thank the team over in France that did this with Dr. Montavan and Dr. Garrett and their entire team there because I think it's very valuable to see this written up in this way. So it's definitely something that we want to pay attention to. So what does that mean for coaches? Because coaches typically aren't measuring this using a goniometer or another kind of inclinometer device that many of the physical therapists, medical doctors, trainers that work with a high level players are going to be doing. So we do a lot of stuff where we'll do a whole series of exercises. Many of them are very simple. Many of them you've all seen before. And then there are progressions and regressions based on what they can't do and based on their diagnostics. So you've got simple things such as a sleeper stretch, which I think a lot of people are aware of. That is usually done wrong in my experience, working with hundreds of academies, coaches, even really good therapists sometimes that may not really be as diligent as they need to be on keeping the scapula in the right spot.",
+          "tags": []
+        },
+        {
+          "start": "16:30",
+          "end": "17:15",
+          "description": "On screen: The image shows a screenshot of a webpage with an article titled \"Shoulder range of motion in competetennis players decreases over time.\" Below the title is a chart that appears to be a scatter plot with two axes labeled \"Stroke\" and \"Movement,\" though the specific numbers on the axes are not clearly visible. The chart includes a line graph with a trend line, indicating some form of correlation or relationship between stroke and movement. There is also a text box with a caption that reads \"25% of tennis players have a shoulder range of motion less than 180 degrees.\" The image also contains a photograph of a man on the left side, but he is not the focus of the image. The overall style of the image suggests it is a screenshot from a webpage or digital document.",
+          "tags": [
+            "slide"
+          ]
+        },
+        {
+          "start": "17:15",
+          "end": "18:00",
+          "description": "On screen: The image appears to be a collage of various elements related to sports science and exercise. It includes a photograph of a person exercising, a graphic with text that reads \"THE BULLETPROOF ARM,\" which seems to be an advertisement or informational poster for a fitness program or product. There is also a section titled \"EXERCISE OPTIONS\" with bullet points listing different types of exercises and their corresponding benefits. The image has a mix of textual information, images, and graphics that are likely intended to promote exercise and fitness programs.",
+          "tags": [
+            "slide"
+          ]
+        },
+        {
+          "start": "17:53",
+          "end": "19:28",
+          "description": "And making sure that it's truly is done correctly. Then you've got other areas of rotator cuff strengthening that you have to do in addition to the range of motion side of things and just having good overall shoulder care. So here's just a series of exercises that I think are valuable. You know, all of these can be applied to tennis athletes. We use these a lot with our players. And again, they're all a little bit different. So in the towel drill at the top that you're seeing, that's an eccentric load and eccentric stability exercise. So it's helping from that external rotation standpoint because they haven't to go fast at the beginning, the acceleration, but then there's a very rapid, somewhat violent stop to try to stabilize. Then the second video, you've got this thoracic rotation and shoulder range of motion exercise. And this is just arm circles, side-lying arm circles, pretty common activity for improving thoracic rotation and thoracic movement, which is really, really important. Then we've got a traditional sort of shoulder activity here stretch. This is one that doesn't probably get done enough anymore. Used to get done a lot more. If you go back into the 80s and 90s, this was a pretty common stretch. Using the tennis racket is fine or using a stick like this. And we're just working through that stage four cocking position, getting tricep stretching, but also getting shoulder stretch and also some thoracic work at the same time.",
+          "tags": []
+        },
+        {
+          "start": "18:00",
+          "end": "18:45",
+          "description": "On screen: The image appears to be a collage of various photographs related to sports science and exercise. It includes images of a person performing an exercise on a gym floor, a man in a sports attire standing next to a weight machine, a person stretching on a yoga mat, and a person holding a kettlebell. There is also a photograph of a person with a certificate or diploma, which seems to be related to fitness or sports science. The text \"Some example of shoulder exercises for tennis athletes\" suggests that the collage may be educational in nature, providing examples of shoulder exercises relevant to tennis players.",
+          "tags": [
+            "slide"
+          ]
+        },
+        {
+          "start": "18:45",
+          "end": "19:30",
+          "description": "On screen: The image appears to be a collage of various photographs related to sports and exercise. It includes images of people engaged in physical activities such as weightlifting, yoga, and tennis. There are also images of equipment like dumbbells and exercise balls. The text overlay on the image reads \"Some example of shoulder exercises for tennis athletes.\"",
+          "tags": [
+            "slide"
+          ]
+        },
+        {
+          "start": "19:28",
+          "end": "20:58",
+          "description": "Many players struggle with that. The activities that we're doing in the lower left, these are a combination of shoulder movements. Some of them are isometric like we're doing there, where we're working on internal shoulder rotation stability, trying to make sure that they can stabilize under load. And there's a whole series of exercises here that we use many times as part of warm-up, many times as part of a muscular endurance circuit to work on shoulder stability. The middle lower was just a traditional sleeper stretch. And then the bottom right, as you can see there, this is a really good one for tennis players. As you can see, these are two high level tennis players that are struggling a little bit to get the range of motion that we would like. Typically, if they can't straighten out their arm, notice the person in the red, how their elbows are bent. That's a sign that they've got some pretty significant shoulder restriction here. They can't lift that arm up with their head down in this position. And that means shoulder elevation is restricted, a bit limited, and that over time can be quite a problem. So we want to make sure we address that consistently. Just a reminder, shoulder isn't just the shoulder. We have to make sure we take into account the rassic extension, which is a huge piece of this. Evaluate soft tissue limitations, focus on normalizing external rotation and strengthening in those end ranges,",
+          "tags": []
+        },
+        {
+          "start": "19:30",
+          "end": "20:15",
+          "description": "On screen: The image appears to be a collage of various photographs related to sports and exercise. It includes images of individuals engaged in physical activities such as yoga, weightlifting, and tennis. There are also images of equipment like dumbbells and sports balls. The text \"SOME EXAMPLES OF SHOULDER EXERCISES FOR TENNIS ATHLETES\" is visible, suggesting that the collage may be related to a fitness or training program for tennis players.",
+          "tags": [
+            "slide"
+          ]
+        },
+        {
+          "start": "20:15",
+          "end": "21:00",
+          "description": "On screen: The image appears to be a collage of various photographs related to sports and exercise. It includes images of a person exercising on a treadmill, a man stretching, a person in a gym setting, and a person practicing yoga. There is also an image of a tennis court with a player holding a racket. The text \"SOME EXAMPLES OF SHOULDER EXERCISES FOR TENNIS ATHLETES\" is visible, suggesting that the collage may be related to sports science and exercise routines for tennis players.",
+          "tags": [
+            "slide"
+          ]
+        },
+        {
+          "start": "20:58",
+          "end": "22:24",
+          "description": "especially for tennis. In stage four cocking, we have to get strong down there so that we can be fast out of there. Be careful about over-stretching. We don't want to over-stretch the range. We want to take it to where the end range is, get a little bit more there, but not excessive. And be careful about active movements that are quite dynamic. OK, let's shift gears really briefly because we just want to touch on use strength training and athletic performance. This keeps coming up as a discussion point. Many of you deal with younger players, many of you deal with parents that have questions. And hopefully this gives you a little data that you can utilize to help answer some of these questions. Should young athletes lift weights? Should the load and intensity? What should the frequency be? Should athletes start weights and when should that be? So there's a lot of research on this. This is the American Academy of Pediatrics. This was a clinical report that was reaffirmed in November 24. So less than a year ago and it really just highlights the value and need and benefit of youth resistance training. So misconceptions are on the left and the evidence is on the right. If you want to read this in more detail, go to this paper, The American Academy of Pediatrics. It's definitely a good resource and can be helpful if you want to provide feedback or information to parents, other coaches,",
+          "tags": []
+        },
+        {
+          "start": "21:00",
+          "end": "21:45",
+          "description": "On screen: The image appears to be an informational graphic related to youth strength training and athletic performance. It features a photograph of a person engaged in a workout, likely at a gym or sports facility. There is text overlaying the image that reads \"YOUTH STRENGTH TRAINING & ATHLETIC PERFORMANCE.\" The text also includes the acronym \"ITPA,\" which may stand for an organization or program related to youth training and athletic performance. The graphic seems to be educational in nature, possibly used to promote or explain the benefits of strength training for young athletes.",
+          "tags": [
+            "slide"
+          ]
+        },
+        {
+          "start": "21:45",
+          "end": "22:30",
+          "description": "On screen: The image appears to be a screenshot of a presentation slide. It contains text that reads \"MISCONCEPTIONS VS EVIDENCE\" at the top, followed by bullet points listing various misconceptions and their corresponding evidence-based explanations. The slide is titled \"Disconnects between what we know and what we do.\" There are no visible logos or decorative elements on this slide.",
+          "tags": [
+            "slide"
+          ]
+        },
+        {
+          "start": "22:25",
+          "end": "23:53",
+          "description": "trainers, maybe that are skeptical about how to do this right. Because like everything else, strengthening done wrong is a risky, but tennis coaching done wrong is actually riskier. So that's important to keep in mind. So here are some major position stands. You can find all these. These are all freely available online. So American Academy of Pediatrics clinical report, which was reaffirmed in 24 now. NSCA has a couple of different papers on this, the National Strength and Conditioning Association, the UK Strength and Conditioning Association and the International Consensus was done in 2014. The IOC has also got a paper on this and the World Health Organization has something similar as well. So there's a lot of good data on this topic and hopefully that can be helpful for you. Understanding how they adapt, pre-puberty, peak height velocity and post-puberty also play a role. We don't really have a lot of time now to talk through all this. But in general, the strength training that you do at pre-puberty is very different than during puberty and is very different again than post-puberty. So working with someone who understands youth development and when to load, when to increase and also when to reduce is really important. Parents often raise the concern of growth plates. There is no evidence that supervised resistance training stunts growth or has a negative impact on growth plates.",
+          "tags": []
+        },
+        {
+          "start": "22:30",
+          "end": "23:15",
+          "description": "On screen: The image appears to be a screenshot of a presentation slide. It features a title \"Major position stands\" followed by a list of bullet points that seem to discuss various topics related to sports science or medicine. The text is too small to read in detail, but it includes items such as \"AAP clinical report 2020,\" \"USCA 2019,\" and \"IOC 2018.\" There are also logos for organizations like ITPA, USCA, and IOC. The slide has a plain white background with black text.",
+          "tags": [
+            "slide"
+          ]
+        },
+        {
+          "start": "23:15",
+          "end": "24:00",
+          "description": "On screen: The image appears to be a screenshot of a presentation slide. It features a title \"How athletes adapt to strength training during youth\" followed by bullet points that mention specific topics related to sports science and athletic development. There is a person in the background, but they are not the focus of the image. The text on the slide is too small to read clearly, so I cannot provide details about the content of the presentation.",
+          "tags": [
+            "slide"
+          ]
+        },
+        {
+          "start": "23:54",
+          "end": "25:23",
+          "description": "So it's really, really important to understand that. And most injuries in youth strength training come from poor supervision. The vast majority of injuries in youth that play sports come actually from sports training or competition, not from strength training. So it's really important to put it in context and perspective. So parents worry about, you know, will it stunt the growth? You know, there's decades and decades of research that shows that it doesn't. So it's really, really important to understand that. And then the last big question is how early should we start? And I always say you start as early as an athlete can understand instruction. That could be five years old, six years old, seven years old, eight years old. What that looks like at that age is very different. That's, you know, jumping up and down off equipment that could be running and stopping. That could be pull ups. That could be monkey bar activities. That's all strength training, resistance training, but it's different. It's not necessarily in Iraq with a barbell with dumbbells doing traditional movements. You could do that if the athletes interested in it, but it doesn't have to be like that. So the biggest thing is instruction and then appropriate range of motion, technique, stability before you even think about progressing resistance. So it's really important to keep that in mind. So here's just the final slide, guiding principles and new strength training.",
+          "tags": []
+        },
+        {
+          "start": "24:00",
+          "end": "24:45",
+          "description": "On screen: The image displays a slide from a presentation on youth strength training. It features a title \"Youth Strength Training\" and a subtitle that reads \"Parents often work harder than their kids to get them to start.\" Below this, there is a question posed: \"Will it grow? I don't know yet.\" The slide also includes a list of reasons why parents might struggle to motivate their children to engage in strength training. These reasons include the child's lack of interest, the belief that they are too young for such activities, and the concern that they may be injured or hurt during the process. Additionally, it mentions that parents often feel overwhelmed by the task of building a strong foundation for their children's future success in sports. The slide is part of an educational presentation, as indicated by the logo at the bottom right corner.",
+          "tags": [
+            "slide"
+          ]
+        },
+        {
+          "start": "24:45",
+          "end": "25:30",
+          "description": "On screen: The image displays a slide from a presentation on youth strength training. It features a title \"Youth Strength Training\" and a subtitle that reads \"Parents often work, will it slow down growth?\" Below this, there is a question posed to parents about their children's growth. The slide also includes a text box with the question \"What would happen if we started at age 10?\" followed by an answer that says \"Fortunately, decades of research and sport science have shown that well-designed strength training is essential for building durable muscles.\" The slide appears to be part of an educational or informational presentation.",
+          "tags": [
+            "slide"
+          ]
+        },
+        {
+          "start": "25:23",
+          "end": "26:11",
+          "description": "Technique first, progress slowly, general strength, unilateral and rotational training is really, really important. Don't just do two-legged squats, for example. We need to do a lot of different movements for tennis. Include power and speed early to teach moving quickly with very light resistance. Run fast, jump high, you know, throw medicine balls as far as you can. Things like that can be really, really fun for kids. But also we want to develop power and speed early in their development. Planning and periodization with sports training and competition is vital. So hopefully this was helpful. There's a lot of information on these topics, but again, look up, trust. Quality resources and also work with highly trained professionals. Thank you.",
+          "tags": []
+        },
+        {
+          "start": "25:30",
+          "end": "26:15",
+          "description": "On screen: The image appears to be a screenshot of a presentation slide. It features a title \"Practical application of youth strength training\" followed by a list of bullet points detailing the content of the presentation. The text is too small to read in detail, but it seems to discuss various aspects related to youth strength training, such as technique, progression, and competition. There are also logos for ITPA (International Testosterone Prohibition Association) and a website address \"www.itpa.org.\" The slide is designed with a plain white background and uses black text for the title and bullet points.",
+          "tags": [
+            "slide"
+          ]
+        }
+      ]
+    }
+  ],
+  "_keyframes_done": true
+}
