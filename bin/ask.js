@@ -50,12 +50,21 @@ try {
     `\n${result.intent} · ${result.route} · role ${roleId} · ${result.telemetry.durationMs}ms\n`,
   );
 
-  console.log(result.answer);
+  // APA-style in-text citations for display -- "(Author, Year)" rather than
+  // the raw [n] markers, which are still what result.answer carries and what
+  // --json shows, for anything that reads this output programmatically.
+  console.log(result.answerApa ?? result.answer);
 
   // the table, when the question earned one.
   if (result.table?.markdown) console.log(`\n${result.table.markdown}`);
 
   if (result.sql) console.log(`\nquery run:\n${result.sql}`);
+
+  if (result.references?.length > 0) {
+    console.log(`\n${"-".repeat(70)}\nreferences`);
+
+    for (const reference of result.references) console.log(`  ${reference}`);
+  }
 
   if (result.citations.length > 0) {
     console.log(`\n${"-".repeat(70)}\nsources`);
@@ -74,11 +83,20 @@ try {
   }
 
   // the honest part. an answer that cites nothing reads exactly like one that
-  // cites everything correctly, so we say which it was.
+  // cites everything correctly, so we say which it was. a real author+year
+  // named in prose (see textCitesKnownAuthor) is a materially smaller
+  // problem than citing nothing recognisable, so the two get different
+  // wording rather than the same alarm.
+  const ungrounded = result.grounding?.warnings?.find((warning) => warning.kind === "ungrounded");
+
   if (!result.answered) {
     console.log(`\n  (no answer given${result.reason ? `: ${result.reason}` : ""})`);
-  } else if (result.citations.length === 0) {
-    console.log("\n  warning: the model cited nothing, so this answer is not grounded");
+  } else if (ungrounded) {
+    console.log(
+      ungrounded.severity === "high"
+        ? "\n  warning: the model cited nothing, so this answer is not grounded"
+        : `\n  note: sources are named in prose but not as [n] citations (${ungrounded.detail})`,
+    );
   }
 
   if (result.grounding.danglingCitations?.length > 0) {
@@ -86,7 +104,16 @@ try {
   }
 
   if (result.grounding.unsupportedNumbers?.length > 0) {
-    console.log(`  warning: figures appearing in no source: ${result.grounding.unsupportedNumbers.join(", ")}`);
+    console.log(`  warning: figures appearing in no source AT ALL: ${result.grounding.unsupportedNumbers.join(", ")}`);
+  }
+
+  if (result.grounding.numberCitationMismatches?.length > 0) {
+    console.log("  warning: figures not actually in the source cited for them (may be in a different retrieved chunk):");
+
+    for (const mismatch of result.grounding.numberCitationMismatches) {
+      console.log(`    [${mismatch.citations.join(", ")}] does not contain: ${mismatch.missing.join(", ")}`);
+      console.log(`      claim: "${mismatch.claim}"`);
+    }
   }
 
   console.log();
