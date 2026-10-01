@@ -10,6 +10,7 @@ import { createProcessingStatus } from "./ui/processingStatus.js";
 import { createSourcePanel } from "./ui/sourcePanel.js";
 import { createChatHistory } from "./ui/chatHistory.js";
 import { createQuickQuestions } from "./ui/quickQuestions.js";
+import { createPdfUpload } from "./ui/pdfUpload.js";
 
 
 /*
@@ -497,6 +498,42 @@ function setBusy(busy) {
         busy,
     );
 }
+
+
+// --------------------------------------------------------------------------
+// Private PDF upload
+// --------------------------------------------------------------------------
+
+createPdfUpload({
+    button:
+        getRequiredElement(
+            "#composer-plus-button",
+        ),
+
+    anchor:
+        chatForm,
+
+    onBusyChange:
+        setBusy,
+
+    onError(error) {
+        if (
+            error?.status ===
+            401
+        ) {
+            window.location.assign(
+                "/login",
+            );
+
+            return;
+        }
+
+        showError(
+            error?.message ??
+            "The PDF could not be uploaded.",
+        );
+    },
+});
 
 
 // --------------------------------------------------------------------------

@@ -24,6 +24,8 @@ import assetRoutes from "./modules/assets/asset.routes.js";
 import auditRoutes from "./modules/audit/routes/audit.routes.js";
 import authRoutes from "./modules/auth/routes/auth.routes.js";
 import visionRoutes from "./modules/vision/routes/vision.routes.js";
+import ingestionRoutes from "./modules/ingestion/routes/ingestion.routes.js";
+
 const app = express();
 
 const currentFilePath = fileURLToPath(import.meta.url);
@@ -51,12 +53,20 @@ app.use(express.json());
 // retry before treating it as "not signed in" avoids spurious 401s on the
 // request immediately following login.
 class ResilientMongoStore extends MongoStore {
-  get(sid, callback) {
-    super.get(sid, (err, session) => {
-      if (err || session) return callback(err, session);
-      setTimeout(() => super.get(sid, callback), 75);
-    });
-  }
+    get(sid, callback) {
+        super.get(sid, (err, session) => {
+            if (err || session) return callback(err, session);
+
+            setTimeout(
+                () =>
+                    super.get(
+                        sid,
+                        callback,
+                    ),
+                75,
+            );
+        });
+    }
 }
 
 // Sessions back onto the same MongoDB Atlas cluster everything else uses, so
@@ -64,21 +74,40 @@ class ResilientMongoStore extends MongoStore {
 // becomes req.session.user only at login (auth.controller.js) -- nothing
 // upstream of that point is trusted with a role (threat model T-01).
 app.use(
-  session({
-    secret: authConfig.sessionSecret,
-    resave: false,
-    saveUninitialized: false,
-    // connect-mongo's static create() hardcodes `new MongoStore(...)`, so a
-    // subclass must be constructed directly to actually be used.
-    store: new ResilientMongoStore({ mongoUrl: env.mongodbUri }),
-    cookie: {
-      httpOnly: true,
-      maxAge: authConfig.sessionMaxAgeMs,
-      sameSite: "lax",
-      // Secure cookies require HTTPS; the demo runs over plain HTTP locally.
-      secure: env.nodeEnv === "production",
-    },
-  }),
+    session({
+        secret:
+            authConfig.sessionSecret,
+
+        resave:
+            false,
+
+        saveUninitialized:
+            false,
+
+        // connect-mongo's static create() hardcodes `new MongoStore(...)`, so a
+        // subclass must be constructed directly to actually be used.
+        store:
+            new ResilientMongoStore({
+                mongoUrl:
+                    env.mongodbUri,
+            }),
+
+        cookie: {
+            httpOnly:
+                true,
+
+            maxAge:
+                authConfig.sessionMaxAgeMs,
+
+            sameSite:
+                "lax",
+
+            // Secure cookies require HTTPS; the demo runs over plain HTTP locally.
+            secure:
+                env.nodeEnv ===
+                "production",
+        },
+    }),
 );
 
 /*
@@ -87,116 +116,252 @@ app.use(
  * NODE_ENV -- CI runs with NODE_ENV unset too, and this must not turn on
  * there (see authConfig.devAutoLoginEnabled).
  */
-app.use(async (req, res, next) => {
-  if (!authConfig.devAutoLoginEnabled || req.session.user) {
-    return next();
-  }
+app.use(
+    async (
+        req,
+        res,
+        next,
+    ) => {
+        if (
+            !authConfig.devAutoLoginEnabled ||
+            req.session.user
+        ) {
+            return next();
+        }
 
-  try {
-    // Auto-login still resolves a real seeded account. This keeps development
-    // history, audit records and access checks attached to the same identity
-    // shape produced by the normal login flow.
-    const admin = await User.findOne({
-      roleId: "admin",
-      isActive: true,
-    });
+        try {
+            // Auto-login still resolves a real seeded account. This keeps development
+            // history, audit records and access checks attached to the same identity
+            // shape produced by the normal login flow.
+            const admin =
+                await User.findOne({
+                    roleId:
+                        "admin",
 
-    if (!admin) {
-      const error = new Error(
-        "Development auto-login requires a seeded admin account. Run npm run seed:users first.",
-      );
-      error.statusCode = 500;
-      error.code = "DEV_ADMIN_NOT_SEEDED";
-      throw error;
-    }
+                    isActive:
+                        true,
+                });
 
-    req.session.user = admin.toSafeJSON();
-    return next();
-  } catch (error) {
-    return next(error);
-  }
-});
-app.use(express.static(publicDirectory));
-app.use(telemetryMiddleware);
+            if (!admin) {
+                const error =
+                    new Error(
+                        "Development auto-login requires a seeded admin account. Run npm run seed:users first.",
+                    );
+
+                error.statusCode =
+                    500;
+
+                error.code =
+                    "DEV_ADMIN_NOT_SEEDED";
+
+                throw error;
+            }
+
+            req.session.user =
+                admin.toSafeJSON();
+
+            return next();
+        } catch (error) {
+            return next(
+                error,
+            );
+        }
+    },
+);
+
+app.use(
+    express.static(
+        publicDirectory,
+    ),
+);
+
+app.use(
+    telemetryMiddleware,
+);
 
 // Health route
-app.get("/api/health", (req, res) => {
-  const mongodbStatus = getMongoDBStatus();
-  const healthy = mongodbStatus === "connected";
+app.get(
+    "/api/health",
+    (
+        req,
+        res,
+    ) => {
+        const mongodbStatus =
+            getMongoDBStatus();
 
-  return res.status(healthy ? 200 : 503).json({
-    success: healthy,
-    data: {
-      service: "TennisExplore V2 API",
-      status: healthy ? "healthy" : "degraded",
-      environment: env.nodeEnv,
-      dependencies: {
-        mongodb: mongodbStatus,
-      },
-      timestamp: new Date().toISOString(),
+        const healthy =
+            mongodbStatus ===
+            "connected";
+
+        return res
+            .status(
+                healthy
+                    ? 200
+                    : 503,
+            )
+            .json({
+                success:
+                    healthy,
+
+                data: {
+                    service:
+                        "TennisExplore V2 API",
+
+                    status:
+                        healthy
+                            ? "healthy"
+                            : "degraded",
+
+                    environment:
+                        env.nodeEnv,
+
+                    dependencies: {
+                        mongodb:
+                            mongodbStatus,
+                    },
+
+                    timestamp:
+                        new Date()
+                            .toISOString(),
+                },
+            });
     },
-  });
-});
+);
 
 /*
  * The unified AI Coach is now the root page served by express.static.
  * Keep /explore only as a compatibility redirect for old bookmarks.
  */
-app.get("/explore", (req, res) => {
-  res.redirect(302, "/");
-});
+app.get(
+    "/explore",
+    (
+        req,
+        res,
+    ) => {
+        res.redirect(
+            302,
+            "/",
+        );
+    },
+);
 
-app.get("/platforms", (req, res) => {
-  res.sendFile(path.join(publicDirectory, "platforms.html"));
-});
+app.get(
+    "/platforms",
+    (
+        req,
+        res,
+    ) => {
+        res.sendFile(
+            path.join(
+                publicDirectory,
+                "platforms.html",
+            ),
+        );
+    },
+);
 
-app.get("/login", (req, res) => {
-  res.sendFile(path.join(publicDirectory, "login.html"));
-});
+app.get(
+    "/login",
+    (
+        req,
+        res,
+    ) => {
+        res.sendFile(
+            path.join(
+                publicDirectory,
+                "login.html",
+            ),
+        );
+    },
+);
 
 // Application routes
-app.use("/api/auth", authRoutes);
-
 app.use(
-  "/api/chat",
-  requireAuth,
-  chatRoutes,
+    "/api/auth",
+    authRoutes,
 );
 
 app.use(
-  "/api/conversations",
-  requireAuth,
-  conversationRoutes,
+    "/api/chat",
+    requireAuth,
+    chatRoutes,
 );
 
 app.use(
-  "/api/agent",
-  requireAuth,
-  agentRoutes,
+    "/api/conversations",
+    requireAuth,
+    conversationRoutes,
 );
 
 app.use(
-  "/api/vision",
-  requireAuth,
-  visionRoutes,
+    "/api/agent",
+    requireAuth,
+    agentRoutes,
 );
 
 app.use(
-  "/api/sources",
-  sourceRoutes,
+    "/api/vision",
+    requireAuth,
+    visionRoutes,
+);
+
+/*
+ * Private PDF ingestion.
+ *
+ * Authentication runs before the upload route, so the server determines the
+ * uploader role from the trusted session rather than accepting ACL information
+ * from the browser.
+ */
+app.use(
+    "/api/ingestion",
+    requireAuth,
+    ingestionRoutes,
+);
+
+app.use(
+    "/api/sources",
+    sourceRoutes,
 );
 
 // Internal-classified data; not a public route (threat model T-01).
-app.use("/api/telemetry", requireAuth, telemetryRoutes);
+app.use(
+    "/api/telemetry",
+    requireAuth,
+    telemetryRoutes,
+);
+
 // serves the original file behind a citation, with its own access check
-app.use("/api/assets", requireAuth, assetRoutes);
+app.use(
+    "/api/assets",
+    requireAuth,
+    assetRoutes,
+);
+
 // Says who accessed what -- gating this is as important as gating the
 // access itself (threat model T-01). Admin-only, per the route's own
 // original intent (§7 Data Gate).
-app.use("/api/audit", requireAuth, requireRole("admin"), auditRoutes);
-app.use("/api/quickquestions", requireAuth, quickQuestionRoutes);
+app.use(
+    "/api/audit",
+    requireAuth,
+    requireRole(
+        "admin",
+    ),
+    auditRoutes,
+);
+
+app.use(
+    "/api/quickquestions",
+    requireAuth,
+    quickQuestionRoutes,
+);
+
 // Error handling must come last
-app.use(notFoundHandler);
-app.use(errorHandler);
+app.use(
+    notFoundHandler,
+);
+
+app.use(
+    errorHandler,
+);
 
 export default app;

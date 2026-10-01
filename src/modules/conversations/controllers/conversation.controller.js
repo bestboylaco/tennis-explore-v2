@@ -1,8 +1,10 @@
 import {
   appendConversationMessage,
   createConversation,
+  deleteConversation,
   getConversation,
   listConversations,
+  renameConversation,
 } from "../services/conversation.service.js";
 
 function notFound(res) {
@@ -63,5 +65,34 @@ export async function appendConversationMessageController(req, res) {
   return res.status(200).json({
     success: true,
     data: conversation,
+  });
+}
+
+export async function renameConversationController(req, res) {
+  const conversation = await renameConversation(
+    req.user.id,
+    req.params.conversationId,
+    req.body?.title,
+  );
+
+  if (!conversation) return notFound(res);
+
+  return res.status(200).json({
+    success: true,
+    data: conversation,
+  });
+}
+
+export async function deleteConversationController(req, res) {
+  const deleted = await deleteConversation(
+    req.user.id,
+    req.params.conversationId,
+  );
+
+  if (!deleted) return notFound(res);
+
+  return res.status(200).json({
+    success: true,
+    data: deleted,
   });
 }

@@ -1,0 +1,271 @@
+/*
+ * Courtside Light overrides for the Telemetry dashboard.
+ *
+ * telemetry.css intentionally keeps its original dense dashboard layout. This
+ * file changes presentation only so Telemetry matches the current AI Coach.
+ */
+
+.chat-page {
+    background:
+        radial-gradient(circle at 90% 8%, rgba(179, 218, 104, 0.17), transparent 28rem),
+        radial-gradient(circle at 5% 90%, rgba(63, 132, 96, 0.08), transparent 30rem),
+        #f4f6ef !important;
+}
+
+.chat-topbar {
+    color: #17251d;
+}
+
+.chat-brand {
+    color: #173c29 !important;
+}
+
+.chat-brand__mark {
+    border-color: rgba(36, 80, 55, 0.14) !important;
+    background: rgba(255, 255, 252, 0.88) !important;
+    box-shadow: 0 4px 15px rgba(37, 75, 50, 0.06) !important;
+}
+
+.environment-badge,
+.user-badge__role {
+    color: #536158 !important;
+    border-color: rgba(36, 80, 55, 0.13) !important;
+    background: rgba(255, 255, 252, 0.8) !important;
+}
+
+.user-badge__logout {
+    color: #536158 !important;
+}
+
+.sidebar--left {
+    color: #536158;
+}
+
+.navigation__item {
+    color: #647068 !important;
+}
+
+.navigation__item:hover {
+    color: #173c29 !important;
+    background: rgba(62, 118, 80, 0.07) !important;
+}
+
+.navigation__item--active,
+.navigation__item[aria-current="page"] {
+    color: #173c29 !important;
+    border-color: rgba(61, 116, 77, 0.18) !important;
+    background: linear-gradient(135deg, rgba(180, 221, 94, 0.34), rgba(76, 145, 103, 0.12)) !important;
+}
+
+.sidebar__footer {
+    color: #7a877e !important;
+}
+
+.telemetry-panel {
+    border-color: rgba(36, 80, 55, 0.13) !important;
+    background: rgba(255, 255, 252, 0.88) !important;
+    box-shadow: 0 18px 50px rgba(38, 72, 51, 0.07) !important;
+    backdrop-filter: blur(14px);
+}
+
+.telemetry-header {
+    border-color: rgba(36, 80, 55, 0.1) !important;
+    background: rgba(250, 251, 246, 0.78) !important;
+}
+
+.telemetry-header h1,
+.telemetry-section__title {
+    color: #173c29 !important;
+}
+
+.section-eyebrow,
+.telemetry-section__note {
+    color: #7d8981 !important;
+}
+
+.status-indicator {
+    color: #536158 !important;
+    border-color: rgba(36, 80, 55, 0.13) !important;
+    background: rgba(248, 250, 244, 0.95) !important;
+}
+
+.primary-button {
+    color: #ffffff !important;
+    background: linear-gradient(135deg, #397c68, #285f4d) !important;
+    box-shadow: 0 8px 20px rgba(42, 99, 75, 0.14) !important;
+}
+
+.secondary-button {
+    color: #536158 !important;
+    border-color: rgba(36, 80, 55, 0.14) !important;
+    background: rgba(255, 255, 252, 0.86) !important;
+}
+
+.filter-bar {
+    border-color: rgba(36, 80, 55, 0.1) !important;
+    background: #f5f7f1 !important;
+}
+
+.filter-bar__field label {
+    color: #7b877f !important;
+}
+
+.filter-bar__field select,
+.filter-bar__field input {
+    color: #26382d !important;
+    border-color: rgba(36, 80, 55, 0.15) !important;
+    background: #ffffff !important;
+}
+
+.filter-bar__field select:focus,
+.filter-bar__field input:focus {
+    border-color: rgba(57, 124, 104, 0.55) !important;
+    box-shadow: 0 0 0 0.15rem rgba(57, 124, 104, 0.12) !important;
+}
+
+.filter-bar__field select option {
+    color: #26382d !important;
+    background: #ffffff !important;
+}
+
+.date-field__toggle,
+.date-picker__step,
+.date-picker__action {
+    color: #68766d !important;
+}
+
+.date-picker {
+    color: #26382d !important;
+    border-color: rgba(36, 80, 55, 0.16) !important;
+    background: #ffffff !important;
+    box-shadow: 0 18px 45px rgba(37, 74, 50, 0.14) !important;
+}
+
+.date-picker__month,
+.date-picker__day:hover {
+    color: #173c29 !important;
+}
+
+.date-picker__weekday,
+.date-picker__day {
+    color: #738078 !important;
+}
+
+.date-picker__day--selected {
+    color: #ffffff !important;
+    background: #397c68 !important;
+}
+
+.telemetry-body {
+    background: rgba(249, 250, 246, 0.62);
+}
+
+.telemetry-section {
+    border-color: rgba(36, 80, 55, 0.12) !important;
+    background: rgba(255, 255, 255, 0.82) !important;
+}
+
+.telemetry-notice--muted,
+.telemetry-empty code {
+    color: #68766d !important;
+    border-color: rgba(36, 80, 55, 0.12) !important;
+    background: #f2f5ee !important;
+}
+
+.data-table th,
+.data-table td {
+    border-color: rgba(36, 80, 55, 0.085) !important;
+}
+
+.data-table th {
+    color: #758179 !important;
+    background: #eef2e9 !important;
+}
+
+.data-table td {
+    color: #536158 !important;
+}
+
+.data-table__key {
+    color: #24382c !important;
+}
+
+.data-table tbody tr:hover td {
+    background: rgba(74, 126, 91, 0.055) !important;
+}
+
+.bar__track {
+    background: rgba(48, 91, 62, 0.09) !important;
+}
+
+.bar__fill {
+    background: linear-gradient(90deg, #4f9a79, #9bc85a) !important;
+}
+
+.bar__value {
+    color: #5e6b63 !important;
+}
+
+.stat-card {
+    border-color: rgba(36, 80, 55, 0.11) !important;
+    background: #f7f9f4 !important;
+}
+
+.stat-card__label {
+    color: #7d8881 !important;
+}
+
+.stat-card__value {
+    color: #173c29 !important;
+}
+
+.pill,
+.toggle-group {
+    border-color: rgba(36, 80, 55, 0.12) !important;
+    background: #f3f6f0 !important;
+}
+
+.pill {
+    color: #5d6a62 !important;
+}
+
+.toggle-group__button {
+    color: #78847c !important;
+}
+
+.toggle-group__button--active {
+    color: #173c29 !important;
+    background: rgba(166, 211, 77, 0.22) !important;
+}
+
+.record-row--selected td {
+    background: rgba(166, 211, 77, 0.16) !important;
+}
+
+.record-detail__placeholder,
+.record-raw {
+    border-color: rgba(36, 80, 55, 0.12) !important;
+    background: #f6f8f3 !important;
+}
+
+.record-fields__key,
+.record-detail__id,
+.record-detail__subtitle,
+.structured-value--empty {
+    color: #7d8981 !important;
+}
+
+.record-fields__value,
+.record-raw > summary,
+.structured-value,
+.structured-list li {
+    color: #536158 !important;
+}
+
+.structured-field + .structured-field {
+    border-color: rgba(36, 80, 55, 0.09) !important;
+}
+
+.structured-field__key {
+    color: #24382c !important;
+}

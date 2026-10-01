@@ -65,3 +65,29 @@ export function appendConversationMessage(conversationId, message) {
         },
     );
 }
+
+/**
+ * Renames only a conversation owned by the current authenticated account.
+ */
+export function renameConversation(conversationId, title) {
+    return request(
+        `/api/conversations/${encodeURIComponent(conversationId)}`,
+        {
+            method: "PATCH",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ title }),
+        },
+    );
+}
+
+/**
+ * Permanently deletes only a conversation owned by the current account.
+ */
+export function deleteConversation(conversationId) {
+    return request(
+        `/api/conversations/${encodeURIComponent(conversationId)}`,
+        {
+            method: "DELETE",
+        },
+    );
+}

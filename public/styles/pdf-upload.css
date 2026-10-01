@@ -1,0 +1,41 @@
+.pdf-upload-status {
+    margin: 0.35rem 0.45rem 0;
+    padding: 0.5rem 0.75rem;
+    border: 1px solid rgba(38, 91, 64, 0.13);
+    border-radius: 0.8rem;
+    color: #617067;
+    background: rgba(255, 255, 252, 0.78);
+    font-size: 0.72rem;
+    line-height: 1.45;
+}
+
+.pdf-upload-status[data-state="processing"] {
+    color: #496454;
+    border-color: rgba(57, 124, 104, 0.22);
+    background: rgba(236, 244, 237, 0.9);
+}
+
+.pdf-upload-status[data-state="success"] {
+    color: #285f4d;
+    border-color: rgba(57, 124, 104, 0.24);
+    background: rgba(230, 242, 228, 0.95);
+}
+
+.pdf-upload-status[data-state="failed"] {
+    color: #8b3e45;
+    border-color: rgba(163, 78, 86, 0.25);
+    background: rgba(252, 240, 239, 0.96);
+}
+
+.composer__plus:disabled {
+    opacity: 0.55;
+    cursor: wait;
+}
+
+/* Keep any inline upload failure readable if another caller chooses to use it. */
+.pdf-upload-status[data-state="failed"] {
+    color: #7a211d !important;
+    border-color: #d98a81 !important;
+    background: #fff0ed !important;
+    font-weight: 550;
+}
