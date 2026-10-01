@@ -1,0 +1,22 @@
+[
+  {
+    "label": "athlete denied coach-only doc (sensitivity ceiling)",
+    "roleId": "athlete",
+    "query": "In the 2018 Paris pre-match scouting analysis, what was the score by which Sousa defeated Cecchinato in Round 1?",
+    "targetDocId": "2018-paris-joao-sousa-pre-match-analysis",
+    "k": 50,
+    "targetPresentWithRealFilter": false,
+    "targetPresentWithFilterBypassed": true,
+    "pass": true
+  },
+  {
+    "label": "tour_coach denied athlete-visible doc (program scope)",
+    "roleId": "tour_coach",
+    "query": "According to the load monitoring and injury prevention presentation, what did the Hulin et al. BJSM 2013 study find about doubling weekly workload?",
+    "targetDocId": "aisworkload",
+    "k": 50,
+    "targetPresentWithRealFilter": false,
+    "targetPresentWithFilterBypassed": true,
+    "pass": true
+  }
+]
