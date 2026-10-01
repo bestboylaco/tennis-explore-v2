@@ -47,35 +47,47 @@
    2. Page background
    ========================================================================== */
 
+/* a visible pale sky tone, not just near-white -- the first version's
+   clouds were white-on-near-white with no colour to actually contrast
+   against, on top of sitting almost entirely behind the chat panel's own
+   78%-opaque white + 1.25rem backdrop-blur (which covers nearly the full
+   viewport), so there was effectively nothing left to see (reported
+   directly: "the moving cloud background isn't there"). */
 html,
 body {
     color: #17251d !important;
-    background: radial-gradient(circle at 90% 8%, rgba(179, 218, 104, 0.17), transparent 28rem), radial-gradient(circle at 5% 90%, rgba(63, 132, 96, 0.08), transparent 30rem), #f4f6ef !important;
+    background: radial-gradient(circle at 90% 8%, rgba(179, 218, 104, 0.17), transparent 28rem), radial-gradient(circle at 5% 90%, rgba(63, 132, 96, 0.08), transparent 30rem), linear-gradient(175deg, #eaf2f6 0%, #eef4ee 38%, #f4f6ef 100%) !important;
 }
 
-/* Soft clouds drifting behind the workspace -- a courtside-sky touch the
-   partner asked for, built from layered blurred gradients rather than an
-   image asset. Fixed and z-index: 0 so it always sits behind real content
-   (.chat-application is given z-index: 1 in chat.css for exactly this);
-   pointer-events: none so it can never intercept a click. The pattern is
-   wider than the viewport and drifts slowly via transform, which animates
-   cheaply without triggering layout/repaint on every frame. */
+/* a cloud layer with real definition -- a cooler white core plus a soft
+   grey-blue underside shadow, the way clouds actually render against a pale
+   sky -- used TWICE: once reusable as --cloud-layer for any surface to
+   paint behind itself, and once directly on body::before so it is also
+   visible in whatever page margin isn't covered by a panel. */
+:root {
+    --cloud-layer:
+        radial-gradient(ellipse 9rem 3.2rem at 12% 16%, rgba(255, 255, 255, 0.95), transparent 70%),
+        radial-gradient(ellipse 6rem 2.4rem at 18% 14%, rgba(255, 255, 255, 0.85), transparent 70%),
+        radial-gradient(ellipse 5.5rem 2.2rem at 9% 19%, rgba(210, 222, 228, 0.55), transparent 70%),
+        radial-gradient(ellipse 11rem 3.8rem at 70% 9%, rgba(255, 255, 255, 0.9), transparent 70%),
+        radial-gradient(ellipse 7rem 2.8rem at 77% 12%, rgba(210, 222, 228, 0.5), transparent 70%),
+        radial-gradient(ellipse 10rem 3.4rem at 40% 58%, rgba(255, 255, 255, 0.8), transparent 70%),
+        radial-gradient(ellipse 6.5rem 2.4rem at 46% 61%, rgba(210, 222, 228, 0.45), transparent 70%);
+}
+
+/* the exposed page background -- margins, the strip above the top bar, and
+   anywhere a panel does not reach. fixed and z-index: 0 so it always sits
+   behind real content (.chat-application is given z-index: 1 in chat.css
+   for exactly this); pointer-events: none so it can never intercept a
+   click. wider than the viewport and drifts slowly via transform, which
+   animates cheaply without triggering layout/repaint every frame. */
 body::before {
     content: "";
     position: fixed;
     inset: -10vh -30vw;
     z-index: 0;
     pointer-events: none;
-    background-image:
-        radial-gradient(ellipse 9rem 3.4rem at 12% 16%, rgba(255, 255, 255, 0.85), transparent 72%),
-        radial-gradient(ellipse 6rem 2.6rem at 17% 19%, rgba(255, 255, 255, 0.7), transparent 72%),
-        radial-gradient(ellipse 6.5rem 2.6rem at 8% 20%, rgba(255, 255, 255, 0.65), transparent 72%),
-        radial-gradient(ellipse 11rem 4rem at 70% 9%, rgba(255, 255, 255, 0.75), transparent 72%),
-        radial-gradient(ellipse 7rem 3rem at 76% 12%, rgba(255, 255, 255, 0.6), transparent 72%),
-        radial-gradient(ellipse 10rem 3.6rem at 42% 62%, rgba(255, 255, 255, 0.45), transparent 72%),
-        radial-gradient(ellipse 6rem 2.4rem at 48% 65%, rgba(255, 255, 255, 0.4), transparent 72%);
-    filter: blur(1px);
-    opacity: 0.75;
+    background-image: var(--cloud-layer);
     animation: drift-clouds 150s linear infinite;
 }
 
@@ -143,7 +155,11 @@ body::before {
 .sidebar,
 .workspace-sidebar,
 .left-sidebar {
-    background: rgba(247, 249, 242, 0.96) !important;
+    /* cloud layer painted directly as part of this surface's own
+       background -- it sits at ~96% opacity and covers a large share of
+       the viewport, so a cloud layer merely positioned behind it (on body)
+       was almost entirely hidden rather than visible through it. */
+    background: var(--cloud-layer), rgba(247, 249, 242, 0.96) !important;
     border-color: rgba(36, 80, 55, 0.12) !important;
 }
 
@@ -248,7 +264,14 @@ body::before {
 .chat-panel,
 .ai-coach-panel,
 .chat-main {
-    background: rgba(255, 255, 252, 0.78) !important;
+    /* cloud layer painted directly as part of this surface's own
+       background, same reasoning as the sidebar above -- this panel covers
+       most of the viewport and also backdrop-filter: blurs whatever sits
+       behind it (chat.css), so a cloud layer merely positioned on body was
+       both mostly covered and then blurred away entirely in what little
+       was left (reported directly: "the moving cloud background isn't
+       there"). */
+    background: var(--cloud-layer), rgba(255, 255, 252, 0.78) !important;
     border-color: rgba(36, 80, 55, 0.12) !important;
     box-shadow: 0 18px 50px rgba(38, 72, 51, 0.06) !important;
 }
