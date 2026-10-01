@@ -173,6 +173,29 @@ describe("normalising citation phrasing", () => {
     assert.equal(normaliseCitationPhrasing(text), text);
   });
 
+  it("drops the model's own parens wrapped around an already-correct marker", () => {
+    // live case, 2026-10-01: the frontend's citation button also wraps its
+    // APA text in "(...)" when rendering a "[n]" run, so a literal "(" ")"
+    // the model left around an already-valid marker survives straight
+    // through to double parens on screen: "((Author, Year))".
+    assert.equal(
+      normaliseCitationPhrasing("Hip rotation generates power ([7])."),
+      "Hip rotation generates power [7].",
+    );
+
+    assert.equal(
+      normaliseCitationPhrasing("Wide serves require footwork ([2][5])."),
+      "Wide serves require footwork [2][5].",
+    );
+  });
+
+  it("leaves a real parenthetical aside that happens to include a marker alone", () => {
+    assert.equal(
+      normaliseCitationPhrasing("This pattern holds broadly (see [5] for details)."),
+      "This pattern holds broadly (see [5] for details).",
+    );
+  });
+
   it("does not touch an ordinary parenthetical with no number in it", () => {
     const text = "This was a notable result (as expected).";
 

@@ -71,7 +71,20 @@ export function normaliseCitationPhrasing(answer) {
     .replace(
       /\b(?:evidence(?:\s+blocks?)?|documents?|sources?|citations?|references?|refs?)\s+(\d+(?:\s*(?:,|and|&)\s*\d+)*)\b/gi,
       (_, list) => numbersToBrackets(list),
-    );
+    )
+    // "([2][5])" -- the model wrapping an already-correct "[n]" marker in
+    // its own decorative parentheses on top. the three patterns above only
+    // fire on a BARE number inside the parens, so "[2][5]" (already valid
+    // bracket syntax, not bare digits) passes through them untouched, and
+    // the literal "(" ")" are left sitting around it. harmless on their
+    // own, but the frontend's citation button ALSO wraps its APA text in
+    // "(...)" when rendering a "[n]" run (see appendCitationRun,
+    // messageRenderer.js) -- so the surviving literal parens plus the
+    // button's own parens render as "((...))" (reported directly,
+    // 2026-10-01, screenshot). only matches when the parens contain
+    // nothing but bracket markers, so a real aside that happens to include
+    // one ("(see [5] for details)") is left alone.
+    .replace(/\(\s*((?:\[\d+\])+)\s*\)/g, "$1");
 }
 
 // a trailing block the model writes despite being told not to: its own
