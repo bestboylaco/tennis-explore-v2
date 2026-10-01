@@ -3,6 +3,7 @@ import mongoose from "mongoose";
 import Conversation from "../models/conversation.model.js";
 
 const MAX_TITLE_LENGTH = 58;
+const MAX_CUSTOM_TITLE_LENGTH = 120;
 
 function normaliseUserId(userId) {
   if (!mongoose.isValidObjectId(userId)) return null;
@@ -17,6 +18,28 @@ function titleFromQuestion(question) {
   if (compact.length <= MAX_TITLE_LENGTH) return compact;
 
   return `${compact.slice(0, MAX_TITLE_LENGTH - 3).trimEnd()}...`;
+}
+
+function normaliseCustomTitle(rawTitle) {
+  const title = String(rawTitle ?? "").replace(/\s+/g, " ").trim();
+
+  if (!title) {
+    const error = new Error("Conversation name cannot be empty.");
+    error.statusCode = 400;
+    error.code = "INVALID_CONVERSATION_TITLE";
+    throw error;
+  }
+
+  if (title.length > MAX_CUSTOM_TITLE_LENGTH) {
+    const error = new Error(
+      `Conversation name must be ${MAX_CUSTOM_TITLE_LENGTH} characters or fewer.`,
+    );
+    error.statusCode = 400;
+    error.code = "CONVERSATION_TITLE_TOO_LONG";
+    throw error;
+  }
+
+  return title;
 }
 
 function normaliseMessage(message) {
@@ -142,4 +165,55 @@ export async function appendConversationMessage(userId, conversationId, nextMess
   if (!conversation) return null;
 
   return toSummary(conversation);
+}
+
+/**
+ * Rename is owner-scoped and deliberately does not touch lastMessageAt.
+ * Renaming therefore does not move a conversation to the top of history.
+ */
+export async function renameConversation(userId, conversationId, nextTitle) {
+  const ownerId = normaliseUserId(userId);
+
+  if (!ownerId || !mongoose.isValidObjectId(conversationId)) return null;
+
+  const title = normaliseCustomTitle(nextTitle);
+
+  const conversation = await Conversation.findOneAndUpdate(
+    {
+      _id: conversationId,
+      userId: ownerId,
+    },
+    {
+      $set: { title },
+    },
+    {
+      new: true,
+      runValidators: true,
+    },
+  );
+
+  if (!conversation) return null;
+
+  return toSummary(conversation);
+}
+
+/**
+ * Deletes the conversation and all embedded messages in one owner-scoped
+ * operation. A different account cannot delete the same ObjectId.
+ */
+export async function deleteConversation(userId, conversationId) {
+  const ownerId = normaliseUserId(userId);
+
+  if (!ownerId || !mongoose.isValidObjectId(conversationId)) return null;
+
+  const conversation = await Conversation.findOneAndDelete({
+    _id: conversationId,
+    userId: ownerId,
+  });
+
+  if (!conversation) return null;
+
+  return {
+    id: String(conversation._id),
+  };
 }

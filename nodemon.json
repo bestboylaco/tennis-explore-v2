@@ -1,0 +1,15 @@
+{
+    "watch": [
+        "src",
+        "public"
+    ],
+    "ext": "js,mjs,cjs,json,html,css",
+    "ignore": [
+        "data/**",
+        "node_modules/**",
+        ".git/**",
+        "coverage/**",
+        "test/**"
+    ],
+    "delay": "300"
+}

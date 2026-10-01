@@ -63,13 +63,17 @@ function messageMeta(conversation, isActive) {
         : `${messageText} · ${timeText}`;
 }
 
+function cleanRenameValue(value) {
+    return String(value ?? "").replace(/\s+/g, " ").trim();
+}
+
 /**
  * Account-scoped chat history for the AI Coach workspace.
  *
  * The backend owns persistence and derives the account from the authenticated
  * session. Selecting a conversation never changes its timestamp, so merely
- * opening history cannot reshuffle the list. A conversation moves only when a
- * new message is actually added to it.
+ * opening history cannot reshuffle the list. Rename and delete are also
+ * account-scoped on the backend; the browser never supplies an owner id.
  */
 export async function createChatHistory({
     toggleButton,
@@ -83,14 +87,24 @@ export async function createChatHistory({
     store = conversationApi,
 }) {
     const doc = panel.ownerDocument;
+    const view = doc.defaultView ?? window;
     let conversations = [];
     let activeConversationId = null;
     let activeMessages = [];
     let busy = false;
     let selecting = false;
+    let openMenu = null;
 
     function reportError(error) {
         onError?.(error);
+    }
+
+    function closeOpenMenu() {
+        if (!openMenu) return;
+
+        openMenu.menu.hidden = true;
+        openMenu.toggle.setAttribute("aria-expanded", "false");
+        openMenu = null;
     }
 
     try {
@@ -127,18 +141,133 @@ export async function createChatHistory({
         conversations = sortByLatestMessage(conversations);
     }
 
+    async function selectConversation(conversation) {
+        const isActive = conversation.id === activeConversationId;
+
+        if (busy || selecting || isActive) return;
+
+        selecting = true;
+        closeOpenMenu();
+        render();
+
+        try {
+            const selected = await store.getConversation(conversation.id);
+
+            activeConversationId = selected.id;
+            activeMessages = (selected.messages ?? []).map(cloneTurn);
+
+            render();
+
+            onSelectConversation?.({
+                id: selected.id,
+                title: selected.title,
+                messages: activeMessages.map(cloneTurn),
+            });
+        } catch (error) {
+            reportError(error);
+        } finally {
+            selecting = false;
+            render();
+        }
+    }
+
+    async function renameOne(conversation) {
+        if (busy || selecting) return;
+
+        closeOpenMenu();
+
+        const proposed = view.prompt(
+            "Rename conversation",
+            conversation.title || "Untitled conversation",
+        );
+
+        if (proposed === null) return;
+
+        const title = cleanRenameValue(proposed);
+
+        if (!title) {
+            reportError(new Error("Conversation name cannot be empty."));
+            return;
+        }
+
+        selecting = true;
+        render();
+
+        try {
+            const updated = await store.renameConversation(
+                conversation.id,
+                title,
+            );
+
+            upsertSummary(updated);
+            render();
+        } catch (error) {
+            reportError(error);
+        } finally {
+            selecting = false;
+            render();
+        }
+    }
+
+    async function deleteOne(conversation) {
+        if (busy || selecting) return;
+
+        closeOpenMenu();
+
+        const confirmed = view.confirm(
+            `Delete “${conversation.title || "Untitled conversation"}”?\n\n` +
+                "This conversation and its messages will be permanently deleted.",
+        );
+
+        if (!confirmed) return;
+
+        selecting = true;
+        render();
+
+        try {
+            await store.deleteConversation(conversation.id);
+
+            conversations = conversations.filter(
+                (item) => item.id !== conversation.id,
+            );
+
+            if (activeConversationId === conversation.id) {
+                activeConversationId = null;
+                activeMessages = [];
+
+                onSelectConversation?.({
+                    id: null,
+                    title: "New conversation",
+                    messages: [],
+                });
+            }
+        } catch (error) {
+            reportError(error);
+        } finally {
+            selecting = false;
+            render();
+        }
+    }
+
     function render() {
+        closeOpenMenu();
         countNode.textContent = String(conversations.length);
         emptyState.hidden = conversations.length > 0;
         list.replaceChildren();
 
-        // Do not move the active conversation to the top. The server order is
-        // based on actual message activity, which makes the list predictable.
         for (const conversation of conversations) {
+            const row = doc.createElement("div");
             const button = doc.createElement("button");
             const title = doc.createElement("span");
             const meta = doc.createElement("span");
+            const actions = doc.createElement("div");
+            const menuToggle = doc.createElement("button");
+            const menu = doc.createElement("div");
+            const renameButton = doc.createElement("button");
+            const deleteButton = doc.createElement("button");
             const isActive = conversation.id === activeConversationId;
+
+            row.className = "chat-history__row";
 
             button.type = "button";
             button.className = "chat-history__item";
@@ -157,54 +286,100 @@ export async function createChatHistory({
             meta.textContent = messageMeta(conversation, isActive);
 
             button.append(title, meta);
+            button.addEventListener("click", () => selectConversation(conversation));
 
-            button.addEventListener("click", async () => {
-                if (busy || selecting || isActive) return;
+            actions.className = "chat-history__actions";
 
-                selecting = true;
-                render();
+            menuToggle.type = "button";
+            menuToggle.className = "chat-history__menu-toggle";
+            menuToggle.textContent = "⋯";
+            menuToggle.title = "Conversation actions";
+            menuToggle.setAttribute(
+                "aria-label",
+                `Actions for ${conversation.title || "Untitled conversation"}`,
+            );
+            menuToggle.setAttribute("aria-haspopup", "menu");
+            menuToggle.setAttribute("aria-expanded", "false");
+            menuToggle.disabled = busy || selecting;
 
-                try {
-                    const selected = await store.getConversation(conversation.id);
+            menu.className = "chat-history__menu";
+            menu.hidden = true;
+            menu.setAttribute("role", "menu");
 
-                    activeConversationId = selected.id;
-                    activeMessages = (selected.messages ?? []).map(cloneTurn);
+            renameButton.type = "button";
+            renameButton.className = "chat-history__menu-action";
+            renameButton.textContent = "Rename";
+            renameButton.setAttribute("role", "menuitem");
+            renameButton.disabled = busy || selecting;
 
-                    // Reading a conversation does not alter updatedAt or
-                    // lastMessageAt, so its position remains unchanged.
-                    render();
+            deleteButton.type = "button";
+            deleteButton.className =
+                "chat-history__menu-action chat-history__menu-action--danger";
+            deleteButton.textContent = "Delete";
+            deleteButton.setAttribute("role", "menuitem");
+            deleteButton.disabled = busy || selecting;
 
-                    onSelectConversation?.({
-                        id: selected.id,
-                        title: selected.title,
-                        messages: activeMessages.map(cloneTurn),
-                    });
-                } catch (error) {
-                    reportError(error);
-                } finally {
-                    selecting = false;
-                    render();
-                }
+            menuToggle.addEventListener("click", (event) => {
+                event.stopPropagation();
+
+                const willOpen = menu.hidden;
+                closeOpenMenu();
+
+                if (!willOpen) return;
+
+                menu.hidden = false;
+                menuToggle.setAttribute("aria-expanded", "true");
+                openMenu = { menu, toggle: menuToggle };
             });
 
-            list.append(button);
+            renameButton.addEventListener("click", (event) => {
+                event.stopPropagation();
+                renameOne(conversation);
+            });
+
+            deleteButton.addEventListener("click", (event) => {
+                event.stopPropagation();
+                deleteOne(conversation);
+            });
+
+            menu.append(renameButton, deleteButton);
+            actions.append(menuToggle, menu);
+            row.append(button, actions);
+            list.append(row);
         }
     }
 
     function setExpanded(expanded) {
         panel.hidden = !expanded;
         toggleButton.setAttribute("aria-expanded", String(expanded));
+
+        if (!expanded) closeOpenMenu();
     }
 
     toggleButton.addEventListener("click", () => {
         setExpanded(panel.hidden);
     });
 
+    doc.addEventListener("click", (event) => {
+        if (!openMenu) return;
+
+        const actionContainer = openMenu.toggle.closest(".chat-history__actions");
+
+        if (!actionContainer?.contains(event.target)) {
+            closeOpenMenu();
+        }
+    });
+
+    doc.addEventListener("keydown", (event) => {
+        if (event.key === "Escape") {
+            closeOpenMenu();
+        }
+    });
+
     newChatButton.addEventListener("click", () => {
         if (busy || selecting) return;
 
-        // An empty chat is only a workspace state. It is not written to the
-        // database until the first user message, avoiding empty history rows.
+        closeOpenMenu();
         activeConversationId = null;
         activeMessages = [];
         render();
@@ -293,6 +468,8 @@ export async function createChatHistory({
         for (const item of list.querySelectorAll("button")) {
             item.disabled = busy || selecting;
         }
+
+        if (busy) closeOpenMenu();
     }
 
     render();
