@@ -1,0 +1,89 @@
+{
+  "story": "TENISE-8 / E1-02",
+  "generatedAt": "2026-10-01T06:04:27.947Z",
+  "target": "4/5",
+  "passCount": 4,
+  "total": 5,
+  "accepted": true,
+  "results": [
+    {
+      "id": 1,
+      "type": "pronoun_person",
+      "firstQuestion": "What did Nat Deegan present about female athletes?",
+      "followUp": "What did she recommend for training load?",
+      "resolvedQuestion": "What did Nat Deegan recommend for training load?",
+      "requiredTerms": [
+        "Deegan"
+      ],
+      "missingTerms": [],
+      "contextTurnsUsed": 1,
+      "rewriteApplied": true,
+      "rewriteReason": "subject_coreference",
+      "passed": true
+    },
+    {
+      "id": 2,
+      "type": "pronoun_paper",
+      "firstQuestion": "Summarise Whiteside et al. 2013 kinematic comparison",
+      "followUp": "How many players were in it?",
+      "resolvedQuestion": "What was the number of players in the kinematic comparison study by Whiteside et al. 2013?",
+      "requiredTerms": [
+        "Whiteside"
+      ],
+      "missingTerms": [],
+      "contextTurnsUsed": 1,
+      "rewriteApplied": true,
+      "rewriteReason": "coreference_without_subject",
+      "passed": true
+    },
+    {
+      "id": 3,
+      "type": "ellipsis",
+      "firstQuestion": "What does research say about lumbar bone stress in juniors?",
+      "followUp": "And in adults?",
+      "resolvedQuestion": "What does research say about lumbar bone stress in adults?",
+      "requiredTerms": [
+        "lumbar",
+        "adult"
+      ],
+      "missingTerms": [],
+      "contextTurnsUsed": 1,
+      "rewriteApplied": true,
+      "rewriteReason": "continuation_opener",
+      "passed": true
+    },
+    {
+      "id": 4,
+      "type": "ellipsis_comparison",
+      "firstQuestion": "How does serve load differ between training and tournaments?",
+      "followUp": "What about groundstrokes?",
+      "resolvedQuestion": "What about groundstrokes?",
+      "requiredTerms": [
+        "groundstroke",
+        "tournament"
+      ],
+      "missingTerms": [
+        "tournament"
+      ],
+      "contextTurnsUsed": 0,
+      "rewriteApplied": false,
+      "rewriteReason": "subject_lost",
+      "passed": false
+    },
+    {
+      "id": 5,
+      "type": "pronoun_thing",
+      "firstQuestion": "Who published the first Cardio Tennis paper?",
+      "followUp": "When was that published?",
+      "resolvedQuestion": "When was the first Cardio Tennis paper published?",
+      "requiredTerms": [
+        "Cardio Tennis"
+      ],
+      "missingTerms": [],
+      "contextTurnsUsed": 1,
+      "rewriteApplied": true,
+      "rewriteReason": "coreference_without_subject",
+      "passed": true
+    }
+  ]
+}

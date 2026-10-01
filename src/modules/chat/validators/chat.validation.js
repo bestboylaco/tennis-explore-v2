@@ -1,4 +1,5 @@
 const MAX_QUESTION_LENGTH = 4000;
+const MAX_CONVERSATION_ID_LENGTH = 200;
 
 /**
  * Validates the natural-language question sent by the chat interface.
@@ -22,7 +23,29 @@ export function validateChatQuestion(req, res, next) {
         });
     }
 
-    const { evidence } = req.body ?? {};
+    const {
+        evidence,
+        conversationId,
+    } = req.body ?? {};
+
+
+    if (
+        conversationId !== undefined &&
+        (
+            typeof conversationId !== "string" ||
+            conversationId.trim() === "" ||
+            conversationId.trim().length >
+            MAX_CONVERSATION_ID_LENGTH
+        )
+    ) {
+        errors.push({
+            field:
+                "conversationId",
+
+            message:
+                `Conversation id, when provided, must be a non-empty string of ${MAX_CONVERSATION_ID_LENGTH} characters or fewer.`,
+        });
+    }
 
     // evidence is optional and normally supplied by retrieval (TENISE-15/17,
     // not yet wired in). Accepted here too so the generation stage (TENISE-19)
@@ -50,6 +73,13 @@ export function validateChatQuestion(req, res, next) {
 
     // Store the cleaned question so later layers do not repeat this work.
     req.body.question = question.trim();
+
+    if (
+        conversationId !== undefined
+    ) {
+        req.body.conversationId =
+            conversationId.trim();
+    }
 
     return next();
 }
