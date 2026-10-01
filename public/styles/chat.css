@@ -21,8 +21,6 @@
 }
 
 .chat-application {
-    position: relative;
-    z-index: 1;
     min-height: 100vh;
     padding: 0 var(--space-6) var(--space-6);
 }
@@ -612,16 +610,13 @@
 .message--assistant::before {
     width: 2.4rem;
     height: 2.4rem;
-    display: grid;
-    place-items: center;
     flex-shrink: 0;
     border: 1px solid rgba(83, 181, 255, 0.35);
     border-radius: 50%;
-    color: #89d2ff;
-    font-size: 0.7rem;
-    font-weight: 700;
-    letter-spacing: 0.04em;
-    background: linear-gradient(145deg, rgba(56, 128, 221, 0.42), rgba(50, 24, 106, 0.7));
+    background-color: #fdfdf0;
+    background-image: url("/images/ai-icon.jpg");
+    background-size: cover;
+    background-position: center;
     box-shadow: 0 0 1.6rem rgba(60, 139, 255, 0.25);
 }
 
@@ -714,7 +709,7 @@
 }
 
 .message--assistant::before {
-    content: "AI";
+    content: "";
     position: absolute;
     top: 0.35rem;
     left: 0;
