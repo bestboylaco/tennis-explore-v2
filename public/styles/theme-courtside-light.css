@@ -11,6 +11,16 @@
  * - includes the composer focus override used by the chat input
  */
 
+/* the base stylesheet's ::selection (base.css) is white text on a
+   translucent blue, built for the dark theme's dark backgrounds -- against
+   this theme's light/white surfaces that reads as a washed-out, barely
+   visible highlight (reported directly: "highlighted white... not easy to
+   see"). dark text on a visible, on-brand highlight instead. */
+::selection {
+    color: #111111;
+    background: rgba(61, 123, 93, 0.35);
+}
+
 /* ==========================================================================
    1. Core colour tokens
    ========================================================================== */
@@ -239,14 +249,17 @@ body {
    ========================================================================== */
 
 .message--assistant .message__bubble {
-    color: #29362e !important;
+    color: #111111 !important;
     background: #ffffff !important;
     border: 1px solid rgba(37, 82, 57, 0.13) !important;
     box-shadow: 0 7px 24px rgba(37, 70, 48, 0.055) !important;
 }
 
+    /* was a muted sage-green that read as grey, especially at the previous
+       smaller text size (reported directly: response text should be black,
+       it looks a little grey). */
     .message--assistant .message__bubble p {
-        color: #35433a !important;
+        color: #111111 !important;
     }
 
 /* ==========================================================================

@@ -428,47 +428,42 @@ const chatHistory =
 
 
 // --------------------------------------------------------------------------
-// Greeting
+// Landing greeting
 // --------------------------------------------------------------------------
 //
-// Shown once, only into a genuinely empty conversation -- createChatHistory
-// never auto-selects a saved conversation on load, so an empty transcript
-// here means a fresh session, not one still loading. Best-effort: a failed
-// /api/chat/info fetch still shows the greeting, just without a source
-// count, rather than showing nothing at all.
+// The static "What would you like to explore?" card in index.html (CSS
+// hides it the moment #conversation gets a real .message child -- see
+// `.conversation:has(.message) .conversation__empty` in chat.css) is the
+// landing state, ChatGPT-style: the greeting and the composer centre
+// together while there is nothing in the transcript yet, rather than a
+// message bubble at the top of an otherwise-empty scrolling area. This only
+// fills in the live source count; best-effort, since a failed /api/chat/info
+// fetch should still leave the rest of the card's copy showing.
 
-async function showGreeting() {
-    if (conversation.querySelector(".message")) {
-        return;
-    }
+async function fillLandingDescription() {
+    const description =
+        getRequiredElement("#landing-description");
 
     let sourceCount = null;
 
     try {
         ({ sourceCount } = await getChatInfo());
     } catch {
-        // greeting still shows without the count.
+        // card still shows without the count.
     }
 
     const coverage =
         typeof sourceCount === "number"
-            ? `I have access to ${sourceCount.toLocaleString()} sources`
-            : "I have access to a large library of sources";
+            ? `${sourceCount.toLocaleString()} sources`
+            : "a large library of sources";
 
-    appendAssistantMessage({
-        conversation,
-
-        content:
-            `Hey! I'm TennisExplore's knowledge assistant. ${coverage} covering research papers, ` +
-            "match analysis, coaching resources and video, and I can answer questions across all of " +
-            "them with citations back to where each fact came from. Ask me anything tennis-related to get started.",
-
-        openCitation:
-            sourcePanel.open,
-    });
+    description.textContent =
+        `I'm TennisExplore's knowledge assistant, with access to ${coverage} covering research papers, ` +
+        "match analysis, coaching resources and video -- every answer cites back to where it came from. " +
+        "Ask a question to get started, or try one of these:";
 }
 
-void showGreeting();
+void fillLandingDescription();
 
 
 // --------------------------------------------------------------------------
@@ -503,7 +498,7 @@ questionInput.addEventListener(
  * The backend derives the account from req.user, so every signed-in user
  * receives and edits only their own saved Quick Questions.
  */
-await createQuickQuestions({
+const quickQuestions = await createQuickQuestions({
     list:
         getRequiredElement(
             "#quick-questions-list",
@@ -576,6 +571,47 @@ await createQuickQuestions({
         );
     },
 });
+
+
+/*
+ * A few "jump to" suggestions under the landing greeting -- reuses the
+ * account's own Quick Questions rather than a second, separately-maintained
+ * example list. Clicking one fills the composer the same way picking it
+ * from the Quick Questions panel does; it does not send on its own, so a
+ * coach can review or edit the question first.
+ */
+const landingSuggestions =
+    getRequiredElement("#landing-suggestions");
+
+const suggestedQuestions =
+    quickQuestions.getQuestions().slice(0, 4);
+
+if (suggestedQuestions.length > 0) {
+    for (const suggestion of suggestedQuestions) {
+        const chip =
+            document.createElement("button");
+
+        chip.type = "button";
+        chip.className = "landing-suggestion";
+        chip.textContent =
+            suggestion.title ||
+            suggestion.prompt;
+
+        chip.addEventListener("click", () => {
+            questionInput.value =
+                suggestion.prompt ||
+                suggestion.title ||
+                "";
+
+            resizeInput();
+            questionInput.focus();
+        });
+
+        landingSuggestions.append(chip);
+    }
+
+    landingSuggestions.hidden = false;
+}
 
 
 // --------------------------------------------------------------------------

@@ -4,7 +4,7 @@ import { describe, it } from "node:test";
 import {
   bindCitations,
   cleanTitle,
-  consolidateRepeatedCitationsPerSentence,
+  consolidateRepeatedCitations,
   extractCitationMarkers,
   findUnsupportedNumbers,
   normaliseCitationPhrasing,
@@ -174,28 +174,54 @@ describe("cleaning a contaminated title", () => {
   });
 });
 
-describe("consolidating repeated citations within one sentence", () => {
+describe("consolidating repeated citations within one paragraph", () => {
   it("keeps only the last occurrence of a reference repeated in one sentence", () => {
     const answer =
       "In racquet sports, fatigue manifests as slower reaction times [4], reduced grip " +
       "strength [4], and worse shot accuracy [4].";
 
     assert.equal(
-      consolidateRepeatedCitationsPerSentence(answer),
+      consolidateRepeatedCitations(answer),
       "In racquet sports, fatigue manifests as slower reaction times, reduced grip " +
         "strength, and worse shot accuracy [4].",
     );
   });
 
-  it("does not touch the same reference repeated across different sentences", () => {
-    const answer = "Load rose 24% [1]. Recovery also improved this week [1]. A separate claim [2] closes it out.";
+  it("collapses the same reference repeated across sentences in one paragraph", () => {
+    // the live case this widened from sentence- to paragraph-scope to fix:
+    // one source, restated three times across three consecutive sentences.
+    const answer =
+      "Players typically remain inactive for a median of 32.0 days [6]. This is based on " +
+      "the study's analysis of medical conditions [6]. Specific examples include periods " +
+      "of 33, 211 and 297 days [6].";
 
-    assert.equal(consolidateRepeatedCitationsPerSentence(answer), answer);
+    assert.equal(
+      consolidateRepeatedCitations(answer),
+      "Players typically remain inactive for a median of 32.0 days. This is based on " +
+        "the study's analysis of medical conditions. Specific examples include periods " +
+        "of 33, 211 and 297 days [6].",
+    );
+  });
+
+  it("does not touch the same reference repeated across different paragraphs", () => {
+    const answer = "Load rose 24% [1].\n\nRecovery also improved this week [1]. A separate claim [2] closes it out.";
+
+    assert.equal(consolidateRepeatedCitations(answer), answer);
   });
 
   it("leaves distinct references in the same sentence alone", () => {
     const answer = "Two sources agree on this point [5][7].";
 
-    assert.equal(consolidateRepeatedCitationsPerSentence(answer), answer);
+    assert.equal(consolidateRepeatedCitations(answer), answer);
+  });
+
+  it("keeps each bullet independently cited even when they share a source", () => {
+    // a list item is its own scannable, checkable claim -- collapsing a
+    // citation out of an earlier bullet because a later one repeats the
+    // same source would make that earlier bullet look unsupported on its
+    // own, undoing the bulleted structure asked for elsewhere.
+    const answer = "- First point from the study [3]\n- Second point from the same study [3]\n- Third point [3]";
+
+    assert.equal(consolidateRepeatedCitations(answer), answer);
   });
 });

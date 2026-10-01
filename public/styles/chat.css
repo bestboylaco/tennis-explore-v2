@@ -586,12 +586,9 @@
 }
 
 .conversation__empty {
-    max-width: 39rem;
+    max-width: 34rem;
     margin: auto;
-    display: grid;
-    grid-template-columns: auto 1fr;
-    gap: var(--space-4);
-    align-items: start;
+    text-align: center;
 }
 
 .conversation__empty h2 {
@@ -610,7 +607,6 @@
     color: #c3b0ff;
 }
 
-.welcome-avatar,
 .message--assistant::before {
     width: 2.4rem;
     height: 2.4rem;
@@ -629,6 +625,52 @@
 
 .conversation:has(.message) .conversation__empty {
     display: none;
+}
+
+/* Suggested-prompt chips under the landing greeting -- "jump to" questions a
+   coach can start from instead of a blank box, reusing the account's own
+   Quick Questions rather than a second, separately-maintained list. */
+.landing-suggestions {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+    margin-top: var(--space-5);
+    text-align: left;
+}
+
+.landing-suggestion {
+    padding: 0.7rem 1rem;
+    border: 1px solid var(--border-glass);
+    border-radius: var(--radius-md);
+    color: var(--colour-text-primary);
+    background: rgba(255, 255, 255, 0.05);
+    font: inherit;
+    font-size: 0.9rem;
+    text-align: left;
+    cursor: pointer;
+    transition: color 160ms ease, border-color 160ms ease, background 160ms ease;
+}
+
+    .landing-suggestion:hover,
+    .landing-suggestion:focus-visible {
+        border-color: rgba(255, 255, 255, 0.28);
+        background: rgba(255, 255, 255, 0.1);
+    }
+
+/* ChatGPT-style landing: while the conversation is empty, the conversation
+   area shrinks to its own content instead of filling all available height,
+   so the greeting and the composer centre together as one group below the
+   header rather than the composer sitting pinned far below an empty
+   scrollable area (reported directly, 2026-10-01). Once a message exists,
+   #conversation's flex: 1 (declared above, unconditionally) takes back
+   over and the composer returns to its normal pinned-bottom position. */
+.chat-panel:has(#conversation:not(:has(.message))) {
+    justify-content: center;
+}
+
+.chat-panel:has(#conversation:not(:has(.message))) #conversation {
+    flex: 0 1 auto;
+    overflow: visible;
 }
 
 /* --------------------------------------------------------------------------
@@ -654,6 +696,10 @@
     color: var(--colour-text-primary);
     background: var(--surface-dark);
     box-shadow: 0 0.75rem 2rem rgba(5, 1, 12, 0.18);
+    /* matches the assistant bubble's base size below -- the question you
+       typed and the answer you get back should read as the same size
+       (reported directly: query text and response text should match). */
+    font-size: 1rem;
     line-height: 1.6;
     white-space: pre-wrap;
     overflow-wrap: anywhere;
@@ -683,11 +729,11 @@
     box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06);
     /* the smallest tier of the type hierarchy below -- plain response text.
        headings, top-level numbered items and a bullet's own bold lead-in
-       all size up from this base rather than down from a larger default,
-       which is what made every tier read the same size before (reported
-       directly: no clear hierarchy from a numbered heading down to body
-       text). */
-    font-size: 0.75rem;
+       all size up from this base rather than down from a larger default.
+       raised from an earlier, too-small 0.75rem pass to match both a
+       standard chat app's body text size and the user bubble above
+       (reported directly: "too small... go like 3 sizes up"). */
+    font-size: 1rem;
     line-height: 1.65;
     white-space: pre-wrap;
     overflow-wrap: anywhere;
@@ -710,17 +756,16 @@
     line-height: 1.3;
 }
 
-/* three explicit tiers, matching the hierarchy asked for directly: a
-   heading-level line (~16px), a sub-point's own lead-in (~14px), and plain
-   response text (~12px, the bubble's own base size above). the model almost
-   always writes ## or ### rather than a single #, so h2-h4 carry most real
-   headings. */
+/* three explicit tiers, scaled up from the bubble's 1rem base: a
+   heading-level line (~20px), a sub-point's own lead-in (~18px), and a
+   gentler third tier (~17px). the model almost always writes ## or ###
+   rather than a single #, so h2-h4 carry most real headings. */
 .message--assistant .message__bubble h1,
-.message--assistant .message__bubble h2 { font-size: 1rem; font-weight: 600; }
+.message--assistant .message__bubble h2 { font-size: 1.25rem; font-weight: 600; }
 .message--assistant .message__bubble h3,
-.message--assistant .message__bubble h4 { font-size: 0.875rem; font-weight: 600; }
+.message--assistant .message__bubble h4 { font-size: 1.125rem; font-weight: 600; }
 .message--assistant .message__bubble h5,
-.message--assistant .message__bubble h6 { font-size: 0.8125rem; font-weight: 600; }
+.message--assistant .message__bubble h6 { font-size: 1.0625rem; font-weight: 600; }
 
 .message--assistant .message__bubble h1:first-child,
 .message--assistant .message__bubble h2:first-child,
@@ -746,7 +791,7 @@
    list entry -- sized to match the heading tier above rather than reading
    the same size as the plain text underneath it. */
 .message--assistant .message__bubble > ol > li {
-    font-size: 1rem;
+    font-size: 1.25rem;
     font-weight: 600;
 }
 
@@ -754,7 +799,7 @@
    from a heading, with the rest of that bullet's sentence staying at the
    bubble's base (response-text) size. */
 .message--assistant .message__bubble li > strong:first-child {
-    font-size: 0.875rem;
+    font-size: 1.125rem;
 }
 
 .message--assistant .message__bubble li:last-child {

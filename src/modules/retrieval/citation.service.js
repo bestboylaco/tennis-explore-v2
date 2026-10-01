@@ -67,68 +67,86 @@ export function normaliseCitationPhrasing(answer) {
     );
 }
 
-// a sentence boundary: punctuation followed by whitespace then a capital
-// letter, an opening quote/bracket, or the end of the string. deliberately
-// loose rather than a full sentence tokenizer -- it only has to be right
-// often enough that "0.97%." (digit-dot-digit, no following capital) is not
-// mistaken for a sentence end, not right for every edge case in English
-// prose.
-// wrapped in a capturing group so String.split keeps the matched whitespace
-// in the result (as its own array element) instead of discarding it --
-// without that, rejoining the processed sentences with "" would glue them
-// together with no space between.
-const SENTENCE_SPLIT = /((?<=[.!?])\s+(?=[A-Z"'(\[])|(?<=[.!?])\s*$)/;
+/**
+ * drops every occurrence of a repeated [n] in `unit` except the last,
+ * leaving distinct numbers and one-off citations untouched. the unit this
+ * is given -- a sentence, a bullet line, a whole paragraph -- decides the
+ * scope; this function only knows about positions within whatever string it
+ * receives.
+ */
+function collapseRepeatedMarkers(unit) {
+  const positions = [...unit.matchAll(/\[(\d+)\]/g)].map((match) => ({
+    number: match[1],
+    index: match.index,
+    length: match[0].length,
+  }));
+
+  const lastIndexForNumber = new Map();
+  const countForNumber = new Map();
+
+  for (const position of positions) {
+    lastIndexForNumber.set(position.number, position.index);
+    countForNumber.set(position.number, (countForNumber.get(position.number) ?? 0) + 1);
+  }
+
+  let result = unit;
+
+  for (let i = positions.length - 1; i >= 0; i -= 1) {
+    const position = positions[i];
+    const isRepeated = countForNumber.get(position.number) > 1;
+    const isLastOccurrence = position.index === lastIndexForNumber.get(position.number);
+
+    if (!isRepeated || isLastOccurrence) continue;
+
+    let start = position.index;
+
+    // absorb one preceding space, so removing "[4]" from "fact A [4], fact
+    // B" leaves "fact A, fact B" rather than "fact A , fact B".
+    if (start > 0 && result[start - 1] === " ") start -= 1;
+
+    result = result.slice(0, start) + result.slice(position.index + position.length);
+  }
+
+  return result;
+}
+
+// a blank line -- the same boundary renderAnswer's appendBlock uses to split
+// an answer into blocks client-side, so a "paragraph" here means the same
+// thing it means on screen. captured so split() keeps the blank line itself
+// in the result instead of discarding it.
+const PARAGRAPH_SPLIT = /(\n{2,})/;
+
+// a bullet ("- "/"* ") or ordered ("1. "/"1) ") line, the same shapes
+// appendBlock in messageRenderer.js recognises as a list item.
+const LIST_LINE = /^\s*(?:[-*]|\d+[.)])\s+/;
 
 /**
- * when the same [n] appears more than once in one sentence -- one citation
- * marker per fact it supports, even though every fact in that sentence came
+ * when the same [n] is repeated across several clauses of flowing prose --
+ * one citation marker per fact it supports, even though every fact came
  * from the same source -- keeps only the last occurrence and drops the
- * earlier ones, so the sentence reads with one citation at the end rather
- * than one after every clause (reported directly: "Girard and Millet, 2008"
- * appearing three times in a single sentence, all the same reference).
+ * earlier ones, so a paragraph ends with one citation rather than one after
+ * every sentence (reported directly: the same reference appearing three
+ * times across three consecutive sentences, all citing one source).
  *
- * scoped to one sentence at a time, not the whole answer: citing the same
- * source again in a LATER sentence, for a different fact, is normal and is
- * left alone.
+ * scoped to one paragraph at a time, not the whole answer: citing the same
+ * source again in a LATER paragraph, for a different point, is normal and
+ * is left alone. a list block is handled per line instead of as a whole --
+ * each bullet is its own scannable, independently-checkable claim (the
+ * structure explicitly asked for elsewhere), so collapsing a citation out
+ * of bullet two because bullet four cites the same source would make that
+ * bullet look unsupported on its own.
  */
-export function consolidateRepeatedCitationsPerSentence(answer) {
-  const sentences = String(answer).split(SENTENCE_SPLIT);
+export function consolidateRepeatedCitations(answer) {
+  const blocks = String(answer).split(PARAGRAPH_SPLIT);
 
-  return sentences
-    .map((sentence) => {
-      const positions = [...sentence.matchAll(/\[(\d+)\]/g)].map((match) => ({
-        number: match[1],
-        index: match.index,
-        length: match[0].length,
-      }));
+  return blocks
+    .map((block) => {
+      if (/^\n{2,}$/.test(block)) return block;
 
-      const lastIndexForNumber = new Map();
-      const countForNumber = new Map();
+      const lines = block.split("\n");
+      const isList = lines.some((line) => LIST_LINE.test(line));
 
-      for (const position of positions) {
-        lastIndexForNumber.set(position.number, position.index);
-        countForNumber.set(position.number, (countForNumber.get(position.number) ?? 0) + 1);
-      }
-
-      let result = sentence;
-
-      for (let i = positions.length - 1; i >= 0; i -= 1) {
-        const position = positions[i];
-        const isRepeated = countForNumber.get(position.number) > 1;
-        const isLastOccurrence = position.index === lastIndexForNumber.get(position.number);
-
-        if (!isRepeated || isLastOccurrence) continue;
-
-        let start = position.index;
-
-        // absorb one preceding space, so removing "[4]" from "fact A [4], fact
-        // B" leaves "fact A, fact B" rather than "fact A , fact B".
-        if (start > 0 && result[start - 1] === " ") start -= 1;
-
-        result = result.slice(0, start) + result.slice(position.index + position.length);
-      }
-
-      return result;
+      return isList ? lines.map(collapseRepeatedMarkers).join("\n") : collapseRepeatedMarkers(block);
     })
     .join("");
 }

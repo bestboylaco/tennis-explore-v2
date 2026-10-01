@@ -17,7 +17,7 @@ import { retrieve } from "../../retrieval/retrieval.service.js";
 import {
   bindCitations,
   buildReferenceList,
-  consolidateRepeatedCitationsPerSentence,
+  consolidateRepeatedCitations,
   findUnsupportedNumbers,
   normaliseCitationPhrasing,
   toApaText,
@@ -564,12 +564,13 @@ async function answerFromDocuments(plan, { roleId, signal, startedAt, correlatio
     }
   }
 
-  // one citation per fact is right; one citation per sentence is the goal
-  // when every fact in that sentence came from the same source -- collapses
-  // a source repeated mid-sentence down to a single marker at the end. a
+  // one citation per fact is right; one citation per paragraph is the goal
+  // when every fact in it came from the same source -- collapses a source
+  // repeated across a paragraph's sentences down to a single marker at the
+  // end, while leaving each bullet of a list independently cited. a
   // display-layer pass, run after verification so it can never change
   // whether a claim counts as cited.
-  if (!abstained) finalAnswer = consolidateRepeatedCitationsPerSentence(finalAnswer);
+  if (!abstained) finalAnswer = consolidateRepeatedCitations(finalAnswer);
 
   const payload = buildContractPayload({ contracts: plan.contracts, answer: finalAnswer, citations });
 
