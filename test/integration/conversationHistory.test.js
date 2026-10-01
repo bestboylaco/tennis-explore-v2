@@ -6,9 +6,6 @@ import bcrypt from "bcryptjs";
 import dotenv from "dotenv";
 import mongoose from "mongoose";
 
-import { createUser, deleteUserByEmail } from "../../src/modules/auth/models/user.model.js";
-import Conversation from "../../src/modules/conversations/models/conversation.model.js";
-
 // TENISE-63: accounts are DynamoDB now (user.model.js); conversations stay on
 // MongoDB, out of scope for this migration. This suite genuinely needs both
 // reachable: it logs in (DynamoDB) to exercise conversation ownership
@@ -57,6 +54,15 @@ if (!mongoUri) {
 } else if (!dynamoAvailable) {
   skipReason = `no DynamoDB-compatible server reachable at ${DYNAMODB_TEST_ENDPOINT}; run "docker compose up -d dynamodb-local dynamodb-local-init" to start DynamoDB Local.`;
 }
+
+// imported here, after the DYNAMODB_* overrides above, rather than with the
+// static imports at the top: static imports run before any of this file's own
+// code, so dynamodb.config.js would read the environment first and freeze an
+// empty endpoint -- sending createUser to real AWS with the "local" dummy key
+// ("The security token included in the request is invalid", CI run on main
+// after PR #63). auth.test.js does the same for the same reason.
+const { createUser, deleteUserByEmail } = await import("../../src/modules/auth/models/user.model.js");
+const { default: Conversation } = await import("../../src/modules/conversations/models/conversation.model.js");
 
 const password = "Conversation-History-Test-2026!";
 const emailA = `history-a-${randomUUID()}@test.tennisexplore.local`;
