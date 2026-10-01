@@ -2,24 +2,35 @@ import { after, before, describe, it } from "node:test";
 import assert from "node:assert/strict";
 import { randomUUID } from "node:crypto";
 
-import dotenv from "dotenv";
-import mongoose from "mongoose";
 import bcrypt from "bcryptjs";
-
-import User from "../../src/modules/auth/models/user.model.js";
-
-dotenv.config();
 
 // TENISE-43/E5-20, T-01: proves the gap this story closed -- an anonymous
 // caller can no longer read a protected route or run a chat query, and a
 // session survives login/logout the way the client relies on it to.
 //
-// Runs a real server the same way telemetryHttpRoute.test.js does, for the
-// same reason noted there: src/app.js pulls in config/env.js, which throws
-// on a missing PORT while the module graph is still loading -- imported
-// inside before() so the skip guard below can apply first.
+// TENISE-63: login/session no longer touch MongoDB at all -- accounts and
+// sessions are DynamoDB only now (user.model.js, dynamoSessionStore.js). This
+// suite is gated on DynamoDB reachability instead of MONGODB_URI, same
+// pattern test/integration/s3Upload.test.js uses for the S3 adapter: point at
+// DynamoDB Local via its own DYNAMODB_TEST_* vars, distinct from the app's
+// real DYNAMODB_* vars.
+//
+// src/app.js still unconditionally requires PORT/MONGODB_URI to be *set*
+// (src/config/env.js throws on a missing one) because conversations/sources/
+// audit stay on Mongo -- but app.js never calls connectMongoDB() itself
+// (only src/server.js does), so a dummy MONGODB_URI is enough to import and
+// mount the app; nothing this suite exercises touches Mongo for real.
 
-const mongoUri = process.env.MONGODB_URI;
+const DYNAMODB_TEST_ENDPOINT = process.env.DYNAMODB_TEST_ENDPOINT || "http://localhost:8800";
+const DYNAMODB_TEST_TABLE = process.env.DYNAMODB_TEST_TABLE || "tennis-explore-g2";
+
+process.env.PORT ||= "3000";
+process.env.MONGODB_URI ||= "mongodb://unused-in-this-test/db";
+process.env.DYNAMODB_ENDPOINT = DYNAMODB_TEST_ENDPOINT;
+process.env.DYNAMODB_TABLE_NAME = DYNAMODB_TEST_TABLE;
+process.env.DYNAMODB_ACCESS_KEY_ID ||= "local";
+process.env.DYNAMODB_SECRET_ACCESS_KEY ||= "local";
+
 const testEmail = `itest-auth-${randomUUID()}@test.tennisexplore.local`;
 const testPassword = "Correct-Horse-Battery-Staple-9!";
 
@@ -59,11 +70,35 @@ function cookieFrom(response) {
   return setCookie.split(";")[0];
 }
 
-describe("auth", { skip: mongoUri ? false : "MONGODB_URI is not set" }, () => {
-  before(async () => {
-    await mongoose.connect(mongoUri, { serverSelectionTimeoutMS: 15000 });
+async function isDynamoDbReachable() {
+  try {
+    const response = await fetch(DYNAMODB_TEST_ENDPOINT, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/x-amz-json-1.0",
+        "X-Amz-Target": "DynamoDB_20120810.ListTables",
+      },
+      body: "{}",
+    });
 
-    await User.create({
+    const body = await response.json().catch(() => null);
+
+    return typeof body?.__type === "string" && body.__type.includes("dynamodb");
+  } catch {
+    return false;
+  }
+}
+
+const dynamoAvailable = await isDynamoDbReachable();
+const skipReason = dynamoAvailable
+  ? false
+  : `no DynamoDB-compatible server reachable at ${DYNAMODB_TEST_ENDPOINT}; run "docker compose up -d dynamodb-local dynamodb-local-init" to start DynamoDB Local.`;
+
+const { createUser, deleteUserByEmail } = await import("../../src/modules/auth/models/user.model.js");
+
+describe("auth", { skip: skipReason }, () => {
+  before(async () => {
+    await createUser({
       email: testEmail,
       passwordHash: await bcrypt.hash(testPassword, 4), // low cost: test speed, not production
       displayName: "Integration Test Analyst",
@@ -80,9 +115,8 @@ describe("auth", { skip: mongoUri ? false : "MONGODB_URI is not set" }, () => {
   });
 
   after(async () => {
-    await User.deleteOne({ email: testEmail });
+    await deleteUserByEmail(testEmail);
     await new Promise((resolve) => server.close(resolve));
-    await mongoose.disconnect();
   });
 
   it("rejects a chat request with no session at all", async () => {
