@@ -268,7 +268,6 @@ export async function createChatHistory({
             const isActive = conversation.id === activeConversationId;
 
             row.className = "chat-history__row";
-            row.dataset.conversationId = conversation.id;
 
             button.type = "button";
             button.className = "chat-history__item";
