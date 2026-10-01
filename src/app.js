@@ -251,11 +251,17 @@ app.get(
         req,
         res,
     ) => {
+        // `root` matters, not just style: without it, `send` checks every
+        // segment of the full absolute path for a leading dot, starting from
+        // the filesystem root -- not just relative to publicDirectory. Any
+        // checkout living under a dot-directory (e.g. a `.claude/worktrees/`
+        // agent sandbox) then 404s here even though the file exists, while
+        // `express.static(publicDirectory)` above is unaffected because it
+        // already passes `root` internally. Observed live during TENISE-68
+        // verification (2026-10-01).
         res.sendFile(
-            path.join(
-                publicDirectory,
-                "platforms.html",
-            ),
+            "platforms.html",
+            { root: publicDirectory },
         );
     },
 );
@@ -267,10 +273,8 @@ app.get(
         res,
     ) => {
         res.sendFile(
-            path.join(
-                publicDirectory,
-                "login.html",
-            ),
+            "login.html",
+            { root: publicDirectory },
         );
     },
 );
