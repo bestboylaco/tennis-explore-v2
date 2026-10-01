@@ -289,34 +289,64 @@ nothing else holds that port.
 
 ---
 
+## What was verified against the real table (2026-10-01)
+
+Access landed, but scoped to data operations only. Probed action by action
+with deliberately invalid keys (a `ValidationException` means "authorised,
+then rejected before any write"; `AccessDenied` means not granted), and the
+table's item count confirmed at 0 before and after:
+
+| Granted on `tennis-explore-g2` (ap-southeast-2 only) | Not granted |
+|---|---|
+| `GetItem`, `Query`, `Scan`, `BatchGetItem`, `PutItem`, `UpdateItem`, `DeleteItem`, `BatchWriteItem` | `DescribeTable`, `DescribeTimeToLive`, `ListTables`, every `iam:*` read |
+
+**Key schema, found without `DescribeTable`:** a `PutItem` missing its key
+fails validation with the missing attribute's name ("Missing the key
+primary_key in the item"); repeating with only the partition key (guarded by
+an always-false `attribute_exists` condition so nothing could be written)
+named the sort key. A full-key `GetItem` then succeeded:
+
+- partition key **`primary_key`** (String), sort key **`sort_key`** (String)
+
+These are now the code and docker-compose defaults, so DynamoDB Local and the
+real table use identical names. The table was empty, so item 3 below is
+resolved: there is nothing to collide with.
+
+**Credentials:** this project has no static key for the partner account --
+only temporary `aws login --profile partner-corpus` sessions. Set
+`DYNAMODB_PROFILE=partner-corpus` (resolved via `fromIni`, which reads only
+`~/.aws` and never env vars). Do **not** set `AWS_PROFILE` instead: that makes
+the SDK ignore `AWS_ACCESS_KEY_ID` for every client, silently moving Textract
+onto this DynamoDB-only identity. Verified end to end: the real
+`getDynamoDocumentClient()` read the real table with a full `.env` (other
+account's `AWS_ACCESS_KEY_ID` present) loaded.
+
 ## What to confirm once real access lands
 
 This is a real open risk. Listed plainly, not papered over:
 
-1. **The real table's actual partition/sort key attribute names.** Everything
-   here defaults to `PK`/`SK`. If the partner's table uses different names
-   (`id`/`sk`, `pk`/`sk`, anything else), set `DYNAMODB_PK_NAME` /
-   `DYNAMODB_SK_NAME` -- no code change, but it has never been verified
-   against the real schema because `DescribeTable` is denied.
+1. ~~**The real table's actual partition/sort key attribute names.**~~
+   Resolved 2026-10-01 -- `primary_key`/`sort_key`, see above.
 2. **Whether the real table has any GSIs**, and if so, what they're keyed on.
    This design assumes none and uses `Scan`+filter for the two patterns that
    need one (admin lookup, telemetry queries). If a GSI already exists for
    either access pattern, using it instead would be a meaningful performance
    win, not just a style change.
-3. **Whether the partition key space this design produces
-   (`USER#...`/`SESSION#...`/`TELEMETRY#...`) collides with anything already
-   in that table.** `tennis-explore-g2` is the partner's table; nothing here
-   can rule out that it already holds other data under a key scheme of its
-   own (`DescribeTable` and a sample read being denied means this project
-   cannot inspect it). Confirm with the partner before writing the first real
-   item.
+3. ~~**Whether the partition key space collides with existing data.**~~
+   Resolved 2026-10-01 -- a `Scan` returned zero items; the table was empty.
 4. **Whether PAY_PER_REQUEST billing (used by `bin/dynamodb-init.js` for
    DynamoDB Local) is what the real table is provisioned with**, or whether
    it's a fixed-capacity table this project's write patterns need to respect.
-5. **The actual IAM policy once access is granted** -- confirm it covers
-   `PutItem`/`GetItem`/`DeleteItem`/`Scan` on the one table (`Scan` in
-   particular is easy to leave out of a narrowly-scoped policy, and this
-   design depends on it for two access patterns).
+5. ~~**The actual IAM policy**~~ -- resolved 2026-10-01, every data action
+   this design uses (including `Scan`) is granted; see the table above.
+5a. **Whether TTL is enabled on the real table, and on which attribute.**
+   Still open. Sessions and telemetry rely on native TTL (`ttl`, epoch
+   seconds) to expire; `DescribeTimeToLive` is denied so it can't be checked,
+   and `UpdateTimeToLive` was deliberately not attempted since it would change
+   the partner's table. If TTL is off, nothing breaks -- old sessions and
+   telemetry just accumulate instead of expiring. Needs the partner to enable
+   TTL on `ttl` (or say which attribute they already use, then set
+   `DYNAMODB_TTL_ATTRIBUTE`).
 6. **Credentials and endpoint are the only things that should need to
    change** to point this at the real table (`DYNAMODB_ENDPOINT` unset,
    `DYNAMODB_ACCESS_KEY_ID`/`DYNAMODB_SECRET_ACCESS_KEY` set, or rely on the

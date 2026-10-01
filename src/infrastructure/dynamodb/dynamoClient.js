@@ -11,23 +11,38 @@
 
 import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
 import { DynamoDBDocumentClient } from "@aws-sdk/lib-dynamodb";
+import { fromIni } from "@aws-sdk/credential-providers";
 
 import { dynamodbConfig } from "./dynamodb.config.js";
 
 let rawClient = null;
 let documentClient = null;
 
+// Static keys win, then a DynamoDB-scoped profile, then the SDK default
+// chain. fromIni reads only ~/.aws config (including `aws login` sessions)
+// and never env vars, so AWS_ACCESS_KEY_ID meant for another service can't
+// leak in here -- the node provider chain also gets this right today, but
+// warns that a future SDK may start preferring env keys over a profile.
+function resolveCredentials() {
+  if (dynamodbConfig.accessKeyId && dynamodbConfig.secretAccessKey) {
+    return {
+      accessKeyId: dynamodbConfig.accessKeyId,
+      secretAccessKey: dynamodbConfig.secretAccessKey,
+    };
+  }
+
+  if (dynamodbConfig.profile) {
+    return fromIni({ profile: dynamodbConfig.profile });
+  }
+
+  return undefined;
+}
+
 function buildClient() {
   return new DynamoDBClient({
     region: dynamodbConfig.region,
     endpoint: dynamodbConfig.endpoint || undefined,
-    credentials:
-      dynamodbConfig.accessKeyId && dynamodbConfig.secretAccessKey
-        ? {
-            accessKeyId: dynamodbConfig.accessKeyId,
-            secretAccessKey: dynamodbConfig.secretAccessKey,
-          }
-        : undefined,
+    credentials: resolveCredentials(),
   });
 }
 

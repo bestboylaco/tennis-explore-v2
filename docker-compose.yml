@@ -82,8 +82,8 @@ services:
     environment:
       DYNAMODB_ENDPOINT: http://dynamodb-local:8000
       DYNAMODB_TABLE_NAME: ${DYNAMODB_TABLE_NAME:-tennis-explore-g2}
-      DYNAMODB_PK_NAME: ${DYNAMODB_PK_NAME:-PK}
-      DYNAMODB_SK_NAME: ${DYNAMODB_SK_NAME:-SK}
+      DYNAMODB_PK_NAME: ${DYNAMODB_PK_NAME:-primary_key}
+      DYNAMODB_SK_NAME: ${DYNAMODB_SK_NAME:-sort_key}
       DYNAMODB_TTL_ATTRIBUTE: ${DYNAMODB_TTL_ATTRIBUTE:-ttl}
       DYNAMODB_REGION: ${DYNAMODB_REGION:-ap-southeast-2}
       DYNAMODB_ACCESS_KEY_ID: local
