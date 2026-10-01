@@ -1063,3 +1063,23 @@ select:focus-visible {
     color: #781914 !important;
     background: #fff0ed !important;
 }
+
+.message--assistant .in-text-citation,
+.message--assistant .in-text-citation:hover,
+.message--assistant .in-text-citation:active {
+    color: #2f6b57 !important;
+    background: transparent !important;
+    text-decoration-line: underline !important;
+    text-decoration-style: dotted !important;
+    text-decoration-color: #2f6b57 !important;
+    box-shadow: none !important;
+    filter: none !important;
+    transform: none !important;
+}
+
+.message--assistant .in-text-citation:focus-visible {
+    color: #2f6b57 !important;
+    background: transparent !important;
+    outline: 2px solid rgba(47, 107, 87, 0.4);
+    outline-offset: 2px;
+}
