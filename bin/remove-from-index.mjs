@@ -131,9 +131,16 @@ async function main() {
 
   await bm25.save(scratchDir);
 
+  // fileCount was copied over unchanged from the old manifest, so a remove
+  // followed by append-to-index for the same file (the normal way to re-embed
+  // one document) counted it twice. a removed source file is no longer in the
+  // index, so it no longer counts.
   const mergedManifest = {
     ...manifest,
     sourceDirs: remainingSourceDirs,
+    ...(typeof oldManifest.fileCount === "number"
+      ? { fileCount: Math.max(0, oldManifest.fileCount - droppedBySource.size) }
+      : {}),
   };
 
   await fs.writeFile(path.join(scratchDir, "manifest.json"), `${JSON.stringify(mergedManifest, null, 2)}\n`);

@@ -74,6 +74,57 @@ const SERVE_TABLE = {
   lowConfidenceCells: 1,
 };
 
+/** a PDF WITH a text layer -- born-digital, the other 95% of the corpus. */
+async function bornDigitalPdf(name, pageCount = 2) {
+  const filePath = path.join(workDir, name);
+
+  await fsp.writeFile(filePath, Buffer.concat([tinyPdf(pageCount, { text: true }), Buffer.from(`%${name}\n`)]));
+
+  return filePath;
+}
+
+describe("a born-digital pdf (TENISE-66)", () => {
+  it("is unchanged when it has no Textract cache entry", async () => {
+    // the regression guard for every ordinary file: a text-layer pdf nobody
+    // paid to run through Textract must extract exactly as it always did.
+    const filePath = await bornDigitalPdf("plain.pdf");
+
+    const extracted = await extractFile(filePath);
+
+    assert.ok(extracted.pages.length > 0);
+    assert.deepEqual(extracted.tables, []);
+    assert.equal(extracted.ocr, false);
+  });
+
+  it("gets its Textract tables when its extraction is cached", async () => {
+    // a text layer flattens a table into one run of cells; the cached grid is
+    // what keeps "Male" and "Female" attached to their own columns.
+    const filePath = await bornDigitalPdf("born-digital-tables.pdf");
+
+    await writeCache(filePath, cachedResult({ tables: [SERVE_TABLE] }));
+
+    const extracted = await extractFile(filePath);
+
+    assert.equal(extracted.tables.length, 1);
+    assert.deepEqual(extracted.tables[0].grid, SERVE_TABLE.grid);
+  });
+
+  it("keeps its own text layer for prose rather than Textract's page text", async () => {
+    // the native text layer is the better source for prose; only the tables
+    // are taken from the cache. ocr stays false because nothing was OCR'd to
+    // produce the prose chunks.
+    const filePath = await bornDigitalPdf("born-digital-prose.pdf");
+
+    await writeCache(filePath, cachedResult({ tables: [SERVE_TABLE] }));
+
+    const extracted = await extractFile(filePath);
+
+    assert.ok(extracted.pages.length > 0);
+    assert.ok(!extracted.pages.includes("text read off page 1"));
+    assert.equal(extracted.ocr, false);
+  });
+});
+
 describe("a scanned pdf with no Textract cache", () => {
   it("still extracts to nothing, exactly as before this story", async () => {
     // the regression guard. the Textract lookup sits in the middle of
