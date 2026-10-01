@@ -4,6 +4,7 @@
 //   npm run ask -- "how does serve load differ between training and tournaments?"
 //   npm run ask -- --role physiotherapist "what does the research say about injury risk?"
 //   npm run ask -- "how many matches were played on each surface?"
+//   npm run ask -- --effort fast "what was the score against Kumasaka?"
 //
 // runs the full path: classify the question, route it to documents or tables,
 // gather evidence, answer, then check the answer against what was retrieved.
@@ -12,11 +13,15 @@
 import process from "node:process";
 
 import { ROLE_IDS } from "../src/shared/constants/accessControl.js";
+import { ALL_EFFORT_LEVELS } from "../src/config/effort.config.js";
 import { answerQuestion } from "../src/modules/chat/services/answer.service.js";
 
 const args = process.argv.slice(2);
 let roleId = "analyst";
 let showJson = false;
+// TENISE-68: unset by default, same as the API -- answerQuestion treats an
+// unset effort as "no override", not as a third level of its own.
+let effort;
 const words = [];
 
 for (let i = 0; i < args.length; i += 1) {
@@ -25,6 +30,9 @@ for (let i = 0; i < args.length; i += 1) {
     i += 1;
   } else if (args[i] === "--json") {
     showJson = true;
+  } else if (args[i] === "--effort") {
+    effort = args[i + 1];
+    i += 1;
   } else {
     words.push(args[i]);
   }
@@ -33,13 +41,18 @@ for (let i = 0; i < args.length; i += 1) {
 const question = words.join(" ").trim();
 
 if (question === "") {
-  console.error('usage: npm run ask -- [--role <role>] [--json] "your question"');
+  console.error('usage: npm run ask -- [--role <role>] [--effort fast|thorough] [--json] "your question"');
   console.error(`roles: ${ROLE_IDS.join(", ")}`);
   process.exit(1);
 }
 
+if (effort !== undefined && !ALL_EFFORT_LEVELS.includes(effort)) {
+  console.error(`--effort must be one of: ${ALL_EFFORT_LEVELS.join(", ")} (or omitted)`);
+  process.exit(1);
+}
+
 try {
-  const result = await answerQuestion(question, { roleId });
+  const result = await answerQuestion(question, { roleId, effort });
 
   if (showJson) {
     console.log(JSON.stringify(result, null, 2));
@@ -47,7 +60,7 @@ try {
   }
 
   console.log(
-    `\n${result.intent} · ${result.route} · role ${roleId} · ${result.telemetry.durationMs}ms\n`,
+    `\n${result.intent} · ${result.route} · role ${roleId} · effort ${result.telemetry.effort ?? "default"} · ${result.telemetry.durationMs}ms\n`,
   );
 
   // APA-style in-text citations for display -- "(Author, Year)" rather than

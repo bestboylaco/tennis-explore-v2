@@ -61,10 +61,17 @@ export function classifyQuery(query) {
  * misclassified conceptual question gets keyword-only retrieval and a bad
  * answer, and the whole point of the router is that its mistakes should cost
  * milliseconds rather than correctness.
+ *
+ * `overrides.decompositionEnabled` is TENISE-68's per-request effort control
+ * (see effort.config.js) overriding the global DECOMPOSITION_ENABLED for one
+ * call. left undefined -- every caller before TENISE-68, and any caller that
+ * does not pass `effort` -- it falls back to retrievalConfig exactly as
+ * before this parameter existed.
  */
-export function planRetrieval(query) {
+export function planRetrieval(query, overrides = {}) {
   const kind = classifyQuery(query);
   const { bm25K, denseK } = retrievalConfig.retrieval;
+  const decompositionEnabled = overrides.decompositionEnabled ?? retrievalConfig.query.decompositionEnabled;
 
   if (!retrievalConfig.query.routingEnabled) {
     return { kind, bm25K, denseK, decompose: false, useHyde: false, reason: "routing disabled" };
@@ -86,7 +93,7 @@ export function planRetrieval(query) {
         kind,
         bm25K,
         denseK,
-        decompose: retrievalConfig.query.decompositionEnabled,
+        decompose: decompositionEnabled,
         useHyde: false,
         reason: "needs two or more lookups joined",
       };

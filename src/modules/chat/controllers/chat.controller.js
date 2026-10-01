@@ -93,6 +93,14 @@ export async function submitChatQuestionController(req, res) {
              * session id could read someone else's conversation.
              */
             sessionId: req.sessionID ?? req.session?.id ?? null,
+
+            /*
+             * TENISE-68: optional speed/thoroughness control. Already
+             * validated and normalised to "fast"/"thorough"/undefined by
+             * validateChatQuestion -- undefined here means the caller never
+             * mentioned it, and answerQuestion treats that as "no override".
+             */
+            effort: req.body.effort,
         },
     );
 

@@ -315,7 +315,7 @@ const SCORE_SCHEMA = {
  * a passage in almost every case, and sending 50 x 1600 characters through an
  * 8k context window does not fit anyway.
  */
-async function rerankViaLlm(query, candidates, { signal }) {
+async function rerankViaLlm(query, candidates, { signal, fetchImpl = fetch }) {
   const { baseUrl, llmModel, batchSize } = retrievalConfig.rerank;
 
   const batches = [];
@@ -329,7 +329,7 @@ async function rerankViaLlm(query, candidates, { signal }) {
       .map((candidate, index) => `[${index}] ${(candidate.text ?? "").replace(/\s+/g, " ").slice(0, 500)}`)
       .join("\n\n");
 
-    const response = await fetch(`${baseUrl}/api/chat`, {
+    const response = await fetchImpl(`${baseUrl}/api/chat`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
@@ -392,10 +392,17 @@ async function rerankViaLlm(query, candidates, { signal }) {
   return all;
 }
 
-export async function rerankCandidates(query, candidates, { signal } = {}) {
-  const { enabled, strategy } = retrievalConfig.rerank;
+/**
+ * `enabled` overrides retrievalConfig.rerank.enabled for one call -- this is
+ * TENISE-68's per-request effort control (see effort.config.js). undefined
+ * (every caller before TENISE-68, and any call where `effort` was not
+ * passed) falls back to the configured value, unchanged.
+ */
+export async function rerankCandidates(query, candidates, { signal, enabled, fetchImpl = fetch } = {}) {
+  const { strategy } = retrievalConfig.rerank;
+  const effectiveEnabled = enabled ?? retrievalConfig.rerank.enabled;
 
-  if (!enabled || strategy === "none" || candidates.length === 0) {
+  if (!effectiveEnabled || strategy === "none" || candidates.length === 0) {
     return { candidates, reranked: false, reason: "disabled" };
   }
 
@@ -410,7 +417,7 @@ export async function rerankCandidates(query, candidates, { signal } = {}) {
     } else if (strategy === "cross-encoder") {
       scores = await rerankViaCrossEncoder(query, window);
     } else {
-      scores = await rerankViaLlm(query, window, { signal });
+      scores = await rerankViaLlm(query, window, { signal, fetchImpl });
     }
   } catch (error) {
     return { candidates, reranked: false, reason: `reranker_unavailable: ${error.message}` };

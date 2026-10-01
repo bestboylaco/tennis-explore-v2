@@ -36,6 +36,11 @@ export async function submitChatQuestion(
         roleId,
         telemetryRun = null,
         sessionId = null,
+        // TENISE-68: "fast" | "thorough" | undefined. Only reaches
+        // answerQuestion() -- the supplied-evidence path below never runs
+        // retrieval, decomposition, expansion or reranking, so there is
+        // nothing there for effort to change.
+        effort,
     } = {},
 ) {
     /*
@@ -88,6 +93,7 @@ export async function submitChatQuestion(
             roleId,
             correlationId,
             history,
+            effort,
         },
     );
 
