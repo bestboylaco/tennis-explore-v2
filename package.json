@@ -32,7 +32,8 @@
         "textract:eval": "node bin/textract-eval.js",
         "textract:cloudtrail": "node bin/textract-cloudtrail.js",
         "backfill:s3": "node bin/backfill-s3.js",
-        "backfill:s3:structured": "node bin/backfill-s3-structured.js"
+        "backfill:s3:structured": "node bin/backfill-s3-structured.js",
+        "dynamodb:init": "node bin/dynamodb-init.js"
     },
   "keywords": [
     "tennis",
@@ -43,8 +44,10 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@aws-sdk/client-dynamodb": "^3.1119.0",
     "@aws-sdk/client-s3": "^3.1119.0",
     "@aws-sdk/client-textract": "^3.1119.0",
+    "@aws-sdk/lib-dynamodb": "^3.1119.0",
     "@xenova/transformers": "^2.17.2",
     "adm-zip": "^0.5.16",
     "bcryptjs": "^3.0.3",

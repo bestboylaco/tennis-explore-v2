@@ -1,6 +1,6 @@
 import bcrypt from "bcryptjs";
 
-import User from "../models/user.model.js";
+import { createUser as createUserRecord, findUserByEmail } from "../models/user.model.js";
 
 const SALT_ROUNDS = 12;
 
@@ -26,12 +26,9 @@ export async function authenticate(email, password) {
     throw new InvalidCredentialsError();
   }
 
-  const user = await User.findOne({
-    email: email.trim().toLowerCase(),
-    isActive: true,
-  });
+  const user = await findUserByEmail(email.trim().toLowerCase());
 
-  if (!user) {
+  if (!user || !user.isActive) {
     // Still pays bcrypt's cost even on a miss, so a timing difference
     // between "no such user" and "wrong password" cannot be measured.
     await bcrypt.compare(password, "$2a$12$" + "0".repeat(53));
@@ -56,7 +53,7 @@ export async function authenticate(email, password) {
 export async function createUser({ email, password, displayName, roleId }) {
   const passwordHash = await bcrypt.hash(password, SALT_ROUNDS);
 
-  return User.create({
+  return createUserRecord({
     email: email.trim().toLowerCase(),
     passwordHash,
     displayName,

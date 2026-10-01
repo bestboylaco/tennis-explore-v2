@@ -39,5 +39,50 @@ services:
       mc mb --ignore-existing local/tennis-explore-assets
       "
 
+  # TENISE-63: local stand-in for the one DynamoDB table the partner has
+  # granted (tennis-explore-g2). -inMemory means data resets every
+  # `docker compose down`, which is what every test in this repo wants --
+  # nothing here depends on data surviving a restart. Switching to the real
+  # partner table later is purely an env change (DYNAMODB_ENDPOINT,
+  # DYNAMODB_TABLE_NAME, credentials) -- see .env.example and
+  # docs/DYNAMODB-MIGRATION.md.
+  dynamodb-local:
+    image: amazon/dynamodb-local:latest
+    command: ["-jar", "DynamoDBLocal.jar", "-sharedDb", "-inMemory"]
+    ports:
+      - "8000:8000" # DynamoDB API
+    healthcheck:
+      # The image ships no curl/wget, so this proves the port is accepting
+      # connections with nothing more than bash, which the image does have.
+      test: ["CMD-SHELL", "bash -c 'exec 3<>/dev/tcp/127.0.0.1/8000'"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  # Creates the single table (and enables its TTL attribute) on first
+  # startup and exits, the same role minio-init plays for the S3 bucket.
+  # Runs bin/dynamodb-init.js straight from the repo -- that script only
+  # touches @aws-sdk/client-dynamodb (pure JS, no native bindings), so a
+  # Linux container can run it against node_modules installed on any host
+  # OS without a rebuild.
+  dynamodb-local-init:
+    image: node:22-alpine
+    working_dir: /app
+    volumes:
+      - .:/app
+    environment:
+      DYNAMODB_ENDPOINT: http://dynamodb-local:8000
+      DYNAMODB_TABLE_NAME: ${DYNAMODB_TABLE_NAME:-tennis-explore-g2}
+      DYNAMODB_PK_NAME: ${DYNAMODB_PK_NAME:-PK}
+      DYNAMODB_SK_NAME: ${DYNAMODB_SK_NAME:-SK}
+      DYNAMODB_TTL_ATTRIBUTE: ${DYNAMODB_TTL_ATTRIBUTE:-ttl}
+      DYNAMODB_REGION: ${DYNAMODB_REGION:-ap-southeast-2}
+      DYNAMODB_ACCESS_KEY_ID: local
+      DYNAMODB_SECRET_ACCESS_KEY: local
+    depends_on:
+      dynamodb-local:
+        condition: service_healthy
+    entrypoint: ["node", "bin/dynamodb-init.js"]
+
 volumes:
   minio-data:

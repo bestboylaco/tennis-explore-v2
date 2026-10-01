@@ -84,4 +84,10 @@ export const env = Object.freeze({
       secretAccessKey: process.env.S3_SECRET_ACCESS_KEY || "",
     }),
   }),
+
+  // TENISE-63's DynamoDB settings (table/key names, endpoint, credentials) are
+  // deliberately NOT here -- see src/infrastructure/dynamodb/dynamodb.config.js
+  // for why: telemetry and auth must stay importable without PORT/MONGODB_URI
+  // set, the same reason telemetry.config.js and auth.config.js read process.env
+  // directly instead of going through this file.
 });
