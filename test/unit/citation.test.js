@@ -8,6 +8,7 @@ import {
   extractCitationMarkers,
   findUnsupportedNumbers,
   normaliseCitationPhrasing,
+  stripTrailingReferenceList,
 } from "../../src/modules/retrieval/citation.service.js";
 
 const evidence = [
@@ -65,6 +66,14 @@ describe("citation binding", () => {
 });
 
 describe("normalising citation phrasing", () => {
+  // every case here is now recognised by SHAPE (a delimited number or
+  // number-list, with at most a couple of leading words) rather than by
+  // matching a known word -- see the comment on normaliseCitationPhrasing.
+  // the surrounding "(" ")" is consumed along with the word+number inside
+  // it, not kept: the frontend's in-text citation rendering adds its own
+  // parentheses around the APA text, so keeping the source text's parens
+  // too would double them up ("((Author, Year))").
+
   it("converts a trailing bracketed sources list", () => {
     assert.equal(
       normaliseCitationPhrasing("The ratio matters most. [Sources: 4, 6]"),
@@ -79,24 +88,24 @@ describe("normalising citation phrasing", () => {
     );
   });
 
-  it("converts 'evidence block N' inline", () => {
+  it("converts 'evidence block N' inline, dropping the parentheses", () => {
     assert.equal(
       normaliseCitationPhrasing("This is the danger zone (evidence block 6)."),
-      "This is the danger zone ([6]).",
+      "This is the danger zone [6].",
     );
   });
 
   it("converts 'sources N and M' inline", () => {
     assert.equal(
       normaliseCitationPhrasing("Winners hit faster serves (sources 6 and 9)."),
-      "Winners hit faster serves ([6][9]).",
+      "Winners hit faster serves [6][9].",
     );
   });
 
   it("converts 'document N' inline", () => {
     assert.equal(
       normaliseCitationPhrasing("This is discussed further (document 8)."),
-      "This is discussed further ([8]).",
+      "This is discussed further [8].",
     );
   });
 
@@ -114,17 +123,47 @@ describe("normalising citation phrasing", () => {
   });
 
   it("converts 'citation N' and 'citation N, M' inline", () => {
-    // observed live, 2026-10-01: not just left uncited -- the bare number
-    // inside "(citation 10)" was then also read as an unverified data
-    // figure, since nothing recognised it as a citation reference at all.
+    // the live case this whole generalisation was built to fix, 2026-10-01:
+    // not just left uncited -- the bare number inside "(citation 10)" was
+    // then also read as an unverified data figure, since nothing
+    // recognised it as a citation reference at all.
     assert.equal(
       normaliseCitationPhrasing("Use hip rotation (citation 10) to generate power."),
-      "Use hip rotation ([10]) to generate power.",
+      "Use hip rotation [10] to generate power.",
     );
 
     assert.equal(
       normaliseCitationPhrasing("Broader court coverage and aggressive play (citation 1, 4)."),
-      "Broader court coverage and aggressive play ([1][4]).",
+      "Broader court coverage and aggressive play [1][4].",
+    );
+  });
+
+  it("converts a word it has never been told about, by shape, not by name", () => {
+    // the point of the generalisation: a future synonym should not need
+    // its own fix. "ref" and "see" are not in any word list anywhere in
+    // this file.
+    assert.equal(
+      normaliseCitationPhrasing("Use hip rotation (ref 10) to generate power."),
+      "Use hip rotation [10] to generate power.",
+    );
+
+    assert.equal(
+      normaliseCitationPhrasing("Use hip rotation (see 10) to generate power."),
+      "Use hip rotation [10] to generate power.",
+    );
+  });
+
+  it("converts a bare parenthesised number with no word at all", () => {
+    assert.equal(
+      normaliseCitationPhrasing("A bare parenthetical number (10) works too."),
+      "A bare parenthetical number [10] works too.",
+    );
+  });
+
+  it("converts a two-word lead-in before the number", () => {
+    assert.equal(
+      normaliseCitationPhrasing("Use hip rotation (per study 10) to generate power."),
+      "Use hip rotation [10] to generate power.",
     );
   });
 
@@ -134,11 +173,52 @@ describe("normalising citation phrasing", () => {
     assert.equal(normaliseCitationPhrasing(text), text);
   });
 
+  it("does not touch an ordinary parenthetical with no number in it", () => {
+    const text = "This was a notable result (as expected).";
+
+    assert.equal(normaliseCitationPhrasing(text), text);
+  });
+
+  it("leaves a plain score or count alone", () => {
+    const text = "He lost in straight sets, 6-3 6-4.";
+
+    assert.equal(normaliseCitationPhrasing(text), text);
+  });
+
   it("converts bracketed 'Evidence N' without doubling the brackets", () => {
     assert.equal(
       normaliseCitationPhrasing("This is stated in [Evidence 1] and clarified in [Evidence 5]."),
       "This is stated in [1] and clarified in [5].",
     );
+  });
+});
+
+describe("stripping a trailing self-generated reference list", () => {
+  it("removes a trailing block of '[n]: description' lines, however it is introduced", () => {
+    const answer =
+      "Main answer text [2][3].\n\n---\n**Citations**:\n" +
+      "- [2]: Female players contact the ball closer to the net.\n" +
+      "- [3]: Male players recalibrate their impact point.";
+
+    assert.equal(stripTrailingReferenceList(answer), "Main answer text [2][3].");
+  });
+
+  it("removes the block even with a different heading word and no divider", () => {
+    const answer = "Main answer text [2].\n\nReferences:\n[2]: Some description.\n[4]: Another one.";
+
+    assert.equal(stripTrailingReferenceList(answer), "Main answer text [2].");
+  });
+
+  it("leaves a normal answer with a genuine mid-sentence citation alone", () => {
+    const answer = "A real sentence that happens to cite [3] mid-paragraph, nothing to strip.";
+
+    assert.equal(stripTrailingReferenceList(answer), answer);
+  });
+
+  it("does not strip a single trailing citation line -- only a real list of two or more", () => {
+    const answer = "Main text here.\n\n[3]: just one line, not a list.";
+
+    assert.equal(stripTrailingReferenceList(answer), answer);
   });
 });
 
@@ -199,6 +279,29 @@ describe("consolidating repeated citations within one paragraph", () => {
       consolidateRepeatedCitations(answer),
       "In racquet sports, fatigue manifests as slower reaction times, reduced grip " +
         "strength, and worse shot accuracy [4].",
+    );
+  });
+
+  it("removes the marker's own enclosing parens too, rather than leaving a hollow '()'", () => {
+    // live case, 2026-10-01: the model wrote its own "(" ")" around a "[n]"
+    // marker ("... serve speed ([4]). ... racquet head speed ([7]).",
+    // [4] and [7] being page-chunks of one paper). collapsing the repeated
+    // first occurrence used to remove only the "[4]" inside, leaving an
+    // empty "()" sitting in the sentence where a citation used to be --
+    // exactly the "stopped citing" failure this whole feature exists to
+    // prevent, just self-inflicted by the collapse step instead of the model.
+    const answer =
+      "Males show greater explosive power, which influences serve speed ([4]). " +
+      "This is tied to rotation strength, critical for racquet head speed ([7]).";
+    const citations = [
+      { number: 4, docId: "reid2016" },
+      { number: 7, docId: "reid2016" },
+    ];
+
+    assert.equal(
+      consolidateRepeatedCitations(answer, citations),
+      "Males show greater explosive power, which influences serve speed. " +
+        "This is tied to rotation strength, critical for racquet head speed ([7]).",
     );
   });
 

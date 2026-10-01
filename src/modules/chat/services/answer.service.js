@@ -20,6 +20,7 @@ import {
   consolidateRepeatedCitations,
   findUnsupportedNumbers,
   normaliseCitationPhrasing,
+  stripTrailingReferenceList,
   toApaText,
 } from "../../retrieval/citation.service.js";
 import { buildContext } from "../../retrieval/contextBuilder.service.js";
@@ -447,8 +448,17 @@ async function answerFromDocuments(plan, { roleId, signal, startedAt, correlatio
   // and 6", a trailing "[Sources: 4, 6]") get converted to real [n] markers
   // before anything else looks at this text -- see normaliseCitationPhrasing
   // for why these are safe to convert outright rather than fuzzy-matched
-  // like textCitesKnownAuthor.
+  // like textCitesKnownAuthor. run first, specifically so a trailing
+  // reference list phrased in words ("Citations: [2] description") is
+  // already bracket-shaped by the time stripTrailingReferenceList looks for
+  // it below.
   answer = normaliseCitationPhrasing(answer);
+  // the model restating its own reference list as trailing prose despite
+  // being told not to -- removed by shape, not by matching a known heading
+  // word, same reasoning as normaliseCitationPhrasing. this is the recap
+  // block itself, not a citation phrasing, so it comes off entirely rather
+  // than being converted.
+  answer = stripTrailingReferenceList(answer);
 
   const abstained = isAbstention(answer);
 
@@ -493,10 +503,12 @@ async function answerFromDocuments(plan, { roleId, signal, startedAt, correlatio
 
   if (needsRepair) {
     try {
-      const repaired = normaliseCitationPhrasing(
-        await repairCitationsAndFigures(plan.question, answer, context, verification.unsupportedNumbers, {
-          signal,
-        }),
+      const repaired = stripTrailingReferenceList(
+        normaliseCitationPhrasing(
+          await repairCitationsAndFigures(plan.question, answer, context, verification.unsupportedNumbers, {
+            signal,
+          }),
+        ),
       );
       const repairedVerification = verifyAnswer(repaired, evidence, plan.question);
 

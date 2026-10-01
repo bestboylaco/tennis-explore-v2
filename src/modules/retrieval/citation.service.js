@@ -16,64 +16,120 @@ const CITATION_MARKER = /\[(\d+)\]/g;
 // ---------------------------------------------------------------------------
 //
 // GROUNDING_RULES asks for "[n]" and forbids spelling it out, and most
-// answers comply. when one does not, it is usually not vague about WHICH
-// chunk it means -- "evidence block 6", "sources 4 and 6", "[Sources: 4, 6]"
-// all name a real, specific chunk number, just in words or a trailing list
-// instead of an inline bracket. that is a different, more reliable case
-// than textCitesKnownAuthor's fuzzy author/year matching: there is no
-// ambiguity to resolve, only a different spelling of the same bracket to
-// convert, once, before bindCitations/verifyAnswer/toApaText ever see the
-// text (observed live, 2026-09-17, three different phrasings of this across
-// three different answers on the same model).
+// answers comply. when one does not, this used to be a list of specific
+// word-forms ("evidence block N", "sources N", "citation N"...) added one
+// at a time, every time the model found a new one -- which only ever
+// covers phrasings already observed, not the next one. generalised instead
+// (2026-10-02, direct instruction: "a general solution... we should ALWAYS
+// be citing, never not citing"): recognised by SHAPE -- a number or
+// number-list sitting inside parentheses or brackets, with at most one
+// word in front of it, IS a citation reference, whatever that word turns
+// out to be. "(citation 5)", "(evidence 5)", "(ref 5)", "(see 5)", a future
+// word nobody has observed yet -- all the same shape, one rule.
 function numbersToBrackets(list) {
   return (list.match(/\d+/g) ?? []).map((number) => `[${number}]`).join("");
 }
 
-// every word-form of "this is a citation marker" seen in the wild so far.
-// each new one found live gets added here rather than guessed at in
-// advance -- "citation 10" was the latest (observed live, 2026-10-01: not
-// just left uncited, the bare "10" inside "(citation 10)" then also read
-// as an unverified DATA FIGURE, since nothing recognised it as a citation
-// reference at all).
-const CITATION_WORD = "evidence(?:\\s+blocks?)?|documents?|sources?|citations?";
-
 export function normaliseCitationPhrasing(answer) {
   return String(answer)
-    // "[Sources: 4, 6]" or "(Sources: 4, 6)" -- a bracketed/parenthesised list.
+    // "(citation 5)", "(evidence 5)", "(per study 5)", "(Sources: 4, 6)",
+    // "[Evidence 1]", "(5, 7)" bare -- ANY parenthesised or bracketed span
+    // that reduces to up to two leading words (optionally followed by a
+    // colon) and then a number or number-list. generalising this to "any
+    // words" rather than a known list is safe specifically because it is
+    // delimited: prose rarely wraps a bare number in its own parentheses or
+    // brackets unless it is a citation-shaped aside, so the shape itself is
+    // the signal, not the words. deliberately no denylist/validity check
+    // here either -- per direct instruction, under-citing (missing a real
+    // one) is the failure to avoid, not over-matching an unusual
+    // parenthetical; a wrongly converted "(round 2)" still surfaces
+    // visibly, as a real or dangling citation, rather than silently
+    // disappearing as plain text.
     .replace(
-      new RegExp(`[[(]\\s*(?:${CITATION_WORD})\\s*:\\s*(\\d+(?:\\s*(?:,|and|&)\\s*\\d+)*)\\s*[)\\]]`, "gi"),
+      /[[(]\s*(?:[A-Za-z][A-Za-z]{1,14}\s*:?\s+){0,2}(\d+(?:\s*(?:,|and|&)\s*\d+)*)\s*[)\]]/g,
       (_, list) => numbersToBrackets(list),
     )
-    // "**Sources**: 3, 5, 6, 7." or "Sources: 3, 5, 6, 7" -- a trailing
+    // "**Sources**: 3, 5, 6, 7." or "Citations: 3, 5, 6, 7" -- a trailing
     // unbracketed list, bold or not, as its own line at the very end of the
-    // answer. GROUNDING_RULES explicitly forbids a separate sources section,
-    // but the model still writes this one as a standalone recap sometimes
-    // (observed live, 2026-10-01). anchored to the end of the string so an
-    // ordinary sentence that happens to contain the word "sources" earlier
-    // in the answer is never touched.
+    // answer, labelled with whatever word the model reaches for. anchored
+    // to the end of the string so an ordinary sentence that happens to
+    // contain a label word earlier in the answer is never touched.
     .replace(
-      new RegExp(`\\*{0,2}(?:${CITATION_WORD})\\*{0,2}\\s*:\\s*(\\d+(?:\\s*(?:,|and|&)\\s*\\d+)*)\\.?\\s*$`, "gi"),
+      /\*{0,2}[A-Za-z][A-Za-z]{1,14}\*{0,2}\s*:\s*(\d+(?:\s*(?:,|and|&)\s*\d+)*)\.?\s*$/,
       (_, list) => numbersToBrackets(list),
     )
-    // "[Evidence 1]", "[Evidence 4 and 6]" -- already wrapped in square
-    // brackets, which is the model treating the brackets themselves as the
-    // citation marker and just spelling the word out inside them. the whole
-    // bracketed span is replaced, not just the word, so this becomes "[1]"
-    // rather than the doubled-up "[[1]]" (observed live, 2026-09-18).
+    // "evidence block 6", "source 6", "citation 10" -- the word instead of
+    // the bracket, inline, with no surrounding parentheses or brackets at
+    // all. this is the one case still matched by an explicit word list
+    // rather than any word: with no delimiter at all, "word number" is
+    // indistinguishable from ordinary tennis prose ("set 3", "round 2",
+    // "seed 4"), so generalising it would corrupt real content rather than
+    // protect it. the list is short because it only has to cover words
+    // that actually MEAN "citation" -- it is not trying to anticipate
+    // every synonym, just the handful that are citation words in any
+    // phrasing.
     .replace(
-      new RegExp(`\\[\\s*(?:${CITATION_WORD})\\s+(\\d+(?:\\s*(?:,|and|&)\\s*\\d+)*)\\s*\\]`, "gi"),
-      (_, list) => numbersToBrackets(list),
-    )
-    // "evidence block 6", "evidence blocks 4 and 6", "evidence 6" (no
-    // "block"), "source 6", "sources 4, 6", "document 6", "citation 10",
-    // "citation 5, 6" -- the word instead of the bracket, inline. any
-    // surrounding parentheses are prose punctuation, not part of the
-    // citation, and are left alone -- only the word+number span itself is
-    // replaced.
-    .replace(
-      new RegExp(`\\b(?:${CITATION_WORD})\\s+(\\d+(?:\\s*(?:,|and|&)\\s*\\d+)*)\\b`, "gi"),
+      /\b(?:evidence(?:\s+blocks?)?|documents?|sources?|citations?|references?|refs?)\s+(\d+(?:\s*(?:,|and|&)\s*\d+)*)\b/gi,
       (_, list) => numbersToBrackets(list),
     );
+}
+
+// a trailing block the model writes despite being told not to: its own
+// reference list restated as prose, introduced by whatever heading it
+// invents this time ("**Citations**:", "References:", no heading at all).
+// matched by STRUCTURE instead -- two or more consecutive lines that are
+// each shaped like "[n]: description" or "[n] description" -- so a new
+// heading word needs no fix of its own, the same reasoning as
+// normaliseCitationPhrasing above. requires more than one such line so a
+// single legitimate "[3] this finding..." sentence mid-answer is never
+// mistaken for the block.
+const REFERENCE_LIST_LINE = /^[-*]?\s*\[\d+\]\s*:?\s+\S.*$/;
+
+export function stripTrailingReferenceList(answer) {
+  const lines = String(answer).split("\n");
+  let boundary = lines.length;
+  let count = 0;
+  let usedHeading = false;
+
+  for (let i = lines.length - 1; i >= 0; i -= 1) {
+    const trimmed = lines[i].trim();
+
+    // blank lines and divider rules ("---") are neutral separators -- they
+    // extend the boundary either way, so a divider between the real answer
+    // and the block gets removed along with it, but they never by
+    // themselves stop the scan or count as the block.
+    if (trimmed === "" || /^[-*=_]{3,}$/.test(trimmed)) {
+      boundary = i;
+      continue;
+    }
+
+    if (REFERENCE_LIST_LINE.test(trimmed)) {
+      count += 1;
+      boundary = i;
+      continue;
+    }
+
+    // one heading-shaped line directly above the list -- stripped of its
+    // own "*"/":" decoration, what's left is just a short word or two
+    // ("Citations", "References", whatever this model invents) -- is
+    // consumed too, but only once; anything else stops the scan, since
+    // this is meant to remove a trailing block, not rewrite the answer.
+    if (!usedHeading && count > 0) {
+      const bare = trimmed.replace(/[*:]/g, "").trim();
+
+      if (bare.length > 0 && bare.length < 60 && /^[A-Za-z][\w\s]*$/.test(bare)) {
+        usedHeading = true;
+        boundary = i;
+        continue;
+      }
+    }
+
+    break;
+  }
+
+  if (count < 2) return String(answer);
+
+  return lines.slice(0, boundary).join("\n").trimEnd();
 }
 
 /**
@@ -118,12 +174,24 @@ function collapseRepeatedMarkers(unit, docIdByNumber) {
     if (!isRepeated || isLastOccurrence) continue;
 
     let start = position.index;
+    let end = position.index + position.length;
+
+    // the model sometimes wraps its own "[n]" in a visible "(...)" even
+    // though the citation syntax is the bracket alone -- removing just the
+    // marker then would leave a hollow, empty "()" behind (reported
+    // directly, 2026-10-01: "()" appearing mid-sentence where a citation
+    // used to be). if the marker is the entire content of an enclosing
+    // paren pair, the parens go with it.
+    if (result[start - 1] === "(" && result[end] === ")") {
+      start -= 1;
+      end += 1;
+    }
 
     // absorb one preceding space, so removing "[4]" from "fact A [4], fact
     // B" leaves "fact A, fact B" rather than "fact A , fact B".
     if (start > 0 && result[start - 1] === " ") start -= 1;
 
-    result = result.slice(0, start) + result.slice(position.index + position.length);
+    result = result.slice(0, start) + result.slice(end);
   }
 
   return result;
