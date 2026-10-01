@@ -29,11 +29,19 @@ function numbersToBrackets(list) {
   return (list.match(/\d+/g) ?? []).map((number) => `[${number}]`).join("");
 }
 
+// every word-form of "this is a citation marker" seen in the wild so far.
+// each new one found live gets added here rather than guessed at in
+// advance -- "citation 10" was the latest (observed live, 2026-10-01: not
+// just left uncited, the bare "10" inside "(citation 10)" then also read
+// as an unverified DATA FIGURE, since nothing recognised it as a citation
+// reference at all).
+const CITATION_WORD = "evidence(?:\\s+blocks?)?|documents?|sources?|citations?";
+
 export function normaliseCitationPhrasing(answer) {
   return String(answer)
     // "[Sources: 4, 6]" or "(Sources: 4, 6)" -- a bracketed/parenthesised list.
     .replace(
-      /[[(]\s*sources?\s*:\s*(\d+(?:\s*(?:,|and|&)\s*\d+)*)\s*[)\]]/gi,
+      new RegExp(`[[(]\\s*(?:${CITATION_WORD})\\s*:\\s*(\\d+(?:\\s*(?:,|and|&)\\s*\\d+)*)\\s*[)\\]]`, "gi"),
       (_, list) => numbersToBrackets(list),
     )
     // "**Sources**: 3, 5, 6, 7." or "Sources: 3, 5, 6, 7" -- a trailing
@@ -44,7 +52,7 @@ export function normaliseCitationPhrasing(answer) {
     // ordinary sentence that happens to contain the word "sources" earlier
     // in the answer is never touched.
     .replace(
-      /\*{0,2}sources?\*{0,2}\s*:\s*(\d+(?:\s*(?:,|and|&)\s*\d+)*)\.?\s*$/gi,
+      new RegExp(`\\*{0,2}(?:${CITATION_WORD})\\*{0,2}\\s*:\\s*(\\d+(?:\\s*(?:,|and|&)\\s*\\d+)*)\\.?\\s*$`, "gi"),
       (_, list) => numbersToBrackets(list),
     )
     // "[Evidence 1]", "[Evidence 4 and 6]" -- already wrapped in square
@@ -53,16 +61,17 @@ export function normaliseCitationPhrasing(answer) {
     // bracketed span is replaced, not just the word, so this becomes "[1]"
     // rather than the doubled-up "[[1]]" (observed live, 2026-09-18).
     .replace(
-      /\[\s*(?:evidence(?:\s+blocks?)?|documents?|sources?)\s+(\d+(?:\s*(?:,|and|&)\s*\d+)*)\s*\]/gi,
+      new RegExp(`\\[\\s*(?:${CITATION_WORD})\\s+(\\d+(?:\\s*(?:,|and|&)\\s*\\d+)*)\\s*\\]`, "gi"),
       (_, list) => numbersToBrackets(list),
     )
     // "evidence block 6", "evidence blocks 4 and 6", "evidence 6" (no
-    // "block"), "source 6", "sources 4, 6", "document 6" -- the word instead
-    // of the bracket, inline. any surrounding parentheses are prose
-    // punctuation, not part of the citation, and are left alone -- only the
-    // word+number span itself is replaced.
+    // "block"), "source 6", "sources 4, 6", "document 6", "citation 10",
+    // "citation 5, 6" -- the word instead of the bracket, inline. any
+    // surrounding parentheses are prose punctuation, not part of the
+    // citation, and are left alone -- only the word+number span itself is
+    // replaced.
     .replace(
-      /\b(?:evidence(?:\s+blocks?)?|documents?|sources?)\s+(\d+(?:\s*(?:,|and|&)\s*\d+)*)\b/gi,
+      new RegExp(`\\b(?:${CITATION_WORD})\\s+(\\d+(?:\\s*(?:,|and|&)\\s*\\d+)*)\\b`, "gi"),
       (_, list) => numbersToBrackets(list),
     );
 }

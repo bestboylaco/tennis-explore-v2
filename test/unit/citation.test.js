@@ -113,6 +113,21 @@ describe("normalising citation phrasing", () => {
     );
   });
 
+  it("converts 'citation N' and 'citation N, M' inline", () => {
+    // observed live, 2026-10-01: not just left uncited -- the bare number
+    // inside "(citation 10)" was then also read as an unverified data
+    // figure, since nothing recognised it as a citation reference at all.
+    assert.equal(
+      normaliseCitationPhrasing("Use hip rotation (citation 10) to generate power."),
+      "Use hip rotation ([10]) to generate power.",
+    );
+
+    assert.equal(
+      normaliseCitationPhrasing("Broader court coverage and aggressive play (citation 1, 4)."),
+      "Broader court coverage and aggressive play ([1][4]).",
+    );
+  });
+
   it("leaves the word 'sources' alone when it is not a trailing list", () => {
     const text = "Plain text with sources mentioned mid-sentence stays alone.";
 
