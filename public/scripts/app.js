@@ -697,18 +697,29 @@ chatForm.addEventListener(
 
 
         try {
-            /*
-             * Persist the user's message before calling the AI pipeline.
-             */
             await chatHistory
                 .recordUserMessage(
                     question,
                 );
 
 
+            /*
+             * E1-02 sends only the opaque conversation id.
+             *
+             * Chat history itself remains server/account persisted, but conversation
+             * context used by the follow-up rewriter lives only in the authenticated
+             * session.
+             */
+            const conversationId =
+                chatHistory
+                    .getActiveConversation()
+                    .id;
+
+
             const result =
                 await submitChatQuestion(
                     question,
+                    conversationId,
                 );
 
             const response =

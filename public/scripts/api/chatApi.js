@@ -71,7 +71,8 @@ async function readResponseBody(response) {
  * the authenticated session server-side (requireAuth, req.user.roleId),
  * never from anything this client sends.
  */
-export async function submitChatQuestion(question) {
+export async function submitChatQuestion(question,
+    conversationId = null,) {
     const abortController = new AbortController();
 
     const timeoutId = window.setTimeout(() => {
@@ -102,7 +103,19 @@ export async function submitChatQuestion(question) {
 
             credentials: "same-origin",
 
-            body: JSON.stringify({ question }),
+            body: JSON.stringify({
+                question,
+
+                ...(
+                    typeof conversationId === "string" &&
+                        conversationId.trim()
+                        ? {
+                            conversationId:
+                                conversationId.trim(),
+                        }
+                        : {}
+                ),
+            }),
 
             signal: abortController.signal,
         });
