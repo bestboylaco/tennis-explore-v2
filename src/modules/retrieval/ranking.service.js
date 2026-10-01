@@ -212,6 +212,70 @@ async function rerankViaRerankApi(query, candidates, { signal }) {
   return scores;
 }
 
+// ---------------------------------------------------------------------------
+// cross-encoder reranking, in-process
+// ---------------------------------------------------------------------------
+//
+// a real cross-encoder, run through transformers.js/onnx in this node
+// process. no separate service to run, and none of rerankViaLlm's
+// batch-calibration problem: bge-reranker is a sequence-classification model
+// with a single output label, so each (query, passage) pair gets one
+// independent logit -- there is no batch of candidates competing against each
+// other for a shared 0-10 scale, because there is no batch at all from the
+// model's point of view. every passage is scored against the query alone.
+//
+// the model is loaded once and kept in module scope. it is ~280MB of weights
+// for the default bge-reranker-base; reloading it per request would make this
+// slower than not reranking at all.
+let crossEncoderPipelinePromise = null;
+
+async function loadCrossEncoder() {
+  if (!crossEncoderPipelinePromise) {
+    crossEncoderPipelinePromise = (async () => {
+      // imported lazily so a process that never uses this strategy never pays
+      // for loading the transformers.js runtime at all.
+      const { AutoTokenizer, AutoModelForSequenceClassification } = await import("@xenova/transformers");
+
+      const { crossEncoderModel } = retrievalConfig.rerank;
+
+      const [tokenizer, model] = await Promise.all([
+        AutoTokenizer.from_pretrained(crossEncoderModel),
+        AutoModelForSequenceClassification.from_pretrained(crossEncoderModel),
+      ]);
+
+      return { tokenizer, model };
+    })();
+  }
+
+  return crossEncoderPipelinePromise;
+}
+
+/**
+ * scores every candidate against the query with a real cross-encoder.
+ *
+ * read the raw logit, not a softmax'd label confidence -- a reranker head has
+ * exactly one output label, so there is nothing to soften into a "confidence"
+ * in the first place. the logit itself IS the relevance score, and higher is
+ * more relevant, same as the llm and service strategies.
+ */
+async function rerankViaCrossEncoder(query, candidates) {
+  const { tokenizer, model } = await loadCrossEncoder();
+
+  const texts = candidates.map(() => query);
+  const passages = candidates.map((candidate) => (candidate.text ?? "").slice(0, 2000));
+
+  const inputs = tokenizer(texts, {
+    text_pair: passages,
+    padding: true,
+    truncation: true,
+  });
+
+  const { logits } = await model(inputs);
+
+  // logits is a [candidates.length, 1] tensor for a single-label reranker head.
+  return Array.from(logits.data);
+}
+
 // the schema the batched llm reranker is constrained to. asking for a bare
 // array of numbers gets prose about half the time; constraining the decode
 // makes it structurally impossible.
@@ -272,6 +336,12 @@ async function rerankViaLlm(query, candidates, { signal }) {
         model: llmModel,
         stream: false,
         format: SCORE_SCHEMA,
+        // a reasoning model's hidden thinking pass eats into num_predict
+        // before the schema-constrained scores -- see evidenceGrader.
+        // service.js's gradeChunk, where this measurably emptied the
+        // response entirely. defensive here since RERANK_LLM_MODEL is
+        // pinned to a non-reasoning model today, but the config is swappable.
+        think: false,
         // temperature 0 so the same passage scores the same every run. a
         // reranker that is not reproducible cannot be evaluated.
         options: { temperature: 0, num_predict: 400 },
@@ -335,10 +405,13 @@ export async function rerankCandidates(query, candidates, { signal } = {}) {
   let scores;
 
   try {
-    scores =
-      strategy === "service"
-        ? await rerankViaRerankApi(query, window, { signal })
-        : await rerankViaLlm(query, window, { signal });
+    if (strategy === "service") {
+      scores = await rerankViaRerankApi(query, window, { signal });
+    } else if (strategy === "cross-encoder") {
+      scores = await rerankViaCrossEncoder(query, window);
+    } else {
+      scores = await rerankViaLlm(query, window, { signal });
+    }
   } catch (error) {
     return { candidates, reranked: false, reason: `reranker_unavailable: ${error.message}` };
   }

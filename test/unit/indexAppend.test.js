@@ -9,6 +9,9 @@ import { after, before, describe, it } from "node:test";
 // first imported.
 let workDir;
 let buildIndex;
+let canonicalChunking;
+let CHUNKING_KEYS;
+let retrievalConfig;
 
 before(async () => {
   workDir = await fsp.mkdtemp(path.join(os.tmpdir(), "index-append-test-"));
@@ -28,7 +31,10 @@ before(async () => {
   process.env.PORT ||= "3000";
   process.env.MONGODB_URI ||= "mongodb://unused-in-this-test/db";
 
-  ({ buildIndex } = await import("../../src/modules/ingestion/indexBuilder.service.js"));
+  ({ buildIndex, canonicalChunking, CHUNKING_KEYS } = await import(
+    "../../src/modules/ingestion/indexBuilder.service.js"
+  ));
+  ({ retrievalConfig } = await import("../../src/config/retrieval.config.js"));
 });
 
 after(async () => {
@@ -288,6 +294,101 @@ describe("buildIndex --append -- documents already in the index", () => {
         return true;
       },
     );
+  });
+});
+
+// ---------------------------------------------------------------------------
+// E2-07 added five keys to retrievalConfig.chunking. the manifest has always
+// been written from that WHOLE object while the append guard compared against a
+// hardcoded three-key literal, so the two were equal only by coincidence -- and
+// adding any key at all broke every newly built index's ability to append to
+// itself. these cover both directions of the canonicaliser that replaced it.
+// ---------------------------------------------------------------------------
+
+describe("buildIndex --append -- chunking keys added after an index was built", () => {
+  it("still appends to a manifest holding only the original three keys", () => {
+    // THE REGRESSION GUARD FOR THE COMMITTED INDEX. data/index/manifest.json
+    // holds exactly {targetChars: 1600, overlapChars: 200, minChars: 120} and
+    // nothing else, across 103,708 chunks that took hours to embed. if
+    // normalising that against the current config ever stops matching, those
+    // chunks can no longer be extended and the only remedy is a full rebuild.
+    const legacy = { targetChars: 1600, overlapChars: 200, minChars: 120 };
+
+    assert.deepEqual(canonicalChunking(legacy), canonicalChunking(retrievalConfig.chunking));
+  });
+
+  it("fills a missing key with the literal it replaced, not with the current config", () => {
+    // the filled value has to be what the index was ACTUALLY built with, which
+    // is the old hardcoded literal. filling from the live config would make any
+    // index look compatible with whatever the environment happens to say today,
+    // which is the opposite of what the guard is for.
+    assert.equal(canonicalChunking({}).rowsPerChunk, 1);
+    assert.equal(canonicalChunking({}).recordMaxChars, 1400);
+    assert.equal(canonicalChunking({}).fallbackMinChars, 40);
+    assert.equal(canonicalChunking({}).slideMinChars, 40);
+    assert.equal(canonicalChunking({}).tableHeadroomChars, 32);
+  });
+
+  it("orders keys identically whatever order they arrive in", () => {
+    // the guard compares with JSON.stringify, so key order is load-bearing.
+    const forwards = { targetChars: 1600, overlapChars: 200, minChars: 120 };
+    const backwards = { minChars: 120, overlapChars: 200, targetChars: 1600 };
+
+    assert.equal(JSON.stringify(canonicalChunking(forwards)), JSON.stringify(canonicalChunking(backwards)));
+  });
+
+  it("covers every key in retrievalConfig.chunking", () => {
+    // THE ACTUAL GUARD. a sixth key added to the config and not to
+    // CHUNKING_KEYS is not an error anywhere -- the canonicaliser would simply
+    // stop checking it, and two indexes built to different recipes would append
+    // to each other in silence. this is the only thing that notices.
+    assert.deepEqual([...CHUNKING_KEYS].sort(), Object.keys(retrievalConfig.chunking).sort());
+  });
+
+  it("refuses an index built with a different rowsPerChunk", () => {
+    // the new key is genuinely checked, not merely tolerated. packed record
+    // chunks and one-row-per-chunk records in one index would make any
+    // evaluation over it compare two recipes at once.
+    return (async () => {
+      const outputDir = await existingIndex({
+        chunking: { targetChars: 1600, overlapChars: 200, minChars: 120, rowsPerChunk: 5 },
+      });
+
+      const sources = await sourceDir();
+
+      await assert.rejects(
+        () => buildIndex({ sourceDirs: [sources], outputDir, append: true }),
+        (error) => {
+          assert.match(error.message, /chunking/);
+          assert.match(error.message, /rowsPerChunk/);
+
+          return true;
+        },
+      );
+    })();
+  });
+
+  it("writes every chunking key into the manifest of a real build", async () => {
+    // the write side of the same canonicaliser. this is what makes a newly
+    // built index able to append to itself: before, the manifest recorded the
+    // whole config object while the guard rebuilt three keys by hand.
+    const outputDir = await freshIndex();
+
+    const manifest = JSON.parse(await fsp.readFile(path.join(outputDir, "manifest.json"), "utf8"));
+
+    assert.deepEqual(Object.keys(manifest.chunking), [...CHUNKING_KEYS]);
+  });
+
+  it("lets a freshly built index append to itself", async () => {
+    // the failure the canonicaliser exists to prevent, stated end to end.
+    const outputDir = await freshIndex();
+    const more = await namedSource("append-to-self", "A document about second serve depth.");
+
+    await buildIndex({ sourceDirs: [more], outputDir, append: true });
+
+    const manifest = JSON.parse(await fsp.readFile(path.join(outputDir, "manifest.json"), "utf8"));
+
+    assert.equal(manifest.fileCount, 2);
   });
 });
 

@@ -16,7 +16,7 @@ import { INTENTS } from "../../src/shared/constants/queryTaxonomy.js";
 describe("buildSystemPrompt", () => {
   it("does not ask a table answer to cite numbered evidence blocks", () => {
     const prompt = buildSystemPrompt({
-      intent: INTENTS.ANALYTICAL,
+      intent: INTENTS.FACT_RETRIEVAL,
       contracts: [],
       isTableAnswer: true,
     });
@@ -27,7 +27,7 @@ describe("buildSystemPrompt", () => {
 
   it("tells a table answer not to claim the knowledge base lacks an answer", () => {
     const prompt = buildSystemPrompt({
-      intent: INTENTS.AGGREGATION,
+      intent: INTENTS.COMPARISON,
       contracts: [],
       isTableAnswer: true,
     });
@@ -37,11 +37,11 @@ describe("buildSystemPrompt", () => {
 
   it("keeps the original evidence-block rules for document answers", () => {
     const prompt = buildSystemPrompt({
-      intent: INTENTS.SINGLE_HOP,
+      intent: INTENTS.FACT_RETRIEVAL,
       contracts: [],
     });
 
     assert.match(prompt, /evidence block/i);
-    assert.match(prompt, /knowledge base does not contain an answer/i);
+    assert.match(prompt, /knowledge base does not contain anything/i);
   });
 });

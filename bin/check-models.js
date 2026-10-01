@@ -72,9 +72,20 @@ if (retrievalConfig.rerank.strategy === "service") {
     console.log(` MISS  no rerank service at ${url}`);
     console.log("        start one:  python tools/rerank/rerank_server.py");
   }
+} else if (retrievalConfig.rerank.strategy === "cross-encoder") {
+  // no health check here the way "service" gets one -- the model loads
+  // lazily, in-process, on the first real rerank call (see loadCrossEncoder in
+  // ranking.service.js), not at startup. confirming it actually loads means
+  // loading it, which is a multi-second download+init on a cold cache and not
+  // something this quick check should pay for on every run.
+  console.log(`  ok   real cross-encoder (${retrievalConfig.rerank.crossEncoderModel}), in-process via transformers.js`);
+  console.log("       loads lazily on first use -- run `npm run ask` once to confirm it actually downloads and scores.");
 } else {
   console.log(`  ok   scoring passages with ${retrievalConfig.rerank.llmModel}, in batches of ${retrievalConfig.rerank.batchSize}`);
-  console.log("       needs nothing extra. for a real cross-encoder instead:");
+  console.log("       works with nothing extra, but batches are scored on their own curve -- see rerankViaLlm.");
+  console.log("       for a real cross-encoder instead, in-process and no separate service:");
+  console.log("         RERANK_STRATEGY=cross-encoder in .env");
+  console.log("       or as a separate process:");
   console.log("         pip install fastapi uvicorn sentence-transformers");
   console.log("         python tools/rerank/rerank_server.py");
   console.log("         then set RERANK_STRATEGY=service and RERANK_API_URL in .env");

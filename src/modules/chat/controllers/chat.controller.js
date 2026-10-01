@@ -1,10 +1,50 @@
 import { randomUUID } from "node:crypto";
+import fs from "node:fs/promises";
+import path from "node:path";
 
 import { submitChatQuestion } from "../services/chat.service.js";
 
 import {
   submitAgentChatQuestion,
 } from "../services/agentChat.service.js";
+
+import { retrievalConfig } from "../../../config/retrieval.config.js";
+
+/**
+ * The corpus file count, read once and cached -- the manifest only changes
+ * when the index is rebuilt, which restarts the process, so there is no
+ * point re-reading it on every greeting.
+ */
+let cachedSourceCount = null;
+
+async function readSourceCount() {
+  if (cachedSourceCount !== null) return cachedSourceCount;
+
+  try {
+    const manifestPath = path.join(retrievalConfig.index.dir, "manifest.json");
+    const manifest = JSON.parse(await fs.readFile(manifestPath, "utf8"));
+
+    cachedSourceCount = manifest.fileCount ?? null;
+  } catch {
+    cachedSourceCount = null;
+  }
+
+  return cachedSourceCount;
+}
+
+/**
+ * GET /api/chat/info -- static facts the frontend greets a fresh
+ * conversation with (how many documents this can actually answer from).
+ * Not query-specific, so it carries no telemetry correlation id.
+ */
+export async function getChatInfoController(req, res) {
+  const sourceCount = await readSourceCount();
+
+  return res.status(200).json({
+    success: true,
+    data: { sourceCount },
+  });
+}
 
 /**
  * Accepts one natural-language coaching question and returns the
@@ -41,6 +81,13 @@ export async function submitChatQuestionController(req, res) {
              * Links query-stage telemetry to the HTTP request.
              */
             correlationId,
+
+            /*
+             * Conversation memory is keyed on the authenticated session, not on
+             * anything the client sends. A caller who could choose their own
+             * session id could read someone else's conversation.
+             */
+            sessionId: req.sessionID ?? req.session?.id ?? null,
         },
     );
 

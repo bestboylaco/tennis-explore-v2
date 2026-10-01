@@ -27,6 +27,12 @@ npm-debug.log*
 # scratch output for `npm run build:index:test` -- never the real index.
 data/index-test/
 
+# per-cell indexes built by `npm run eval:chunking -- --build` (E2-07). one
+# folder per chunking recipe, e.g. data/index-eval/t1600-o200-r1/, rebuilt on
+# demand from the partner corpus. what IS committed is the ground truth
+# (queries/chunking_*.json) and the result (evidence/chunking_comparison.json).
+data/index-eval/
+
 # scratch index built from a subset of videos before merging into the real,
 # committed data/index/ -- kept tracked on Tenk_corpus_duplication on purpose,
 # ignored again once it's merged into data/index/ on the branch that does that.
