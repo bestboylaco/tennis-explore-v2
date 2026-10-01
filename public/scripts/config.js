@@ -18,24 +18,26 @@ export const DEFAULT_CHAT_ENDPOINT = "/api/chat";
  * when the backend does not respond.
  *
  * Keyed by effort (see the composer's effort control) rather than one flat
- * number -- "low" is every default this already had: a local 8b model doing
- * retrieval, grading, reranking and generation takes tens of seconds on
- * consumer hardware, measured at 20-56s on an 8 GB card, and the old 15s
- * ceiling aborted every real request, which surfaced as "failed to complete
- * request" and looked like a backend fault when the backend was fine.
+ * number. A local 8b model doing retrieval, grading, reranking and
+ * generation takes tens of seconds on consumer hardware, measured at
+ * 20-130s on an 8 GB card depending on question complexity, and the old
+ * 15s ceiling aborted every real request, which surfaced as "failed to
+ * complete request" and looked like a backend fault when the backend was
+ * fine.
  *
- * "high" needs real headroom, not just a bigger number for its own sake: a
- * complex comparison question was observed taking 130s for retrieval and
- * generation ALONE on "low" settings (2026-10-01) -- "high" effort widens
- * retrieval further on top of that, and the backend's own repair-pass
- * budget for "high" is 280s (REPAIR_TIME_BUDGET_MS.high in
- * answer.service.js). This has to stay comfortably above that, or the
- * browser gives up before the server does and the coach sees a timeout
- * error instead of the thorough answer that was actually coming.
+ * The backend's citation-repair pass now always runs when something needs
+ * fixing, on both effort levels -- it used to be skippable past a time
+ * budget, which meant the one check that exists to catch an uncited answer
+ * was the thing most likely to be skipped on exactly the slow, complex
+ * questions that needed it (reported directly, 2026-10-01, "no citations
+ * at all" reaching the user twice this way). Both ceilings here are sized
+ * with that in mind: generous ceilings that should rarely be hit, not
+ * numbers tuned to the common case, since this is now the only thing
+ * standing between a slow answer and the repair pass actually finishing.
  */
 export const REQUEST_TIMEOUT_MS_BY_EFFORT = Object.freeze({
-    low: 180_000,
-    high: 360_000,
+    low: 240_000,
+    high: 600_000,
 });
 
 /**

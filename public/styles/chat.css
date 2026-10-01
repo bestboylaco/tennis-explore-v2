@@ -783,20 +783,16 @@
     margin-bottom: var(--space-1);
 }
 
-/* a numbered item at the top of the bubble is almost always being used as a
-   section heading ("1. From Basic Skills to Advanced Tactics"), not a true
-   list entry -- sized to match the heading tier above rather than reading
-   the same size as the plain text underneath it. */
-.message--assistant .message__bubble > ol > li {
-    font-size: 1.25rem;
-    font-weight: 600;
-}
-
-/* a bullet's own bold lead-in ("**Early Period:** ...") sits one tier down
-   from a heading, with the rest of that bullet's sentence staying at the
-   bubble's base (response-text) size. */
-.message--assistant .message__bubble li > strong:first-child {
-    font-size: 1.125rem;
+/* Deliberately NOT sized by position (top-level numbered item, first bold
+   word in a bullet, etc.) -- that tied a bold run's size to where it
+   happened to sit in the DOM, so identical **bold** text read at different
+   sizes depending on whether the model put it first in a bullet, inside a
+   top-level numbered item, or just mid-sentence (reported directly,
+   2026-10-01: "bold text is larger sometimes and smaller other times").
+   Only a real heading (#/##/### -- h1-h6 below) is ever larger than body
+   text; bold anywhere in the bubble means weight, consistently, not size. */
+.message--assistant .message__bubble strong {
+    font-weight: 700;
 }
 
 .message--assistant .message__bubble li:last-child {

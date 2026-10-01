@@ -722,14 +722,14 @@ chatForm.addEventListener(
 
         setBusy(true);
 
-        // sets expectations honestly before the wait starts -- "thorough" can
-        // take several minutes (it widens retrieval and gives the citation-
-        // repair pass real room to run), and a spinner with no indication of
-        // that reads as the app having stalled.
+        // sets expectations honestly before the wait starts -- the citation
+        // check always runs now, on both levels, so neither is a quick
+        // guarantee any more, and a spinner with no indication of that reads
+        // as the app having stalled.
         processingMessageText.textContent =
             effortSelect.value === "high"
-                ? "Thinking it through -- this can take a few minutes..."
-                : "Analysing your question...";
+                ? "Thinking it through with extra sources -- this can take several minutes..."
+                : "Analysing your question -- checking citations can take a little while...";
 
         status.start();
 

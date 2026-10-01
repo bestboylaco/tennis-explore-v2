@@ -52,21 +52,14 @@ import { recordAccess, recordAccessDenial } from "../../audit/services/accessAud
 // "effort" is the one user-facing exception to this pipeline never taking a
 // mode/route/model selection from the client (see chat.validation.js) -- a
 // direct, partner-requested choice between a faster answer and a more
-// thorough one, not a technical routing decision. "low" is every default
-// this pipeline already had; "high" widens retrieval and gives the
-// citation-repair pass real room to run instead of skipping it, in
-// exchange for taking a lot longer. Invalid/missing effort is treated as
+// thorough one, not a technical routing decision. this is the ONE thing
+// effort actually controls: how much evidence goes into generating the
+// answer in the first place. whether the result gets citation-checked and
+// repaired is not part of this tradeoff -- that always happens, on both
+// levels (see needsRepair below). Invalid/missing effort is treated as
 // "low" rather than rejected -- an old client that never sends it should
 // keep behaving exactly as it always did.
 const EFFORT_TOP_N_MULTIPLIER = Object.freeze({ low: 1, high: 1.75 });
-
-// see the `needsRepair` guard below for what this bounds against. "high"
-// is deliberately close to the high-effort client timeout
-// (public/scripts/config.js) rather than unlimited -- repair must still be
-// cut off before the browser gives up, just with far more room than "low"
-// leaves it (observed live, 2026-10-01: a complex comparison took 130s for
-// retrieval+generation alone, before repair even got a chance to run).
-const REPAIR_TIME_BUDGET_MS = Object.freeze({ low: 90_000, high: 280_000 });
 
 function normaliseEffort(effort) {
   return effort === "high" ? "high" : "low";
@@ -476,27 +469,27 @@ async function answerFromDocuments(plan, { roleId, signal, startedAt, correlatio
   // of the two and did not regress the other -- see
   // repairCitationsAndFigures above for why a second, narrower call works
   // better than asking harder in the first one.
+  //
+  // deliberately unconditional on elapsed time, for both effort levels --
+  // this used to skip past a budget (90s low / 280s high), on the reasoning
+  // that a slightly-under-cited real answer beats a hard client timeout
+  // with nothing shown. that reasoning was wrong in practice: it meant the
+  // one check that exists specifically to catch an uncited answer was the
+  // thing skipped on exactly the slow, complex questions most likely to
+  // produce one, and "no citations at all" reached the user twice this way
+  // (reported directly, 2026-10-01, the second time even on "high" effort
+  // with a raised budget). the fix is not a bigger budget, it's no budget:
+  // effort controls how much evidence goes into GENERATING the answer
+  // (EFFORT_TOP_N_MULTIPLIER above), which is where time should be spent
+  // deliberately; whether the result gets checked and fixed is not a knob,
+  // it always happens. the client-side timeout
+  // (REQUEST_TIMEOUT_MS_BY_EFFORT, public/scripts/config.js) is sized to
+  // give this room on both effort levels rather than being the thing that
+  // decides whether repair is attempted.
   const needsRepair =
     !abstained &&
     ((verification.claimCount > 0 && verification.citedFraction < 1) ||
-      verification.unsupportedNumbers.length > 0) &&
-    // the repair call is a second full generation, costing roughly as much
-    // as the answer it is fixing. the frontend gives the whole request a
-    // budget before it aborts with nothing shown at all (REQUEST_TIMEOUT_MS
-    // in public/scripts/config.js, effort-dependent) -- attempting repair on
-    // a question that has already eaten most of that budget (plan +
-    // retrieve + grade + generate) risks trading a slightly-under-cited but
-    // real answer for a hard timeout and no answer whatsoever. "high"
-    // effort gets a much larger budget here specifically because this guard
-    // was observed skipping repair ENTIRELY on exactly the questions most
-    // likely to need it: a complex, multi-hop comparison took 130s for
-    // retrieval+generation alone, well past the 90s "low" budget, leaving a
-    // fully uncited answer with no safety net at all (reported directly,
-    // 2026-10-01). skipping repair past this point keeps the guaranteed
-    // outcome -- the original answer, imperfectly cited -- rather than
-    // gambling it on a second call that may not land; "high" effort is the
-    // user explicitly choosing to gamble more generously.
-    Date.now() - startedAt < REPAIR_TIME_BUDGET_MS[effort];
+      verification.unsupportedNumbers.length > 0);
 
   if (needsRepair) {
     try {
