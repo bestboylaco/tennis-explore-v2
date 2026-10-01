@@ -53,6 +53,43 @@ body {
     background: radial-gradient(circle at 90% 8%, rgba(179, 218, 104, 0.17), transparent 28rem), radial-gradient(circle at 5% 90%, rgba(63, 132, 96, 0.08), transparent 30rem), #f4f6ef !important;
 }
 
+/* Soft clouds drifting behind the workspace -- a courtside-sky touch the
+   partner asked for, built from layered blurred gradients rather than an
+   image asset. Fixed and z-index: 0 so it always sits behind real content
+   (.chat-application is given z-index: 1 in chat.css for exactly this);
+   pointer-events: none so it can never intercept a click. The pattern is
+   wider than the viewport and drifts slowly via transform, which animates
+   cheaply without triggering layout/repaint on every frame. */
+body::before {
+    content: "";
+    position: fixed;
+    inset: -10vh -30vw;
+    z-index: 0;
+    pointer-events: none;
+    background-image:
+        radial-gradient(ellipse 9rem 3.4rem at 12% 16%, rgba(255, 255, 255, 0.85), transparent 72%),
+        radial-gradient(ellipse 6rem 2.6rem at 17% 19%, rgba(255, 255, 255, 0.7), transparent 72%),
+        radial-gradient(ellipse 6.5rem 2.6rem at 8% 20%, rgba(255, 255, 255, 0.65), transparent 72%),
+        radial-gradient(ellipse 11rem 4rem at 70% 9%, rgba(255, 255, 255, 0.75), transparent 72%),
+        radial-gradient(ellipse 7rem 3rem at 76% 12%, rgba(255, 255, 255, 0.6), transparent 72%),
+        radial-gradient(ellipse 10rem 3.6rem at 42% 62%, rgba(255, 255, 255, 0.45), transparent 72%),
+        radial-gradient(ellipse 6rem 2.4rem at 48% 65%, rgba(255, 255, 255, 0.4), transparent 72%);
+    filter: blur(1px);
+    opacity: 0.75;
+    animation: drift-clouds 150s linear infinite;
+}
+
+@keyframes drift-clouds {
+    from { transform: translateX(0); }
+    to { transform: translateX(-12vw); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    body::before {
+        animation: none;
+    }
+}
+
 /*
  * Keep all current dimensions/grid behaviour.
  * Only replace the dark purple surfaces.
@@ -374,48 +411,30 @@ body {
     }
 
 /* ==========================================================================
-   11. Sources button
+   11. In-text citations (replaced the old "Sources" dropdown button/popover)
    ========================================================================== */
-
-.citation-list {
-    border-color: rgba(37, 80, 55, 0.11) !important;
-}
-
-.citation-list__toggle {
-    color: #536158 !important;
-    background: #f4f7ef !important;
-    border: 1px solid rgba(39, 87, 59, 0.17) !important;
-}
-
-    .citation-list__toggle:hover {
-        color: #173c29 !important;
-        background: #ebf1e5 !important;
-        border-color: rgba(42, 93, 62, 0.3) !important;
-    }
 
 /* ==========================================================================
    12. Sources popover
    ========================================================================== */
 
-.citation-popover {
-    background: rgba(255, 255, 252, 0.99) !important;
-    border: 1px solid rgba(39, 85, 58, 0.15) !important;
-    box-shadow: 0 16px 45px rgba(31, 64, 43, 0.16) !important;
-    backdrop-filter: blur(15px);
-}
-
-.citation-popover__heading {
-    color: #78837a !important;
-}
-
-.citation-button {
+/* chat.css's own .citation-inline rule was written against the dark theme's
+   dark bubble background -- its hover/focus state turns the text white and
+   its underline is a near-white translucent line, both of which disappear
+   against this theme's white answer bubbles (reported directly, twice now:
+   "highlighting the hyperlinks in white"). overridden here with dark text
+   and a visible on-brand underline/hover instead, the same way the old
+   .citation-button rule it replaces used to. */
+.citation-inline {
     color: #526158 !important;
-    background: transparent !important;
+    text-decoration-color: rgba(37, 82, 57, 0.35) !important;
 }
 
-    .citation-button:hover {
+    .citation-inline:hover,
+    .citation-inline:focus-visible {
         color: #173c29 !important;
-        background: rgba(65, 122, 79, 0.07) !important;
+        background: rgba(65, 122, 79, 0.1) !important;
+        text-decoration-color: rgba(23, 60, 41, 0.6) !important;
     }
 
 /* ==========================================================================

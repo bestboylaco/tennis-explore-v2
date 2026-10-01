@@ -570,7 +570,7 @@ async function answerFromDocuments(plan, { roleId, signal, startedAt, correlatio
   // end, while leaving each bullet of a list independently cited. a
   // display-layer pass, run after verification so it can never change
   // whether a claim counts as cited.
-  if (!abstained) finalAnswer = consolidateRepeatedCitations(finalAnswer);
+  if (!abstained) finalAnswer = consolidateRepeatedCitations(finalAnswer, citations);
 
   const payload = buildContractPayload({ contracts: plan.contracts, answer: finalAnswer, citations });
 

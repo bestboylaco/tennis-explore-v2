@@ -21,6 +21,8 @@
 }
 
 .chat-application {
+    position: relative;
+    z-index: 1;
     min-height: 100vh;
     padding: 0 var(--space-6) var(--space-6);
 }
@@ -958,7 +960,11 @@
    -------------------------------------------------------------------------- */
 
 .composer {
-    margin: 0 var(--space-5);
+    /* was flush against the panel's bottom edge -- the panel itself has no
+       bottom padding, so the composer's own box border was the only thing
+       between it and the outer edge (reported directly: "touching the
+       outer box which it shouldn't"). */
+    margin: 0 var(--space-5) var(--space-4);
     padding: 0.5rem;
     display: grid;
     grid-template-columns: minmax(0, 1fr) auto;

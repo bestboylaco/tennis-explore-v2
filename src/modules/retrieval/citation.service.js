@@ -68,33 +68,43 @@ export function normaliseCitationPhrasing(answer) {
 }
 
 /**
- * drops every occurrence of a repeated [n] in `unit` except the last,
- * leaving distinct numbers and one-off citations untouched. the unit this
- * is given -- a sentence, a bullet line, a whole paragraph -- decides the
- * scope; this function only knows about positions within whatever string it
- * receives.
+ * drops every occurrence of a repeated reference in `unit` except the last,
+ * leaving distinct references and one-off citations untouched. the unit
+ * this is given -- a sentence, a bullet line, a whole paragraph -- decides
+ * the scope; this function only knows about positions within whatever
+ * string it receives.
+ *
+ * "repeated" is judged by the underlying document (`docIdByNumber`), not by
+ * the marker number alone: [6] and [7] are two different, perfectly valid
+ * markers if they are two different papers, but the same repeated reference
+ * if they are two page-level chunks of the SAME paper -- which, shown in
+ * APA short form with no page number, read as an identical citation
+ * repeated anyway (reported directly, 2026-10-01, after the number-only
+ * version of this left exactly that case untouched). a marker with no
+ * entry in `docIdByNumber` (dangling, or no citation data supplied) falls
+ * back to grouping by its own number.
  */
-function collapseRepeatedMarkers(unit) {
+function collapseRepeatedMarkers(unit, docIdByNumber) {
   const positions = [...unit.matchAll(/\[(\d+)\]/g)].map((match) => ({
-    number: match[1],
+    key: docIdByNumber.get(match[1]) ?? match[1],
     index: match.index,
     length: match[0].length,
   }));
 
-  const lastIndexForNumber = new Map();
-  const countForNumber = new Map();
+  const lastIndexForKey = new Map();
+  const countForKey = new Map();
 
   for (const position of positions) {
-    lastIndexForNumber.set(position.number, position.index);
-    countForNumber.set(position.number, (countForNumber.get(position.number) ?? 0) + 1);
+    lastIndexForKey.set(position.key, position.index);
+    countForKey.set(position.key, (countForKey.get(position.key) ?? 0) + 1);
   }
 
   let result = unit;
 
   for (let i = positions.length - 1; i >= 0; i -= 1) {
     const position = positions[i];
-    const isRepeated = countForNumber.get(position.number) > 1;
-    const isLastOccurrence = position.index === lastIndexForNumber.get(position.number);
+    const isRepeated = countForKey.get(position.key) > 1;
+    const isLastOccurrence = position.index === lastIndexForKey.get(position.key);
 
     if (!isRepeated || isLastOccurrence) continue;
 
@@ -121,12 +131,20 @@ const PARAGRAPH_SPLIT = /(\n{2,})/;
 const LIST_LINE = /^\s*(?:[-*]|\d+[.)])\s+/;
 
 /**
- * when the same [n] is repeated across several clauses of flowing prose --
- * one citation marker per fact it supports, even though every fact came
- * from the same source -- keeps only the last occurrence and drops the
- * earlier ones, so a paragraph ends with one citation rather than one after
- * every sentence (reported directly: the same reference appearing three
- * times across three consecutive sentences, all citing one source).
+ * when the same underlying source is cited repeatedly across several
+ * clauses of flowing prose -- one citation marker per fact it supports,
+ * even though every fact came from the same document -- keeps only the
+ * last occurrence and drops the earlier ones, so a paragraph ends with one
+ * citation rather than one after every sentence (reported directly: the
+ * same reference appearing three times across three consecutive
+ * sentences, all citing one source).
+ *
+ * "the same source" is judged by document, not by marker number -- two
+ * different page-level chunks of one paper ([6] and [7]) display as an
+ * identical-looking APA citation with no page shown, so leaving both in
+ * reads exactly like the number-repeated case this was built to fix
+ * (reported directly, 2026-10-01, as a second round of the same complaint
+ * after the number-only version of this check still left that case alone).
  *
  * scoped to one paragraph at a time, not the whole answer: citing the same
  * source again in a LATER paragraph, for a different point, is normal and
@@ -136,7 +154,8 @@ const LIST_LINE = /^\s*(?:[-*]|\d+[.)])\s+/;
  * of bullet two because bullet four cites the same source would make that
  * bullet look unsupported on its own.
  */
-export function consolidateRepeatedCitations(answer) {
+export function consolidateRepeatedCitations(answer, citations = []) {
+  const docIdByNumber = new Map(citations.map((citation) => [String(citation.number), citation.docId]));
   const blocks = String(answer).split(PARAGRAPH_SPLIT);
 
   return blocks
@@ -145,8 +164,9 @@ export function consolidateRepeatedCitations(answer) {
 
       const lines = block.split("\n");
       const isList = lines.some((line) => LIST_LINE.test(line));
+      const collapse = (unit) => collapseRepeatedMarkers(unit, docIdByNumber);
 
-      return isList ? lines.map(collapseRepeatedMarkers).join("\n") : collapseRepeatedMarkers(block);
+      return isList ? lines.map(collapse).join("\n") : collapse(block);
     })
     .join("");
 }

@@ -459,7 +459,7 @@ async function fillLandingDescription() {
 
     description.textContent =
         `I'm TennisExplore's knowledge assistant, with access to ${coverage} covering research papers, ` +
-        "match analysis, coaching resources and video -- every answer cites back to where it came from. " +
+        "match analysis, coaching resources and video. " +
         "Ask a question to get started, or try one of these:";
 }
 

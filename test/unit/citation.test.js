@@ -203,6 +203,38 @@ describe("consolidating repeated citations within one paragraph", () => {
     );
   });
 
+  it("collapses two different marker numbers that are the same document at different pages", () => {
+    // the live case this was extended to catch: [6] and [7] are different,
+    // valid markers, but both page-level chunks of one paper -- shown in
+    // APA short form with no page number, they read as the same citation
+    // repeated, which is exactly what this is meant to fix.
+    const answer =
+      "This is based on the study's analysis of medical conditions [6]. Specific examples " +
+      "include periods of 33, 211 and 297 days [7].";
+
+    const citations = [
+      { number: 6, docId: "epidemiology-of-tennis-injuries" },
+      { number: 7, docId: "epidemiology-of-tennis-injuries" },
+    ];
+
+    assert.equal(
+      consolidateRepeatedCitations(answer, citations),
+      "This is based on the study's analysis of medical conditions. Specific examples " +
+        "include periods of 33, 211 and 297 days [7].",
+    );
+  });
+
+  it("leaves two different markers alone when they are genuinely different documents", () => {
+    const answer = "One study found X [6]. A separate study found Y [7].";
+
+    const citations = [
+      { number: 6, docId: "paper-one" },
+      { number: 7, docId: "paper-two" },
+    ];
+
+    assert.equal(consolidateRepeatedCitations(answer, citations), answer);
+  });
+
   it("does not touch the same reference repeated across different paragraphs", () => {
     const answer = "Load rose 24% [1].\n\nRecovery also improved this week [1]. A separate claim [2] closes it out.";
 
