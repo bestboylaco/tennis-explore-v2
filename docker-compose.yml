@@ -50,7 +50,16 @@ services:
     image: amazon/dynamodb-local:latest
     command: ["-jar", "DynamoDBLocal.jar", "-sharedDb", "-inMemory"]
     ports:
-      - "8000:8000" # DynamoDB API
+      # Host side is 8800, not DynamoDB Local's usual 8000: 8000 is a common
+      # port for other local dev servers (Django, etc.) to already hold on a
+      # dev machine, and a host-side collision there is silent -- Docker's
+      # own port forward loses to whatever else is already bound to
+      # 127.0.0.1:8000, so requests from outside the compose network (this
+      # app, `npm run dynamodb:init`, the test suite) quietly hit the wrong
+      # server instead of failing loudly. Only the host mapping changes;
+      # other containers on this compose network still reach it at
+      # dynamodb-local:8000.
+      - "8800:8000" # DynamoDB API
     healthcheck:
       # The image ships no curl/wget, so this proves the port is accepting
       # connections with nothing more than bash, which the image does have.

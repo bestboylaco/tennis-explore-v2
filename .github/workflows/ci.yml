@@ -91,6 +91,38 @@ jobs:
             mc mb --ignore-existing local/tennis-explore-assets
           "
 
+      # TENISE-63: accounts/sessions/telemetry now need a DynamoDB-compatible
+      # server the same way the S3 tests need MinIO above. Run directly
+      # (DynamoDB Local's image needs no command argument, unlike minio/minio)
+      # rather than as a `services:` entry, for consistency with the MinIO
+      # step's own container-per-dependency style in this job.
+      - name: Start DynamoDB Local
+        run: |
+          docker run -d --name dynamodb-local -p 8800:8000 \
+            amazon/dynamodb-local:latest -jar DynamoDBLocal.jar -sharedDb -inMemory
+
+          for i in $(seq 1 30); do
+            if curl -sf -X POST http://localhost:8800 \
+                -H "Content-Type: application/x-amz-json-1.0" \
+                -H "X-Amz-Target: DynamoDB_20120810.ListTables" -d '{}' \
+                -o /dev/null -w '%{http_code}' | grep -q 400; then
+              echo "DynamoDB Local is up"
+              exit 0
+            fi
+            sleep 1
+          done
+
+          echo "DynamoDB Local did not become healthy in time" >&2
+          docker logs dynamodb-local
+          exit 1
+
+      - name: Create DynamoDB table
+        env:
+          DYNAMODB_ENDPOINT: http://localhost:8800
+          DYNAMODB_ACCESS_KEY_ID: local
+          DYNAMODB_SECRET_ACCESS_KEY: local
+        run: node bin/dynamodb-init.js
+
       - name: Run integration tests
         env:
           # src/config/env.js requires PORT at import time; the value itself
@@ -107,4 +139,8 @@ jobs:
           S3_TEST_BUCKET: tennis-explore-assets
           S3_ACCESS_KEY_ID: minioadmin
           S3_SECRET_ACCESS_KEY: minioadmin
+          DYNAMODB_TEST_ENDPOINT: http://localhost:8800
+          DYNAMODB_TEST_TABLE: tennis-explore-g2
+          DYNAMODB_ACCESS_KEY_ID: local
+          DYNAMODB_SECRET_ACCESS_KEY: local
         run: npm run test:integration

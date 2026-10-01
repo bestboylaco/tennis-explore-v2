@@ -28,7 +28,7 @@ const tableName = process.env.DYNAMODB_TABLE_NAME || "tennis-explore-g2";
 const pkName = process.env.DYNAMODB_PK_NAME || "PK";
 const skName = process.env.DYNAMODB_SK_NAME || "SK";
 const ttlAttribute = process.env.DYNAMODB_TTL_ATTRIBUTE || "ttl";
-const endpoint = process.env.DYNAMODB_ENDPOINT || "http://localhost:8000";
+const endpoint = process.env.DYNAMODB_ENDPOINT || "http://localhost:8800";
 const region = process.env.DYNAMODB_REGION || process.env.AWS_REGION || "ap-southeast-2";
 
 const client = new DynamoDBClient({
