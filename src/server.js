@@ -27,6 +27,8 @@ import {
   bootstrapVerification,
 } from "./modules/verification/verification.bootstrap.js";
 
+import { warmupGenerationModel } from "./modules/chat/services/generation.service.js";
+
 let server;
 let isShuttingDown = false;
 
@@ -76,6 +78,17 @@ async function startServer() {
           );
         }
       );
+    // Fired after the server is already accepting requests, not awaited --
+    // a slow or unreachable Ollama host should never delay startup itself,
+    // only whether the very first chat request lands warm.
+    warmupGenerationModel().then(({ warmed, durationMs }) => {
+      console.log(
+        warmed
+          ? `Ollama generation model warmed in ${durationMs}ms.`
+          : `Ollama generation model warmup did not complete after ${durationMs}ms; the first query will load it instead.`,
+      );
+    });
+
     // Written after the connection is up, which is the first moment the
     // telemetry store is reachable.
     await run.finish(RUN_STATUSES.SUCCESS);

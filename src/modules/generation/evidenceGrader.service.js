@@ -91,17 +91,30 @@ export function cheapGrade(question, evidence) {
   // final are everywhere -- so the grader passed it and the model answered a
   // question it could not answer. but "djokovic" and "2019" appear nowhere, and
   // that is the whole signal.
+  // strips accents and the possessive/plural tail that a proper noun collects in
+  // ordinary sentences ("Djokovic's", "Federers'"). without this, a question
+  // about "Nadal's" serve refuses outright against evidence that only ever
+  // writes "Nadal", which is the majority of real usage -- the possessive is
+  // vastly more common in a question than in the prose that answers it.
+  const normaliseAnchor = (text) =>
+    text
+      .normalize("NFD")
+      .replace(/[̀-ͯ]/g, "")
+      .replace(/'s?\b/g, "");
+
   const anchors = [
     ...new Set(
       [
         ...String(question).matchAll(/\b(?:19|20)\d{2}\b/g),
         // capitalised words, ignoring the sentence's first word
         ...String(question).slice(1).matchAll(/\b[A-Z][a-z]{2,}\b/g),
-      ].map((match) => match[0].toLowerCase()),
+      ].map((match) => normaliseAnchor(match[0].toLowerCase())),
     ),
   ];
 
-  const anchorsFound = anchors.filter((anchor) => haystack.includes(anchor)).length;
+  const normalisedHaystack = normaliseAnchor(haystack);
+
+  const anchorsFound = anchors.filter((anchor) => normalisedHaystack.includes(anchor)).length;
   const anchorCoverage = anchors.length === 0 ? 1 : anchorsFound / anchors.length;
 
   // thresholds are deliberately lopsided. calling good evidence insufficient
@@ -167,6 +180,14 @@ async function gradeChunk(question, chunk, { signal }) {
     body: JSON.stringify({
       model: retrievalConfig.generation.model,
       stream: false,
+      // a reasoning model (qwen3 and friends) spends tokens on a hidden
+      // <think> pass before answering. num_predict: 3 leaves no room for
+      // that AND the actual "yes"/"no" -- measured live, every single
+      // judgement came back with an empty content field and the whole
+      // 3-token budget spent on one reasoning token, so every chunk on every
+      // question graded "not relevant" regardless of what it said. think:
+      // false turns the reasoning pass off so the budget goes to the answer.
+      think: false,
       options: { temperature: 0, num_predict: 3 },
       messages: [
         {
@@ -200,7 +221,7 @@ async function gradeChunk(question, chunk, { signal }) {
  * grading step that cannot run should not block an answer the retrieval layer
  * was perfectly capable of supporting.
  */
-export async function gradeEvidence(question, evidence, { signal = null } = {}) {
+export async function gradeEvidence(question, evidence, { signal = null, forceModelGrade = false } = {}) {
   const cheap = cheapGrade(question, evidence);
 
   if (!retrievalConfig.generation.gradingEnabled) {
@@ -209,7 +230,13 @@ export async function gradeEvidence(question, evidence, { signal = null } = {}) 
 
   // an unambiguous cheap verdict is taken as final. no point spending ten model
   // calls to confirm what two counters already agree on.
-  if (cheap.grade === GRADES.INSUFFICIENT && cheap.confidence >= 0.8) {
+  //
+  // forceModelGrade skips this shortcut. it is set on the regrade that follows
+  // query expansion -- the cheap rules already voted insufficient once on this
+  // question, expansion was run specifically because that vote might be wrong,
+  // and trusting the same heuristic a second time defeats the point of having
+  // widened the search. the small model gets the actual final say instead.
+  if (cheap.grade === GRADES.INSUFFICIENT && cheap.confidence >= 0.8 && !forceModelGrade) {
     return { ...cheap, kept: [], source: "rules" };
   }
 
@@ -229,12 +256,45 @@ export async function gradeEvidence(question, evidence, { signal = null } = {}) 
     };
   }
 
-  const kept = window.filter((_, index) => verdicts[index]);
-  const relevantFraction = window.length === 0 ? 0 : kept.length / window.length;
+  let kept = window.filter((_, index) => verdicts[index]);
+  let graded = window;
+  let ungradedTail = tail;
+
+  // the window entirely failing is exactly the case where looking further
+  // matters most. topN widens retrieval to ~1.8x what actually gets shown,
+  // so a real answer sitting just past position gradeLimit in the ranking
+  // reads identically to "nothing retrieved is relevant" once the window
+  // alone decides that -- and it is genuinely there often enough to be
+  // worth one more concurrent batch of cheap yes/no calls (observed live,
+  // 2026-09-17: the passage that directly answered the question ranked
+  // 10th, one place past an 8-chunk window, and the question was refused
+  // with 25 chunks retrieved and 17 of them never even looked at).
+  //
+  // graded only once, not looped -- a second empty batch is a much weaker
+  // signal that a third would help, and this should cost extra only on the
+  // single worst case, not turn into an unbounded search.
+  if (kept.length === 0 && tail.length > 0) {
+    const nextWindow = tail.slice(0, retrievalConfig.generation.gradeLimit);
+    ungradedTail = tail.slice(retrievalConfig.generation.gradeLimit);
+
+    try {
+      const nextVerdicts = await Promise.all(nextWindow.map((chunk) => gradeChunk(question, chunk, { signal })));
+
+      kept = nextWindow.filter((_, index) => nextVerdicts[index]);
+      graded = [...window, ...nextWindow];
+    } catch {
+      // the first batch's grader call already succeeded, so this is not
+      // "grader unavailable" -- just proceed with what the first batch found
+      // (nothing), and leave the second window ungraded rather than judged.
+      ungradedTail = tail;
+    }
+  }
+
+  const relevantFraction = graded.length === 0 ? 0 : kept.length / graded.length;
 
   // ungraded tail chunks are kept behind the graded ones. they were never
   // judged, so dropping them would be a guess in the other direction.
-  const finalEvidence = [...kept, ...tail];
+  const finalEvidence = [...kept, ...ungradedTail];
 
   let grade;
 
@@ -245,12 +305,12 @@ export async function gradeEvidence(question, evidence, { signal = null } = {}) 
   return {
     grade,
     confidence: 0.9,
-    reason: `${kept.length} of ${window.length} passages judged relevant`,
+    reason: `${kept.length} of ${graded.length} passages judged relevant`,
     termCoverage: cheap.termCoverage,
     armAgreement: cheap.armAgreement,
     relevantFraction,
     kept: finalEvidence,
-    dropped: window.length - kept.length,
+    dropped: graded.length - kept.length,
     source: "model",
   };
 }

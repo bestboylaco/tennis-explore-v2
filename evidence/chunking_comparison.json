@@ -1,6 +1,6 @@
 {
-  "generatedAt": "2026-09-18T05:36:37.015Z",
-  "gitCommit": "d7917815c0b9590b3c55df64e64d267fe5e6819c",
+  "generatedAt": "2026-09-17T23:05:46.111Z",
+  "gitCommit": "9466c18d156c4aaccea45cd7bad97ac2f6f11db4",
   "node": "v22.17.1",
   "embedding": {
     "provider": "ollama",
@@ -527,7 +527,7 @@
             "fernandez-et-al-2006-intensity-of-tennis-match-play-bjsm-405#p0000_3",
             "kovacs-2006-applied-physiology-of-tennis-performance-bjsm-40#p0001_3"
           ],
-          "ms": 4157
+          "ms": 5131
         },
         {
           "id": "CQ-02",
@@ -546,7 +546,7 @@
             "fernandez-fernandez-et-al-2009-a-review-of-the-activity-profile-and-physiological-demands-of-tennis-match-play#p0002_3",
             "fernandez-fernandez-et-al-2009-a-review-of-the-activity-profile-and-physiological-demands-of-tennis-match-play#p0007_1"
           ],
-          "ms": 541
+          "ms": 609
         },
         {
           "id": "CQ-03",
@@ -565,7 +565,7 @@
             "reid-schneiker-2008-strength-and-conditioning-in-tennis-current-research-and-practice-jsams-113#p0001_0",
             "gomes-et-al-2011-physiological-demands-of-match-play-in-elite-tennis-a-case-study#p0002_0"
           ],
-          "ms": 602
+          "ms": 560
         },
         {
           "id": "CQ-04",
@@ -584,7 +584,7 @@
             "bergeron-et-al-2006-a-voluntary-fluid-intake-and-core-temperature-responses-in-tennis-bjsm#p0003_2",
             "kovacs-2008-brief-review-of-fluid-and-hydration-in-tennis-ijspp#p0002_1"
           ],
-          "ms": 569
+          "ms": 458
         },
         {
           "id": "CQ-05",
@@ -603,7 +603,7 @@
             "hornery-et-al-2007-fatigue-in-tennis-mechanisms-of-fatigue-and-effect-on-performance-sports-med-3873#p0001_2",
             "kovacs-2006-applied-physiology-of-tennis-performance-bjsm-40#p0003_1"
           ],
-          "ms": 610
+          "ms": 475
         },
         {
           "id": "CQ-06",
@@ -622,7 +622,7 @@
             "ellenbecker-et-al-2007-a-descriptive-profile-of-age-specific-knee-extension-flexion-strength-in-elite-junior-tennis-players#p0004_0",
             "baiget-et-al-2014-on-court-endurance-and-performance-testing-in-competitive-male-tennis-players#p0001_2"
           ],
-          "ms": 593
+          "ms": 512
         },
         {
           "id": "CQ-07",
@@ -641,7 +641,7 @@
             "ranchordas-et-al-2013-nutrition-for-tennis-practical-recommendations#p0009_3",
             "ranchordas-et-al-2013-nutrition-for-tennis-practical-recommendations#p0009_2"
           ],
-          "ms": 549
+          "ms": 535
         },
         {
           "id": "CQ-08",
@@ -660,7 +660,7 @@
             "girard-et-al-2006-specific-incremental-field-test-for-aerobic-fitness-in-tennis#p0000_4",
             "girard-et-al-2006-specific-incremental-field-test-for-aerobic-fitness-in-tennis#p0001_0"
           ],
-          "ms": 582
+          "ms": 563
         },
         {
           "id": "CQ-09",
@@ -679,7 +679,7 @@
             "match-data-example#r000002",
             "match-data-example#r000052"
           ],
-          "ms": 587
+          "ms": 584
         },
         {
           "id": "CQ-10",
@@ -698,7 +698,7 @@
             "match-data-example#r000042",
             "match-data-example#r000043"
           ],
-          "ms": 585
+          "ms": 530
         },
         {
           "id": "CQ-11",
@@ -717,7 +717,7 @@
             "match-data-example#r000011",
             "match-data-example#r000010"
           ],
-          "ms": 577
+          "ms": 544
         },
         {
           "id": "CQ-12",
@@ -736,7 +736,7 @@
             "match-data-example#r000029",
             "match-data-example#r000012"
           ],
-          "ms": 575
+          "ms": 505
         },
         {
           "id": "CQ-13",
@@ -755,7 +755,7 @@
             "johnson-mchugh-2006-performance-demands-of-professional-male-tennis-players#p0000_2",
             "johnson-mchugh-2006-performance-demands-of-professional-male-tennis-players#p0001_1"
           ],
-          "ms": 585
+          "ms": 506
         },
         {
           "id": "CQ-14",
@@ -774,7 +774,7 @@
             "match-data-example#r000030",
             "match-data-example#r000029"
           ],
-          "ms": 568
+          "ms": 422
         },
         {
           "id": "CQ-15",
@@ -793,7 +793,7 @@
             "kondric-et-al-2013-sport-nutrition-and-doping-in-tennis-an-analysis-of-athletes-attitudes-and-knowledge#p0005_3",
             "johnson-mchugh-2006-performance-demands-of-professional-male-tennis-players#p0002_3"
           ],
-          "ms": 577
+          "ms": 408
         }
       ]
     },
@@ -909,7 +909,7 @@
             "kovacs-2006-applied-physiology-of-tennis-performance-bjsm-40#p0000_6",
             "fernandez-et-al-2006-intensity-of-tennis-match-play-bjsm-405#p0003_7"
           ],
-          "ms": 656
+          "ms": 529
         },
         {
           "id": "CQ-02",
@@ -928,7 +928,7 @@
             "hoppe-et-al-2014-running-activity-profile-of-adolescent-tennis-players-during-match-play#p0000_4",
             "fernandez-et-al-2006-intensity-of-tennis-match-play-bjsm-405#p0001_6"
           ],
-          "ms": 591
+          "ms": 473
         },
         {
           "id": "CQ-03",
@@ -947,7 +947,7 @@
             "reid-schneiker-2008-strength-and-conditioning-in-tennis-current-research-and-practice-jsams-113#p0001_0",
             "gomes-et-al-2011-physiological-demands-of-match-play-in-elite-tennis-a-case-study#p0002_0"
           ],
-          "ms": 588
+          "ms": 489
         },
         {
           "id": "CQ-04",
@@ -966,7 +966,7 @@
             "kovacs-2008-brief-review-of-fluid-and-hydration-in-tennis-ijspp#p0005_4",
             "fernandez-fernandez-et-al-2009-a-review-of-the-activity-profile-and-physiological-demands-of-tennis-match-play#p0008_3"
           ],
-          "ms": 621
+          "ms": 461
         },
         {
           "id": "CQ-05",
@@ -985,7 +985,7 @@
             "gomes-et-al-2011-physiological-demands-of-match-play-in-elite-tennis-a-case-study#p0001_4",
             "hornery-et-al-2007-fatigue-in-tennis-mechanisms-of-fatigue-and-effect-on-performance-sports-med-3873#p0001_5"
           ],
-          "ms": 575
+          "ms": 482
         },
         {
           "id": "CQ-06",
@@ -1004,7 +1004,7 @@
             "ellenbecker-et-al-2007-a-descriptive-profile-of-age-specific-knee-extension-flexion-strength-in-elite-junior-tennis-players#p0004_0",
             "reid-et-al-2009-planning-and-periodisation-for-the-elite-junior-tennis-player#p0000_6"
           ],
-          "ms": 590
+          "ms": 512
         },
         {
           "id": "CQ-07",
@@ -1023,7 +1023,7 @@
             "ranchordas-et-al-2013-nutrition-for-tennis-practical-recommendations#p0009_4",
             "ranchordas-et-al-2013-nutrition-for-tennis-practical-recommendations#p0012_6"
           ],
-          "ms": 550
+          "ms": 558
         },
         {
           "id": "CQ-08",
@@ -1042,7 +1042,7 @@
             "girard-et-al-2006-specific-incremental-field-test-for-aerobic-fitness-in-tennis#p0005_1",
             "girard-et-al-2006-specific-incremental-field-test-for-aerobic-fitness-in-tennis#p0001_0"
           ],
-          "ms": 611
+          "ms": 488
         },
         {
           "id": "CQ-09",
@@ -1061,7 +1061,7 @@
             "match-data-example#r000002",
             "match-data-example#r000052"
           ],
-          "ms": 584
+          "ms": 592
         },
         {
           "id": "CQ-10",
@@ -1080,7 +1080,7 @@
             "match-data-example#r000042",
             "match-data-example#r000043"
           ],
-          "ms": 624
+          "ms": 457
         },
         {
           "id": "CQ-11",
@@ -1099,7 +1099,7 @@
             "match-data-example#r000011",
             "match-data-example#r000010"
           ],
-          "ms": 596
+          "ms": 540
         },
         {
           "id": "CQ-12",
@@ -1118,7 +1118,7 @@
             "match-data-example#r000029",
             "match-data-example#r000012"
           ],
-          "ms": 605
+          "ms": 559
         },
         {
           "id": "CQ-13",
@@ -1137,7 +1137,7 @@
             "match-data-example#r000061",
             "johnson-mchugh-2006-performance-demands-of-professional-male-tennis-players#p0000_5"
           ],
-          "ms": 597
+          "ms": 535
         },
         {
           "id": "CQ-14",
@@ -1156,7 +1156,7 @@
             "match-data-example#r000065",
             "fernandez-fernandez-et-al-2009-a-review-of-the-activity-profile-and-physiological-demands-of-tennis-match-play#p0000_0"
           ],
-          "ms": 557
+          "ms": 458
         },
         {
           "id": "CQ-15",
@@ -1175,7 +1175,7 @@
             "johnson-mchugh-2006-performance-demands-of-professional-male-tennis-players#p0002_8",
             "kovacs-2006-applied-physiology-of-tennis-performance-bjsm-40#p0000_2"
           ],
-          "ms": 630
+          "ms": 439
         }
       ]
     },
@@ -1291,7 +1291,7 @@
             "fernandez-et-al-2006-intensity-of-tennis-match-play-bjsm-405#p0000_3",
             "reid-schneiker-2008-strength-and-conditioning-in-tennis-current-research-and-practice-jsams-113#p0001_1"
           ],
-          "ms": 633
+          "ms": 472
         },
         {
           "id": "CQ-02",
@@ -1310,7 +1310,7 @@
             "fernandez-fernandez-et-al-2009-a-review-of-the-activity-profile-and-physiological-demands-of-tennis-match-play#p0002_3",
             "reid-duffield-2014-the-development-of-fatigue-during-match-play-tennis#p0000_1"
           ],
-          "ms": 600
+          "ms": 458
         },
         {
           "id": "CQ-03",
@@ -1329,7 +1329,7 @@
             "reid-schneiker-2008-strength-and-conditioning-in-tennis-current-research-and-practice-jsams-113#p0001_0",
             "reid-schneiker-2008-strength-and-conditioning-in-tennis-current-research-and-practice-jsams-113#p0005_0"
           ],
-          "ms": 609
+          "ms": 532
         },
         {
           "id": "CQ-04",
@@ -1348,7 +1348,7 @@
             "fernandez-fernandez-et-al-2009-a-review-of-the-activity-profile-and-physiological-demands-of-tennis-match-play#p0008_0",
             "bergeron-et-al-2006-a-voluntary-fluid-intake-and-core-temperature-responses-in-tennis-bjsm#p0001_3"
           ],
-          "ms": 590
+          "ms": 524
         },
         {
           "id": "CQ-05",
@@ -1367,7 +1367,7 @@
             "hornery-et-al-2007-fatigue-in-tennis-mechanisms-of-fatigue-and-effect-on-performance-sports-med-3873#p0001_2",
             "gomes-et-al-2011-physiological-demands-of-match-play-in-elite-tennis-a-case-study#p0001_1"
           ],
-          "ms": 581
+          "ms": 555
         },
         {
           "id": "CQ-06",
@@ -1386,7 +1386,7 @@
             "reid-et-al-2009-planning-and-periodisation-for-the-elite-junior-tennis-player#p0000_2",
             "ellenbecker-et-al-2007-a-descriptive-profile-of-age-specific-knee-extension-flexion-strength-in-elite-junior-tennis-players#p0003_2"
           ],
-          "ms": 582
+          "ms": 534
         },
         {
           "id": "CQ-07",
@@ -1405,7 +1405,7 @@
             "ranchordas-et-al-2013-nutrition-for-tennis-practical-recommendations#p0009_2",
             "ranchordas-et-al-2013-nutrition-for-tennis-practical-recommendations#p0010_0"
           ],
-          "ms": 557
+          "ms": 582
         },
         {
           "id": "CQ-08",
@@ -1424,7 +1424,7 @@
             "girard-et-al-2006-specific-incremental-field-test-for-aerobic-fitness-in-tennis#p0005_0",
             "girard-et-al-2006-specific-incremental-field-test-for-aerobic-fitness-in-tennis#p0004_4"
           ],
-          "ms": 606
+          "ms": 531
         },
         {
           "id": "CQ-09",
@@ -1443,7 +1443,7 @@
             "match-data-example#r000002",
             "match-data-example#r000052"
           ],
-          "ms": 548
+          "ms": 505
         },
         {
           "id": "CQ-10",
@@ -1462,7 +1462,7 @@
             "match-data-example#r000042",
             "match-data-example#r000043"
           ],
-          "ms": 554
+          "ms": 494
         },
         {
           "id": "CQ-11",
@@ -1481,7 +1481,7 @@
             "match-data-example#r000011",
             "match-data-example#r000010"
           ],
-          "ms": 537
+          "ms": 463
         },
         {
           "id": "CQ-12",
@@ -1500,7 +1500,7 @@
             "match-data-example#r000029",
             "match-data-example#r000012"
           ],
-          "ms": 526
+          "ms": 430
         },
         {
           "id": "CQ-13",
@@ -1519,7 +1519,7 @@
             "johnson-mchugh-2006-performance-demands-of-professional-male-tennis-players#p0000_2",
             "fernandez-et-al-2006-intensity-of-tennis-match-play-bjsm-405#p0001_0"
           ],
-          "ms": 507
+          "ms": 590
         },
         {
           "id": "CQ-14",
@@ -1538,7 +1538,7 @@
             "match-data-example#r000030",
             "match-data-example#r000029"
           ],
-          "ms": 538
+          "ms": 558
         },
         {
           "id": "CQ-15",
@@ -1557,7 +1557,7 @@
             "kondric-et-al-2013-sport-nutrition-and-doping-in-tennis-an-analysis-of-athletes-attitudes-and-knowledge#p0005_3",
             "johnson-mchugh-2006-performance-demands-of-professional-male-tennis-players#p0002_3"
           ],
-          "ms": 491
+          "ms": 541
         }
       ]
     },
@@ -1673,7 +1673,7 @@
             "fernandez-et-al-2006-intensity-of-tennis-match-play-bjsm-405#p0000_3",
             "kovacs-2006-applied-physiology-of-tennis-performance-bjsm-40#p0001_3"
           ],
-          "ms": 543
+          "ms": 621
         },
         {
           "id": "CQ-02",
@@ -1692,7 +1692,7 @@
             "fernandez-fernandez-et-al-2009-a-review-of-the-activity-profile-and-physiological-demands-of-tennis-match-play#p0002_3",
             "fernandez-fernandez-et-al-2009-a-review-of-the-activity-profile-and-physiological-demands-of-tennis-match-play#p0007_1"
           ],
-          "ms": 457
+          "ms": 577
         },
         {
           "id": "CQ-03",
@@ -1711,7 +1711,7 @@
             "reid-schneiker-2008-strength-and-conditioning-in-tennis-current-research-and-practice-jsams-113#p0001_0",
             "gomes-et-al-2011-physiological-demands-of-match-play-in-elite-tennis-a-case-study#p0002_0"
           ],
-          "ms": 452
+          "ms": 613
         },
         {
           "id": "CQ-04",
@@ -1730,7 +1730,7 @@
             "bergeron-et-al-2006-a-voluntary-fluid-intake-and-core-temperature-responses-in-tennis-bjsm#p0003_2",
             "fernandez-fernandez-et-al-2009-a-review-of-the-activity-profile-and-physiological-demands-of-tennis-match-play#p0008_0"
           ],
-          "ms": 520
+          "ms": 529
         },
         {
           "id": "CQ-05",
@@ -1749,7 +1749,7 @@
             "gomes-et-al-2011-physiological-demands-of-match-play-in-elite-tennis-a-case-study#p0001_1",
             "hornery-et-al-2007-fatigue-in-tennis-mechanisms-of-fatigue-and-effect-on-performance-sports-med-3873#p0001_2"
           ],
-          "ms": 496
+          "ms": 492
         },
         {
           "id": "CQ-06",
@@ -1768,7 +1768,7 @@
             "ellenbecker-et-al-2007-a-descriptive-profile-of-age-specific-knee-extension-flexion-strength-in-elite-junior-tennis-players#p0004_0",
             "reid-et-al-2009-planning-and-periodisation-for-the-elite-junior-tennis-player#p0006_2"
           ],
-          "ms": 521
+          "ms": 544
         },
         {
           "id": "CQ-07",
@@ -1787,7 +1787,7 @@
             "ranchordas-et-al-2013-nutrition-for-tennis-practical-recommendations#p0009_3",
             "ranchordas-et-al-2013-nutrition-for-tennis-practical-recommendations#p0009_2"
           ],
-          "ms": 521
+          "ms": 515
         },
         {
           "id": "CQ-08",
@@ -1806,7 +1806,7 @@
             "girard-et-al-2006-specific-incremental-field-test-for-aerobic-fitness-in-tennis#p0000_4",
             "girard-et-al-2006-specific-incremental-field-test-for-aerobic-fitness-in-tennis#p0001_0"
           ],
-          "ms": 500
+          "ms": 494
         },
         {
           "id": "CQ-09",
@@ -1825,7 +1825,7 @@
             "match-data-example#r000055",
             "match-data-example#r000045"
           ],
-          "ms": 534
+          "ms": 565
         },
         {
           "id": "CQ-10",
@@ -1844,7 +1844,7 @@
             "match-data-example#r000055",
             "match-data-example#r000005"
           ],
-          "ms": 528
+          "ms": 550
         },
         {
           "id": "CQ-11",
@@ -1863,7 +1863,7 @@
             "match-data-example#r000010",
             "match-data-example#r000095"
           ],
-          "ms": 582
+          "ms": 536
         },
         {
           "id": "CQ-12",
@@ -1882,7 +1882,7 @@
             "match-data-example#r000000",
             "match-data-example#r000025"
           ],
-          "ms": 609
+          "ms": 552
         },
         {
           "id": "CQ-13",
@@ -1901,7 +1901,7 @@
             "johnson-mchugh-2006-performance-demands-of-professional-male-tennis-players#p0001_3",
             "hornery-et-al-2007-fatigue-in-tennis-mechanisms-of-fatigue-and-effect-on-performance-sports-med-3873#p0001_1"
           ],
-          "ms": 559
+          "ms": 508
         },
         {
           "id": "CQ-14",
@@ -1920,7 +1920,7 @@
             "match-data-example#r000035",
             "match-data-example#r000025"
           ],
-          "ms": 555
+          "ms": 559
         },
         {
           "id": "CQ-15",
@@ -1939,7 +1939,7 @@
             "match-data-example#r000010",
             "match-data-example#r000050"
           ],
-          "ms": 569
+          "ms": 418
         }
       ]
     },
@@ -2055,7 +2055,7 @@
             "fernandez-et-al-2006-intensity-of-tennis-match-play-bjsm-405#p0003_7",
             "kovacs-2006-applied-physiology-of-tennis-performance-bjsm-40#p0001_8"
           ],
-          "ms": 582
+          "ms": 579
         },
         {
           "id": "CQ-02",
@@ -2074,7 +2074,7 @@
             "hoppe-et-al-2014-running-activity-profile-of-adolescent-tennis-players-during-match-play#p0000_4",
             "fernandez-fernandez-et-al-2009-a-review-of-the-activity-profile-and-physiological-demands-of-tennis-match-play#p0002_7"
           ],
-          "ms": 563
+          "ms": 492
         },
         {
           "id": "CQ-03",
@@ -2093,7 +2093,7 @@
             "reid-schneiker-2008-strength-and-conditioning-in-tennis-current-research-and-practice-jsams-113#p0005_1",
             "gomes-et-al-2011-physiological-demands-of-match-play-in-elite-tennis-a-case-study#p0002_0"
           ],
-          "ms": 590
+          "ms": 570
         },
         {
           "id": "CQ-04",
@@ -2112,7 +2112,7 @@
             "bergeron-et-al-2006-a-voluntary-fluid-intake-and-core-temperature-responses-in-tennis-bjsm#p0001_7",
             "bergeron-et-al-2006-a-voluntary-fluid-intake-and-core-temperature-responses-in-tennis-bjsm#p0000_1"
           ],
-          "ms": 565
+          "ms": 467
         },
         {
           "id": "CQ-05",
@@ -2131,7 +2131,7 @@
             "kovacs-2006-applied-physiology-of-tennis-performance-bjsm-40#p0003_3",
             "hornery-et-al-2007-fatigue-in-tennis-mechanisms-of-fatigue-and-effect-on-performance-sports-med-3873#p0011_3"
           ],
-          "ms": 586
+          "ms": 563
         },
         {
           "id": "CQ-06",
@@ -2150,7 +2150,7 @@
             "ellenbecker-et-al-2007-a-descriptive-profile-of-age-specific-knee-extension-flexion-strength-in-elite-junior-tennis-players#p0004_0",
             "reid-et-al-2009-planning-and-periodisation-for-the-elite-junior-tennis-player#p0000_5"
           ],
-          "ms": 568
+          "ms": 520
         },
         {
           "id": "CQ-07",
@@ -2169,7 +2169,7 @@
             "ranchordas-et-al-2013-nutrition-for-tennis-practical-recommendations#p0009_6",
             "ranchordas-et-al-2013-nutrition-for-tennis-practical-recommendations#p0009_4"
           ],
-          "ms": 587
+          "ms": 588
         },
         {
           "id": "CQ-08",
@@ -2188,7 +2188,7 @@
             "girard-et-al-2006-specific-incremental-field-test-for-aerobic-fitness-in-tennis#p0001_0",
             "girard-et-al-2006-specific-incremental-field-test-for-aerobic-fitness-in-tennis#p0005_0"
           ],
-          "ms": 504
+          "ms": 548
         },
         {
           "id": "CQ-09",
@@ -2207,7 +2207,7 @@
             "match-data-example#r000002",
             "match-data-example#r000052"
           ],
-          "ms": 574
+          "ms": 501
         },
         {
           "id": "CQ-10",
@@ -2226,7 +2226,7 @@
             "match-data-example#r000042",
             "match-data-example#r000043"
           ],
-          "ms": 557
+          "ms": 408
         },
         {
           "id": "CQ-11",
@@ -2245,7 +2245,7 @@
             "match-data-example#r000011",
             "match-data-example#r000010"
           ],
-          "ms": 566
+          "ms": 512
         },
         {
           "id": "CQ-12",
@@ -2264,7 +2264,7 @@
             "match-data-example#r000029",
             "match-data-example#r000012"
           ],
-          "ms": 573
+          "ms": 447
         },
         {
           "id": "CQ-13",
@@ -2283,7 +2283,7 @@
             "match-data-example#r000061",
             "johnson-mchugh-2006-performance-demands-of-professional-male-tennis-players#p0000_5"
           ],
-          "ms": 561
+          "ms": 527
         },
         {
           "id": "CQ-14",
@@ -2302,7 +2302,7 @@
             "match-data-example#r000030",
             "fernandez-fernandez-et-al-2009-a-review-of-the-activity-profile-and-physiological-demands-of-tennis-match-play#p0000_0"
           ],
-          "ms": 594
+          "ms": 506
         },
         {
           "id": "CQ-15",
@@ -2321,7 +2321,7 @@
             "johnson-mchugh-2006-performance-demands-of-professional-male-tennis-players#p0002_8",
             "kondric-et-al-2013-sport-nutrition-and-doping-in-tennis-an-analysis-of-athletes-attitudes-and-knowledge#p0000_2"
           ],
-          "ms": 583
+          "ms": 506
         }
       ]
     }

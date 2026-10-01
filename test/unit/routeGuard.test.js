@@ -2,9 +2,12 @@ import assert from "node:assert/strict";
 import { describe, it } from "node:test";
 
 import { ruleBasedPlan } from "../../src/modules/query/queryPlanner.service.js";
-import { ROUTE_FOR_INTENT, ROUTES } from "../../src/shared/constants/queryTaxonomy.js";
+import { ROUTES } from "../../src/shared/constants/queryTaxonomy.js";
 
-const routeOf = (question) => ROUTE_FOR_INTENT[ruleBasedPlan(question).intent];
+// v2 decides route directly from the question's vocabulary (classifyRoute),
+// never from the intent -- so there is no longer a separate lookup step here
+// that could itself be wrong. this file now exercises that decision directly.
+const routeOf = (question) => ruleBasedPlan(question).route;
 
 describe("route selection", () => {
   it("keeps counting words about a paper on the document route", () => {

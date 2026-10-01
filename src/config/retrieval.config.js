@@ -225,16 +225,28 @@ export const retrievalConfig = Object.freeze({
     // pipeline after hybrid itself.
     enabled: bool(process.env.RERANK_ENABLED, true),
 
-    // two strategies.
+    // three strategies.
     //
-    //   "llm"      score passages in batches with the ordinary chat model.
-    //              works on a stock ollama install with nothing extra. this is
-    //              the default because it is the only option that always works.
+    //   "llm"           score passages in batches with the ordinary chat
+    //                    model. works on a stock ollama install with nothing
+    //                    extra, but batches are scored on their own curve and
+    //                    pooling scores across batches is not reliable -- see
+    //                    rerankViaLlm in ranking.service.js.
     //
-    //   "service"  call a real cross-encoder over http. better, and needs a
-    //              separate process: tools/rerank/rerank_server.py, or
-    //              huggingface text-embeddings-inference, or infinity. set
-    //              RERANK_API_URL to point at it.
+    //   "cross-encoder"  a real cross-encoder (bge-reranker), run in-process
+    //                     via transformers.js/onnx. no separate service, no
+    //                     batch-calibration problem -- every passage is
+    //                     scored against the query independently, not against
+    //                     the other passages in its batch. this is the
+    //                     recommended strategy; "llm" exists as a fallback
+    //                     that needs no model download.
+    //
+    //   "service"        call a real cross-encoder over http instead --
+    //                     tools/rerank/rerank_server.py, or huggingface
+    //                     text-embeddings-inference, or infinity. set
+    //                     RERANK_API_URL to point at it. useful if you would
+    //                     rather run the reranker as a separate process (e.g.
+    //                     on a GPU box) than in the node process.
     //
     // NOTE for anyone reaching for ollama here: ollama has NO /api/rerank.
     // it serves a reranker model's embedding layer but not its classification
@@ -244,10 +256,17 @@ export const retrievalConfig = Object.freeze({
 
     apiUrl: process.env.RERANK_API_URL || "",
     model: process.env.RERANK_MODEL || "BAAI/bge-reranker-v2-m3",
+    // the transformers.js model id for the "cross-encoder" strategy. Xenova's
+    // org publishes onnx conversions of the standard bge-reranker checkpoints
+    // -- "Xenova/bge-reranker-base" (~280MB, the default) fits comfortably
+    // alongside the embedding and generation models on an 8GB card;
+    // "Xenova/bge-reranker-v2-m3" is larger and stronger if there is room.
+    crossEncoderModel: process.env.RERANK_CROSS_ENCODER_MODEL || "Xenova/bge-reranker-base",
     llmModel: process.env.RERANK_LLM_MODEL || "llama3.1:8b",
     // how many passages go into one scoring call. one call per passage meant 50
     // sequential round trips and about 90 seconds; ten per call is five calls,
-    // run concurrently.
+    // run concurrently. the cross-encoder strategy scores every passage in one
+    // batch regardless -- this only bounds the "llm" strategy.
     batchSize: num(process.env.RERANK_BATCH_SIZE, 12),
     baseUrl: stripTrailingSlash(process.env.OLLAMA_BASE_URL || "http://localhost:11434"),
   }),
@@ -330,6 +349,24 @@ export const retrievalConfig = Object.freeze({
     // how much context the model is given. 12000 chars is ~3000 tokens, which
     // leaves room in an 8k window for the few-shot examples and the answer.
     maxContextChars: num(process.env.MAX_CONTEXT_CHARS, 12000),
+  }),
+
+  // ---------------------------------------------------------------------
+  // multi-turn conversation
+  // ---------------------------------------------------------------------
+  conversation: Object.freeze({
+    // rewriting a follow-up into a standalone question before retrieval. off
+    // and the system still answers -- it just cannot follow "what about clay?".
+    rewriteEnabled: bool(process.env.REWRITE_ENABLED, true),
+
+    rewriteModel:
+      process.env.REWRITE_MODEL || process.env.OLLAMA_GENERATION_MODEL || "llama3.1:8b",
+
+    // how many previous turns the rewriter may look at. small on purpose: an
+    // older turn is far more likely to drag the rewrite off topic than to
+    // supply the missing subject, and every extra turn is prompt tokens spent
+    // on context that is probably no longer relevant.
+    maxTurns: num(process.env.REWRITE_MAX_TURNS, 3),
   }),
 });
 

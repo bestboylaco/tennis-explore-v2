@@ -903,3 +903,183 @@ select:focus-visible {
         color: #173c29 !important;
         background: #eef3e9 !important;
     }
+
+/* ==========================================================================
+   24. Strong errors + Chat History management
+   ========================================================================== */
+
+/*
+ * The earlier light-theme error colours were too close to the background.
+ * Keep the light surface, but give every piece of error copy a dark red
+ * foreground that remains readable on normal laptop displays.
+ */
+.error-banner,
+.error-state,
+.request-error {
+    color: #6f1714 !important;
+    background: #fff0ed !important;
+    border: 1px solid #d98a81 !important;
+    box-shadow: 0 8px 24px rgba(112, 28, 24, 0.08) !important;
+}
+
+.error-banner strong,
+.error-state strong,
+.request-error strong {
+    color: #5b100e !important;
+    opacity: 1 !important;
+    font-weight: 800 !important;
+}
+
+.error-banner p,
+#error-message,
+.error-state p,
+.request-error p {
+    color: #7a211d !important;
+    opacity: 1 !important;
+    font-weight: 550 !important;
+}
+
+#error-banner .text-button,
+#dismiss-error-button {
+    color: #651713 !important;
+    background: #ffffff !important;
+    border: 1px solid #d7aaa5 !important;
+}
+
+#error-banner .text-button:hover,
+#dismiss-error-button:hover {
+    color: #4f0c09 !important;
+    background: #ffe1dc !important;
+    border-color: #c96d63 !important;
+}
+
+/* One conversation row = main selector + a separate actions button. */
+.chat-history__row {
+    position: relative;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 0.25rem;
+    align-items: stretch;
+    width: 100%;
+}
+
+.chat-history__row + .chat-history__row {
+    margin-top: 0.15rem;
+}
+
+.chat-history__row .chat-history__item {
+    min-width: 0;
+    width: 100%;
+    text-align: left;
+}
+
+.chat-history__item-title {
+    display: block;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    color: inherit !important;
+}
+
+.chat-history__item-meta {
+    display: block;
+    margin-top: 0.15rem;
+    overflow: hidden;
+    color: #849087 !important;
+    font-size: 0.68rem;
+    line-height: 1.25;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.chat-history__actions {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.chat-history .chat-history__menu-toggle {
+    display: grid;
+    width: 2rem;
+    min-width: 2rem;
+    height: 2rem;
+    padding: 0 !important;
+    place-items: center;
+    color: #6b786f !important;
+    background: transparent !important;
+    border: 1px solid transparent !important;
+    border-radius: 0.55rem;
+    font-size: 1.1rem;
+    line-height: 1;
+}
+
+.chat-history .chat-history__menu-toggle:hover,
+.chat-history .chat-history__menu-toggle[aria-expanded="true"] {
+    color: #173c29 !important;
+    background: #edf2e8 !important;
+    border-color: rgba(39, 87, 59, 0.16) !important;
+}
+
+.chat-history__menu {
+    position: absolute;
+    z-index: 60;
+    top: calc(100% + 0.25rem);
+    right: 0;
+    width: 8.5rem;
+    padding: 0.35rem;
+    border: 1px solid rgba(38, 80, 55, 0.16);
+    border-radius: 0.7rem;
+    background: #ffffff;
+    box-shadow: 0 12px 30px rgba(32, 61, 42, 0.16);
+}
+
+.chat-history__menu[hidden] {
+    display: none !important;
+}
+
+.chat-history .chat-history__menu-action {
+    display: block;
+    width: 100%;
+    padding: 0.55rem 0.65rem !important;
+    color: #35443a !important;
+    background: transparent !important;
+    border: 0 !important;
+    border-radius: 0.5rem;
+    text-align: left;
+    font-size: 0.78rem;
+}
+
+.chat-history .chat-history__menu-action:hover {
+    color: #173c29 !important;
+    background: #eef3e9 !important;
+}
+
+.chat-history .chat-history__menu-action--danger {
+    color: #9a2b25 !important;
+}
+
+.chat-history .chat-history__menu-action--danger:hover {
+    color: #781914 !important;
+    background: #fff0ed !important;
+}
+
+.message--assistant .in-text-citation,
+.message--assistant .in-text-citation:hover,
+.message--assistant .in-text-citation:active {
+    color: #2f6b57 !important;
+    background: transparent !important;
+    text-decoration-line: underline !important;
+    text-decoration-style: dotted !important;
+    text-decoration-color: #2f6b57 !important;
+    box-shadow: none !important;
+    filter: none !important;
+    transform: none !important;
+}
+
+.message--assistant .in-text-citation:focus-visible {
+    color: #2f6b57 !important;
+    background: transparent !important;
+    outline: 2px solid rgba(47, 107, 87, 0.4);
+    outline-offset: 2px;
+}

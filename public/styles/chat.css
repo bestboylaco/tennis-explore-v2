@@ -39,6 +39,52 @@
     gap: var(--space-5);
 }
 
+.chat-topbar__start {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-4);
+}
+
+.sidebar-toggle {
+    display: inline-flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 0.2rem;
+    width: 2.25rem;
+    height: 2.25rem;
+    padding: 0;
+    border: 1px solid var(--border-glass);
+    border-radius: 0.6rem;
+    background: var(--surface-glass-soft);
+    cursor: pointer;
+    transition: background 120ms ease-out, border-color 120ms ease-out;
+}
+
+.sidebar-toggle:hover {
+    background: var(--surface-glass-strong, var(--surface-glass-soft));
+    border-color: var(--border-glass-strong);
+}
+
+.sidebar-toggle span {
+    display: block;
+    width: 1.05rem;
+    height: 1.5px;
+    border-radius: 1px;
+    background: var(--colour-text-secondary);
+    transition: transform 160ms ease-out, opacity 160ms ease-out;
+}
+
+/* the middle bar shrinks when the sidebar is hidden, turning the icon from
+   a hamburger into something closer to a collapse/expand chevron cue --
+   cheap enough to do in css that it is not worth shipping a real icon set
+   for one button. */
+.chat-page.sidebar-collapsed .sidebar-toggle:not(.sidebar-toggle--right) span:nth-child(2),
+.chat-page.sidebar-collapsed-right .sidebar-toggle--right span:nth-child(2) {
+    transform: scaleX(0.4);
+    opacity: 0.6;
+}
+
 .chat-brand {
     display: inline-flex;
     align-items: center;
@@ -148,7 +194,33 @@
         var(--right-sidebar-width);
     gap: var(--space-5);
     align-items: stretch;
-    transition: margin-right 180ms ease-out;
+    transition: margin-right 180ms ease-out, grid-template-columns 220ms ease-out;
+}
+
+/* collapsing the column to 0 (rather than removing the sidebar from the grid
+   entirely) is what lets grid-template-columns animate -- swapping the
+   column count outright jumps instantly in every browser, changing one
+   track's size does not. the sidebar's own content fades and clips via
+   .sidebar--left below, in step with the column shrinking. */
+.chat-page.sidebar-collapsed .workspace {
+    grid-template-columns:
+        0rem
+        minmax(30rem, 1fr)
+        var(--right-sidebar-width);
+    gap: 0 var(--space-5);
+}
+
+.chat-page.sidebar-collapsed-right .workspace {
+    grid-template-columns:
+        var(--left-sidebar-width)
+        minmax(30rem, 1fr)
+        0rem;
+    gap: var(--space-5) 0;
+}
+
+.chat-page.sidebar-collapsed.sidebar-collapsed-right .workspace {
+    grid-template-columns: 0rem minmax(30rem, 1fr) 0rem;
+    gap: 0;
 }
 
 .sidebar {
@@ -159,6 +231,19 @@
     display: flex;
     flex-direction: column;
     padding: var(--space-3) 0;
+    overflow: hidden;
+    opacity: 1;
+    transition: opacity 160ms ease-out;
+}
+
+.chat-page.sidebar-collapsed .sidebar--left {
+    opacity: 0;
+    pointer-events: none;
+}
+
+.chat-page.sidebar-collapsed-right .sidebar--right {
+    opacity: 0;
+    pointer-events: none;
 }
 
 .sidebar--right {
@@ -168,6 +253,8 @@
     align-items: stretch;
     justify-content: flex-start;
     overflow: hidden;
+    opacity: 1;
+    transition: opacity 160ms ease-out;
 }
 
 .sidebar__heading {
@@ -415,8 +502,12 @@
 }
 
 .chat-panel__header {
-    min-height: 5.5rem;
-    padding: var(--space-5) var(--space-6);
+    /* was 5.5rem, sized to fit the eyebrow + <h1> that used to live here.
+       that text is gone (now a visually-hidden h1, for screen readers only)
+       and this only holds the status pill now, so the old height left a
+       tall, mostly-empty strip pushing the actual conversation down. */
+    min-height: 3.25rem;
+    padding: var(--space-3) var(--space-6);
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -452,6 +543,11 @@
     font-size: 0.75rem;
     white-space: nowrap;
     background: var(--surface-glass-soft);
+    /* the visible eyebrow/h1 that used to sit before this in the header was
+       removed; the visually-hidden h1 that replaced it is out of flex flow
+       entirely (position: absolute), so without this the status pill would
+       drift to the header's left edge instead of staying at the right. */
+    margin-left: auto;
 }
 
 .status-indicator__dot {
@@ -590,7 +686,54 @@
     overflow-wrap: anywhere;
 }
 
-.message--assistant .message__bubble p:last-child {
+.message--assistant .message__bubble p:last-child,
+.message--assistant .message__bubble ul:last-child,
+.message--assistant .message__bubble ol:last-child {
+    margin-bottom: 0;
+}
+
+.message--assistant .message__bubble h1,
+.message--assistant .message__bubble h2,
+.message--assistant .message__bubble h3,
+.message--assistant .message__bubble h4,
+.message--assistant .message__bubble h5,
+.message--assistant .message__bubble h6 {
+    margin: var(--space-3) 0 var(--space-2);
+    color: var(--colour-text-primary);
+    line-height: 1.3;
+}
+
+/* the model almost always writes ## or ### rather than a single #, so these
+   two sizes carry most real headings -- kept close to the surrounding body
+   text rather than browser-default heading sizes, which would read as
+   shouting inside a chat bubble. */
+.message--assistant .message__bubble h1,
+.message--assistant .message__bubble h2 { font-size: 1.05rem; }
+.message--assistant .message__bubble h3,
+.message--assistant .message__bubble h4 { font-size: 0.95rem; }
+.message--assistant .message__bubble h5,
+.message--assistant .message__bubble h6 { font-size: 0.88rem; }
+
+.message--assistant .message__bubble h1:first-child,
+.message--assistant .message__bubble h2:first-child,
+.message--assistant .message__bubble h3:first-child,
+.message--assistant .message__bubble h4:first-child,
+.message--assistant .message__bubble h5:first-child,
+.message--assistant .message__bubble h6:first-child {
+    margin-top: 0;
+}
+
+.message--assistant .message__bubble ul,
+.message--assistant .message__bubble ol {
+    margin: 0 0 var(--space-3);
+    padding-left: 1.3rem;
+}
+
+.message--assistant .message__bubble li {
+    margin-bottom: var(--space-1);
+}
+
+.message--assistant .message__bubble li:last-child {
     margin-bottom: 0;
 }
 
@@ -623,6 +766,58 @@
 /* --------------------------------------------------------------------------
    Citations
    -------------------------------------------------------------------------- */
+
+/*
+ * Partner-requested direct in-text source links.
+ *
+ * These are real buttons for keyboard/accessibility behaviour, but styled as
+ * citation text so they remain part of the sentence. Clicking one reuses the
+ * existing source-panel resolver; there is no separate Sources dropdown.
+ */
+.in-text-citation {
+    display: inline;
+    margin: 0;
+    padding: 0 0.08rem;
+    border: 0;
+    border-radius: 0.2rem;
+    color: #2f6b57;
+    background: transparent;
+    font: inherit;
+    line-height: inherit;
+    text-align: inherit;
+    text-decoration-line: underline;
+    text-decoration-style: dotted;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 0.16em;
+    cursor: pointer;
+    transition: color 140ms ease, background 140ms ease, text-decoration-color 140ms ease;
+}
+
+.in-text-citation:hover {
+    color: #2f6b57;
+    background: transparent;
+    text-decoration-style: dotted;
+}
+
+.in-text-citation:focus-visible {
+    outline: 2px solid rgba(47, 107, 87, 0.45);
+    outline-offset: 2px;
+    color: #1f4f3f;
+    background: rgba(47, 107, 87, 0.08);
+}
+
+.in-text-citation:hover {
+    color: #ffffff;
+    background: rgba(77, 184, 255, 0.12);
+    text-decoration-style: solid;
+}
+
+.in-text-citation:focus-visible {
+    outline: 2px solid rgba(77, 184, 255, 0.78);
+    outline-offset: 2px;
+    color: #ffffff;
+    background: rgba(77, 184, 255, 0.12);
+}
 
 .citation-list {
     position: relative;
@@ -765,10 +960,15 @@
     align-items: flex-start;
     justify-content: space-between;
     gap: var(--space-4);
-    border: 1px solid rgba(255, 125, 145, 0.42);
+    /* derived from --colour-error (#ff7d91) rather than a separately picked
+       red -- this used to be its own hand-tuned rgba(255, 125, 145, ...) and
+       #ffdce2, close to the shared error colour but not the same value, so
+       the error banner read as a visibly different red from every other
+       error/danger accent in the page. */
+    border: 1px solid rgb(from var(--colour-error) r g b / 42%);
     border-radius: var(--radius-md);
-    color: #ffdce2;
-    background: rgba(139, 28, 56, 0.28);
+    color: color-mix(in srgb, var(--colour-error) 55%, white);
+    background: color-mix(in srgb, var(--colour-error) 22%, black);
 }
 
 .error-banner strong {

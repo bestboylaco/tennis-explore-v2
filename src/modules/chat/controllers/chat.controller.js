@@ -1,10 +1,55 @@
 import { randomUUID } from "node:crypto";
+import fs from "node:fs/promises";
+import path from "node:path";
 
 import { submitChatQuestion } from "../services/chat.service.js";
 
 import {
   submitAgentChatQuestion,
 } from "../services/agentChat.service.js";
+
+import {
+    recordTurn,
+    resolveFollowUp,
+} from "../services/conversationContext.service.js";
+
+import { retrievalConfig } from "../../../config/retrieval.config.js";
+
+/**
+ * The corpus file count, read once and cached -- the manifest only changes
+ * when the index is rebuilt, which restarts the process, so there is no
+ * point re-reading it on every greeting.
+ */
+let cachedSourceCount = null;
+
+async function readSourceCount() {
+  if (cachedSourceCount !== null) return cachedSourceCount;
+
+  try {
+    const manifestPath = path.join(retrievalConfig.index.dir, "manifest.json");
+    const manifest = JSON.parse(await fs.readFile(manifestPath, "utf8"));
+
+    cachedSourceCount = manifest.fileCount ?? null;
+  } catch {
+    cachedSourceCount = null;
+  }
+
+  return cachedSourceCount;
+}
+
+/**
+ * GET /api/chat/info -- static facts the frontend greets a fresh
+ * conversation with (how many documents this can actually answer from).
+ * Not query-specific, so it carries no telemetry correlation id.
+ */
+export async function getChatInfoController(req, res) {
+  const sourceCount = await readSourceCount();
+
+  return res.status(200).json({
+    success: true,
+    data: { sourceCount },
+  });
+}
 
 /**
  * Accepts one natural-language coaching question and returns the
@@ -41,6 +86,13 @@ export async function submitChatQuestionController(req, res) {
              * Links query-stage telemetry to the HTTP request.
              */
             correlationId,
+
+            /*
+             * Conversation memory is keyed on the authenticated session, not on
+             * anything the client sends. A caller who could choose their own
+             * session id could read someone else's conversation.
+             */
+            sessionId: req.sessionID ?? req.session?.id ?? null,
         },
     );
 
@@ -76,46 +128,122 @@ export function deliberatelyFailChatController(req, res) {
  * from the server-side session.
  */
 export async function submitAgentChatQuestionController(
-  req,
-  res,
+    req,
+    res,
 ) {
-  const correlationId =
-    `agent-query:${randomUUID()}`;
+    const correlationId =
+        `agent-query:${randomUUID()}`;
 
-
-  req.telemetry?.setCorrelationId(
-    correlationId,
-  );
-
-
-  const result =
-    await submitAgentChatQuestion(
-      req.body.question,
-      {
-        roleId:
-          req.user.roleId,
-
+    req.telemetry?.setCorrelationId(
         correlationId,
-
-        /*
-         * Presentation-only information.
-         * The client cannot use this to alter routing,
-         * permissions or evidence access.
-         */
-        responseTimeZone:
-          req.get("X-Time-Zone") ??
-          "UTC",
-      },
     );
 
 
-  return res
-    .status(200)
-    .json({
-      success:
-        true,
+    const originalQuestion =
+        req.body.question;
 
-      data:
-        result,
+    const conversationId =
+        req.body.conversationId ??
+        null;
+
+
+    /*
+     * Resolve conversation-dependent wording BEFORE routing/retrieval.
+     *
+     * The browser sends only conversationId. Previous turns are read from the
+     * authenticated server-side session and are never reconstructed client-side.
+     */
+    const resolution =
+        await resolveFollowUp({
+            session:
+                req.session,
+
+            conversationId,
+
+            question:
+                originalQuestion,
+        });
+
+
+    /*
+     * The Agent receives the resolved standalone question.
+     *
+     * Everything after this point -- routing, actions, retrieval, synthesis and
+     * verification -- continues through the existing pipeline unchanged.
+     */
+    const result =
+        await submitAgentChatQuestion(
+            resolution.resolvedQuestion,
+            {
+                roleId:
+                    req.user.roleId,
+
+                correlationId,
+
+                responseTimeZone:
+                    req.get("X-Time-Zone") ??
+                    "UTC",
+            },
+        );
+
+
+    /*
+     * Keep only the resolved question plus a short assistant-answer excerpt in
+     * the authenticated session.
+     */
+    const answer =
+        result?.response?.answerApa ??
+        result?.response?.answer ??
+        result?.answer ??
+        "";
+
+
+    recordTurn({
+        session:
+            req.session,
+
+        conversationId,
+
+        resolvedQuestion:
+            resolution.resolvedQuestion,
+
+        answer,
     });
+
+
+    /*
+     * Acceptance evidence is returned explicitly so tests can verify whether
+     * context was used without inspecting session internals.
+     */
+    const metadata = {
+        ...(result?.metadata ?? {}),
+
+        originalQuestion:
+            resolution.originalQuestion,
+
+        resolvedQuestion:
+            resolution.resolvedQuestion,
+
+        contextTurnsUsed:
+            resolution.contextTurnsUsed,
+
+        rewriteApplied:
+            resolution.rewriteApplied,
+
+        rewriteReason:
+            resolution.rewriteReason,
+    };
+
+
+    return res
+        .status(200)
+        .json({
+            success:
+                true,
+
+            data: {
+                ...result,
+                metadata,
+            },
+        });
 }

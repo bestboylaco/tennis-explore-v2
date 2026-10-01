@@ -1,7 +1,17 @@
 /**
  * Default backend endpoint used by the unified chat interface.
+ *
+ * /api/chat (answer.service.js) rather than /api/chat/v2
+ * (agentOrchestrator.service.js/routingAgent.service.js) -- v2's routing
+ * agent has no chitchat handling and asks the model for JSON in plain prose
+ * rather than through Ollama's `format` schema constraint, so a bare
+ * greeting ("Hi!") gets a conversational reply instead of JSON and the
+ * request 500s (observed live, 2026-09-17). v1 has that constraint
+ * (queryPlanner.service.js's PLAN_SCHEMA), a real chitchat short-circuit,
+ * and this session's false-refusal and reranking work; v2 does not yet.
+ * Revisit once v2 is brought up to the same standard.
  */
-export const DEFAULT_CHAT_ENDPOINT = "/api/chat/v2";
+export const DEFAULT_CHAT_ENDPOINT = "/api/chat";
 
 /**
  * Stops the interface from displaying an endless processing state
