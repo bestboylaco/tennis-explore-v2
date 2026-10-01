@@ -36,6 +36,17 @@ export function normaliseCitationPhrasing(answer) {
       /[[(]\s*sources?\s*:\s*(\d+(?:\s*(?:,|and|&)\s*\d+)*)\s*[)\]]/gi,
       (_, list) => numbersToBrackets(list),
     )
+    // "**Sources**: 3, 5, 6, 7." or "Sources: 3, 5, 6, 7" -- a trailing
+    // unbracketed list, bold or not, as its own line at the very end of the
+    // answer. GROUNDING_RULES explicitly forbids a separate sources section,
+    // but the model still writes this one as a standalone recap sometimes
+    // (observed live, 2026-10-01). anchored to the end of the string so an
+    // ordinary sentence that happens to contain the word "sources" earlier
+    // in the answer is never touched.
+    .replace(
+      /\*{0,2}sources?\*{0,2}\s*:\s*(\d+(?:\s*(?:,|and|&)\s*\d+)*)\.?\s*$/gi,
+      (_, list) => numbersToBrackets(list),
+    )
     // "[Evidence 1]", "[Evidence 4 and 6]" -- already wrapped in square
     // brackets, which is the model treating the brackets themselves as the
     // citation marker and just spelling the word out inside them. the whole
@@ -56,6 +67,72 @@ export function normaliseCitationPhrasing(answer) {
     );
 }
 
+// a sentence boundary: punctuation followed by whitespace then a capital
+// letter, an opening quote/bracket, or the end of the string. deliberately
+// loose rather than a full sentence tokenizer -- it only has to be right
+// often enough that "0.97%." (digit-dot-digit, no following capital) is not
+// mistaken for a sentence end, not right for every edge case in English
+// prose.
+// wrapped in a capturing group so String.split keeps the matched whitespace
+// in the result (as its own array element) instead of discarding it --
+// without that, rejoining the processed sentences with "" would glue them
+// together with no space between.
+const SENTENCE_SPLIT = /((?<=[.!?])\s+(?=[A-Z"'(\[])|(?<=[.!?])\s*$)/;
+
+/**
+ * when the same [n] appears more than once in one sentence -- one citation
+ * marker per fact it supports, even though every fact in that sentence came
+ * from the same source -- keeps only the last occurrence and drops the
+ * earlier ones, so the sentence reads with one citation at the end rather
+ * than one after every clause (reported directly: "Girard and Millet, 2008"
+ * appearing three times in a single sentence, all the same reference).
+ *
+ * scoped to one sentence at a time, not the whole answer: citing the same
+ * source again in a LATER sentence, for a different fact, is normal and is
+ * left alone.
+ */
+export function consolidateRepeatedCitationsPerSentence(answer) {
+  const sentences = String(answer).split(SENTENCE_SPLIT);
+
+  return sentences
+    .map((sentence) => {
+      const positions = [...sentence.matchAll(/\[(\d+)\]/g)].map((match) => ({
+        number: match[1],
+        index: match.index,
+        length: match[0].length,
+      }));
+
+      const lastIndexForNumber = new Map();
+      const countForNumber = new Map();
+
+      for (const position of positions) {
+        lastIndexForNumber.set(position.number, position.index);
+        countForNumber.set(position.number, (countForNumber.get(position.number) ?? 0) + 1);
+      }
+
+      let result = sentence;
+
+      for (let i = positions.length - 1; i >= 0; i -= 1) {
+        const position = positions[i];
+        const isRepeated = countForNumber.get(position.number) > 1;
+        const isLastOccurrence = position.index === lastIndexForNumber.get(position.number);
+
+        if (!isRepeated || isLastOccurrence) continue;
+
+        let start = position.index;
+
+        // absorb one preceding space, so removing "[4]" from "fact A [4], fact
+        // B" leaves "fact A, fact B" rather than "fact A , fact B".
+        if (start > 0 && result[start - 1] === " ") start -= 1;
+
+        result = result.slice(0, start) + result.slice(position.index + position.length);
+      }
+
+      return result;
+    })
+    .join("");
+}
+
 /**
  * pulls the [n] markers out of an answer, in the order they appear.
  */
@@ -69,6 +146,30 @@ export function extractCitationMarkers(answer) {
   }
 
   return numbers;
+}
+
+// a specific, identifiable contamination pattern: 62 documents across the
+// corpus have their "title" field extracted as the ResearchGate cover-page
+// boilerplate ("See discussions, stats, and author profiles for this
+// publication at: <url> <the real title>") rather than the paper's actual
+// title, because that line sits above the real title on the page and the
+// extraction took the first line of text. the real title reliably follows
+// the url, so it is recovered by stripping everything up to and including
+// it, rather than discarded outright -- a citation naming no source at all
+// is worse than one with an ugly title (reported directly, 2026-09-28:
+// citations reading `("See discussions, stats, and author profiles...,"
+// 2015)`).
+const RESEARCHGATE_BOILERPLATE =
+  /^see discussions,?\s*stats,?\s*and author profiles for this publication at:?\s*https?:\/\/\S+\s*/i;
+
+export function cleanTitle(title) {
+  const value = String(title ?? "").trim();
+  const stripped = value.replace(RESEARCHGATE_BOILERPLATE, "").trim();
+
+  // never return an empty string -- if stripping the boilerplate leaves
+  // nothing (the real title failed to extract too), showing the original
+  // messy text is still more honest than showing "untitled source".
+  return stripped || value;
 }
 
 /**
@@ -98,7 +199,7 @@ export function bindCitations(answer, evidence) {
       number,
       chunkId: chunk.chunk_id,
       docId: chunk.doc_id,
-      title: chunk.title,
+      title: cleanTitle(chunk.title),
       // the filename is shown next to the title because title extraction from a
       // pdf is a best effort -- across 2,300 partner files plenty have no usable
       // title page at all. the filename always identifies the document exactly,

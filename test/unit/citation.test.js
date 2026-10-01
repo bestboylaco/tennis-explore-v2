@@ -3,6 +3,8 @@ import { describe, it } from "node:test";
 
 import {
   bindCitations,
+  cleanTitle,
+  consolidateRepeatedCitationsPerSentence,
   extractCitationMarkers,
   findUnsupportedNumbers,
   normaliseCitationPhrasing,
@@ -104,6 +106,19 @@ describe("normalising citation phrasing", () => {
     assert.equal(normaliseCitationPhrasing(text), text);
   });
 
+  it("converts a trailing unbracketed 'Sources:' recap line", () => {
+    assert.equal(
+      normaliseCitationPhrasing("Some answer text [3][7].\n\n**Sources**: 3, 5, 6, 7."),
+      "Some answer text [3][7].\n\n[3][5][6][7]",
+    );
+  });
+
+  it("leaves the word 'sources' alone when it is not a trailing list", () => {
+    const text = "Plain text with sources mentioned mid-sentence stays alone.";
+
+    assert.equal(normaliseCitationPhrasing(text), text);
+  });
+
   it("converts bracketed 'Evidence N' without doubling the brackets", () => {
     assert.equal(
       normaliseCitationPhrasing("This is stated in [Evidence 1] and clarified in [Evidence 5]."),
@@ -135,5 +150,52 @@ describe("unsupported numbers", () => {
   it("ignores citation markers themselves", () => {
     // [1] must not be read as the number 1 appearing in the answer.
     assert.deepEqual(findUnsupportedNumbers("As shown [1].", evidence), []);
+  });
+});
+
+describe("cleaning a contaminated title", () => {
+  it("strips ResearchGate's cover-page boilerplate, keeping the real title", () => {
+    const raw =
+      "See discussions, stats, and author profiles for this publication at: " +
+      "http://www.researchgate.net/publication/283317827 The acute:chronic workload ratio predicts";
+
+    assert.equal(cleanTitle(raw), "The acute:chronic workload ratio predicts");
+  });
+
+  it("leaves an ordinary title untouched", () => {
+    assert.equal(cleanTitle("Serve Kinematics Study"), "Serve Kinematics Study");
+  });
+
+  it("falls back to the original text if nothing is left after stripping", () => {
+    const boilerplateOnly =
+      "See discussions, stats, and author profiles for this publication at: http://example.com/x";
+
+    assert.equal(cleanTitle(boilerplateOnly), boilerplateOnly);
+  });
+});
+
+describe("consolidating repeated citations within one sentence", () => {
+  it("keeps only the last occurrence of a reference repeated in one sentence", () => {
+    const answer =
+      "In racquet sports, fatigue manifests as slower reaction times [4], reduced grip " +
+      "strength [4], and worse shot accuracy [4].";
+
+    assert.equal(
+      consolidateRepeatedCitationsPerSentence(answer),
+      "In racquet sports, fatigue manifests as slower reaction times, reduced grip " +
+        "strength, and worse shot accuracy [4].",
+    );
+  });
+
+  it("does not touch the same reference repeated across different sentences", () => {
+    const answer = "Load rose 24% [1]. Recovery also improved this week [1]. A separate claim [2] closes it out.";
+
+    assert.equal(consolidateRepeatedCitationsPerSentence(answer), answer);
+  });
+
+  it("leaves distinct references in the same sentence alone", () => {
+    const answer = "Two sources agree on this point [5][7].";
+
+    assert.equal(consolidateRepeatedCitationsPerSentence(answer), answer);
   });
 });
