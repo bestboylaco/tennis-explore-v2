@@ -4,5 +4,11 @@
     "calls": 14,
     "detectPages": 2,
     "detectCalls": 2
+  },
+  "2026-10": {
+    "pages": 9,
+    "calls": 9,
+    "detectPages": 0,
+    "detectCalls": 0
   }
 }
