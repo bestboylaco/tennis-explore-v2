@@ -679,13 +679,12 @@ chatForm.addEventListener(
 
 
             const assistantMessage = {
-                // APA-style rendering -- "(Author, Year)" in-text citations
-                // instead of raw [n] markers, so the coach can see where a
-                // claim came from without opening the sources panel. Falls
-                // back to the raw answer if the backend did not supply one
-                // (e.g. an older cached response).
+                // The raw [n]-marker form, not the pre-flattened APA string --
+                // messageRenderer renders [n] markers as clickable in-text
+                // citations itself (APA-style text, opening the source panel
+                // on click), which needs the markers still in the text to
+                // know where to place them.
                 content:
-                    response.answerApa ??
                     response.answer ??
                     "No answer was returned.",
 

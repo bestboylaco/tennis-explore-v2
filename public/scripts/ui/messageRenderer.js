@@ -8,11 +8,13 @@
  *
  * An assistant turn can carry four things, and only the answer is always there:
  *
- *   answer     prose, with [n] citation markers
+ *   answer     prose, with [n] citation markers -- rendered as clickable
+ *              in-text citations (see appendCitationRun), not a separate
+ *              list: a reader checks a claim at the claim.
  *   table      a computed result, when the question was answered from records
- *   citations  buttons that open the source beside the conversation, which is
- *              also where the SQL behind a table answer is shown -- putting it
- *              here too just duplicated the same block under every table.
+ *   citations  the data each in-text citation resolves against, and (for a
+ *              table answer) where the SQL behind it is shown beside the
+ *              conversation when a reader clicks through.
  */
 
 function element(doc, tag, className, text) {
@@ -24,32 +26,45 @@ function element(doc, tag, className, text) {
     return node;
 }
 
+const INLINE_TOKEN = /\*\*(.+?)\*\*|((?:\[\d+\])+)/g;
+
 /**
- * Appends `**bold**` runs as real <strong> elements, everything else as
+ * Appends `**bold**` runs as real <strong> elements and citation marker runs
+ * as clickable in-text citations (see appendCitationRun), everything else as
  * plain text nodes.
  *
- * Still never treats the model's output as markup: split() on a capturing
- * regex can only ever produce strings, which go into textContent or a
- * createTextNode, never into innerHTML. A model that writes literal "<" or
- * a stray "**" with no closing pair renders as inert text either way -- this
- * adds exactly one piece of structure (bold) on top of that, not a markdown
- * parser.
+ * Still never treats the model's output as markup: every piece either goes
+ * into textContent/createTextNode, or -- for a citation -- is built from
+ * data this file already trusts (the citations array), never from the
+ * model's own text. A model that writes literal "<" or a stray "**" with no
+ * closing pair renders as inert text either way.
  */
-function appendInlineFormatting(doc, parent, text) {
-    const parts = String(text).split(/\*\*(.+?)\*\*/g);
+function appendInlineFormatting(doc, parent, text, citationsByNumber = null, openCitation = null) {
+    const value = String(text);
+    let lastIndex = 0;
 
-    parts.forEach((part, index) => {
-        if (part === "") return;
+    for (const match of value.matchAll(INLINE_TOKEN)) {
+        if (match.index > lastIndex) {
+            parent.append(doc.createTextNode(value.slice(lastIndex, match.index)));
+        }
 
-        if (index % 2 === 1) {
+        if (match[1] !== undefined) {
             const strong = doc.createElement("strong");
 
-            strong.textContent = part;
+            strong.textContent = match[1];
             parent.append(strong);
+        } else if (citationsByNumber) {
+            appendCitationRun(doc, parent, match[2], citationsByNumber, openCitation);
         } else {
-            parent.append(doc.createTextNode(part));
+            parent.append(doc.createTextNode(match[2]));
         }
-    });
+
+        lastIndex = match.index + match[0].length;
+    }
+
+    if (lastIndex < value.length) {
+        parent.append(doc.createTextNode(value.slice(lastIndex)));
+    }
 }
 
 /**
@@ -74,7 +89,7 @@ function appendInlineFormatting(doc, parent, text) {
  * HTML, so a model that writes a stray "#" or "-" with no real structure
  * around it just renders as the literal character it is.
  */
-function appendBlock(doc, wrapper, block, orderedState) {
+function appendBlock(doc, wrapper, block, orderedState, citationsByNumber, openCitation) {
     let currentList = null;
     let currentListTag = null;
 
@@ -94,7 +109,7 @@ function appendBlock(doc, wrapper, block, orderedState) {
             const level = Math.min(heading[1].length + 1, 6);
             const node = doc.createElement(`h${level}`);
 
-            appendInlineFormatting(doc, node, heading[2]);
+            appendInlineFormatting(doc, node, heading[2], citationsByNumber, openCitation);
             wrapper.append(node);
             continue;
         }
@@ -116,7 +131,7 @@ function appendBlock(doc, wrapper, block, orderedState) {
 
             const li = doc.createElement("li");
 
-            appendInlineFormatting(doc, li, listMatch[1]);
+            appendInlineFormatting(doc, li, listMatch[1], citationsByNumber, openCitation);
             currentList.append(li);
 
             if (listTag === "ol") orderedState.count += 1;
@@ -129,7 +144,7 @@ function appendBlock(doc, wrapper, block, orderedState) {
 
         const p = element(doc, "p");
 
-        appendInlineFormatting(doc, p, line);
+        appendInlineFormatting(doc, p, line, citationsByNumber, openCitation);
         wrapper.append(p);
     }
 }
@@ -143,18 +158,19 @@ function appendBlock(doc, wrapper, block, orderedState) {
  * from the model is ever inserted; see appendInlineFormatting/appendBlock
  * above.
  */
-function renderAnswer(doc, text) {
+function renderAnswer(doc, text, citations = [], openCitation = null) {
     const wrapper = element(doc, "div", "message__bubble");
     const orderedState = { count: 0 };
+    const citationsByNumber = new Map(citations.map((citation) => [citation.number, citation]));
 
     for (const block of String(text).split(/\n{2,}/)) {
         if (block.trim() === "") continue;
 
-        appendBlock(doc, wrapper, block, orderedState);
+        appendBlock(doc, wrapper, block, orderedState, citationsByNumber, openCitation);
     }
 
     if (wrapper.children.length === 0) {
-        appendBlock(doc, wrapper, String(text), orderedState);
+        appendBlock(doc, wrapper, String(text), orderedState, citationsByNumber, openCitation);
     }
 
     return wrapper;
@@ -211,149 +227,82 @@ function renderTable(doc, table) {
 }
 
 /**
- * Collapses citations down to one entry per underlying document.
+ * In-text citations, not a "Sources" dropdown.
  *
- * `citations` has one entry per [n] marker in the answer, so a single paper
- * cited twice at two different pages shows up as two separate entries --
- * the Sources button then reads "Sources 5" for an answer that actually
- * draws on two real documents, and the popover lists the same paper twice
- * under two different numbers, which is not what "sources" means to a
- * reader (reported directly, 2026-09-18: "should just be unique").
+ * Every [n] marker (or consecutive run, "[2][5]") in the answer renders as a
+ * clickable span of real text -- "(Author, Year)" -- that opens the same
+ * side panel a Sources button used to. A reader checks a claim at the claim,
+ * not in a separate list they have to go find (reported directly,
+ * 2026-09-28: replace the dropdown with in-text hyperlinks on the citations
+ * themselves). A marker with no matching citation (dangling -- see
+ * bindCitations) is left as the bare "[n]" text rather than a dead link.
  *
- * Grouped by docId, falling back to the title when a citation carries no
- * docId, so this degrades to "one button per citation" rather than
- * throwing when older-shaped data is missing the field. The first citation
- * in each group is kept as-is -- it still opens the source panel at the
- * page it was actually cited at.
+ * This mirrors apaInText/apaShortAuthor/apaYear/apaShortTitle in
+ * citation.service.js exactly, on purpose -- the backend's `references` list
+ * (CLI, history exports) and this inline rendering need to describe the same
+ * citation the same way. Duplicated rather than imported because this file
+ * ships to the browser as a plain script with no bundler, and citation
+ * titles already arrive pre-cleaned (see cleanTitle server-side) so this
+ * copy does not need that part.
  */
-function dedupeCitations(citations) {
-    const seen = new Map();
+function apaYear(date) {
+    const match = String(date ?? "").match(/\b(1[89]|20)\d{2}\b/);
 
-    for (const citation of citations) {
-        const key = citation?.docId ?? citation?.title ?? citation;
+    return match ? match[0] : "n.d.";
+}
 
-        if (!seen.has(key)) seen.set(key, citation);
+function apaShortAuthor(authors) {
+    if (!Array.isArray(authors) || authors.length === 0) return null;
+    if (authors.length === 1) return authors[0];
+    if (authors.length === 2) return `${authors[0]} & ${authors[1]}`;
+
+    return `${authors[0]} et al.`;
+}
+
+function apaShortTitle(citation, maxWords = 6) {
+    const title = citation.title || citation.fileName || citation.docId || "untitled source";
+    const words = String(title).trim().split(/\s+/);
+    const short = words.slice(0, maxWords).join(" ");
+
+    return words.length > maxWords ? `${short}...` : short;
+}
+
+function apaInText(citation) {
+    const author = apaShortAuthor(citation.authors);
+    const year = apaYear(citation.date);
+
+    if (author) return `${author}, ${year}`;
+
+    return `"${apaShortTitle(citation)}," ${year}`;
+}
+
+/**
+ * Appends one run of consecutive "[n]" markers as a single clickable
+ * citation, grouping multiple sources the way APA does ("(Author, 2021;
+ * Other, 2019)") the same way toApaText does server-side. Clicking opens the
+ * first known source in the group -- there is one panel, so a grouped
+ * citation has to pick one, and the first is the one the marker run leads
+ * with.
+ *
+ * A run where none of the numbers match a real citation renders as plain
+ * text, not a dead button -- an invented citation number should stay
+ * visible as what it is, not disappear or look clickable when it is not.
+ */
+function appendCitationRun(doc, parent, run, citationsByNumber, openCitation) {
+    const numbers = [...run.matchAll(/\[(\d+)\]/g)].map((match) => Number(match[1]));
+    const known = numbers.map((number) => citationsByNumber.get(number)).filter(Boolean);
+
+    if (known.length === 0 || !openCitation) {
+        parent.append(doc.createTextNode(run));
+        return;
     }
 
-    return [...seen.values()];
-}
+    const button = element(doc, "button", "citation-inline", `(${known.map(apaInText).join("; ")})`);
 
-function citationLabel(citation, index, references = []) {
-    if (typeof citation === "string") return citation;
+    button.type = "button";
+    button.addEventListener("click", () => openCitation(known[0], button));
 
-    const number = citation?.number ?? index + 1;
-
-    // the backend's APA-style reference line for this exact citation number,
-    // e.g. "[3] Thomas Perri. (2022). Serve Kinematics Study. [research_paper]"
-    // -- matched by number, not by array position, since `citations` is
-    // ordered by where its markers first appeared in the answer while
-    // `references` is always sorted by citation number. the leading "[n]"
-    // is stripped for display: the internal citation number is what [n]
-    // markers and the reference list key off, but it is not a meaningful
-    // ordering to show a reader here -- sources are already listed in the
-    // order they were actually used, not by that number.
-    const reference = references.find((line) => line.startsWith(`[${number}]`));
-
-    if (reference) return reference.replace(/^\[\d+\]\s*/, "");
-
-    return citation?.link?.label ?? citation?.title ?? "Source";
-}
-
-function renderCitations(doc, citations, openCitation, references = []) {
-    const uniqueCitations = dedupeCitations(citations);
-
-    const section = element(
-        doc,
-        "section",
-        "citation-list",
-    );
-
-    /*
-     * Only the Sources button is visible initially.
-     * The individual citations are shown in a floating popover.
-     */
-    const toggleButton = element(
-        doc,
-        "button",
-        "citation-list__toggle",
-        `Sources ${uniqueCitations.length}`,
-    );
-
-    toggleButton.type = "button";
-    toggleButton.setAttribute("aria-expanded", "false");
-
-    const popover = element(
-        doc,
-        "div",
-        "citation-popover",
-    );
-
-    popover.hidden = true;
-
-    const popoverHeading = element(
-        doc,
-        "p",
-        "citation-popover__heading",
-        "Sources",
-    );
-
-    const buttons = element(
-        doc,
-        "div",
-        "citation-list__buttons",
-    );
-
-    uniqueCitations.forEach((citation, index) => {
-        /*
-         * Keep using the existing citationLabel() function.
-         * This means the citation text and numbering behaviour do not change.
-         */
-        const button = element(
-            doc,
-            "button",
-            "citation-button",
-            citationLabel(citation, index, references),
-        );
-
-        button.type = "button";
-
-        button.addEventListener("click", () => {
-            // Close the small source list before opening the source panel.
-            popover.hidden = true;
-
-            toggleButton.setAttribute(
-                "aria-expanded",
-                "false",
-            );
-
-            openCitation(citation, button);
-        });
-
-        buttons.append(button);
-    });
-
-    popover.append(
-        popoverHeading,
-        buttons,
-    );
-
-    toggleButton.addEventListener("click", () => {
-        const isOpen = !popover.hidden;
-
-        popover.hidden = isOpen;
-
-        toggleButton.setAttribute(
-            "aria-expanded",
-            String(!isOpen),
-        );
-    });
-
-    section.append(
-        toggleButton,
-        popover,
-    );
-
-    return section;
+    parent.append(button);
 }
 
 /**
@@ -526,7 +475,6 @@ export function appendAssistantMessage({
     content,
     sections = [],
     citations = [],
-    references = [],
     table = null,
     grounding = null,
     openCitation,
@@ -549,6 +497,8 @@ export function appendAssistantMessage({
             renderAnswer(
                 doc,
                 content,
+                citations,
+                openCitation,
             ),
         );
     }
@@ -556,10 +506,6 @@ export function appendAssistantMessage({
     const tableNode = renderTable(doc, table);
 
     if (tableNode) row.append(tableNode);
-
-    if (Array.isArray(citations) && citations.length > 0 && openCitation) {
-        row.append(renderCitations(doc, citations, openCitation, references));
-    }
 
     const warnings = renderWarnings(doc, grounding);
 

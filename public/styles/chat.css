@@ -681,6 +681,13 @@
     color: var(--colour-text-secondary);
     background: rgba(255, 255, 255, 0.07);
     box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06);
+    /* the smallest tier of the type hierarchy below -- plain response text.
+       headings, top-level numbered items and a bullet's own bold lead-in
+       all size up from this base rather than down from a larger default,
+       which is what made every tier read the same size before (reported
+       directly: no clear hierarchy from a numbered heading down to body
+       text). */
+    font-size: 0.75rem;
     line-height: 1.65;
     white-space: pre-wrap;
     overflow-wrap: anywhere;
@@ -703,16 +710,17 @@
     line-height: 1.3;
 }
 
-/* the model almost always writes ## or ### rather than a single #, so these
-   two sizes carry most real headings -- kept close to the surrounding body
-   text rather than browser-default heading sizes, which would read as
-   shouting inside a chat bubble. */
+/* three explicit tiers, matching the hierarchy asked for directly: a
+   heading-level line (~16px), a sub-point's own lead-in (~14px), and plain
+   response text (~12px, the bubble's own base size above). the model almost
+   always writes ## or ### rather than a single #, so h2-h4 carry most real
+   headings. */
 .message--assistant .message__bubble h1,
-.message--assistant .message__bubble h2 { font-size: 1.05rem; }
+.message--assistant .message__bubble h2 { font-size: 1rem; font-weight: 600; }
 .message--assistant .message__bubble h3,
-.message--assistant .message__bubble h4 { font-size: 0.95rem; }
+.message--assistant .message__bubble h4 { font-size: 0.875rem; font-weight: 600; }
 .message--assistant .message__bubble h5,
-.message--assistant .message__bubble h6 { font-size: 0.88rem; }
+.message--assistant .message__bubble h6 { font-size: 0.8125rem; font-weight: 600; }
 
 .message--assistant .message__bubble h1:first-child,
 .message--assistant .message__bubble h2:first-child,
@@ -731,6 +739,22 @@
 
 .message--assistant .message__bubble li {
     margin-bottom: var(--space-1);
+}
+
+/* a numbered item at the top of the bubble is almost always being used as a
+   section heading ("1. From Basic Skills to Advanced Tactics"), not a true
+   list entry -- sized to match the heading tier above rather than reading
+   the same size as the plain text underneath it. */
+.message--assistant .message__bubble > ol > li {
+    font-size: 1rem;
+    font-weight: 600;
+}
+
+/* a bullet's own bold lead-in ("**Early Period:** ...") sits one tier down
+   from a heading, with the rest of that bullet's sentence staying at the
+   bubble's base (response-text) size. */
+.message--assistant .message__bubble li > strong:first-child {
+    font-size: 0.875rem;
 }
 
 .message--assistant .message__bubble li:last-child {
@@ -764,102 +788,31 @@
 }
 
 /* --------------------------------------------------------------------------
-   Citations
+   Citations -- in-text, not a dropdown (reported directly, 2026-09-28: a
+   reader should click the citation itself, where the claim is, and land in
+   the same side panel a "Sources" list used to open).
    -------------------------------------------------------------------------- */
 
-.citation-list {
-    position: relative;
-    width: fit-content;
-    margin-top: var(--space-3);
-    padding-top: var(--space-3);
-    border-top: 1px solid var(--border-glass);
-}
-
-/*
- * Sources stays compact until the user chooses to inspect citations.
- */
-.citation-list__toggle {
-    min-height: 2rem;
-    padding: 0.4rem 0.7rem;
-    border: 1px solid rgba(255, 255, 255, 0.14);
-    border-radius: var(--radius-pill);
-    color: var(--colour-text-secondary);
-    background: rgba(255, 255, 255, 0.06);
-    font-family: inherit;
-    font-size: 0.7rem;
-    font-weight: 600;
-    cursor: pointer;
-    transition: color 160ms ease, border-color 160ms ease, background 160ms ease;
-}
-
-    .citation-list__toggle:hover {
-        color: #ffffff;
-        border-color: rgba(255, 255, 255, 0.24);
-        background: rgba(255, 255, 255, 0.1);
-    }
-
-/*
- * Floating source list.
- *
- * Absolute positioning means opening the list does not increase
- * the height of the answer.
- */
-.citation-popover {
-    position: absolute;
-    left: 0;
-    bottom: calc(100% + 0.5rem);
-    z-index: 50;
-    width: min(24rem, 75vw);
-    max-height: 18rem;
-    overflow-y: auto;
-    padding: 0.5rem;
-    border: 1px solid rgba(255, 255, 255, 0.14);
-    border-radius: 0.8rem;
-    background: rgba(24, 14, 34, 0.98);
-    box-shadow: 0 1rem 3rem rgba(0, 0, 0, 0.45);
-    backdrop-filter: blur(1rem);
-}
-
-.citation-popover[hidden] {
-        display: none;
-}
-
-.citation-popover__heading {
-    margin: 0;
-    padding: 0.45rem 0.55rem 0.6rem;
-    color: var(--colour-text-muted);
-    font-size: 0.68rem;
-    font-weight: 700;
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
-}
-
-.citation-list__buttons {
-    display: flex;
-    flex-direction: column;
-    gap: 0.25rem;
-}
-
-/*
- * Existing citation labels are now displayed as rows inside the popover.
- */
-.citation-button {
-    width: 100%;
-    padding: 0.6rem 0.7rem;
+.citation-inline {
+    padding: 0 0.15rem;
     border: 0;
-    border-radius: 0.55rem;
+    border-radius: 0.25rem;
     color: var(--colour-text-secondary);
     background: transparent;
-    font-family: inherit;
-    font-size: 0.72rem;
-    text-align: left;
+    font: inherit;
+    font-size: inherit;
+    text-decoration: underline;
+    text-decoration-color: rgba(255, 255, 255, 0.35);
+    text-underline-offset: 0.15em;
     cursor: pointer;
-    transition: color 160ms ease, background 160ms ease;
+    transition: color 160ms ease, background 160ms ease, text-decoration-color 160ms ease;
 }
 
-    .citation-button:hover {
+    .citation-inline:hover,
+    .citation-inline:focus-visible {
         color: #ffffff;
-        background: rgba(255, 255, 255, 0.07);
+        background: rgba(255, 255, 255, 0.1);
+        text-decoration-color: rgba(255, 255, 255, 0.7);
     }
 
 /* --------------------------------------------------------------------------
