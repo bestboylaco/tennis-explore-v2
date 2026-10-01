@@ -67,6 +67,9 @@ const sendButton =
 const conversation =
     getRequiredElement("#conversation");
 
+const effortToggle =
+    getRequiredElement("#effort-toggle");
+
 
 // --------------------------------------------------------------------------
 // Sidebars, foldable -- left (workspace nav) and right (quick start)
@@ -657,6 +660,65 @@ createPdfUpload({
 
 
 // --------------------------------------------------------------------------
+// Effort toggle (TENISE-68)
+// --------------------------------------------------------------------------
+
+/*
+ * "" (Standard, the default) means "send no effort field at all" -- the
+ * coach gets exactly today's behaviour unless they deliberately pick
+ * Fast or Thorough. Remembered per browser via localStorage so the choice
+ * survives a reload, same convenience as the quick-questions editor's
+ * local persistence; never sent anywhere but this client.
+ */
+const EFFORT_STORAGE_KEY = "tennisexplore.effort";
+
+function readStoredEffort() {
+    try {
+        const stored = window.localStorage.getItem(EFFORT_STORAGE_KEY);
+
+        return stored === "fast" || stored === "thorough" ? stored : "";
+    } catch {
+        // Private browsing / storage disabled: fall back to Standard.
+        return "";
+    }
+}
+
+function writeStoredEffort(effort) {
+    try {
+        window.localStorage.setItem(EFFORT_STORAGE_KEY, effort);
+    } catch {
+        // Nothing to do -- the toggle still works for this page view.
+    }
+}
+
+let selectedEffort = readStoredEffort();
+
+function applyEffortButtonStates() {
+    for (const button of effortToggle.querySelectorAll(".toggle-group__button")) {
+        const isActive = button.dataset.effortValue === selectedEffort;
+
+        button.classList.toggle("toggle-group__button--active", isActive);
+        button.setAttribute("aria-checked", String(isActive));
+    }
+}
+
+effortToggle.addEventListener("click", (event) => {
+    const button = event.target.closest(".toggle-group__button");
+
+    if (!button) {
+        return;
+    }
+
+    selectedEffort = button.dataset.effortValue ?? "";
+
+    writeStoredEffort(selectedEffort);
+    applyEffortButtonStates();
+});
+
+applyEffortButtonStates();
+
+
+// --------------------------------------------------------------------------
 // Send question
 // --------------------------------------------------------------------------
 
@@ -720,6 +782,7 @@ chatForm.addEventListener(
                 await submitChatQuestion(
                     question,
                     conversationId,
+                    selectedEffort,
                 );
 
             const response =

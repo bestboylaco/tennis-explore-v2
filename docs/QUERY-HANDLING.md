@@ -250,6 +250,12 @@ so there is no equivalent pipeline stage to switch there yet -- and per
 `public/scripts/config.js`, the live interface already defaults to `/api/chat`
 for unrelated reasons (v2's routing agent is not yet at parity).
 
+**UI:** the composer has a Standard / Fast / Thorough toggle above the
+message box (`#effort-toggle` in `public/index.html`, wired in `app.js`).
+Standard sends no `effort` field, so it is byte-identical to a request from
+before this toggle existed. The selection is remembered per browser via
+`localStorage` and is never required to send a question.
+
 ---
 
 ## Trying it

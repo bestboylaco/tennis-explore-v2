@@ -67,19 +67,23 @@ async function readResponseBody(response) {
 /**
  * Sends one natural-language question to the backend.
  *
- * The body carries only the question (plus conversationId, when there is
- * one). No mode, source, command, model, route -- or role -- is submitted;
- * the role the query runs as comes off the authenticated session
+ * The body carries the question, plus conversationId when there is one, and
+ * effort when one is selected. No source, backend route, or role is
+ * submitted; the role the query runs as comes off the authenticated session
  * server-side (requireAuth, req.user.roleId), never from anything this
  * client sends.
  *
- * `effort` (TENISE-68) does not change that rule: it is included ONLY when
- * getEffortOverride() finds a `?effort=` query-string override already in
- * the URL (see config.js) -- the composer itself exposes no control for it,
- * so a coach is never required, or even offered, a choice here.
+ * `effort` (TENISE-68) is the one exception to "no mode is offered": the
+ * composer's Standard/Fast/Thorough toggle (app.js) passes its current
+ * selection as `effort`, defaulting to "" (Standard), which omits the field
+ * entirely so an untouched toggle changes nothing server-side. The
+ * `?effort=` query-string override from getEffortOverride() still works too
+ * (useful for acceptance testing without clicking the toggle) and is used
+ * only when the caller does not pass `effort` explicitly.
  */
 export async function submitChatQuestion(question,
-    conversationId = null,) {
+    conversationId = null,
+    effort = null,) {
     const abortController = new AbortController();
 
     const timeoutId = window.setTimeout(() => {
@@ -123,14 +127,16 @@ export async function submitChatQuestion(question,
                         : {}
                 ),
 
-                ...(
-                    getEffortOverride()
-                        ? {
-                            effort:
-                                getEffortOverride(),
-                        }
-                        : {}
-                ),
+                ...(() => {
+                    const resolvedEffort =
+                        (effort === "fast" || effort === "thorough")
+                            ? effort
+                            : getEffortOverride();
+
+                    return resolvedEffort
+                        ? { effort: resolvedEffort }
+                        : {};
+                })(),
             }),
 
             signal: abortController.signal,

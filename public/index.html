@@ -211,6 +211,33 @@
                     </button>
                 </div>
 
+                <div id="effort-toggle"
+                     class="toggle-group composer__effort"
+                     role="radiogroup"
+                     aria-label="Response effort">
+                    <button type="button"
+                            class="toggle-group__button toggle-group__button--active"
+                            data-effort-value=""
+                            role="radio"
+                            aria-checked="true">
+                        Standard
+                    </button>
+                    <button type="button"
+                            class="toggle-group__button"
+                            data-effort-value="fast"
+                            role="radio"
+                            aria-checked="false">
+                        Fast
+                    </button>
+                    <button type="button"
+                            class="toggle-group__button"
+                            data-effort-value="thorough"
+                            role="radio"
+                            aria-checked="false">
+                        Thorough
+                    </button>
+                </div>
+
                 <form id="chat-form" class="composer">
                     <label class="visually-hidden" for="question">Ask a coaching question</label>
                     <textarea id="question"
