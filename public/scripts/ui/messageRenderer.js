@@ -39,7 +39,16 @@ const INLINE_TOKEN = /\*\*(.+?)\*\*|((?:\[\d+\])+)/g;
  * model's own text. A model that writes literal "<" or a stray "**" with no
  * closing pair renders as inert text either way.
  */
-function appendInlineFormatting(doc, parent, text, citationsByNumber = null, openCitation = null) {
+// a bold span whose ENTIRE content is citation markers -- "**[4]**", not
+// "**bold text** [4]" -- which the model does sometimes, emphasising the
+// marker itself rather than placing it after emphasised text. Matched
+// before building a <strong>, so this renders as a citation like any other
+// [4], not as literal bold text containing the characters "[4]" (reported
+// directly, 2026-10-01: the raw bracket was still showing because this
+// exact shape fell through as bold text instead).
+const BOLD_CITATION_ONLY = /^(?:\[\d+\])+$/;
+
+function appendInlineFormatting(doc, parent, text, citationsByNumber = null, openCitation = null, citationState = null) {
     const value = String(text);
     let lastIndex = 0;
 
@@ -48,13 +57,15 @@ function appendInlineFormatting(doc, parent, text, citationsByNumber = null, ope
             parent.append(doc.createTextNode(value.slice(lastIndex, match.index)));
         }
 
-        if (match[1] !== undefined) {
+        if (match[1] !== undefined && citationsByNumber && BOLD_CITATION_ONLY.test(match[1])) {
+            appendCitationRun(doc, parent, match[1], citationsByNumber, openCitation, citationState);
+        } else if (match[1] !== undefined) {
             const strong = doc.createElement("strong");
 
             strong.textContent = match[1];
             parent.append(strong);
         } else if (citationsByNumber) {
-            appendCitationRun(doc, parent, match[2], citationsByNumber, openCitation);
+            appendCitationRun(doc, parent, match[2], citationsByNumber, openCitation, citationState);
         } else {
             parent.append(doc.createTextNode(match[2]));
         }
@@ -89,7 +100,7 @@ function appendInlineFormatting(doc, parent, text, citationsByNumber = null, ope
  * HTML, so a model that writes a stray "#" or "-" with no real structure
  * around it just renders as the literal character it is.
  */
-function appendBlock(doc, wrapper, block, orderedState, citationsByNumber, openCitation) {
+function appendBlock(doc, wrapper, block, orderedState, citationsByNumber, openCitation, citationState) {
     let currentList = null;
     let currentListTag = null;
 
@@ -109,7 +120,7 @@ function appendBlock(doc, wrapper, block, orderedState, citationsByNumber, openC
             const level = Math.min(heading[1].length + 1, 6);
             const node = doc.createElement(`h${level}`);
 
-            appendInlineFormatting(doc, node, heading[2], citationsByNumber, openCitation);
+            appendInlineFormatting(doc, node, heading[2], citationsByNumber, openCitation, citationState);
             wrapper.append(node);
             continue;
         }
@@ -131,7 +142,7 @@ function appendBlock(doc, wrapper, block, orderedState, citationsByNumber, openC
 
             const li = doc.createElement("li");
 
-            appendInlineFormatting(doc, li, listMatch[1], citationsByNumber, openCitation);
+            appendInlineFormatting(doc, li, listMatch[1], citationsByNumber, openCitation, citationState);
             currentList.append(li);
 
             if (listTag === "ol") orderedState.count += 1;
@@ -144,7 +155,7 @@ function appendBlock(doc, wrapper, block, orderedState, citationsByNumber, openC
 
         const p = element(doc, "p");
 
-        appendInlineFormatting(doc, p, line, citationsByNumber, openCitation);
+        appendInlineFormatting(doc, p, line, citationsByNumber, openCitation, citationState);
         wrapper.append(p);
     }
 }
@@ -162,15 +173,21 @@ function renderAnswer(doc, text, citations = [], openCitation = null) {
     const wrapper = element(doc, "div", "message__bubble");
     const orderedState = { count: 0 };
     const citationsByNumber = new Map(citations.map((citation) => [citation.number, citation]));
+    // tracks the most recently rendered citation's document, across the
+    // whole answer in reading order, so appendCitationRun can tell a
+    // genuine repeat (same document, right after itself) from a fresh
+    // citation -- see appendCitationRun for what that changes about how it
+    // renders.
+    const citationState = { lastDocId: null };
 
     for (const block of String(text).split(/\n{2,}/)) {
         if (block.trim() === "") continue;
 
-        appendBlock(doc, wrapper, block, orderedState, citationsByNumber, openCitation);
+        appendBlock(doc, wrapper, block, orderedState, citationsByNumber, openCitation, citationState);
     }
 
     if (wrapper.children.length === 0) {
-        appendBlock(doc, wrapper, String(text), orderedState, citationsByNumber, openCitation);
+        appendBlock(doc, wrapper, String(text), orderedState, citationsByNumber, openCitation, citationState);
     }
 
     return wrapper;
@@ -287,8 +304,21 @@ function apaInText(citation) {
  * A run where none of the numbers match a real citation renders as plain
  * text, not a dead button -- an invented citation number should stay
  * visible as what it is, not disappear or look clickable when it is not.
+ *
+ * A single-source run whose document is the SAME document the immediately
+ * preceding citation pointed at (`citationState.lastDocId`) renders compact
+ * -- just "p.6" -- instead of repeating the full "(Author, Year)" again.
+ * This is the common case in a structured, multi-point answer built mostly
+ * from one paper cited at several different pages: each point is still a
+ * genuinely different, independently-checkable claim (different page,
+ * different table), so the citation stays -- it just doesn't need to
+ * re-announce the same author and year every single time right next to
+ * where it already said so (reported directly, 2026-10-01: a five-point
+ * breakdown citing one paper's three different pages read as needlessly
+ * repetitive). A multi-source run, or a repeat that isn't immediately
+ * adjacent, always renders in full.
  */
-function appendCitationRun(doc, parent, run, citationsByNumber, openCitation) {
+function appendCitationRun(doc, parent, run, citationsByNumber, openCitation, citationState) {
     const numbers = [...run.matchAll(/\[(\d+)\]/g)].map((match) => Number(match[1]));
     const known = numbers.map((number) => citationsByNumber.get(number)).filter(Boolean);
 
@@ -297,12 +327,30 @@ function appendCitationRun(doc, parent, run, citationsByNumber, openCitation) {
         return;
     }
 
-    const button = element(doc, "button", "citation-inline", `(${known.map(apaInText).join("; ")})`);
+    const isRepeatOfLast =
+        known.length === 1 &&
+        citationState &&
+        known[0].docId != null &&
+        known[0].docId === citationState.lastDocId &&
+        known[0].page != null;
+
+    const label = isRepeatOfLast ? `p.${known[0].page}` : `(${known.map(apaInText).join("; ")})`;
+
+    const button = element(
+        doc,
+        "button",
+        isRepeatOfLast ? "citation-inline citation-inline--compact" : "citation-inline",
+        label,
+    );
 
     button.type = "button";
     button.addEventListener("click", () => openCitation(known[0], button));
 
     parent.append(button);
+
+    if (citationState) {
+        citationState.lastDocId = known.length === 1 ? (known[0].docId ?? null) : null;
+    }
 }
 
 /**

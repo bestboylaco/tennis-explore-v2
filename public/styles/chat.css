@@ -857,6 +857,17 @@
         text-decoration-color: rgba(255, 255, 255, 0.7);
     }
 
+/* a repeat of the citation immediately before it -- same document, a
+   different page -- so it doesn't need to re-announce the author/year
+   again right next to where it just said so. smaller and slightly raised,
+   the way a page reference reads next to the citation it belongs to,
+   rather than a second full citation. */
+.citation-inline--compact {
+    font-size: 0.8em;
+    vertical-align: super;
+    padding: 0 0.1rem;
+}
+
 /* --------------------------------------------------------------------------
    Processing and errors
    -------------------------------------------------------------------------- */
