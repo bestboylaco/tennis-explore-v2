@@ -140,6 +140,13 @@ async function callSpecPlanner(messages, { signal }) {
       model: retrievalConfig.query.plannerModel,
       stream: false,
       format: SPEC_SCHEMA,
+      // see evidenceGrader.service.js's gradeChunk for why: a reasoning
+      // model's hidden thinking pass eats into num_predict before the actual
+      // schema-constrained output, which can truncate or corrupt it. this
+      // model is pinned to a non-reasoning model today, but the config is
+      // swappable, so this is defensive rather than a fix for an observed
+      // failure here specifically.
+      think: false,
       options: { temperature: 0, num_predict: 500 },
       messages,
     }),

@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import { describe, it } from "node:test";
 
 import { ruleBasedPlan } from "../../src/modules/query/queryPlanner.service.js";
-import { INTENTS, ROUTE_FOR_INTENT, ROUTES } from "../../src/shared/constants/queryTaxonomy.js";
+import { INTENTS, ROUTES } from "../../src/shared/constants/queryTaxonomy.js";
 
 describe("rule based routing", () => {
   it("sends a calculation over records to the structured route", () => {
@@ -10,7 +10,7 @@ describe("rule based routing", () => {
     // confident, wrong number, because no chunk contains a median.
     const plan = ruleBasedPlan("what is the median change in serve speeds year on year in the mens and womens draws?");
 
-    assert.equal(ROUTE_FOR_INTENT[plan.intent], ROUTES.STRUCTURED);
+    assert.equal(plan.route, ROUTES.STRUCTURED);
   });
 
   it("handles plural table vocabulary", () => {
@@ -18,13 +18,14 @@ describe("rule based routing", () => {
     // speeds", which sent the partner's own example question to the documents.
     const plan = ruleBasedPlan("average serve speeds by year");
 
-    assert.equal(ROUTE_FOR_INTENT[plan.intent], ROUTES.STRUCTURED);
+    assert.equal(plan.route, ROUTES.STRUCTURED);
   });
 
   it("treats a single-entity superlative as a lookup, not an aggregation", () => {
     const plan = ruleBasedPlan("what is Player X's best ranking");
 
-    assert.equal(plan.intent, INTENTS.ANALYTICAL);
+    assert.equal(plan.intent, INTENTS.FACT_RETRIEVAL);
+    assert.equal(plan.route, ROUTES.STRUCTURED);
   });
 
   it("routes a superlative to the planner rather than deciding alone", () => {
@@ -39,21 +40,39 @@ describe("rule based routing", () => {
     assert.equal(ruleBasedPlan("summarise the recovery research for tennis players").intent, INTENTS.SUMMARISATION);
   });
 
-  it("recognises a question spanning two documents", () => {
-    assert.equal(
-      ruleBasedPlan("how do the findings of the periodisation paper compare with the catapult presentation").intent,
-      INTENTS.MULTI_HOP,
+  it("recognises a question spanning two documents as a comparison", () => {
+    // v1 called this multi_hop, because "compare" and "how do X relate to Y"
+    // both matched the same catch-all pattern and comparison was only wired up
+    // for the structured route. v2 makes comparing two documents' findings a
+    // comparison outright, whichever route it resolves to.
+    const plan = ruleBasedPlan(
+      "how do the findings of the periodisation paper compare with the catapult presentation",
     );
+
+    assert.equal(plan.intent, INTENTS.COMPARISON);
+    assert.equal(plan.route, ROUTES.UNSTRUCTURED);
   });
 
   it("sends a question about a paper to the documents", () => {
     const plan = ruleBasedPlan("who were the authors of the cardio tennis publication");
 
-    assert.equal(ROUTE_FOR_INTENT[plan.intent], ROUTES.UNSTRUCTURED);
+    assert.equal(plan.route, ROUTES.UNSTRUCTURED);
+  });
+
+  it("recognises a comparison even without table vocabulary", () => {
+    // v1 required comparison wording AND table vocabulary to call something
+    // comparative; a comparison phrased in plain language (no rankings, no
+    // scores) fell through to the ambiguous default. v2 does not require that
+    // -- comparing two things is the same intent whichever route it resolves
+    // to, and "differences between" is not actually ambiguous here.
+    const plan = ruleBasedPlan("what are the differences between a platform and a step up stance in the serve");
+
+    assert.equal(plan.intent, INTENTS.COMPARISON);
+    assert.equal(plan.route, ROUTES.UNSTRUCTURED);
   });
 
   it("reports low confidence when it genuinely cannot tell", () => {
-    const plan = ruleBasedPlan("what are the differences between a platform and a step up stance in the serve");
+    const plan = ruleBasedPlan("tell me about footwork");
 
     assert.ok(plan.confidence < 0.5);
   });

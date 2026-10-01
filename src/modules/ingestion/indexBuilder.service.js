@@ -58,6 +58,64 @@ const STATE_FILE = ".build-state.json";
 // spending ten minutes each and possibly exhausting memory on one file.
 const MAX_FILE_BYTES = 80 * 1024 * 1024;
 
+// ---------------------------------------------------------------------------
+// the chunking settings an index was built under
+//
+// these exist because the append guard used to compare `manifest.chunking`
+// against a hardcoded three-key object literal, while the manifest was written
+// from `retrievalConfig.chunking` -- the WHOLE object. the two were only ever
+// equal by coincidence, and adding any key to the config broke every new index's
+// ability to append to itself: the manifest would hold eight keys, the guard
+// would build three, and they would never match again.
+//
+// so both sides go through one canonicaliser instead. it fixes the key order and
+// fills anything missing with the value that key had when it was still a literal
+// in chunking.service.js. that is what keeps the committed 103,708-chunk index
+// appendable: its manifest holds only {targetChars, overlapChars, minChars}, and
+// normalising it fills in exactly the behaviour it was actually built with.
+//
+// IMPORTANT: a key added to retrievalConfig.chunking and not added here is not a
+// compile error, it is a guard that silently stops checking that key. that is
+// what test/unit/indexAppend.test.js asserts against by comparing this list to
+// Object.keys(retrievalConfig.chunking).
+// ---------------------------------------------------------------------------
+const CHUNKING_DEFAULTS = Object.freeze({
+  targetChars: 1600,
+  overlapChars: 200,
+  minChars: 120,
+  rowsPerChunk: 1,
+  recordMaxChars: 1400,
+  fallbackMinChars: 40,
+  slideMinChars: 40,
+  tableHeadroomChars: 32,
+});
+
+export const CHUNKING_KEYS = Object.freeze(Object.keys(CHUNKING_DEFAULTS).sort());
+
+// the keys E2-07 added. the fingerprint appends only these, and only when they
+// are off their default, so an existing .build-state.json still resumes.
+const NEW_CHUNKING_KEYS = Object.freeze([
+  "fallbackMinChars",
+  "recordMaxChars",
+  "rowsPerChunk",
+  "slideMinChars",
+  "tableHeadroomChars",
+]);
+
+/**
+ * every chunking key, in a fixed order, with missing ones filled from the
+ * literals they replaced. safe to JSON.stringify and compare.
+ */
+export function canonicalChunking(chunking) {
+  const canonical = {};
+
+  for (const key of CHUNKING_KEYS) {
+    canonical[key] = chunking?.[key] ?? CHUNKING_DEFAULTS[key];
+  }
+
+  return canonical;
+}
+
 // which column holds the date a row is ABOUT, in preference order.
 const DATE_COLUMNS = ["match_date", "Date", "date", "tournament_start_date", "event_date"];
 
@@ -79,6 +137,29 @@ function firstUsableDate(candidates = []) {
   }
 
   return null;
+}
+
+/**
+ * the range of dates a packed record chunk actually covers.
+ *
+ * a chunk carries exactly one `event_date`, and that date drives the query-time
+ * date filter. with rowsPerChunk > 1 that single date belongs to the first row
+ * only, so the chunk is filed under it on behalf of rows it does not describe.
+ * recording [min, max] alongside makes that visible instead of leaving it as a
+ * silent inaccuracy -- when min equals max the packing cost nothing here, and
+ * when it does not, the gap is exactly the error being carried.
+ *
+ * null when no row in the chunk has a parsable date, which is the same thing
+ * `event_date` reports in that case.
+ */
+function eventDateSpan(candidatesByRow = []) {
+  const dates = candidatesByRow.map((candidates) => firstUsableDate(candidates)).filter(Boolean);
+
+  if (dates.length === 0) return null;
+
+  // iso yyyy-mm-dd sorts lexicographically, which is the whole reason
+  // normaliseDate produces it.
+  return [dates.reduce((a, b) => (a < b ? a : b)), dates.reduce((a, b) => (a > b ? a : b))];
 }
 
 /**
@@ -137,7 +218,11 @@ export async function prepareFile(
 
     return chunkRecords(extracted, { label, eventDateColumns: dateColumns })
       .map((chunk) => {
-        const { raw_event_candidates: rawDates, ...rest } = chunk;
+        const {
+          raw_event_candidates: rawDates,
+          raw_event_candidates_by_row: rawDatesByRow,
+          ...rest
+        } = chunk;
 
         return finalise(
           {
@@ -146,6 +231,7 @@ export async function prepareFile(
             provenance: "partner",
             authors: [],
             event_date: firstUsableDate(rawDates),
+            event_date_span: eventDateSpan(rawDatesByRow),
             publication_year: null,
             entity_ids: [],
             source_uri: filePath,
@@ -692,6 +778,13 @@ export async function uploadSourceFiles(chunks, uploaded, failures) {
  * refuses to resume rather than trying to cope.
  */
 function configFingerprint() {
+  // the five keys added for E2-07 are appended ONLY when they differ from their
+  // default. at the defaults the string is byte-for-byte what it has always
+  // been, so a teammate's half-finished .build-state.json still resumes.
+  const varied = NEW_CHUNKING_KEYS.filter(
+    (key) => retrievalConfig.chunking[key] !== CHUNKING_DEFAULTS[key],
+  ).map((key) => `${key}:${retrievalConfig.chunking[key]}`);
+
   return [
     `schema:${SCHEMA_VERSION}`,
     `provider:${retrievalConfig.embedding.provider}`,
@@ -699,6 +792,7 @@ function configFingerprint() {
     `dim:${retrievalConfig.embedding.dimension}`,
     `chunk:${retrievalConfig.chunking.targetChars}/${retrievalConfig.chunking.overlapChars}`,
     `contextual:${retrievalConfig.contextual.enabled ? retrievalConfig.contextual.mode : "off"}`,
+    ...varied,
   ].join("|");
 }
 
@@ -750,11 +844,15 @@ async function assertAppendCompatible(outputDir, existing) {
   check("embedding provider", existing.embeddingProvider, retrievalConfig.embedding.provider);
   check("dimension", existing.dimension, retrievalConfig.embedding.dimension);
   check("schema version", existing.schemaVersion, SCHEMA_VERSION);
-  check("chunking", existing.chunking, {
-    targetChars: retrievalConfig.chunking.targetChars,
-    overlapChars: retrievalConfig.chunking.overlapChars,
-    minChars: retrievalConfig.chunking.minChars,
-  });
+  // both sides normalised, so an older manifest holding only the original three
+  // keys still compares equal at the defaults -- that is the regression guard
+  // for the committed index -- while a genuinely different recipe, such as
+  // rowsPerChunk=5, still fails.
+  check(
+    "chunking",
+    canonicalChunking(existing.chunking),
+    canonicalChunking(retrievalConfig.chunking),
+  );
   check(
     "contextual headers",
     existing.contextual,
@@ -954,7 +1052,9 @@ export async function buildIndex({
       embeddingProvider: retrievalConfig.embedding.provider,
       embeddingModel: retrievalConfig.embedding.model,
       contextual: retrievalConfig.contextual.enabled ? retrievalConfig.contextual.mode : "off",
-      chunking: retrievalConfig.chunking,
+      // through the same canonicaliser the append guard uses, so the two can
+      // never drift apart again.
+      chunking: canonicalChunking(retrievalConfig.chunking),
       // the union, not a replacement. an append run is pointed at one folder,
       // and overwriting the list with just that folder would erase the record
       // of where the other 2,599 files came from -- which is what the

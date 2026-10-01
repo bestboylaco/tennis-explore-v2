@@ -7,6 +7,7 @@ import {
 import { bindCitations } from "../../retrieval/citation.service.js";
 import { startTelemetryRun } from "../../telemetry/services/telemetryRecorder.service.js";
 import { answerQuestion } from "./answer.service.js";
+import { appendTurn, getTurns } from "./conversation.service.js";
 import { generateAnswer } from "./generation.service.js";
 import { routeQuery } from "./routing.service.js";
 
@@ -34,6 +35,7 @@ export async function submitChatQuestion(
         correlationId = null,
         roleId,
         telemetryRun = null,
+        sessionId = null,
     } = {},
 ) {
     /*
@@ -71,21 +73,54 @@ export async function submitChatQuestion(
      *
      * answerQuestion() owns the full production-style query pipeline so
      * the browser and CLI share the same retrieval and citation behaviour.
+     *
+     * Previous turns of this conversation are read here so a follow-up can be
+     * resolved into a standalone question before retrieval runs. sessionId
+     * comes from the authenticated session, never from the request body -- a
+     * client that could name its own session id could read another user's
+     * conversation.
      */
+    const history = getTurns(sessionId);
+
     const result = await answerQuestion(
         question,
         {
             roleId,
             correlationId,
+            history,
         },
     );
+
+    /*
+     * Recorded after the answer, and only on this success path, so a failed
+     * request does not leave a turn in the history that the user never saw
+     * answered.
+     *
+     * The question stored is what the user actually typed, not the rewrite --
+     * storing the rewrite would compound, since turn 3 would then be rewritten
+     * against turn 2's rewrite rather than against what was actually asked.
+     */
+    appendTurn(sessionId, { question, answer: result.answer });
 
     return {
         status: "completed",
 
         response: {
             answer: result.answer,
+            // APA-style display rendering of the same answer, and its
+            // matching reference list -- see toApaText/buildReferenceList in
+            // citation.service.js. `answer` above is kept as the raw [n]
+            // form for anything that still wants that.
+            answerApa: result.answerApa ?? result.answer,
+            references: result.references ?? [],
             receivedQuestion: question,
+
+            /*
+             * What retrieval actually searched for. Shown in the interface so
+             * a wrong rewrite is visible rather than silently answered.
+             */
+            conversation: result.conversation ?? null,
+
             answered: result.answered,
             evidenceCount: result.citations.length,
             intent: result.intent,

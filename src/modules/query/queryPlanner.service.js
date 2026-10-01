@@ -40,10 +40,11 @@ import {
   ALL_INTENTS,
   INTENTS,
   ROUTES,
-  ROUTE_FOR_INTENT,
   CONTRACTS_FOR_INTENT,
-  TOP_N_FOR_INTENT,
+  TOP_N_FOR_INTENT_ROUTE,
+  DECOMPOSED_TOP_N,
 } from "../../shared/constants/queryTaxonomy.js";
+import { MULTI_HOP_SIGNALS } from "../../shared/constants/multiHopSignals.js";
 
 // ---------------------------------------------------------------------------
 // stage 1: rules
@@ -86,13 +87,6 @@ const SUMMARY_SIGNALS = [
   /\b(everything|all the research|the literature)\b/i,
 ];
 
-const MULTI_HOP_SIGNALS = [
-  /\band also\b/i,
-  /\bhow (do|does) .+ (relate|compare|differ)/i,
-  /\b(both|each of)\b/i,
-  /\?.*\?/, // two question marks means two questions
-];
-
 // vocabulary that only exists in the tables. if a question uses these words it
 // is almost certainly asking about records rather than about prose.
 //
@@ -107,12 +101,29 @@ const UNSTRUCTURED_VOCABULARY =
   /\b(papers?|stud(y|ies)|research|articles?|publications?|authors?|presentations?|slides?|decks?|says?|claims?|findings?|methodology|abstract|videos?|clips?|footage|according to)\b/i;
 
 /**
+ * where the answer lives, from vocabulary alone.
+ *
+ * independent of intent on purpose -- v1 derived route from intent, which is
+ * exactly what let a model that mis-classified "how many strokes were coded in
+ * the PhD study" as an aggregation also send it to the tables. route is decided
+ * here, once, from what the question is actually about, and every intent goes
+ * through the same decision.
+ */
+export function classifyRoute(question) {
+  const text = String(question);
+  const structured = STRUCTURED_VOCABULARY.test(text);
+  const unstructured = UNSTRUCTURED_VOCABULARY.test(text);
+
+  return structured && !unstructured ? ROUTES.STRUCTURED : ROUTES.UNSTRUCTURED;
+}
+
+/**
  * a first guess, from rules alone.
  *
- * returns a confidence as well as an intent. high confidence means we skip the
- * model call; low confidence means we ask. the thresholds are deliberately
- * conservative -- being wrong about the route is expensive (an aggregation
- * question routed to retrieval gets a confidently wrong answer), so anything
+ * returns a confidence, an intent and a route. high confidence means we skip
+ * the model call; low confidence means we ask. the thresholds are deliberately
+ * conservative -- being wrong about the route is expensive (a real calculation
+ * routed to document retrieval gets a confidently wrong answer), so anything
  * ambiguous goes to the model.
  */
 export function ruleBasedPlan(question) {
@@ -126,45 +137,50 @@ export function ruleBasedPlan(question) {
   const summarising = SUMMARY_SIGNALS.some((pattern) => pattern.test(text));
   const multiHop = MULTI_HOP_SIGNALS.some((pattern) => pattern.test(text));
 
+  const route = classifyRoute(text);
+
   // real arithmetic over table vocabulary is the one case the rules are
-  // reliably right about, and also the case where being wrong is worst -- an
-  // aggregation sent to retrieval returns a confident, wrong number.
+  // reliably right about, and also the case where being wrong is worst -- a
+  // calculation sent to document retrieval returns a confident, wrong number.
   if (aggregating && structured && !unstructured) {
-    return { intent: comparing ? INTENTS.COMPARATIVE : INTENTS.AGGREGATION, confidence: 0.9 };
+    return { intent: comparing ? INTENTS.COMPARISON : INTENTS.FACT_RETRIEVAL, confidence: 0.9, route };
   }
 
   if (summarising && !structured) {
-    return { intent: INTENTS.SUMMARISATION, confidence: 0.85 };
+    return { intent: INTENTS.SUMMARISATION, confidence: 0.85, route };
   }
 
-  if (comparing && structured && !unstructured) {
-    return { intent: INTENTS.COMPARATIVE, confidence: 0.8 };
+  if (comparing) {
+    // structured ("wins on hard versus clay") and unstructured ("how does the
+    // periodisation paper compare with the catapult deck") are the same
+    // intent now -- the route split already happened above.
+    return { intent: INTENTS.COMPARISON, confidence: structured && !unstructured ? 0.8 : 0.75, route };
   }
 
-  // a superlative over table vocabulary. analytical is the safer default of the
-  // two candidates -- it is the narrower query, and the planner has the entity
-  // list needed to widen it to an aggregation. confidence is deliberately below
-  // the floor so the planner always gets asked.
+  // a superlative over table vocabulary. confidence is deliberately below the
+  // floor so the planner always gets asked -- "highest" can mean a single
+  // named entity's value or a rank over the whole population, and only the
+  // model call has the entity list to tell them apart.
   if (superlative && structured && !unstructured) {
-    return { intent: INTENTS.ANALYTICAL, confidence: 0.5 };
+    return { intent: INTENTS.FACT_RETRIEVAL, confidence: 0.5, route };
   }
 
   // plain table vocabulary with no aggregation wording: a lookup.
   if (structured && !unstructured && !multiHop) {
-    return { intent: INTENTS.ANALYTICAL, confidence: 0.6 };
+    return { intent: INTENTS.FACT_RETRIEVAL, confidence: 0.6, route };
   }
 
   if (multiHop && unstructured) {
-    return { intent: INTENTS.MULTI_HOP, confidence: 0.7 };
+    return { intent: INTENTS.FACT_RETRIEVAL, confidence: 0.7, route };
   }
 
   if (unstructured && !structured && !multiHop && !summarising) {
-    return { intent: INTENTS.SINGLE_HOP, confidence: 0.65 };
+    return { intent: INTENTS.FACT_RETRIEVAL, confidence: 0.65, route };
   }
 
   // genuinely ambiguous. say so rather than guessing -- a low confidence here
   // is what buys the planner call.
-  return { intent: INTENTS.SINGLE_HOP, confidence: 0.3 };
+  return { intent: INTENTS.FACT_RETRIEVAL, confidence: 0.3, route };
 }
 
 // ---------------------------------------------------------------------------
@@ -211,17 +227,14 @@ The knowledge base holds two kinds of material:
 - TABLES: match records, rankings, test results. Rows and numbers.
 
 Choose exactly one intent:
-- single_hop: one fact found in one document.
-- multi_hop: needs two or more separate lookups joined together.
+- fact_retrieval: the question wants one specific answer -- a fact from a document, a value from a table, or a calculation over table rows. This covers lookups, arithmetic (average, median, total, count, trend) and questions needing more than one fact joined together.
 - summarisation: asks you to condense or overview a body of material.
-- analytical: looks up a specific value for a specific entity in the tables.
-- comparative: sets two or more groups against each other in the tables.
-- aggregation: requires arithmetic over many rows (average, median, total, count, trend).
+- comparison: sets two or more things against each other -- two papers' findings, two players' records, two groups in the tables.
 
 Rules:
-- If the question needs a calculation over many records, it is aggregation or comparative, never single_hop.
-- If the question asks what a paper, author, presentation or video says, it is single_hop, multi_hop or summarisation -- EVEN IF it contains counting words like "how many", "percentage" or "average". A number reported in a study is a fact stated in that study, not a calculation over the tables.
-- Only choose analytical, comparative or aggregation when the answer must be computed from rows of match, ranking or test data.
+- Whether the answer lives in a document or a table is NOT part of the intent -- do not choose your intent based on where you think the answer is.
+- If the question asks what a paper, author, presentation or video says, it is fact_retrieval, comparison or summarisation, whichever fits -- EVEN IF it contains counting words like "how many", "percentage" or "average". A number reported in a study is a fact stated in that study, not a calculation over the tables.
+- If a question needs two or more separate lookups joined together (multi-part questions, "and also", "how does X relate to Y"), list them in subQuestions. This can happen under fact_retrieval or comparison.
 - Extract entities and metrics exactly as the user wrote them. Do not invent any.
 - Leave a field empty rather than guessing.`;
 
@@ -234,6 +247,12 @@ async function callPlanner(question, { signal }) {
       stream: false,
       // constrained decoding. this is the whole trick.
       format: PLAN_SCHEMA,
+      // a reasoning model's hidden thinking pass eats into num_predict before
+      // the schema-constrained output -- see evidenceGrader.service.js's
+      // gradeChunk, where this measurably emptied the response entirely.
+      // defensive here since plannerModel is pinned to a non-reasoning model
+      // today, but the config is swappable.
+      think: false,
       // temperature 0: the same question must classify the same way every time,
       // or the answer shape becomes non-deterministic and nothing downstream can
       // be tested.
@@ -312,8 +331,7 @@ export async function planQuery(question, { signal = null } = {}) {
   // entities and metrics extracted for a table query.
   const needsModel =
     retrievalConfig.query.plannerEnabled &&
-    (rules.confidence < retrievalConfig.query.plannerConfidenceFloor ||
-      ROUTE_FOR_INTENT[rules.intent] === ROUTES.STRUCTURED);
+    (rules.confidence < retrievalConfig.query.plannerConfidenceFloor || rules.route === ROUTES.STRUCTURED);
 
   if (needsModel) {
     try {
@@ -333,37 +351,28 @@ export async function planQuery(question, { signal = null } = {}) {
     }
   }
 
-  // ---- guard the route -----------------------------------------------
-  //
-  // the planner over-triggers on counting words. "how many strokes were
-  // manually coded in the PhD study" and "what percentage of a year is
-  // disrupted by a stress fracture" both contain aggregation wording, and both
-  // are facts STATED IN A PAPER -- not calculations over records. sent to the
-  // structured route they find no matching column and abstain, so a question we
-  // can answer comes back as "the knowledge base does not contain an answer".
-  //
-  // the test is vocabulary, not phrasing: if a question talks about papers,
-  // studies, authors or presentations and mentions nothing that lives in a
-  // table, no table can answer it whatever the counting words say.
-  const structuredWords = STRUCTURED_VOCABULARY.test(question);
-  const documentWords = UNSTRUCTURED_VOCABULARY.test(question);
+  // route is decided from the question's own vocabulary, never from the
+  // intent the model or the rules chose -- so there is nothing here to guard
+  // against a model over-triggering on counting words and dragging the route
+  // along with it. that failure mode (v1's "how many strokes were coded in
+  // the PhD study" sent to the tables) is structurally impossible now: intent
+  // and route are decided independently and neither can drag the other along.
+  // rules.route already is classifyRoute(question); reused rather than
+  // recomputed.
+  const route = rules.route;
 
-  if (documentWords && !structuredWords && ROUTE_FOR_INTENT[plan.intent] === ROUTES.STRUCTURED) {
-    plan.intent = MULTI_HOP_SIGNALS.some((pattern) => pattern.test(question))
-      ? INTENTS.MULTI_HOP
-      : INTENTS.SINGLE_HOP;
-
-    source = `${source}+document_vocabulary_override`;
-  }
-
-  const route = ROUTE_FOR_INTENT[plan.intent];
+  const baseTopN = TOP_N_FOR_INTENT_ROUTE[plan.intent]?.[route] ?? 8;
+  // widened once a question needs more than one retrieval pass joined
+  // together -- what v1 called multi_hop -- decided from the actual extracted
+  // subQuestions, not from a guess made before the entities were known.
+  const topN = plan.subQuestions.length > 1 ? Math.max(baseTopN, DECOMPOSED_TOP_N) : baseTopN;
 
   return {
     question,
     intent: plan.intent,
     route,
     contracts: CONTRACTS_FOR_INTENT[plan.intent],
-    topN: TOP_N_FOR_INTENT[plan.intent],
+    topN,
     entities: plan.entities,
     metrics: plan.metrics,
     timeframe: plan.timeframe,

@@ -1,54 +1,127 @@
 import mongoose from "mongoose";
 
-import { ROLE_IDS } from "../../../shared/constants/accessControl.js";
+import {
+    ROLE_IDS,
+} from "../../../shared/constants/accessControl.js";
 
-// The account behind a role. Before this model existed, role was a request
-// body field a caller could set to anything -- this is what closes that gap
-// (threat model T-01): a session now has to resolve to one of these before
-// any role-gated request runs at all.
-const userSchema = new mongoose.Schema(
-  {
-    email: {
-      type: String,
-      required: true,
-      unique: true,
-      trim: true,
-      lowercase: true,
-    },
+/*
+ * The account behind a role.
+ *
+ * The role is resolved from the authenticated account rather than accepted
+ * from request input. This prevents a browser from granting itself another
+ * role simply by changing a request body.
+ */
+const userSchema =
+    new mongoose.Schema(
+        {
+            email: {
+                type:
+                    String,
 
-    // bcrypt hash only. The plaintext password is never stored, logged, or
-    // returned -- see toSafeJSON below, and the same rule the threat model
-    // already applies to telemetry: never write raw content this collection
-    // doesn't need.
-    passwordHash: { type: String, required: true },
+                required:
+                    true,
 
-    displayName: { type: String, required: true, trim: true },
+                /*
+                 * `unique: true` already creates the email index.
+                 *
+                 * Do not also call userSchema.index({ email: 1 }) below, otherwise
+                 * Mongoose reports a duplicate schema-index warning.
+                 */
+                unique:
+                    true,
 
-    roleId: {
-      type: String,
-      required: true,
-      enum: ROLE_IDS,
-    },
+                trim:
+                    true,
 
-    isActive: { type: Boolean, default: true },
-  },
-  { timestamps: true },
-);
+                lowercase:
+                    true,
+            },
 
-userSchema.index({ email: 1 }, { unique: true });
+            /*
+             * bcrypt hash only.
+             *
+             * The plaintext password is never stored, logged or returned.
+             */
+            passwordHash: {
+                type:
+                    String,
 
-// The shape returned to a client after login/session-check. Never includes
-// passwordHash -- a field added to the schema later still has to be added
-// here explicitly to become visible, rather than leaking by default.
-userSchema.methods.toSafeJSON = function toSafeJSON() {
-  return {
-    id: String(this._id),
-    email: this.email,
-    displayName: this.displayName,
-    roleId: this.roleId,
-  };
-};
+                required:
+                    true,
+            },
 
-const User = mongoose.models.User || mongoose.model("User", userSchema);
+            displayName: {
+                type:
+                    String,
+
+                required:
+                    true,
+
+                trim:
+                    true,
+            },
+
+            roleId: {
+                type:
+                    String,
+
+                required:
+                    true,
+
+                enum:
+                    ROLE_IDS,
+            },
+
+            isActive: {
+                type:
+                    Boolean,
+
+                default:
+                    true,
+            },
+        },
+        {
+            timestamps:
+                true,
+        },
+    );
+
+/*
+ * Deliberately no second email index here.
+ *
+ * The schema-level `unique: true` definition above is the single source of
+ * truth for the unique email index.
+ */
+
+/*
+ * Safe account representation returned after login/session validation.
+ *
+ * passwordHash is deliberately omitted.
+ */
+userSchema.methods.toSafeJSON =
+    function toSafeJSON() {
+        return {
+            id:
+                String(
+                    this._id,
+                ),
+
+            email:
+                this.email,
+
+            displayName:
+                this.displayName,
+
+            roleId:
+                this.roleId,
+        };
+    };
+
+const User =
+    mongoose.models.User ||
+    mongoose.model(
+        "User",
+        userSchema,
+    );
 
 export default User;

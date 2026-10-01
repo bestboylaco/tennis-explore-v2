@@ -1,4 +1,4 @@
-import { submitChatQuestion } from "./api/chatApi.js";
+import { getChatInfo, submitChatQuestion } from "./api/chatApi.js";
 import { getCurrentUser, logout } from "./api/authApi.js";
 
 import {
@@ -66,6 +66,78 @@ const sendButton =
 
 const conversation =
     getRequiredElement("#conversation");
+
+
+// --------------------------------------------------------------------------
+// Sidebars, foldable -- left (workspace nav) and right (quick start)
+// --------------------------------------------------------------------------
+//
+// Purely a display preference, remembered per browser -- not something the
+// backend needs to know or that should follow the account to another
+// device, so localStorage rather than a server round trip. Wrapped in
+// try/catch because a private window or blocked site data can make storage
+// throw rather than just return null.
+
+/**
+ * Wires one foldable-sidebar toggle button: applies/removes `bodyClass` on
+ * <body>, remembers the state under `storageKey`, and keeps the button's
+ * aria-expanded/label/title in sync. Both sidebars use the same shape, so
+ * this is built once and called twice rather than duplicated.
+ */
+function createSidebarToggle({ buttonSelector, bodyClass, storageKey, showLabel, hideLabel }) {
+    const button = getRequiredElement(buttonSelector);
+
+    function readStored() {
+        try {
+            return window.localStorage.getItem(storageKey) === "true";
+        } catch {
+            return false;
+        }
+    }
+
+    function storePreference(collapsed) {
+        try {
+            window.localStorage.setItem(storageKey, String(collapsed));
+        } catch {
+            // per-viewer convenience only -- nothing downstream depends on
+            // this persisting, so blocked or full storage is not an error to
+            // surface.
+        }
+    }
+
+    function apply(collapsed) {
+        document.body.classList.toggle(bodyClass, collapsed);
+
+        button.setAttribute("aria-expanded", String(!collapsed));
+        button.setAttribute("aria-label", collapsed ? showLabel : hideLabel);
+        button.title = collapsed ? showLabel : hideLabel;
+    }
+
+    apply(readStored());
+
+    button.addEventListener("click", () => {
+        const collapsed = !document.body.classList.contains(bodyClass);
+
+        apply(collapsed);
+        storePreference(collapsed);
+    });
+}
+
+createSidebarToggle({
+    buttonSelector: "#sidebar-toggle-button",
+    bodyClass: "sidebar-collapsed",
+    storageKey: "tennisexplore.sidebarCollapsed",
+    showLabel: "Show sidebar",
+    hideLabel: "Hide sidebar",
+});
+
+createSidebarToggle({
+    buttonSelector: "#quick-start-toggle-button",
+    bodyClass: "sidebar-collapsed-right",
+    storageKey: "tennisexplore.quickStartCollapsed",
+    showLabel: "Show quick start",
+    hideLabel: "Hide quick start",
+});
 
 
 // --------------------------------------------------------------------------
@@ -255,6 +327,10 @@ function renderConversation(messages) {
                     message.citations ??
                     [],
 
+                references:
+                    message.references ??
+                    [],
+
                 table:
                     message.table ??
                     null,
@@ -350,6 +426,50 @@ const chatHistory =
                 );
             },
     });
+
+
+// --------------------------------------------------------------------------
+// Greeting
+// --------------------------------------------------------------------------
+//
+// Shown once, only into a genuinely empty conversation -- createChatHistory
+// never auto-selects a saved conversation on load, so an empty transcript
+// here means a fresh session, not one still loading. Best-effort: a failed
+// /api/chat/info fetch still shows the greeting, just without a source
+// count, rather than showing nothing at all.
+
+async function showGreeting() {
+    if (conversation.querySelector(".message")) {
+        return;
+    }
+
+    let sourceCount = null;
+
+    try {
+        ({ sourceCount } = await getChatInfo());
+    } catch {
+        // greeting still shows without the count.
+    }
+
+    const coverage =
+        typeof sourceCount === "number"
+            ? `I have access to ${sourceCount.toLocaleString()} sources`
+            : "I have access to a large library of sources";
+
+    appendAssistantMessage({
+        conversation,
+
+        content:
+            `Hey! I'm TennisExplore's knowledge assistant. ${coverage} covering research papers, ` +
+            "match analysis, coaching resources and video, and I can answer questions across all of " +
+            "them with citations back to where each fact came from. Ask me anything tennis-related to get started.",
+
+        openCitation:
+            sourcePanel.open,
+    });
+}
+
+void showGreeting();
 
 
 // --------------------------------------------------------------------------
@@ -596,12 +716,22 @@ chatForm.addEventListener(
 
 
             const assistantMessage = {
+                // APA-style rendering -- "(Author, Year)" in-text citations
+                // instead of raw [n] markers, so the coach can see where a
+                // claim came from without opening the sources panel. Falls
+                // back to the raw answer if the backend did not supply one
+                // (e.g. an older cached response).
                 content:
+                    response.answerApa ??
                     response.answer ??
                     "No answer was returned.",
 
                 citations:
                     result?.citations ??
+                    [],
+
+                references:
+                    response.references ??
                     [],
 
                 /*

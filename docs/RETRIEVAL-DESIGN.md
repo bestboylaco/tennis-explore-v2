@@ -107,17 +107,94 @@ The literature is clear that this helps on multi-hop questions specifically and
 does nothing for simple lookups, which is why the router gates it rather than it
 running on everything.
 
-### Chunking: 1600 chars, 200 overlap — **deliberately modest overlap**
+### Chunking per file type — **measured on our corpus (E2-07)**
 
-1600 characters is roughly 400 tokens, inside the 256–1024 token band the 2026
-chunking guidance converges on. BGE-M3 could take far larger chunks, but a bigger
-chunk dilutes what you matched — the vector is an average, so burying one
-relevant sentence among four irrelevant paragraphs drags it away from the query.
+The live index uses 1600-character prose chunks with a 200-character overlap and
+one CSV row per chunk. Until E2-07 those numbers were defended only by citing
+other people's benchmarks. They are now defended by
+`evidence/chunking_comparison.json`: four indexes built from the same 27 partner
+files (26 research PDFs, 1 match CSV) under `data/index-eval/<cell>/`, scored on
+15 questions whose answer spans were verified verbatim in the source *before* any
+cell was built. Every per-file-type value now lives in
+`retrievalConfig.chunking` (`rowsPerChunk`, `recordMaxChars`,
+`fallbackMinChars`, `slideMinChars`, `tableHeadroomChars`) instead of as
+literals in `chunking.service.js`.
 
-Overlap is small on purpose. A January 2026 systematic analysis found overlap
-gave **no measurable retrieval benefit** and only increased indexing cost; the
-real fix for context lost at a boundary is the contextual header, not more
-overlap. 200 characters is enough to stop a sentence being severed.
+**What was measured.** Hybrid RRF with the reranker, router, HyDE and
+decomposition all off — one variable per comparison. A hit is a single top-5
+chunk whose `text` (never the context header) wholly contains the normalised
+span. The tie-break rule was registered before scoring: recall@5, then span-MRR,
+then index cost, then the status quo; 10 points is the threshold at every step.
+
+| cell | prose recall@5 | prose span-MRR | records recall@5 | records span-MRR | chunks | bytes |
+|---|---|---|---|---|---|---|
+| `t1600-o200-r1` (live) | 8/8 | 0.656 | 6/7 | 0.786 | 812 | 3.68 MB |
+| `t800-o200-r1` | 8/8 | **0.854** | 6/7 | 0.786 | 1496 | 5.50 MB |
+| `t1600-o0-r1` | 8/8 | 0.781 | 6/7 | 0.786 | 805 | 3.51 MB |
+| `t1600-o200-r5` | 8/8 | 0.656 | **5/7** | 0.566 | 734 | 3.50 MB |
+| `t800-o0-r1` (combination check) | 8/8 | **0.917** | 6/7 | 0.786 | 1471 | 5.09 MB |
+
+**Records: one row per chunk, now a decision rather than an assumption.** Packing
+five rows per chunk (`rowsPerChunk=5`, 98 → 20 record chunks of ~4,800 chars)
+dropped record recall@5 from 6/7 to 5/7 and span-MRR from 0.786 to 0.566: one
+question fell out of the top 10 entirely and two others slipped from rank 1 to
+ranks 2 and 3. That is a 14-point loss, above the threshold, so the rule keeps
+`rowsPerChunk=1`. Packing also carries a cost the scores do not show: a chunk has
+one `event_date`, so five rows with five dates are filed under the first row's
+date for the query-time filter (`event_date_span` records the true range).
+
+**Prose: recall@5 did not separate the cells; span-MRR did.** All four cells
+retrieved every prose span in the top 5 (8/8), so on this question set the
+chunking parameters do not change *whether* the passage is found, only how high
+it ranks. On rank, 800-character chunks beat 1600 by 19.8 MRR points and
+zero overlap beat 200 by 12.5 points — both above the threshold, so the
+registered rule picks `targetChars=800` and `overlapChars=0` for prose. Two
+things stop that from being an automatic change to the live default:
+
+- **Effect size is unknowable at n=8.** A Wilson interval at this size is about
+  ±25 points; the harness measures direction, not magnitude. The MRR gains are
+  consistent in direction across the questions (no prose question got worse
+  under either challenger) but they are not a precise estimate.
+- **The live index has 103,708 append-only chunks**, so adopting either value
+  means a full rebuild of several hours, not a config change.
+
+The two wins were then checked together. `t800-o0-r1` changes both variables
+against the same baseline — it is a combination check, not a fourth
+single-variable comparison, and it says only whether the two gains survive each
+other, not which variable earned them. They do: prose span-MRR reached 0.917,
+the highest of the five cells, with recall still 8/8 and no span severed; the
+record questions were unaffected, as they must be. Read alongside the
+single-variable cells this is consistent: smaller chunks put the right passage
+higher, dropping the overlap helps a little more, and neither costs recall on
+this corpus. The cost is index size — 1,471 prose chunks and 5.09 MB against
+812 and 3.68 MB — about 40% more bytes for the same corpus.
+
+So the live defaults stay at 1600/200 for now, with the evidence recorded and a
+rebuild decision left to the team: the registered rule's recommendation for
+prose is `targetChars=800, overlapChars=0`, and the combination has been
+measured. The literature claim this section used to rest on — that overlap buys
+no measurable retrieval benefit — is now a finding on our own corpus: overlap
+did not help recall, and cost 0.17 MB and 12.5 MRR points. The 800-character
+result agrees with the ~200-token region most RAG guidance converges on.
+
+**Confounds, stated rather than hidden.** `minChars` is applied *after* the
+overlap tail is prepended (`splitText`, final filter), so a short trailing
+fragment survives at overlap 200 and is dropped at overlap 0; that is why the
+overlap-0 cell has 707 prose chunks against 714, and it biases *against*
+overlap 0 by removing content. Prose here is PDF only (the corpus holds no
+`.txt`/`.md`; `.docx` is unsupported by `extractFile`), all three go through the
+same `chunkDocument` path. No `.pptx` exists, so `slideMinChars` is in config
+without evidence. PDFs with Textract tables were excluded because `chunkTables`'
+budget also depends on `targetChars`. The deterministic control passed: record
+chunks are byte-identical between `t1600-o200-r1` and `t800-o200-r1`, and their
+seven record outcomes and ranks matched exactly. `authors.slice(0, 3)` and
+`detectSection`'s 200-character window were deliberately left as literals — they
+are not per-file-type, and both feed the context header rather than the chunk.
+
+The one prose question that failed nowhere and the one record question that
+failed everywhere (CQ-09, a Wimbledon result among eight Wimbledon rows) are
+both in `perQuestion` in the JSON, with the chunk ids, so any number above can
+be traced to a specific chunk.
 
 ---
 
@@ -221,6 +298,22 @@ Results are written to `evidence/strategy_comparison.json`, broken down by
 question type as well as overall — the headline average tends to hide that a
 technique helps enormously on one kind of question and not at all on another,
 and *that* is the finding worth reporting.
+
+```bash
+CHUNK_EVAL_CORPUS_ROOT=C:/IFN736-project/document-sources npm run eval:chunking
+```
+
+The chunking comparison is a separate harness on purpose: `npm run eval` varies
+query-time settings over one fixed index, whereas chunking is a build-time
+choice, so each cell is its own index under `data/index-eval/<cellId>/`. It never
+builds unless `--build` is passed (a few minutes per cell, needs Ollama), it
+refuses any `INDEX_DIR` that is or sits inside `data/index`, and it runs the
+ground-truth gate (`--check-questions` to run only that) before touching an
+index: every span in `queries/chunking_questions.json` must occur verbatim on
+exactly one page or row of exactly one corpus document, and any that does not is
+excluded from every cell's denominator and reported loudly. The corpus files are
+partner data and are not committed; `queries/chunking_corpus.json` holds their
+sha256 hashes and preflight refuses a missing, altered or duplicated file.
 
 ---
 

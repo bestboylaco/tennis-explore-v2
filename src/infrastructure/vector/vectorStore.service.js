@@ -206,6 +206,30 @@ export class VectorStoreWriter {
       );
     }
 
+    await this._writeChunk(chunk, quantise(l2Normalise(Float32Array.from(vector))));
+  }
+
+  /**
+   * writes a chunk whose vector is ALREADY quantised int8 -- carried over
+   * from an existing index rather than freshly embedded. re-running it
+   * through add()'s normalise+quantise would be wrong twice over: it is not
+   * a unit-length float vector, and there is no embedding to normalise in
+   * the first place. this exists for removing chunks from an index (drop
+   * the ones you don't want, keep everyone else's vectors exactly as they
+   * were) without paying to re-embed everything that stays.
+   */
+  async addQuantised(chunk, quantisedVector) {
+    if (quantisedVector.length !== this.dimension) {
+      throw new Error(
+        `chunk ${chunk.chunk_id} has a ${quantisedVector.length}-dimension vector but the index ` +
+          `is ${this.dimension}-dimension.`,
+      );
+    }
+
+    await this._writeChunk(chunk, quantisedVector);
+  }
+
+  async _writeChunk(chunk, quantisedVector) {
     // roll on WHICHEVER limit is hit first. sharding on the vector file alone
     // is not enough: at 1024 int8 dims a shard holds ~92k vectors (90 MB), but
     // 92k chunks of json text is closer to 180 MB, so chunks-000.jsonl would
@@ -215,8 +239,6 @@ export class VectorStoreWriter {
     if (this.shardCount >= this.vectorsPerShard || this.shardChunkBytes >= MAX_SHARD_BYTES) {
       await this.rollShard();
     }
-
-    const quantised = quantise(l2Normalise(Float32Array.from(vector)));
 
     // embedding_text is context_header + text concatenated, so storing it is
     // storing the same bytes twice. at 283k chunks that is ~250 MB of pure
@@ -229,7 +251,9 @@ export class VectorStoreWriter {
     this.shardChunkBytes += Buffer.byteLength(line);
 
     const chunkOk = this.chunkStream.write(line);
-    const vectorOk = this.vectorStream.write(Buffer.from(quantised.buffer, 0, quantised.byteLength));
+    const vectorOk = this.vectorStream.write(
+      Buffer.from(quantisedVector.buffer, quantisedVector.byteOffset, quantisedVector.byteLength),
+    );
 
     // respect backpressure, but ONLY on the stream that actually filled up.
     //
