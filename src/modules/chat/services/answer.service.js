@@ -10,6 +10,7 @@
 // the prompt.
 
 import { retrievalConfig } from "../../../config/retrieval.config.js";
+import { applyEffortToTopN, resolveEffortOverrides } from "../../../config/effort.config.js";
 import { CONTRACTS, ROUTES } from "../../../shared/constants/queryTaxonomy.js";
 import { grantsForRole } from "../../../shared/constants/accessControl.js";
 import { planQuery } from "../../query/queryPlanner.service.js";
@@ -228,7 +229,7 @@ function abstain({ plan, roleId, reason, cause = "not_found", startedAt }) {
  * genuinely-denied caller "we found nothing" when the truth is "you may not
  * see what we found" (T-01/E5-17's whole point, applied to messaging).
  */
-async function hasRestrictedEvidence(plan, { roleId, signal, ownEvidence }) {
+async function hasRestrictedEvidence(plan, { roleId, signal, ownEvidence, effortOverrides }) {
   if (roleId === "admin") return false;
 
   const unrestricted = await retrieve(plan.question, {
@@ -240,6 +241,11 @@ async function hasRestrictedEvidence(plan, { roleId, signal, ownEvidence }) {
     topN: Math.ceil(plan.topN * 1.8),
     signal,
     subQueries: plan.subQuestions,
+    // Same effort as the caller's own retrieval -- this check exists to
+    // compare "what this role can see" against "what exists", and the two
+    // retrievals have to run the same pipeline shape (same reranking, same
+    // decomposition) or the comparison is contaminated by effort, not access.
+    effortOverrides,
   });
 
   const ownIds = new Set(ownEvidence.map((chunk) => chunk.chunk_id));
@@ -247,7 +253,7 @@ async function hasRestrictedEvidence(plan, { roleId, signal, ownEvidence }) {
   return unrestricted.evidence.some((chunk) => !ownIds.has(chunk.chunk_id));
 }
 
-async function answerFromDocuments(plan, { roleId, signal, startedAt, correlationId }) {
+async function answerFromDocuments(plan, { roleId, signal, startedAt, correlationId, effort = null, effortOverrides = {} }) {
   const retrieval = await retrieve(plan.question, {
     roleId,
     // retrieve wider than we will show. grading and deduplication both remove
@@ -255,10 +261,11 @@ async function answerFromDocuments(plan, { roleId, signal, startedAt, correlatio
     topN: Math.ceil(plan.topN * 1.8),
     signal,
     subQueries: plan.subQuestions,
+    effortOverrides,
   });
 
   if (retrieval.evidence.length === 0) {
-    const wasFiltered = await hasRestrictedEvidence(plan, { roleId, signal, ownEvidence: [] });
+    const wasFiltered = await hasRestrictedEvidence(plan, { roleId, signal, ownEvidence: [], effortOverrides });
 
     if (wasFiltered) {
       const reason = `material exists for this question but is not visible to the role "${roleId}"`;
@@ -303,7 +310,15 @@ async function answerFromDocuments(plan, { roleId, signal, startedAt, correlatio
    * extra second is worth paying. On a question that already retrieved well it
    * would change nothing and cost a model call.
    */
-  if (graded.grade !== GRADES.SUFFICIENT) {
+  // "fast" skips this whole stage, not just the model call inside it: even
+  // the no-model keyword fallback below still pays for a second full hybrid
+  // retrieval pass over the index, which is exactly the cost "fast" exists
+  // to avoid. so the gate sits here, around the stage, rather than inside
+  // expandQuery alone -- effortOverrides.expansionEnabled is read once, and
+  // if it says no, no second retrieve() call happens at all.
+  const expansionEnabled = effortOverrides.expansionEnabled ?? retrievalConfig.query.expansionEnabled;
+
+  if (graded.grade !== GRADES.SUFFICIENT && expansionEnabled) {
     const rephrasings = await expandQuery(plan.question, { signal });
     // the model being unreachable is when you least want the system to give up,
     // so there is a no-model fallback: the question stripped to content words.
@@ -315,6 +330,7 @@ async function answerFromDocuments(plan, { roleId, signal, startedAt, correlatio
         topN: Math.ceil(plan.topN * 1.8),
         signal,
         subQueries: attempts,
+        effortOverrides,
       });
 
       // regrade against the combined evidence rather than the new evidence
@@ -347,6 +363,7 @@ async function answerFromDocuments(plan, { roleId, signal, startedAt, correlatio
       roleId,
       signal,
       ownEvidence: retrieval.evidence,
+      effortOverrides,
     });
 
     const reason = wasFiltered
@@ -548,6 +565,7 @@ async function answerFromDocuments(plan, { roleId, signal, startedAt, correlatio
       roleId,
       signal,
       ownEvidence: retrieval.evidence,
+      effortOverrides,
     });
 
     if (wasFiltered) {
@@ -602,6 +620,12 @@ async function answerFromDocuments(plan, { roleId, signal, startedAt, correlatio
       intent: plan.intent,
       route: plan.route,
       planSource: plan.planSource,
+      // TENISE-68: which effort level actually ran, not just which one was
+      // requested -- "default" covers both "never passed" and anything that
+      // resolved to no override, so this is what to read to confirm fast and
+      // thorough genuinely produced a different retrieval.telemetry below
+      // rather than silently falling back to the same thing.
+      effort: effort ?? "default",
       ...retrieval.telemetry,
       evidenceGrade: graded.grade,
       duplicatesRemoved: prepared.duplicatesRemoved,
@@ -831,10 +855,17 @@ function queryTelemetry(result) {
  *
  * roleId is required and has no default, for the same reason as in retrieval:
  * a default means forgetting to pass one still returns data.
+ *
+ * `effort` (TENISE-68) is "fast" | "thorough" | undefined. undefined -- the
+ * value every existing caller passes, since none of them know this parameter
+ * exists -- resolves to `{}` from resolveEffortOverrides, and every override
+ * site below falls back to retrievalConfig when its field is missing from
+ * that object. so an omitted effort changes nothing: this is additive, not a
+ * new default behaviour.
  */
 export async function answerQuestion(
   question,
-  { roleId, signal = null, correlationId = null, history = [] } = {},
+  { roleId, signal = null, correlationId = null, history = [], effort } = {},
 ) {
   if (typeof question !== "string" || question.trim() === "") {
     throw new Error("answerQuestion requires a non-empty question.");
@@ -891,7 +922,22 @@ export async function answerQuestion(
   const rewrite = await rewriteFollowUp(question, history, { signal });
   const resolved = rewrite.question;
 
-  const plan = await planQuery(resolved, { signal });
+  const rawPlan = await planQuery(resolved, { signal });
+
+  // resolved once, here, and threaded down rather than re-read from
+  // retrievalConfig at each stage -- see effort.config.js for which four
+  // flags this touches and why those four. an unrecognised or omitted
+  // `effort` resolves to `{}`, which is why every downstream read of this
+  // object is written as `effortOverrides.x ?? retrievalConfig...`: missing
+  // means "behave as configured", not "behave as fast" or "as thorough".
+  const effortOverrides = resolveEffortOverrides(effort);
+
+  // topN is scaled here, once, rather than passed as a separate parameter
+  // everywhere plan.topN is read below (retrieve's cap, prepareEvidence,
+  // hasRestrictedEvidence's own cap) -- all of those already read plan.topN,
+  // so scaling it on the plan object itself means every one of them picks up
+  // the effort-adjusted value with no further changes.
+  const plan = { ...rawPlan, topN: applyEffortToTopN(rawPlan.topN, effortOverrides) };
 
   // every return path below gets the rewrite stamped onto it, so the browser
   // can show what was actually searched for and telemetry can tell a wrong
@@ -924,7 +970,7 @@ export async function answerQuestion(
     // refusal is a real answer and it must survive.
     if (structured.cause === "access_denied") return withConversation(structured);
 
-    const fallback = await answerFromDocuments(plan, { roleId, signal, startedAt, correlationId });
+    const fallback = await answerFromDocuments(plan, { roleId, signal, startedAt, correlationId, effort, effortOverrides });
 
     if (fallback.answered) {
       fallback.telemetry.fellBackFrom = ROUTES.STRUCTURED;
@@ -936,7 +982,7 @@ export async function answerQuestion(
   }
 
   return withConversation(
-    await answerFromDocuments(plan, { roleId, signal, startedAt, correlationId }),
+    await answerFromDocuments(plan, { roleId, signal, startedAt, correlationId, effort, effortOverrides }),
   );
 }
 

@@ -1,5 +1,6 @@
 import {
     getChatEndpoint,
+    getEffortOverride,
     REQUEST_TIMEOUT_MS,
 } from "../config.js";
 
@@ -66,10 +67,16 @@ async function readResponseBody(response) {
 /**
  * Sends one natural-language question to the backend.
  *
- * The body carries only the question. No mode, source, command, model,
- * route -- or role -- is submitted; the role the query runs as comes off
- * the authenticated session server-side (requireAuth, req.user.roleId),
- * never from anything this client sends.
+ * The body carries only the question (plus conversationId, when there is
+ * one). No mode, source, command, model, route -- or role -- is submitted;
+ * the role the query runs as comes off the authenticated session
+ * server-side (requireAuth, req.user.roleId), never from anything this
+ * client sends.
+ *
+ * `effort` (TENISE-68) does not change that rule: it is included ONLY when
+ * getEffortOverride() finds a `?effort=` query-string override already in
+ * the URL (see config.js) -- the composer itself exposes no control for it,
+ * so a coach is never required, or even offered, a choice here.
  */
 export async function submitChatQuestion(question,
     conversationId = null,) {
@@ -112,6 +119,15 @@ export async function submitChatQuestion(question,
                         ? {
                             conversationId:
                                 conversationId.trim(),
+                        }
+                        : {}
+                ),
+
+                ...(
+                    getEffortOverride()
+                        ? {
+                            effort:
+                                getEffortOverride(),
                         }
                         : {}
                 ),

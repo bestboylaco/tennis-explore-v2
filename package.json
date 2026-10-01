@@ -20,6 +20,7 @@
         "eval:answers": "node bin/eval-answers.js",
         "eval:refusal": "node bin/e5-18-refusal-test.mjs",
         "eval:e1-02": "node bin/e1-02-followup-eval.mjs",
+        "eval:effort": "node bin/tenise68-effort-eval.mjs",
         "test:rbac-roles": "node bin/tenise50-rbac-model-check.mjs",
         "test:rbac-matrix": "node bin/tenise36-access-matrix-test.mjs",
         "test:rbac-negative": "node bin/tenise36-negative-test.mjs",

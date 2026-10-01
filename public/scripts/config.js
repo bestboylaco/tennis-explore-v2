@@ -51,6 +51,35 @@ export function getChatEndpoint() {
 }
 
 /**
+ * A query-string override for the per-request effort level (TENISE-68),
+ * in the exact same spirit as `endpoint` above: useful for trying "fast"
+ * vs "thorough" from a browser without writing a script, and -- like
+ * `endpoint` -- deliberately NOT a control in the chat interface itself.
+ * chat.validation.js's rule stands: a coach is never required to pick a
+ * mode, so this stays a URL-only escape hatch, not a composer toggle. If
+ * product wants a visible toggle later, that is a UI decision of its own,
+ * not an extension of this.
+ *
+ * Example:
+ * http://localhost:3000/?effort=fast
+ */
+export function getEffortOverride() {
+    const searchParameters = new URLSearchParams(
+        window.location.search,
+    );
+
+    const effortOverride =
+        searchParameters.get("effort");
+
+    return (
+        effortOverride === "fast" ||
+        effortOverride === "thorough"
+    )
+        ? effortOverride
+        : null;
+}
+
+/**
  * Read-only telemetry API backing the debugging dashboard.
  *
  * GET /api/telemetry             list of records
