@@ -1,6 +1,6 @@
 import {
     getChatEndpoint,
-    REQUEST_TIMEOUT_MS,
+    REQUEST_TIMEOUT_MS_BY_EFFORT,
 } from "../config.js";
 
 /**
@@ -66,17 +66,19 @@ async function readResponseBody(response) {
 /**
  * Sends one natural-language question to the backend.
  *
- * The body carries only the question. No mode, source, command, model,
- * route -- or role -- is submitted; the role the query runs as comes off
- * the authenticated session server-side (requireAuth, req.user.roleId),
- * never from anything this client sends.
+ * The body carries the question and, optionally, an effort level -- the one
+ * deliberate exception to "no mode, source, command, model or route is
+ * submitted": a speed-vs-thoroughness preference the coach chose for this
+ * question, not a routing or access decision. The role the query runs as
+ * still comes off the authenticated session server-side (requireAuth,
+ * req.user.roleId), never from anything this client sends.
  */
-export async function submitChatQuestion(question) {
+export async function submitChatQuestion(question, { effort = "low" } = {}) {
     const abortController = new AbortController();
 
     const timeoutId = window.setTimeout(() => {
         abortController.abort();
-    }, REQUEST_TIMEOUT_MS);
+    }, REQUEST_TIMEOUT_MS_BY_EFFORT[effort] ?? REQUEST_TIMEOUT_MS_BY_EFFORT.low);
 
     try {
         const response = await fetch(getChatEndpoint(), {
@@ -102,7 +104,7 @@ export async function submitChatQuestion(question) {
 
             credentials: "same-origin",
 
-            body: JSON.stringify({ question }),
+            body: JSON.stringify({ question, effort }),
 
             signal: abortController.signal,
         });

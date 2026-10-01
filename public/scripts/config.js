@@ -16,12 +16,27 @@ export const DEFAULT_CHAT_ENDPOINT = "/api/chat";
 /**
  * Stops the interface from displaying an endless processing state
  * when the backend does not respond.
+ *
+ * Keyed by effort (see the composer's effort control) rather than one flat
+ * number -- "low" is every default this already had: a local 8b model doing
+ * retrieval, grading, reranking and generation takes tens of seconds on
+ * consumer hardware, measured at 20-56s on an 8 GB card, and the old 15s
+ * ceiling aborted every real request, which surfaced as "failed to complete
+ * request" and looked like a backend fault when the backend was fine.
+ *
+ * "high" needs real headroom, not just a bigger number for its own sake: a
+ * complex comparison question was observed taking 130s for retrieval and
+ * generation ALONE on "low" settings (2026-10-01) -- "high" effort widens
+ * retrieval further on top of that, and the backend's own repair-pass
+ * budget for "high" is 280s (REPAIR_TIME_BUDGET_MS.high in
+ * answer.service.js). This has to stay comfortably above that, or the
+ * browser gives up before the server does and the coach sees a timeout
+ * error instead of the thorough answer that was actually coming.
  */
-// A local 8b model doing retrieval, grading, reranking and generation takes
-// tens of seconds on consumer hardware -- measured at 20-56s on an 8 GB card.
-// The old 15s ceiling aborted every real request, which surfaced as "failed to
-// complete request" and looked like a backend fault when the backend was fine.
-export const REQUEST_TIMEOUT_MS = 180_000;
+export const REQUEST_TIMEOUT_MS_BY_EFFORT = Object.freeze({
+    low: 180_000,
+    high: 360_000,
+});
 
 /**
  * A query-string override is provided only for acceptance testing.
@@ -63,7 +78,7 @@ export const TELEMETRY_ENDPOINT = "/api/telemetry";
  * The summary endpoint runs seven aggregations, so it is given its own budget
  * rather than sharing the chat request's.
  *
- * That budget is now much shorter than REQUEST_TIMEOUT_MS, not longer: chat
+ * That budget is now much shorter than REQUEST_TIMEOUT_MS_BY_EFFORT, not longer: chat
  * waits on a local model doing retrieval and generation, while these are
  * database aggregations. Twenty seconds is generous for them, and a dashboard
  * that hangs for three minutes on a slow query is worse than one that fails.

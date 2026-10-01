@@ -197,7 +197,7 @@
                             <span></span>
                             <span></span>
                         </span>
-                        <span>Analysing your question...</span>
+                        <span id="processing-message-text">Analysing your question...</span>
                     </div>
                 </div>
 
@@ -222,6 +222,11 @@
                               placeholder="Ask a question..."
                               autocomplete="off"
                               required></textarea>
+                    <label for="effort-select" class="visually-hidden">Response effort</label>
+                    <select id="effort-select" class="effort-select" title="How much effort to spend on this answer">
+                        <option value="low" selected>Fast</option>
+                        <option value="high">Thorough</option>
+                    </select>
                     <button id="send-button" class="send-button" type="submit">Send</button>
                     <button id="composer-plus-button"
                             class="composer__plus"

@@ -88,6 +88,14 @@ export async function submitChatQuestionController(req, res) {
              * session id could read someone else's conversation.
              */
             sessionId: req.sessionID ?? req.session?.id ?? null,
+
+            /*
+             * The one deliberate exception to "no mode/route/model from the
+             * client" (see chat.validation.js) -- a speed-vs-thoroughness
+             * preference the coach chose for this question, not a routing or
+             * access decision. Validated to "low"/"high" before this point.
+             */
+            effort: req.body.effort,
         },
     );
 

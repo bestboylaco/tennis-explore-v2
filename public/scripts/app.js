@@ -63,8 +63,38 @@ const questionInput =
 const sendButton =
     getRequiredElement("#send-button");
 
+const effortSelect =
+    getRequiredElement("#effort-select");
+
+const processingMessageText =
+    getRequiredElement("#processing-message-text");
+
 const conversation =
     getRequiredElement("#conversation");
+
+/*
+ * Remembered per browser, the same way the sidebar collapse state is --
+ * a coach who prefers thorough answers shouldn't have to reselect it
+ * every time they open the page. Falls back to "low" (the element's own
+ * default) if storage is unavailable or holds something unexpected.
+ */
+try {
+    const storedEffort = window.localStorage.getItem("effort");
+
+    if (storedEffort === "low" || storedEffort === "high") {
+        effortSelect.value = storedEffort;
+    }
+} catch {
+    // keep the element's own default.
+}
+
+effortSelect.addEventListener("change", () => {
+    try {
+        window.localStorage.setItem("effort", effortSelect.value);
+    } catch {
+        // the choice still applies to this request; it just won't be remembered.
+    }
+});
 
 
 // --------------------------------------------------------------------------
@@ -692,6 +722,15 @@ chatForm.addEventListener(
 
         setBusy(true);
 
+        // sets expectations honestly before the wait starts -- "thorough" can
+        // take several minutes (it widens retrieval and gives the citation-
+        // repair pass real room to run), and a spinner with no indication of
+        // that reads as the app having stalled.
+        processingMessageText.textContent =
+            effortSelect.value === "high"
+                ? "Thinking it through -- this can take a few minutes..."
+                : "Analysing your question...";
+
         status.start();
 
 
@@ -708,6 +747,7 @@ chatForm.addEventListener(
             const result =
                 await submitChatQuestion(
                     question,
+                    { effort: effortSelect.value },
                 );
 
             const response =

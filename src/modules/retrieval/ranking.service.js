@@ -392,15 +392,15 @@ async function rerankViaLlm(query, candidates, { signal }) {
   return all;
 }
 
-export async function rerankCandidates(query, candidates, { signal } = {}) {
+export async function rerankCandidates(query, candidates, { signal, rerankInput = retrievalConfig.retrieval.rerankInput } = {}) {
   const { enabled, strategy } = retrievalConfig.rerank;
 
   if (!enabled || strategy === "none" || candidates.length === 0) {
     return { candidates, reranked: false, reason: "disabled" };
   }
 
-  const window = candidates.slice(0, retrievalConfig.retrieval.rerankInput);
-  const tail = candidates.slice(retrievalConfig.retrieval.rerankInput);
+  const window = candidates.slice(0, rerankInput);
+  const tail = candidates.slice(rerankInput);
 
   let scores;
 

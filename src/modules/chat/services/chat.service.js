@@ -36,6 +36,7 @@ export async function submitChatQuestion(
         roleId,
         telemetryRun = null,
         sessionId = null,
+        effort = "low",
     } = {},
 ) {
     /*
@@ -88,6 +89,7 @@ export async function submitChatQuestion(
             roleId,
             correlationId,
             history,
+            effort,
         },
     );
 

@@ -179,7 +179,14 @@ export async function retrieve(query, { roleId, topN = retrievalConfig.retrieval
   assertAccessInvariant(hydrated, filter);
 
   // ---- rerank and cut ----------------------------------------------------
-  const { candidates, reranked, reason } = await rerankCandidates(query, hydrated, { signal });
+  // the rerank window must never be narrower than what the caller actually
+  // asked to retrieve -- otherwise a caller requesting a wide topN (e.g.
+  // "high" effort in answer.service.js scaling plan.topN up) silently gets
+  // capped back down at the rerank stage regardless, before topN is ever
+  // applied. floored at the configured default so a narrow topN request
+  // doesn't shrink the window below its normal size either.
+  const rerankInput = Math.max(retrievalConfig.retrieval.rerankInput, topN);
+  const { candidates, reranked, reason } = await rerankCandidates(query, hydrated, { signal, rerankInput });
 
   if (!reranked && reason && reason !== "disabled") notes.push(reason);
 

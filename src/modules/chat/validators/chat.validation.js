@@ -22,7 +22,7 @@ export function validateChatQuestion(req, res, next) {
         });
     }
 
-    const { evidence } = req.body ?? {};
+    const { evidence, effort } = req.body ?? {};
 
     // evidence is optional and normally supplied by retrieval (TENISE-15/17,
     // not yet wired in). Accepted here too so the generation stage (TENISE-19)
@@ -34,6 +34,17 @@ export function validateChatQuestion(req, res, next) {
         errors.push({
             field: "evidence",
             message: "Evidence, when provided, must be an array of strings.",
+        });
+    }
+
+    // the one exception to "no mode/route/model from the client" (see the
+    // docstring above) -- a speed-vs-thoroughness preference, not a routing
+    // choice. Optional and defaults to "low" downstream, so an older client
+    // that never sends it keeps behaving exactly as it always did.
+    if (effort !== undefined && effort !== "low" && effort !== "high") {
+        errors.push({
+            field: "effort",
+            message: 'Effort, when provided, must be "low" or "high".',
         });
     }
 

@@ -49,8 +49,28 @@ import { runQuery } from "../../structured/queryEngine.service.js";
 import { AUDIT_QUERY_KINDS } from "../../../shared/constants/audit.js";
 import { recordAccess, recordAccessDenial } from "../../audit/services/accessAuditRecorder.service.js";
 
-// see the `needsRepair` guard below for what this bounds against.
-const REPAIR_TIME_BUDGET_MS = 90_000;
+// "effort" is the one user-facing exception to this pipeline never taking a
+// mode/route/model selection from the client (see chat.validation.js) -- a
+// direct, partner-requested choice between a faster answer and a more
+// thorough one, not a technical routing decision. "low" is every default
+// this pipeline already had; "high" widens retrieval and gives the
+// citation-repair pass real room to run instead of skipping it, in
+// exchange for taking a lot longer. Invalid/missing effort is treated as
+// "low" rather than rejected -- an old client that never sends it should
+// keep behaving exactly as it always did.
+const EFFORT_TOP_N_MULTIPLIER = Object.freeze({ low: 1, high: 1.75 });
+
+// see the `needsRepair` guard below for what this bounds against. "high"
+// is deliberately close to the high-effort client timeout
+// (public/scripts/config.js) rather than unlimited -- repair must still be
+// cut off before the browser gives up, just with far more room than "low"
+// leaves it (observed live, 2026-10-01: a complex comparison took 130s for
+// retrieval+generation alone, before repair even got a chance to run).
+const REPAIR_TIME_BUDGET_MS = Object.freeze({ low: 90_000, high: 280_000 });
+
+function normaliseEffort(effort) {
+  return effort === "high" ? "high" : "low";
+}
 
 export class ModelUnavailableError extends Error {
   constructor(message, { cause } = {}) {
@@ -248,7 +268,7 @@ async function hasRestrictedEvidence(plan, { roleId, signal, ownEvidence }) {
   return unrestricted.evidence.some((chunk) => !ownIds.has(chunk.chunk_id));
 }
 
-async function answerFromDocuments(plan, { roleId, signal, startedAt, correlationId }) {
+async function answerFromDocuments(plan, { roleId, signal, startedAt, correlationId, effort = "low" }) {
   const retrieval = await retrieve(plan.question, {
     roleId,
     // retrieve wider than we will show. grading and deduplication both remove
@@ -461,16 +481,22 @@ async function answerFromDocuments(plan, { roleId, signal, startedAt, correlatio
     ((verification.claimCount > 0 && verification.citedFraction < 1) ||
       verification.unsupportedNumbers.length > 0) &&
     // the repair call is a second full generation, costing roughly as much
-    // as the answer it is fixing. the frontend gives the whole request 180s
-    // (public/scripts/config.js, REQUEST_TIMEOUT_MS) before it aborts with
-    // nothing shown at all -- attempting repair on a question that has
-    // already eaten most of that budget (plan + retrieve + grade + generate)
-    // risks trading a slightly-under-cited but real answer for a hard
-    // timeout and no answer whatsoever (reported directly, 2026-09-18: a
-    // comparative question timed out). skipping repair past this point
-    // keeps the guaranteed outcome -- the original answer, imperfectly
-    // cited -- rather than gambling it on a second call that may not land.
-    Date.now() - startedAt < REPAIR_TIME_BUDGET_MS;
+    // as the answer it is fixing. the frontend gives the whole request a
+    // budget before it aborts with nothing shown at all (REQUEST_TIMEOUT_MS
+    // in public/scripts/config.js, effort-dependent) -- attempting repair on
+    // a question that has already eaten most of that budget (plan +
+    // retrieve + grade + generate) risks trading a slightly-under-cited but
+    // real answer for a hard timeout and no answer whatsoever. "high"
+    // effort gets a much larger budget here specifically because this guard
+    // was observed skipping repair ENTIRELY on exactly the questions most
+    // likely to need it: a complex, multi-hop comparison took 130s for
+    // retrieval+generation alone, well past the 90s "low" budget, leaving a
+    // fully uncited answer with no safety net at all (reported directly,
+    // 2026-10-01). skipping repair past this point keeps the guaranteed
+    // outcome -- the original answer, imperfectly cited -- rather than
+    // gambling it on a second call that may not land; "high" effort is the
+    // user explicitly choosing to gamble more generously.
+    Date.now() - startedAt < REPAIR_TIME_BUDGET_MS[effort];
 
   if (needsRepair) {
     try {
@@ -843,11 +869,13 @@ function queryTelemetry(result) {
  */
 export async function answerQuestion(
   question,
-  { roleId, signal = null, correlationId = null, history = [] } = {},
+  { roleId, signal = null, correlationId = null, history = [], effort = "low" } = {},
 ) {
   if (typeof question !== "string" || question.trim() === "") {
     throw new Error("answerQuestion requires a non-empty question.");
   }
+
+  effort = normaliseEffort(effort);
 
   if (!roleId) {
     throw new Error("answerQuestion requires a roleId. there is no default role on purpose.");
@@ -902,6 +930,15 @@ export async function answerQuestion(
 
   const plan = await planQuery(resolved, { signal });
 
+  // "high" effort widens retrieval by scaling the planner's own topN, which
+  // every retrieve() call inside answerFromDocuments/answerFromTables
+  // already derives its own width from -- so this one change is what makes
+  // "more sources" real everywhere downstream, not a setting to repeat at
+  // each call site.
+  if (effort === "high") {
+    plan.topN = Math.ceil(plan.topN * EFFORT_TOP_N_MULTIPLIER.high);
+  }
+
   // every return path below gets the rewrite stamped onto it, so the browser
   // can show what was actually searched for and telemetry can tell a wrong
   // rewrite apart from a genuine gap in the corpus.
@@ -917,7 +954,7 @@ export async function answerQuestion(
   });
 
   if (plan.route === ROUTES.STRUCTURED) {
-    const structured = await answerFromTables(plan, { roleId, signal, startedAt, correlationId });
+    const structured = await answerFromTables(plan, { roleId, signal, startedAt, correlationId, effort });
 
     if (structured.answered) return withConversation(structured);
 
@@ -933,7 +970,7 @@ export async function answerQuestion(
     // refusal is a real answer and it must survive.
     if (structured.cause === "access_denied") return withConversation(structured);
 
-    const fallback = await answerFromDocuments(plan, { roleId, signal, startedAt, correlationId });
+    const fallback = await answerFromDocuments(plan, { roleId, signal, startedAt, correlationId, effort });
 
     if (fallback.answered) {
       fallback.telemetry.fellBackFrom = ROUTES.STRUCTURED;
@@ -945,7 +982,7 @@ export async function answerQuestion(
   }
 
   return withConversation(
-    await answerFromDocuments(plan, { roleId, signal, startedAt, correlationId }),
+    await answerFromDocuments(plan, { roleId, signal, startedAt, correlationId, effort }),
   );
 }
 

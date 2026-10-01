@@ -1628,3 +1628,28 @@ body.has-source-panel .sidebar--right {
         background: #eef3e9;
         color: #173c29;
     }
+
+/* Fast/Thorough -- the one choice a coach makes about how a question is
+   answered (see answer.service.js's `effort` option). Styled to sit quietly
+   among the composer's other controls rather than look like a prominent
+   setting, since the fast default should need no attention most of the
+   time. */
+.effort-select {
+    flex: 0 0 auto;
+    height: 40px;
+    padding: 0 0.6rem;
+    border: 1px solid rgba(39, 87, 59, 0.18);
+    border-radius: 999px;
+    background: rgba(255, 255, 252, 0.9);
+    color: #2f5d44;
+    font: inherit;
+    font-size: 0.8rem;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+    .effort-select:hover,
+    .effort-select:focus-visible {
+        background: #eef3e9;
+        color: #173c29;
+    }
