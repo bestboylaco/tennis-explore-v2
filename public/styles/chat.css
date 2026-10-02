@@ -753,16 +753,21 @@
     line-height: 1.3;
 }
 
-/* three explicit tiers, scaled up from the bubble's 1rem base: a
-   heading-level line (~20px), a sub-point's own lead-in (~18px), and a
-   gentler third tier (~17px). the model almost always writes ## or ###
-   rather than a single #, so h2-h4 carry most real headings. */
+/* three explicit tiers, scaled up from the bubble's 1rem (16px) base in a
+   clean, even 4px step per tier: 20px, 24px, 28px. the model almost always
+   writes ## or ### rather than a single #, so h2-h4 carry most real
+   headings. widened 2026-10-02 (direct industry feedback: wanted clearer
+   distinction between headings and body text), then widened further the
+   same day ("make it bigger difference"), then evened out to an exact 4px
+   step between every tier ("make the diff 4px"). h1/h2 and h3/h4 both stay
+   700 weight so the top two tiers read as unambiguously headings, not just
+   bigger text. */
 .message--assistant .message__bubble h1,
-.message--assistant .message__bubble h2 { font-size: 1.25rem; font-weight: 600; }
+.message--assistant .message__bubble h2 { font-size: 1.75rem; font-weight: 700; }
 .message--assistant .message__bubble h3,
-.message--assistant .message__bubble h4 { font-size: 1.125rem; font-weight: 600; }
+.message--assistant .message__bubble h4 { font-size: 1.5rem; font-weight: 700; }
 .message--assistant .message__bubble h5,
-.message--assistant .message__bubble h6 { font-size: 1.0625rem; font-weight: 600; }
+.message--assistant .message__bubble h6 { font-size: 1.25rem; font-weight: 600; }
 
 .message--assistant .message__bubble h1:first-child,
 .message--assistant .message__bubble h2:first-child,
