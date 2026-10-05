@@ -1,0 +1,268 @@
+{
+  "generatedAt": "2026-10-05T12:54:44.128Z",
+  "gitCommit": "879c310de022cce1ab564c5aeec93a0b2291832a",
+  "node": "v22.17.1",
+  "story": "E2-08 de-identification transform inside the ingestion path",
+  "config": {
+    "deidentification": {
+      "enabled": true,
+      "fields": [
+        {
+          "name": "athlete_name",
+          "prefix": "ATHLETE",
+          "columns": [
+            "opponent_name",
+            "partner_name",
+            "player name"
+          ],
+          "compositeColumns": [
+            [
+              "playerGivenName",
+              "playerFamilyName"
+            ]
+          ],
+          "freeText": true,
+          "familyNameAlone": true,
+          "familyNameMinLength": 4
+        }
+      ],
+      "keyId": "86886cb3",
+      "configPath": "config/deidentification.json",
+      "dictionaryFolders": 1
+    },
+    "embedding": {
+      "provider": "hash",
+      "model": "bge-m3"
+    },
+    "indexDir": "data/index-deid-demo",
+    "sources": [
+      {
+        "kind": "table",
+        "file": "match-data-example.csv"
+      },
+      {
+        "kind": "table",
+        "file": "itf-2026-01-12.csv"
+      },
+      {
+        "kind": "pdf",
+        "file": "performance-benchmarking-2-0-read-only.pdf"
+      },
+      {
+        "kind": "pdf",
+        "file": "a-performance-science-approach-post-ao-2021-report.pdf"
+      },
+      {
+        "kind": "pdf",
+        "file": "2004-boys.pdf"
+      },
+      {
+        "kind": "pdf",
+        "file": "free-comm-posters-thurs-am.pdf"
+      }
+    ],
+    "secret": "never recorded -- see keyId"
+  },
+  "keyId": "86886cb3",
+  "dictionary": {
+    "persons": 9994,
+    "multiWordEntries": 21243,
+    "singleWordEntries": 5912
+  },
+  "index": {
+    "chunks": 9736,
+    "files": 6,
+    "skipped": 0,
+    "manifestDeidentification": {
+      "enabled": true,
+      "fields": [
+        "athlete_name"
+      ],
+      "keyId": "86886cb3",
+      "persons": 9994
+    }
+  },
+  "replacementsInSources": {
+    "fullName": 10044,
+    "single": 5806
+  },
+  "probes": [
+    {
+      "index": 0,
+      "kind": "free-text",
+      "sha256": "194da7111797766b290697319af3b362469cc51526ae00635c1e04cf9b462121",
+      "tokens": 2,
+      "sourceMentions": 2
+    },
+    {
+      "index": 1,
+      "kind": "free-text",
+      "sha256": "868b113750310cc59511882dbd96dccf0f4abcf944abb6e2feedf6f0ab4fcb3d",
+      "tokens": 2,
+      "sourceMentions": 1
+    },
+    {
+      "index": 2,
+      "kind": "free-text",
+      "sha256": "e1ece1edc6f7827ec6d65a6bbf2c8cd41c756a0064d4548c377f545329178454",
+      "tokens": 2,
+      "sourceMentions": 2
+    },
+    {
+      "index": 3,
+      "kind": "free-text",
+      "sha256": "4097d9d19b0b404fb268c03eb76442c1bc4b105ff4b25c24f880db0629b0e9e1",
+      "tokens": 2,
+      "sourceMentions": 2
+    },
+    {
+      "index": 4,
+      "kind": "free-text",
+      "sha256": "cc2eb9dfd3ee1f966886fa0bea9df3fcfaa66da618d115a60d28a613f552f291",
+      "tokens": 2,
+      "sourceMentions": 1
+    },
+    {
+      "index": 5,
+      "kind": "structured",
+      "sha256": "7a057d9df830c5da579b7b39670bef4fd320fc06a0fb43cd63f6272e791a738c",
+      "tokens": 3,
+      "sourceMentions": 2
+    },
+    {
+      "index": 6,
+      "kind": "structured",
+      "sha256": "0227217db8feced89b5487f09a7eac3926f0b76a8fed8f1762773dc5aa5f5174",
+      "tokens": 2,
+      "sourceMentions": 1
+    },
+    {
+      "index": 7,
+      "kind": "structured",
+      "sha256": "8019854ccfca7681983f815ae3a487ec7a7f502e6d32affaac9a4f129bf8888c",
+      "tokens": 2,
+      "sourceMentions": 1
+    },
+    {
+      "index": 8,
+      "kind": "structured",
+      "sha256": "6bfd747511958047a991a09ba13384b03c8375597d54ee329021d3517dc29361",
+      "tokens": 2,
+      "sourceMentions": 1
+    },
+    {
+      "index": 9,
+      "kind": "structured",
+      "sha256": "59c4f0a955548f86bac5e89160fdc2696d9dde210441532b3548ef3d116070f4",
+      "tokens": 2,
+      "sourceMentions": 1
+    }
+  ],
+  "hits": [
+    {
+      "probe": 0,
+      "rawScan": 0,
+      "rawScanFiles": [],
+      "bm25ResultsContainingName": 0,
+      "bm25ResultsForQuery": 10,
+      "nameTokensInVocab": 2,
+      "nameTokens": 2,
+      "pseudonymInIndex": true
+    },
+    {
+      "probe": 1,
+      "rawScan": 0,
+      "rawScanFiles": [],
+      "bm25ResultsContainingName": 0,
+      "bm25ResultsForQuery": 50,
+      "nameTokensInVocab": 1,
+      "nameTokens": 2,
+      "pseudonymInIndex": true
+    },
+    {
+      "probe": 2,
+      "rawScan": 0,
+      "rawScanFiles": [],
+      "bm25ResultsContainingName": 0,
+      "bm25ResultsForQuery": 3,
+      "nameTokensInVocab": 2,
+      "nameTokens": 2,
+      "pseudonymInIndex": true
+    },
+    {
+      "probe": 3,
+      "rawScan": 0,
+      "rawScanFiles": [],
+      "bm25ResultsContainingName": 0,
+      "bm25ResultsForQuery": 14,
+      "nameTokensInVocab": 1,
+      "nameTokens": 2,
+      "pseudonymInIndex": true
+    },
+    {
+      "probe": 4,
+      "rawScan": 0,
+      "rawScanFiles": [],
+      "bm25ResultsContainingName": 0,
+      "bm25ResultsForQuery": 0,
+      "nameTokensInVocab": 0,
+      "nameTokens": 2,
+      "pseudonymInIndex": true
+    },
+    {
+      "probe": 5,
+      "rawScan": 0,
+      "rawScanFiles": [],
+      "bm25ResultsContainingName": 0,
+      "bm25ResultsForQuery": 0,
+      "nameTokensInVocab": 0,
+      "nameTokens": 3,
+      "pseudonymInIndex": true
+    },
+    {
+      "probe": 6,
+      "rawScan": 0,
+      "rawScanFiles": [],
+      "bm25ResultsContainingName": 0,
+      "bm25ResultsForQuery": 0,
+      "nameTokensInVocab": 0,
+      "nameTokens": 2,
+      "pseudonymInIndex": true
+    },
+    {
+      "probe": 7,
+      "rawScan": 0,
+      "rawScanFiles": [],
+      "bm25ResultsContainingName": 0,
+      "bm25ResultsForQuery": 0,
+      "nameTokensInVocab": 0,
+      "nameTokens": 2,
+      "pseudonymInIndex": true
+    },
+    {
+      "probe": 8,
+      "rawScan": 0,
+      "rawScanFiles": [],
+      "bm25ResultsContainingName": 0,
+      "bm25ResultsForQuery": 4,
+      "nameTokensInVocab": 2,
+      "nameTokens": 2,
+      "pseudonymInIndex": true
+    },
+    {
+      "probe": 9,
+      "rawScan": 0,
+      "rawScanFiles": [],
+      "bm25ResultsContainingName": 0,
+      "bm25ResultsForQuery": 0,
+      "nameTokensInVocab": 0,
+      "nameTokens": 2,
+      "pseudonymInIndex": true
+    }
+  ],
+  "summary": {
+    "probes": 10,
+    "allZero": true,
+    "rule": "rawScan === 0 && bm25ResultsContainingName === 0, for every probe"
+  }
+}

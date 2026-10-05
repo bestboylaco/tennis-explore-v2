@@ -6,9 +6,15 @@
 // makes the ablation in `npm run eval` honest -- each technique can be switched
 // off without editing the code that uses it.
 
+import fs from "node:fs";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
+
 import dotenv from "dotenv";
 
 dotenv.config();
+
+const PROJECT_ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../..");
 
 // small helper so OLLAMA_BASE_URL=http://localhost:11434/ and
 // http://localhost:11434 behave identically.
@@ -45,6 +51,118 @@ function intAtLeast(value, fallback, { name, min }) {
   }
 
   return parsed;
+}
+
+// a secret shorter than this can be brute-forced from a single known
+// name -> pseudonym pair, and then every pseudonym in the index is reversible
+// by hashing a list of names.
+const DEID_MIN_SECRET_CHARS = 16;
+
+function readDeidentificationFields(configPath) {
+  const resolved = path.resolve(PROJECT_ROOT, configPath);
+  let parsed;
+
+  try {
+    parsed = JSON.parse(fs.readFileSync(resolved, "utf8"));
+  } catch (error) {
+    throw new Error(`DEID_CONFIG_PATH: cannot read ${resolved} -- ${error.message}`);
+  }
+
+  const fields = parsed?.fields;
+
+  if (!Array.isArray(fields) || fields.length === 0) {
+    throw new Error(`${resolved} must hold a non-empty "fields" array.`);
+  }
+
+  const names = new Set();
+
+  for (const field of fields) {
+    if (typeof field?.name !== "string" || field.name.trim() === "" || names.has(field.name)) {
+      throw new Error(`${resolved}: every field needs a unique, non-empty "name".`);
+    }
+
+    // the prefix becomes part of a token that bm25 and the doc id sanitiser
+    // both have to keep intact, so it is restricted to what survives both.
+    if (typeof field.prefix !== "string" || !/^[A-Z][A-Z0-9]*$/.test(field.prefix)) {
+      throw new Error(`${resolved}: field "${field.name}" needs an upper-case alphanumeric "prefix".`);
+    }
+
+    const columns = field.columns ?? [];
+    const composite = field.compositeColumns ?? [];
+
+    if (
+      !Array.isArray(columns) ||
+      !columns.every((column) => typeof column === "string") ||
+      !Array.isArray(composite) ||
+      !composite.every((group) => Array.isArray(group) && group.length > 0 && group.every((c) => typeof c === "string"))
+    ) {
+      throw new Error(`${resolved}: field "${field.name}" has malformed "columns" or "compositeColumns".`);
+    }
+
+    if (columns.length === 0 && composite.length === 0) {
+      throw new Error(`${resolved}: field "${field.name}" names no columns, so it can never find a value.`);
+    }
+
+    names.add(field.name);
+  }
+
+  return fields;
+}
+
+function deepFreeze(value) {
+  if (value && typeof value === "object") {
+    for (const item of Object.values(value)) deepFreeze(item);
+    Object.freeze(value);
+  }
+
+  return value;
+}
+
+/**
+ * E2-08. read once at import like everything else here, and validated eagerly:
+ * enabled without a usable secret is a build that would either crash an hour
+ * in or, worse, run with a guessable key.
+ *
+ * the secret is attached NON-ENUMERABLE. it is readable as `.secret` by the
+ * code that needs it, but JSON.stringify, object spread and console.log all
+ * skip it -- so dumping this config into a manifest or an evidence file cannot
+ * leak it by accident.
+ */
+function loadDeidentification() {
+  const enabled = bool(process.env.DEID_ENABLED, false);
+  const configPath = process.env.DEID_CONFIG_PATH || "config/deidentification.json";
+  const secret = process.env.DEID_SECRET || "";
+
+  let fields = [];
+
+  if (enabled) {
+    if (secret.trim().length < DEID_MIN_SECRET_CHARS) {
+      throw new Error(
+        `DEID_ENABLED=true but DEID_SECRET is ${secret.trim() === "" ? "not set" : "too short"}. ` +
+          `it must be at least ${DEID_MIN_SECRET_CHARS} characters -- it is the key every ` +
+          `pseudonym is derived from, and without it nothing can be de-identified.`,
+      );
+    }
+
+    fields = readDeidentificationFields(configPath);
+  }
+
+  const block = {
+    enabled,
+    configPath,
+    // extra folders whose csv/xlsx feed the name dictionary without being
+    // indexed themselves -- e.g. the athlete lists, when building an index of
+    // pdfs only. semicolon-separated, like STRUCTURED_SOURCE_DIRS.
+    dictionaryDirs: (process.env.DEID_DICTIONARY_DIRS || "")
+      .split(";")
+      .map((directory) => directory.trim())
+      .filter(Boolean),
+    fields,
+  };
+
+  Object.defineProperty(block, "secret", { value: secret, enumerable: false });
+
+  return deepFreeze(block);
 }
 
 export const retrievalConfig = Object.freeze({
@@ -147,6 +265,24 @@ export const retrievalConfig = Object.freeze({
     // header row, so a row is not cut in half by a rounding error.
     tableHeadroomChars: num(process.env.CHUNK_TABLE_HEADROOM_CHARS, 32),
   }),
+
+  // ---------------------------------------------------------------------
+  // de-identification (E2-08)
+  //
+  // replaces configured identifying values -- athlete names, for now -- with
+  // keyed one-way pseudonyms before anything is chunked or indexed. see
+  // modules/ingestion/deidentification.service.js and docs/DEIDENTIFICATION.md.
+  //
+  // a sibling of `chunking`, NOT a key inside it: every chunking key is checked
+  // by the append guard's canonicaliser, and test/unit/indexAppend.test.js
+  // fails on a chunking key it does not know about.
+  //
+  // OFF by default, for now. the committed data/index was built from the raw
+  // corpus, so turning this on by default would make every teammate's append
+  // and resume refuse; the E2-07 ground truth is written against real names;
+  // and CI has no secret. a production rebuild sets DEID_ENABLED=true.
+  // ---------------------------------------------------------------------
+  deidentification: loadDeidentification(),
 
   // ---------------------------------------------------------------------
   // contextual retrieval

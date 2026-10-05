@@ -33,10 +33,22 @@ import path from "node:path";
 import readline from "node:readline";
 
 import { retrievalConfig } from "../src/config/retrieval.config.js";
-import { SCHEMA_VERSION } from "../src/modules/ingestion/metadata.service.js";
 import { checkEmbeddingProvider } from "../src/modules/ingestion/embedding.service.js";
-import { buildIndex } from "../src/modules/ingestion/indexBuilder.service.js";
+import {
+  buildIndex,
+  // imported, not copied. the copy that used to live here had already fallen
+  // behind by the five E2-07 chunking keys, and a checkpoint written with a
+  // stale fingerprint is refused by the very resume it exists to drive.
+  configFingerprint,
+  dictionarySourceDirs,
+} from "../src/modules/ingestion/indexBuilder.service.js";
 import { listIngestableFiles } from "../src/modules/ingestion/extraction.service.js";
+import {
+  buildDictionary,
+  canonicalDeidentification,
+  keyIdFor,
+  replaceNames,
+} from "../src/modules/ingestion/deidentification.service.js";
 
 const REAL_INDEX_DIR = retrievalConfig.index.dir;
 const newContentDir = process.argv[2];
@@ -44,17 +56,6 @@ const newContentDir = process.argv[2];
 if (!newContentDir) {
   console.error("usage: node bin/append-to-index.mjs <folder-of-new-files-only>");
   process.exit(1);
-}
-
-function configFingerprint() {
-  return [
-    `schema:${SCHEMA_VERSION}`,
-    `provider:${retrievalConfig.embedding.provider}`,
-    `model:${retrievalConfig.embedding.model}`,
-    `dim:${retrievalConfig.embedding.dimension}`,
-    `chunk:${retrievalConfig.chunking.targetChars}/${retrievalConfig.chunking.overlapChars}`,
-    `contextual:${retrievalConfig.contextual.enabled ? retrievalConfig.contextual.mode : "off"}`,
-  ].join("|");
 }
 
 async function readJsonl(filePath, onLine) {
@@ -99,6 +100,36 @@ async function main() {
 
   console.log(`existing index: ${oldManifest.chunkCount.toLocaleString()} chunks, ${oldManifest.fileCount} files`);
 
+  // ---- E2-08: the index and this run must agree on de-identification --------
+  // this script drives buildIndex through RESUME, not --append, so the append
+  // guard in indexBuilder never sees it. checked here instead, for the same
+  // reason: de-identified chunks beside raw ones leave real names next to their
+  // own pseudonyms, and two secrets split every athlete in two.
+  const deid = retrievalConfig.deidentification;
+  const wanted = canonicalDeidentification(
+    deid.enabled
+      ? { enabled: true, fields: deid.fields.map((field) => field.name), keyId: keyIdFor(deid.secret) }
+      : { enabled: false },
+  );
+  const existing = canonicalDeidentification(oldManifest.deidentification);
+
+  if (JSON.stringify(existing) !== JSON.stringify(wanted)) {
+    console.error(
+      `\nrefusing to run: de-identification does not match the index.\n` +
+        `  index has ${JSON.stringify(existing)}\n  this run would use ${JSON.stringify(wanted)}\n` +
+        `set DEID_ENABLED / DEID_SECRET to match, or rebuild the whole index.`,
+    );
+    process.exit(1);
+  }
+
+  // under de-identification the index holds pseudonymised file names, so the
+  // collision check below has to compare like with like.
+  const dictionary = deid.enabled
+    ? await buildDictionary(dictionarySourceDirs([newContentDir], oldManifest))
+    : null;
+  const indexedName = (file) =>
+    (dictionary ? replaceNames(path.basename(file), dictionary) : path.basename(file)).toLowerCase();
+
   // ---- collect what's already indexed ---------------------------------------
   const doneSourceUris = new Set();
   const doneFileNames = new Set();
@@ -119,14 +150,14 @@ async function main() {
     process.exit(1);
   }
 
-  const collisions = newFiles.filter((file) => doneFileNames.has(path.basename(file).toLowerCase()));
+  const collisions = newFiles.filter((file) => doneFileNames.has(indexedName(file)));
 
   if (collisions.length > 0) {
     console.error(
       `\nrefusing to run: ${collisions.length} file(s) in ${newContentDir} match a filename already in the index:\n`,
     );
 
-    for (const file of collisions.slice(0, 20)) console.error(`  ${path.basename(file)}`);
+    for (const file of collisions.slice(0, 20)) console.error(`  ${indexedName(file)}`);
     if (collisions.length > 20) console.error(`  ...and ${collisions.length - 20} more`);
 
     console.error(`\nthis folder must contain ONLY files that have never been indexed. remove these and re-run.`);
