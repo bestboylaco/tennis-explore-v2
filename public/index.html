@@ -1,214 +1,633 @@
 <!doctype html>
 <html lang="en">
+
 <head>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description" content="TennisExplore unified AI coaching chat interface">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1">
+
+    <meta name="description"
+          content="TennisExplore unified AI coaching chat interface">
+
     <title>TennisExplore | AI Coach</title>
 
-    <link rel="stylesheet" href="/styles/tokens.css">
-    <link rel="stylesheet" href="/styles/base.css">
-    <link rel="stylesheet" href="/styles/chat.css">
-    <link rel="stylesheet" href="/styles/auth.css">
+    <link rel="stylesheet"
+          href="/styles/tokens.css">
+
+    <link rel="stylesheet"
+          href="/styles/base.css">
+
+    <link rel="stylesheet"
+          href="/styles/chat.css">
+
+    <link rel="stylesheet"
+          href="/styles/auth.css">
+
     <link rel="stylesheet"
           href="/styles/theme-courtside-light.css">
-    <link rel="stylesheet" href="/styles/pdf-upload.css">
+
+    <link rel="stylesheet"
+          href="/styles/pdf-upload.css">
+
+    <link rel="stylesheet"
+          href="/styles/ui-v2.css">
 </head>
-<body class="chat-page">
+
+
+<body class="chat-page sidebar-collapsed">
+
+    <!-- =========================================================
+         STATIC PAGE BACKGROUND
+         ========================================================= -->
+
+    <div class="page-tennis-background"
+         aria-hidden="true">
+
+        <div class="page-tennis-court"></div>
+
+    </div>
+
+
+    <!-- =========================================================
+         APPLICATION
+         ========================================================= -->
+
     <div class="chat-application">
+
+
+        <!-- =====================================================
+             TOP BAR
+             ===================================================== -->
+
         <header class="chat-topbar">
+
             <div class="chat-topbar__start">
+
                 <button id="sidebar-toggle-button"
                         class="sidebar-toggle"
                         type="button"
-                        aria-expanded="true"
+                        aria-expanded="false"
                         aria-controls="left-sidebar"
-                        aria-label="Hide sidebar"
-                        title="Hide sidebar">
+                        aria-label="Expand sidebar"
+                        title="Expand sidebar">
+
                     <span aria-hidden="true"></span>
                     <span aria-hidden="true"></span>
                     <span aria-hidden="true"></span>
+
                 </button>
 
-                <a class="chat-brand" href="/" aria-label="TennisExplore home">
-                    <span class="chat-brand__mark" aria-hidden="true">
+
+                <a class="chat-brand"
+                   href="/"
+                   aria-label="TennisExplore home">
+
+                    <span class="chat-brand__mark"
+                          aria-hidden="true">
+
                         <span class="chat-brand__ball"></span>
+
                     </span>
-                    <span class="chat-brand__text"><strong>Tennis</strong>Explore</span>
+
+                    <span class="chat-brand__text">
+                        <strong>Tennis</strong>Explore
+                    </span>
+
                 </a>
+
             </div>
 
+
             <div class="chat-topbar__actions">
-                <!--
-                    Platforms and About are intentionally no longer linked from
-                    the AI Coach top bar. Their page remains available for later
-                    product decisions; see docs/UI-NAVIGATION-NOTES.md.
-                -->
+
                 <button id="quick-start-toggle-button"
                         class="sidebar-toggle sidebar-toggle--right"
                         type="button"
                         aria-expanded="true"
                         aria-controls="right-sidebar"
-                        aria-label="Hide quick start"
-                        title="Hide quick start">
+                        aria-label="Hide saved questions"
+                        title="Hide saved questions">
+
                     <span aria-hidden="true"></span>
                     <span aria-hidden="true"></span>
                     <span aria-hidden="true"></span>
+
                 </button>
 
-                <div id="user-badge" class="user-badge" hidden>
-                    <span id="user-badge-role" class="user-badge__role"></span>
-                    <button id="logout-button" class="user-badge__logout" type="button">
+
+                <div id="user-badge"
+                     class="user-badge"
+                     hidden>
+
+                    <span id="user-badge-role"
+                          class="user-badge__role">
+                    </span>
+
+                    <button id="logout-button"
+                            class="user-badge__logout"
+                            type="button">
+
                         Sign out
+
                     </button>
+
                 </div>
+
             </div>
+
         </header>
 
-        <main class="workspace">
-            <!-- Product navigation mirrors the earlier three-column interface. -->
-            <aside id="left-sidebar" class="sidebar sidebar--left">
-                <div class="sidebar__heading">Workspace</div>
 
-                <nav class="navigation" aria-label="Product capabilities">
+        <!-- =====================================================
+             WORKSPACE
+             ===================================================== -->
+
+        <main class="workspace">
+
+
+            <!-- =================================================
+                 LEFT SIDEBAR
+                 ================================================= -->
+
+            <aside id="left-sidebar"
+                   class="sidebar sidebar--left">
+
+                <div class="sidebar__heading">
+                    Workspace
+                </div>
+
+
+                <nav class="navigation"
+                     aria-label="Product capabilities">
+
+
                     <a class="navigation__item navigation__item--active"
                        href="/"
-                       aria-current="page">
-                        <span>AI Coach</span>
+                       aria-current="page"
+                       aria-label="AI Coach"
+                       data-nav-label="AI Coach">
+
+                        <span>
+                            AI Coach
+                        </span>
+
                     </a>
 
-                    <p class="navigation__group-label">Connected tools</p>
+
+                    <p class="navigation__group-label">
+                        Connected tools
+                    </p>
+
 
                     <a class="navigation__item navigation__item--external"
                        href="https://tennis.smartabase.com/ams/auth"
                        target="_blank"
-                       rel="noopener noreferrer">
-                        <span>AMS</span>
-                        <small>Open</small>
+                       rel="noopener noreferrer"
+                       aria-label="Open AMS"
+                       data-nav-label="AMS">
+
+                        <span>
+                            AMS
+                        </span>
+
+                        <small>
+                            Open
+                        </small>
+
                     </a>
+
 
                     <a class="navigation__item navigation__item--external"
                        href="https://app-v3.teambuildr.com/login"
                        target="_blank"
-                       rel="noopener noreferrer">
-                        <span>TeamBuildr</span>
-                        <small>Open</small>
+                       rel="noopener noreferrer"
+                       aria-label="Open TeamBuildr"
+                       data-nav-label="TeamBuildr">
+
+                        <span>
+                            TeamBuildr
+                        </span>
+
+                        <small>
+                            Open
+                        </small>
+
                     </a>
+
 
                     <a class="navigation__item navigation__item--external"
                        href="https://login.teamworksapp.com/"
                        target="_blank"
-                       rel="noopener noreferrer">
-                        <span>Teamworks</span>
-                        <small>Open</small>
+                       rel="noopener noreferrer"
+                       aria-label="Open Teamworks"
+                       data-nav-label="Teamworks">
+
+                        <span>
+                            Teamworks
+                        </span>
+
+                        <small>
+                            Open
+                        </small>
+
                     </a>
+
 
                     <a class="navigation__item navigation__item--external"
                        href="https://www.tennismove.com.au/"
                        target="_blank"
-                       rel="noopener noreferrer">
-                        <span>TennisMove</span>
-                        <small>Open</small>
+                       rel="noopener noreferrer"
+                       aria-label="Open TennisMove"
+                       data-nav-label="TennisMove">
+
+                        <span>
+                            TennisMove
+                        </span>
+
+                        <small>
+                            Open
+                        </small>
+
                     </a>
 
-                    <p class="navigation__group-label">System</p>
 
-                    <!--
-                      E5-17: telemetry is available to any signed-in account.
-                      Authentication is already enforced before this page loads.
-                    -->
-                    <a class="navigation__item" href="/telemetry.html">
-                        <span>Telemetry</span>
+                    <p class="navigation__group-label">
+                        System
+                    </p>
+
+
+                    <a class="navigation__item"
+                       href="/telemetry.html"
+                       aria-label="Telemetry"
+                       data-nav-label="Telemetry">
+
+                        <span>
+                            Telemetry
+                        </span>
+
                     </a>
+
                 </nav>
 
-                <section class="chat-history" aria-labelledby="chat-history-title">
+
+                <!-- =================================================
+                     CHAT HISTORY
+                     ================================================= -->
+
+                <section class="chat-history"
+                         aria-labelledby="chat-history-title">
+
                     <div class="chat-history__controls">
+
                         <button id="chat-history-toggle"
                                 class="chat-history__toggle"
                                 type="button"
                                 aria-expanded="false"
-                                aria-controls="chat-history-panel">
-                            <span id="chat-history-title">Chat history</span>
-                            <span id="chat-history-count" class="chat-history__count">0</span>
+                                aria-controls="chat-history-panel"
+                                aria-label="Chat history"
+                                data-nav-label="Chat history">
+
+                            <span id="chat-history-title">
+                                Chat history
+                            </span>
+
+
+                            <span id="chat-history-count"
+                                  class="chat-history__count">
+
+                                0
+
+                            </span>
+
                         </button>
+
 
                         <button id="new-chat-button"
                                 class="chat-history__new"
-                                type="button">
+                                type="button"
+                                aria-label="New chat"
+                                data-nav-label="New chat">
+
                             New chat
+
                         </button>
+
                     </div>
+
 
                     <div id="chat-history-panel"
                          class="chat-history__panel"
                          hidden>
-                        <p id="chat-history-empty" class="chat-history__empty">
-                            No saved conversations yet. Your first question will create one for this account.
+
+                        <p id="chat-history-empty"
+                           class="chat-history__empty">
+
+                            No saved conversations yet.
+                            Your first question will create one
+                            for this account.
+
                         </p>
+
+
                         <div id="chat-history-list"
                              class="chat-history__list"
-                             aria-label="Conversation history"></div>
+                             aria-label="Conversation history">
+                        </div>
+
                     </div>
+
                 </section>
 
+
                 <div class="sidebar__footer">
-                    <strong>One connected workspace</strong>
-                    <p>Ask AI Coach or open an organisational tool without hunting through separate bookmarks.</p>
+
+                    <strong>
+                        One connected workspace
+                    </strong>
+
+                    <p>
+                        Ask AI Coach or open an organisational
+                        tool without hunting through separate
+                        bookmarks.
+                    </p>
+
                 </div>
+
             </aside>
 
-            <section class="chat-panel" aria-label="AI Coach chat">
+
+            <!-- =================================================
+                 MAIN CHAT
+                 ================================================= -->
+
+            <section class="chat-panel"
+                     aria-label="AI Coach chat">
+
+
                 <header class="chat-panel__header">
-                    <h1 class="visually-hidden">AI Coach</h1>
+
+                    <h1 class="visually-hidden">
+                        AI Coach
+                    </h1>
+
 
                     <div id="processing-status"
                          class="status-indicator"
                          data-state="ready"
                          role="status"
                          aria-live="polite">
-                        <span class="status-indicator__dot" aria-hidden="true"></span>
-                        <span id="status-text">Ready</span>
+
+                        <span class="status-indicator__dot"
+                              aria-hidden="true">
+                        </span>
+
+                        <span id="status-text">
+                            Ready
+                        </span>
+
                     </div>
+
                 </header>
+
+
+                <!-- =================================================
+                     CONVERSATION
+                     ================================================= -->
 
                 <div id="conversation"
                      class="conversation"
                      role="log"
                      aria-live="polite"
                      aria-relevant="additions">
-                    <section class="conversation__empty">
-                        <div class="welcome-avatar" aria-hidden="true">AI</div>
-                        <div>
-                            <p class="welcome-card__label">AI coaching workspace</p>
-                            <h2>What would you like to explore?</h2>
-                            <p>
-                                Ask a question about a player, match, research document,
-                                training plan, performance record or video insight.
-                            </p>
+
+
+                    <!-- =============================================
+                         NEW CHAT LANDING
+                         ============================================= -->
+
+                    <section id="conversation-empty"
+                             class="conversation__empty conversation-welcome">
+
+
+                        <div class="conversation-welcome__mark"
+                             aria-hidden="true">
+
+                            <span class="conversation-welcome__ball">
+                            </span>
+
                         </div>
+
+
+                        <p class="conversation-welcome__eyebrow">
+                            TennisExplore AI Coach
+                        </p>
+
+
+                        <h2 class="conversation-welcome__title">
+                            What would you like to explore?
+                        </h2>
+
+
+                        <p class="conversation-welcome__description">
+
+                            Search across research, coaching resources,
+                            performance information and video evidence.
+
+                            <span id="welcome-source-count"></span>
+
+                        </p>
+
+
+                        <div class="conversation-welcome__suggestions"
+                             aria-label="Suggested questions">
+
+
+                            <button class="welcome-suggestion"
+                                    type="button"
+                                    data-prompt="Review player performance from recent matches">
+
+                                <span class="welcome-suggestion__icon"
+                                      aria-hidden="true">
+
+                                    M
+
+                                </span>
+
+                                <span class="welcome-suggestion__content">
+
+                                    <strong>
+                                        Match analysis
+                                    </strong>
+
+                                    <small>
+                                        Review player performance
+                                    </small>
+
+                                </span>
+
+                            </button>
+
+
+                            <button class="welcome-suggestion"
+                                    type="button"
+                                    data-prompt="What does the available research say about athlete recovery?">
+
+                                <span class="welcome-suggestion__icon"
+                                      aria-hidden="true">
+
+                                    R
+
+                                </span>
+
+                                <span class="welcome-suggestion__content">
+
+                                    <strong>
+                                        Research
+                                    </strong>
+
+                                    <small>
+                                        Find supporting evidence
+                                    </small>
+
+                                </span>
+
+                            </button>
+
+
+                            <button class="welcome-suggestion"
+                                    type="button"
+                                    data-prompt="Find coaching resources related to technique development">
+
+                                <span class="welcome-suggestion__icon"
+                                      aria-hidden="true">
+
+                                    C
+
+                                </span>
+
+                                <span class="welcome-suggestion__content">
+
+                                    <strong>
+                                        Coaching
+                                    </strong>
+
+                                    <small>
+                                        Explore coaching resources
+                                    </small>
+
+                                </span>
+
+                            </button>
+
+
+                            <button class="welcome-suggestion"
+                                    type="button"
+                                    data-prompt="Find relevant video evidence for this coaching topic">
+
+                                <span class="welcome-suggestion__icon"
+                                      aria-hidden="true">
+
+                                    V
+
+                                </span>
+
+                                <span class="welcome-suggestion__content">
+
+                                    <strong>
+                                        Video evidence
+                                    </strong>
+
+                                    <small>
+                                        Find relevant moments
+                                    </small>
+
+                                </span>
+
+                            </button>
+
+                        </div>
+
                     </section>
 
-                    <div id="processing-message" class="processing-message" hidden>
-                        <span class="processing-message__animation" aria-hidden="true">
+
+                    <!-- =============================================
+                         PROCESSING
+                         ============================================= -->
+
+                    <div id="processing-message"
+                         class="processing-message"
+                         hidden>
+
+                        <span class="processing-message__animation"
+                              aria-hidden="true">
+
                             <span></span>
                             <span></span>
                             <span></span>
+
                         </span>
-                        <span>Analysing your question...</span>
+
+                        <span>
+                            Analysing your question...
+                        </span>
+
                     </div>
+
                 </div>
 
-                <div id="error-banner" class="error-banner" role="alert" hidden>
-                    <div>
-                        <strong>Unable to complete the request</strong>
-                        <p id="error-message"></p>
+
+                <!-- =================================================
+                     PRODUCT ERROR STATE
+                     ================================================= -->
+
+                <div id="error-banner"
+                     class="error-banner error-banner--product"
+                     role="alert"
+                     hidden>
+
+
+                    <div class="error-banner__icon"
+                         aria-hidden="true">
+
+                        !
+
                     </div>
-                    <button id="dismiss-error-button"
-                            type="button"
-                            class="text-button">
-                        Dismiss
-                    </button>
+
+
+                    <div class="error-banner__content">
+
+                        <strong id="error-title">
+                            Something went wrong
+                        </strong>
+
+                        <p id="error-message"></p>
+
+                    </div>
+
+
+                    <div class="error-banner__actions">
+
+                        <button id="retry-error-button"
+                                class="error-banner__retry"
+                                type="button"
+                                hidden>
+
+                            Try again
+
+                        </button>
+
+
+                        <button id="dismiss-error-button"
+                                class="error-banner__dismiss"
+                                type="button">
+
+                            Dismiss
+
+                        </button>
+
+                    </div>
+
                 </div>
 
                 <div id="effort-toggle"
@@ -238,8 +657,17 @@
                     </button>
                 </div>
 
-                <form id="chat-form" class="composer">
-                    <label class="visually-hidden" for="question">Ask a coaching question</label>
+                <form id="chat-form"
+                      class="composer">
+
+                    <label class="visually-hidden"
+                           for="question">
+
+                        Ask a coaching question
+
+                    </label>
+
+
                     <textarea id="question"
                               name="question"
                               rows="1"
@@ -247,120 +675,284 @@
                               placeholder="Ask a question..."
                               autocomplete="off"
                               required></textarea>
-                    <button id="send-button" class="send-button" type="submit">Send</button>
+
+
+                    <button id="send-button"
+                            class="send-button"
+                            type="submit">
+
+                        Send
+
+                    </button>
+
+
                     <button id="composer-plus-button"
                             class="composer__plus"
                             type="button"
                             aria-label="More options"
                             title="More options">
+
                         +
+
                     </button>
+
                 </form>
+
             </section>
 
-            <aside id="right-sidebar" class="sidebar sidebar--right"
-                   aria-label="Quick questions">
+
+            <!-- =================================================
+                 SAVED QUESTIONS
+                 ================================================= -->
+
+            <aside id="right-sidebar"
+                   class="sidebar sidebar--right"
+                   aria-label="Saved questions">
+
                 <section class="explore-panel"
                          aria-labelledby="explore-heading">
+
+
                     <div class="explore-panel__top">
+
                         <div class="explore-panel__heading">
+
                             <p class="section-eyebrow">
-                                Quick start
+                                Quick Questions
                             </p>
 
+
                             <h2 id="explore-heading">
-                                Explore
+                                Saved Questions
                             </h2>
+
                         </div>
+
 
                         <button id="quick-questions-edit"
                                 class="quick-questions__edit"
                                 type="button">
+
                             Edit
+
                         </button>
+
                     </div>
 
+
                     <p class="explore-panel__description">
-                        Start with a suggested natural-language
-                        coaching question.
+
+                        Save questions you use often and reuse them
+                        without typing them again.
+
                     </p>
 
 
-                    <!-- Saved Quick Questions -->
-
                     <div id="quick-questions-list"
-                         class="explore-list"></div>
+                         class="explore-list">
+                    </div>
 
-
-                    <!-- Quick Question editor -->
 
                     <div id="quick-questions-editor"
                          class="quick-questions-editor"
                          hidden>
+
+
                         <div id="quick-questions-editor-list"
-                             class="quick-questions-editor__list"></div>
+                             class="quick-questions-editor__list">
+                        </div>
+
 
                         <button id="quick-question-add"
                                 class="quick-question-add"
                                 type="button">
+
                             Add question
+
                         </button>
 
+
                         <div class="quick-questions-editor__actions">
+
                             <button id="quick-questions-cancel"
                                     class="quick-question-secondary"
                                     type="button">
+
                                 Cancel
+
                             </button>
+
 
                             <button id="quick-questions-save"
                                     class="quick-question-save"
                                     type="button">
+
                                 Save
+
                             </button>
+
                         </div>
+
                     </div>
+
                 </section>
+
             </aside>
+
         </main>
+
+
+        <!-- =====================================================
+             LEFT SIDEBAR LEGACY REOPEN
+             ===================================================== -->
+
+        <button id="sidebar-reopen-button"
+                class="sidebar-reopen"
+                type="button"
+                aria-label="Show workspace sidebar"
+                title="Show workspace sidebar">
+
+            <span aria-hidden="true">
+                &gt;
+            </span>
+
+        </button>
+
+
+        <!-- =====================================================
+             SAVED QUESTIONS REOPEN
+             ===================================================== -->
+
+        <button id="quick-questions-reopen-button"
+                class="quick-questions-reopen"
+                type="button"
+                aria-label="Show saved questions"
+                title="Show saved questions">
+
+            <span>
+                Saved Questions
+            </span>
+
+            <strong aria-hidden="true">
+                &lt;
+            </strong>
+
+        </button>
+
     </div>
 
-    <!--
-        The existing citation viewer is deliberately retained. It still opens
-        PDF pages, video timestamps, slide text, table evidence and SQL without
-        losing the conversation; only its visual treatment has changed.
-    -->
+
+    <!-- =========================================================
+         SOURCE PANEL
+         ========================================================= -->
+
     <aside id="source-panel"
            class="source-panel"
            role="complementary"
            aria-labelledby="source-panel-title"
            hidden>
+
+
         <header class="source-panel__header">
+
             <div>
-                <p class="source-panel__eyebrow">Supporting evidence</p>
-                <h2 id="source-panel-title">Source</h2>
-                <p id="source-panel-meta" class="source-panel__meta" hidden></p>
+
+                <p class="source-panel__eyebrow">
+                    Supporting evidence
+                </p>
+
+                <h2 id="source-panel-title">
+                    Source
+                </h2>
+
+                <p id="source-panel-meta"
+                   class="source-panel__meta"
+                   hidden>
+                </p>
+
             </div>
+
 
             <button id="source-panel-close"
                     class="source-panel__close"
                     type="button">
+
                 Close
+
             </button>
+
         </header>
 
-        <div id="source-panel-body" class="source-panel__body"></div>
+
+        <div id="source-panel-body"
+             class="source-panel__body">
+        </div>
+
 
         <footer class="source-panel__footer">
+
             <a id="source-panel-download"
                class="source-panel__download"
                target="_blank"
                rel="noopener noreferrer">
+
                 Open in a new tab
+
             </a>
+
         </footer>
+
     </aside>
 
-    <script type="module" src="/scripts/app.js"></script>
+
+    <!-- =========================================================
+         DEFAULT SIDEBAR STATE
+         ========================================================= -->
+
+    <script>
+
+        (() => {
+
+            try {
+
+                const migrationKey =
+                    "tennisexplore.sidebarRailV3Initialised";
+
+
+                if (
+                    window.localStorage.getItem(
+                        migrationKey
+                    ) !== "true"
+                ) {
+
+                    window.localStorage.setItem(
+                        "tennisexplore.sidebarCollapsed",
+                        "true"
+                    );
+
+
+                    window.localStorage.setItem(
+                        migrationKey,
+                        "true"
+                    );
+
+                }
+
+            } catch {
+
+                // Layout preference is optional.
+
+            }
+
+        })();
+
+    </script>
+
+
+    <script type="module"
+            src="/scripts/app.js">
+    </script>
+
 </body>
+
 </html>
