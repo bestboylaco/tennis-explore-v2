@@ -51,6 +51,37 @@ export function getChatEndpoint() {
 }
 
 /**
+ * A query-string override for the per-request effort level (TENISE-68).
+ *
+ * The composer now has a visible Standard/Fast/Thorough toggle (app.js) --
+ * a deliberate product decision to offer this choice, unlike `endpoint`
+ * above. This function stays as a secondary path: useful for acceptance
+ * testing or sharing a link pre-set to a mode without touching the toggle.
+ * `chatApi.js`'s `submitChatQuestion` only falls back to this when its
+ * caller does not pass an explicit `effort` argument, so the toggle always
+ * wins when both are present. chat.validation.js's rule is unaffected: the
+ * field is still optional and omitting it (Standard) changes nothing.
+ *
+ * Example:
+ * http://localhost:3000/?effort=fast
+ */
+export function getEffortOverride() {
+    const searchParameters = new URLSearchParams(
+        window.location.search,
+    );
+
+    const effortOverride =
+        searchParameters.get("effort");
+
+    return (
+        effortOverride === "fast" ||
+        effortOverride === "thorough"
+    )
+        ? effortOverride
+        : null;
+}
+
+/**
  * Read-only telemetry API backing the debugging dashboard.
  *
  * GET /api/telemetry             list of records

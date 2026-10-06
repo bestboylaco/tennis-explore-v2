@@ -4,9 +4,14 @@
   "embeddingModel": "bge-m3",
   "contextual": "template",
   "chunking": {
-    "targetChars": 1600,
+    "fallbackMinChars": 40,
+    "minChars": 120,
     "overlapChars": 200,
-    "minChars": 120
+    "recordMaxChars": 1400,
+    "rowsPerChunk": 1,
+    "slideMinChars": 40,
+    "tableHeadroomChars": 32,
+    "targetChars": 1600
   },
   "sourceDirs": [
     "C:\\Users\\User\\Desktop\\TA_S2\\document-resources\\research-pdfs",
@@ -14,9 +19,12 @@
     "data\\video",
     "data/media",
     "data/media (wayne_elderton x3)",
-    "data\\media"
+    "data\\media",
+    "data/raw/document-resources/research-pdfs",
+    "data/raw/document-resources/research-pdfs",
+    "data/raw/document-resources/research-pdfs"
   ],
-  "chunkCount": 103327,
+  "chunkCount": 103339,
   "dimension": 1024,
   "quantisation": "int8",
   "quantScale": 127,
@@ -27,20 +35,20 @@
     },
     {
       "index": 1,
-      "count": 37921
+      "count": 37922
     },
     {
       "index": 2,
-      "count": 24795
+      "count": 24806
     }
   ],
-  "builtAt": "2026-09-28T07:01:00.957Z",
+  "builtAt": "2026-10-01T13:44:36.818Z",
   "fileCount": 2760,
   "skippedCount": 21,
   "schemaFailures": 0,
   "uploadFailureCount": 0,
   "bm25": {
-    "vocabSize": 363129,
-    "postings": 12324530
+    "vocabSize": 362755,
+    "postings": 12301972
   }
 }

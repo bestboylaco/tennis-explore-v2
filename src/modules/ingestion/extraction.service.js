@@ -109,6 +109,29 @@ async function extractPdf(filePath) {
     pages = await extractPdfWithPoppler(filePath);
   }
 
+  // a born-digital pdf keeps its own text layer for prose, but if someone paid
+  // to run it through bin/textract-extract.js, its TABLES are used too
+  // (TENISE-66). a text layer flattens a table into one run of cells -- a
+  // two-level "Male | Female" x "Point | Game | Set | Match" header comes out
+  // as "Point Male Match Point Female Match Game Set Game Set", and the model
+  // read men's and women's match distances backwards from exactly that. the
+  // prose chunks are left as they are, the same way scanned documents keep
+  // Textract's page text alongside its tables. no cache entry: nothing changes.
+  if (pages.length > 0) {
+    const cached = await readTextractCache(filePath);
+
+    if (cached && cached.tables.length > 0) {
+      return {
+        pages,
+        tables: cached.tables,
+        rawInfo: {},
+        ocr: false,
+        ocrEngine: null,
+        synthetic: cached.synthetic,
+      };
+    }
+  }
+
   // a scanned document, then: pdf.js found no text layer and poppler could not
   // recover one either. there is no separate "is this a scan?" detector because
   // this IS the detector -- two independent parsers returning nothing is what

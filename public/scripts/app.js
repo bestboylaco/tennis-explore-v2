@@ -3,38 +3,31 @@ import {
     submitChatQuestion,
 } from "./api/chatApi.js";
 
-
 import {
     getCurrentUser,
     logout,
 } from "./api/authApi.js";
-
 
 import {
     appendAssistantMessage,
     appendUserMessage,
 } from "./ui/messageRenderer.js";
 
-
 import {
     createProcessingStatus,
 } from "./ui/processingStatus.js";
-
 
 import {
     createSourcePanel,
 } from "./ui/sourcePanel.js";
 
-
 import {
     createChatHistory,
 } from "./ui/chatHistory.js";
 
-
 import {
     createQuickQuestions,
 } from "./ui/quickQuestions.js";
-
 
 import {
     createPdfUpload,
@@ -55,7 +48,6 @@ if (!currentUser) {
         "/login",
     );
 
-
     throw new Error(
         "Redirecting to sign in.",
     );
@@ -64,7 +56,7 @@ if (!currentUser) {
 
 
 /* ==========================================================================
-   DOM HELPER
+   DOM HELPERS
    ========================================================================== */
 
 function getRequiredElement(
@@ -87,6 +79,17 @@ function getRequiredElement(
 
 
     return element;
+
+}
+
+
+function getOptionalElement(
+    selector,
+) {
+
+    return document.querySelector(
+        selector,
+    );
 
 }
 
@@ -119,14 +122,18 @@ const conversation =
     );
 
 
+/*
+ * New UI landing page.
+ */
+
 const conversationEmpty =
-    getRequiredElement(
+    getOptionalElement(
         "#conversation-empty",
     );
 
 
 const welcomeSourceCount =
-    getRequiredElement(
+    getOptionalElement(
         "#welcome-source-count",
     );
 
@@ -137,8 +144,21 @@ const welcomeSuggestions =
     );
 
 
+/*
+ * TENISE-68.
+ *
+ * Optional here so this branch does not crash if an older
+ * index.html is temporarily used during a merge.
+ */
+
+const effortToggle =
+    getOptionalElement(
+        "#effort-toggle",
+    );
+
+
 /* ==========================================================================
-   SIDEBARS
+   SIDEBAR CONTROLLER
    ========================================================================== */
 
 function createSidebarToggle({
@@ -150,9 +170,16 @@ function createSidebarToggle({
 }) {
 
     const button =
-        getRequiredElement(
+        getOptionalElement(
             buttonSelector,
         );
+
+
+    if (!button) {
+
+        return null;
+
+    }
 
 
     function readStored() {
@@ -263,102 +290,101 @@ function createSidebarToggle({
         },
     );
 
+
+    return button;
+
 }
 
 
-/* Left sidebar */
+/* Left navigation */
 
-createSidebarToggle({
+const sidebarToggleButton =
+    createSidebarToggle({
 
-    buttonSelector:
-        "#sidebar-toggle-button",
+        buttonSelector:
+            "#sidebar-toggle-button",
 
-    bodyClass:
-        "sidebar-collapsed",
+        bodyClass:
+            "sidebar-collapsed",
 
-    storageKey:
-        "tennisexplore.sidebarCollapsed",
+        storageKey:
+            "tennisexplore.sidebarCollapsed",
 
-    showLabel:
-        "Show sidebar",
+        showLabel:
+            "Show sidebar",
 
-    hideLabel:
-        "Hide sidebar",
+        hideLabel:
+            "Hide sidebar",
 
-});
+    });
 
 
 /* Saved Questions */
 
-createSidebarToggle({
+const quickQuestionsToggle =
+    createSidebarToggle({
 
-    buttonSelector:
-        "#quick-start-toggle-button",
+        buttonSelector:
+            "#quick-start-toggle-button",
 
-    bodyClass:
-        "sidebar-collapsed-right",
+        bodyClass:
+            "sidebar-collapsed-right",
 
-    storageKey:
-        "tennisexplore.quickStartCollapsed",
+        storageKey:
+            "tennisexplore.quickStartCollapsed",
 
-    showLabel:
-        "Show saved questions",
+        showLabel:
+            "Show saved questions",
 
-    hideLabel:
-        "Hide saved questions",
+        hideLabel:
+            "Hide saved questions",
 
-});
+    });
 
 
-const sidebarToggleButton =
-    getRequiredElement(
-        "#sidebar-toggle-button",
-    );
-
+/* Legacy left-side reopen button */
 
 const sidebarReopenButton =
-    getRequiredElement(
+    getOptionalElement(
         "#sidebar-reopen-button",
     );
 
 
 sidebarReopenButton
-    .addEventListener(
+    ?.addEventListener(
         "click",
         () => {
 
             sidebarToggleButton
-                .click();
+                ?.click();
 
         },
     );
 
 
-const quickQuestionsToggle =
-    getRequiredElement(
-        "#quick-start-toggle-button",
-    );
-
+/* Saved Questions collapsed tab */
 
 const quickQuestionsReopen =
-    getRequiredElement(
+    getOptionalElement(
         "#quick-questions-reopen-button",
     );
 
 
 quickQuestionsReopen
-    .addEventListener(
+    ?.addEventListener(
         "click",
         () => {
 
             quickQuestionsToggle
-                .click();
+                ?.click();
 
         },
     );
 
 
-/* Quick Questions editor elements are also used by Save Question. */
+/* ==========================================================================
+   QUICK QUESTIONS ELEMENTS
+   ========================================================================== */
 
 const quickQuestionsEditButton =
     getRequiredElement(
@@ -384,6 +410,18 @@ const quickQuestionAddButton =
     );
 
 
+const quickQuestionsSaveButton =
+    getRequiredElement(
+        "#quick-questions-save",
+    );
+
+
+const quickQuestionsCancelButton =
+    getRequiredElement(
+        "#quick-questions-cancel",
+    );
+
+
 /* ==========================================================================
    ERROR STATE
    ========================================================================== */
@@ -394,21 +432,9 @@ const errorBanner =
     );
 
 
-const errorTitle =
-    getRequiredElement(
-        "#error-title",
-    );
-
-
 const errorMessage =
     getRequiredElement(
         "#error-message",
-    );
-
-
-const retryErrorButton =
-    getRequiredElement(
-        "#retry-error-button",
     );
 
 
@@ -418,9 +444,118 @@ const dismissErrorButton =
     );
 
 
+/*
+ * Support both:
+ *
+ * 1. the newer index.html containing #error-title
+ *    and #retry-error-button;
+ *
+ * 2. the older index.html with only a <strong> and Dismiss.
+ */
+
+let errorTitle =
+    getOptionalElement(
+        "#error-title",
+    );
+
+
+if (!errorTitle) {
+
+    errorTitle =
+        errorBanner.querySelector(
+            "strong",
+        );
+
+
+    if (errorTitle) {
+
+        errorTitle.id =
+            "error-title";
+
+    }
+
+}
+
+
+let errorActions =
+    errorBanner.querySelector(
+        ".error-banner__actions",
+    );
+
+
+if (!errorActions) {
+
+    errorActions =
+        document.createElement(
+            "div",
+        );
+
+
+    errorActions.className =
+        "error-banner__actions";
+
+
+    dismissErrorButton
+        .before(
+            errorActions,
+        );
+
+
+    errorActions.append(
+        dismissErrorButton,
+    );
+
+}
+
+
+let retryErrorButton =
+    getOptionalElement(
+        "#retry-error-button",
+    );
+
+
+if (!retryErrorButton) {
+
+    retryErrorButton =
+        document.createElement(
+            "button",
+        );
+
+
+    retryErrorButton.id =
+        "retry-error-button";
+
+
+    retryErrorButton.type =
+        "button";
+
+
+    retryErrorButton.className =
+        "text-button error-banner__retry";
+
+
+    retryErrorButton.textContent =
+        "Try again";
+
+
+    retryErrorButton.hidden =
+        true;
+
+
+    errorActions.prepend(
+        retryErrorButton,
+    );
+
+}
+
+
 let retryAction =
     null;
 
+
+/* ==========================================================================
+   FRIENDLY ERROR MESSAGES
+   ========================================================================== */
 
 function friendlyErrorMessage(
     error,
@@ -463,9 +598,12 @@ function friendlyErrorMessage(
     if (
         error?.name ===
         "AbortError" ||
-        /timeout|timed out/i.test(
-            raw,
-        )
+        error?.status ===
+        408 ||
+        /timeout|timed out/i
+            .test(
+                raw,
+            )
     ) {
 
         return (
@@ -518,19 +656,27 @@ function friendlyErrorMessage(
 }
 
 
+/* ==========================================================================
+   ERROR CONTROLS
+   ========================================================================== */
+
 function showError(
     message,
     {
         title =
-        "Something went wrong",
+            "Something went wrong",
 
         retry =
-        null,
+            null,
     } = {},
 ) {
 
-    errorTitle.textContent =
-        title;
+    if (errorTitle) {
+
+        errorTitle.textContent =
+            title;
+
+    }
 
 
     errorMessage.textContent =
@@ -732,6 +878,13 @@ function setConversationEmpty(
     isEmpty,
 ) {
 
+    if (!conversationEmpty) {
+
+        return;
+
+    }
+
+
     conversationEmpty.hidden =
         !isEmpty;
 
@@ -795,7 +948,7 @@ function prefillSavedQuestionEditor(
     ) {
 
         quickQuestionsToggle
-            .click();
+            ?.click();
 
     }
 
@@ -815,8 +968,8 @@ function prefillSavedQuestionEditor(
 
 
     /*
-     * Wait until the editor is rendered,
-     * then add a new row.
+     * Allow Quick Questions to render the editor before
+     * inserting a new row.
      */
 
     requestAnimationFrame(
@@ -838,7 +991,8 @@ function prefillSavedQuestionEditor(
 
                     const row =
                         rows[
-                        rows.length - 1
+                            rows.length -
+                            1
                         ];
 
 
@@ -863,7 +1017,8 @@ function prefillSavedQuestionEditor(
 
                     if (
                         titleInput &&
-                        titleInput.value.trim() ===
+                        titleInput.value
+                            .trim() ===
                         ""
                     ) {
 
@@ -897,8 +1052,8 @@ function prefillSavedQuestionEditor(
 
 
 /*
- * Render normal user bubble and add a subtle
- * Save Question control underneath it.
+ * Keep messageRenderer.js responsible for the message itself.
+ * This function adds only a small UI action beneath user messages.
  */
 
 function appendUserMessageWithActions({
@@ -1052,6 +1207,10 @@ function renderConversation(
                 content:
                     message.content,
 
+                sections:
+                    message.sections ??
+                    [],
+
                 citations:
                     message.citations ??
                     [],
@@ -1187,6 +1346,13 @@ const chatHistory =
 
 async function loadWelcomeInfo() {
 
+    if (!welcomeSourceCount) {
+
+        return;
+
+    }
+
+
     let sourceCount =
         null;
 
@@ -1306,14 +1472,10 @@ await createQuickQuestions({
         quickQuestionAddButton,
 
     saveButton:
-        getRequiredElement(
-            "#quick-questions-save",
-        ),
+        quickQuestionsSaveButton,
 
     cancelButton:
-        getRequiredElement(
-            "#quick-questions-cancel",
-        ),
+        quickQuestionsCancelButton,
 
 
     onSelectQuestion(
@@ -1418,6 +1580,26 @@ function setBusy(
         busy,
     );
 
+
+    if (
+        effortToggle
+    ) {
+
+        for (
+            const button
+            of effortToggle
+                .querySelectorAll(
+                    ".toggle-group__button",
+                )
+        ) {
+
+            button.disabled =
+                busy;
+
+        }
+
+    }
+
 }
 
 
@@ -1478,6 +1660,179 @@ createPdfUpload({
 
 
 /* ==========================================================================
+   EFFORT TOGGLE - TENISE-68
+   ========================================================================== */
+
+const EFFORT_STORAGE_KEY =
+    "tennisexplore.effort";
+
+
+function readStoredEffort() {
+
+    try {
+
+        const stored =
+            window.localStorage
+                .getItem(
+                    EFFORT_STORAGE_KEY,
+                );
+
+
+        return (
+            stored === "fast" ||
+            stored === "thorough"
+        )
+            ? stored
+            : "";
+
+    } catch {
+
+        return "";
+
+    }
+
+}
+
+
+function writeStoredEffort(
+    effort,
+) {
+
+    try {
+
+        window.localStorage
+            .setItem(
+                EFFORT_STORAGE_KEY,
+                effort,
+            );
+
+    } catch {
+
+        // Storage is optional.
+
+    }
+
+}
+
+
+let selectedEffort =
+    readStoredEffort();
+
+
+function applyEffortButtonStates() {
+
+    if (!effortToggle) {
+
+        return;
+
+    }
+
+
+    for (
+        const button
+        of effortToggle
+            .querySelectorAll(
+                ".toggle-group__button",
+            )
+    ) {
+
+        const isActive =
+            (
+                button.dataset
+                    .effortValue ??
+                ""
+            ) ===
+            selectedEffort;
+
+
+        button.classList
+            .toggle(
+                "toggle-group__button--active",
+                isActive,
+            );
+
+
+        button.setAttribute(
+            "aria-checked",
+            String(
+                isActive,
+            ),
+        );
+
+    }
+
+}
+
+
+effortToggle
+    ?.addEventListener(
+        "click",
+        (
+            event,
+        ) => {
+
+            const button =
+                event.target
+                    .closest(
+                        ".toggle-group__button",
+                    );
+
+
+            if (!button) {
+
+                return;
+
+            }
+
+
+            selectedEffort =
+                button.dataset
+                    .effortValue ??
+                "";
+
+
+            writeStoredEffort(
+                selectedEffort,
+            );
+
+
+            applyEffortButtonStates();
+
+        },
+    );
+
+
+applyEffortButtonStates();
+
+
+/* ==========================================================================
+   ACTIVE CONVERSATION
+   ========================================================================== */
+
+function getActiveConversationId() {
+
+    if (
+        typeof chatHistory
+            .getActiveConversation !==
+        "function"
+    ) {
+
+        return null;
+
+    }
+
+
+    return (
+        chatHistory
+            .getActiveConversation()
+            ?.id ??
+        null
+    );
+
+}
+
+
+/* ==========================================================================
    ASSISTANT REQUEST
    ========================================================================== */
 
@@ -1498,9 +1853,30 @@ async function requestAssistantAnswer(
 
     try {
 
+        const conversationId =
+            getActiveConversationId();
+
+
+        /*
+         * This call is compatible with the main TENISE-68 API shape:
+         *
+         * question
+         * conversationId
+         * selectedEffort
+         *
+         * If chatApi.js is still the older single-argument version,
+         * JavaScript safely ignores the additional arguments.
+         */
+
         const result =
             await submitChatQuestion(
+
                 question,
+
+                conversationId,
+
+                selectedEffort,
+
             );
 
 
@@ -1515,6 +1891,10 @@ async function requestAssistantAnswer(
                 response.answerApa ??
                 response.answer ??
                 "No answer was returned.",
+
+            sections:
+                response.sections ??
+                [],
 
             citations:
                 result?.citations ??
@@ -1540,8 +1920,8 @@ async function requestAssistantAnswer(
 
 
         /*
-         * Do not prevent the answer from appearing if
-         * history persistence temporarily fails.
+         * History persistence should not prevent an otherwise
+         * successful AI response from being displayed.
          */
 
         try {
@@ -1552,7 +1932,7 @@ async function requestAssistantAnswer(
                 );
 
         } catch (
-        historyError
+            historyError
         ) {
 
             if (
@@ -1565,7 +1945,7 @@ async function requestAssistantAnswer(
                 );
 
 
-                return;
+                return false;
 
             }
 
@@ -1603,7 +1983,7 @@ async function requestAssistantAnswer(
         return true;
 
     } catch (
-    error
+        error
     ) {
 
         if (
@@ -1633,10 +2013,10 @@ async function requestAssistantAnswer(
                     "Something went wrong",
 
                 /*
-                 * Retry only repeats the AI request.
+                 * Retry repeats only the assistant request.
                  *
-                 * It does not create another user bubble or
-                 * another user History record.
+                 * It does not add another user bubble
+                 * and does not save the user turn again.
                  */
                 retry:
                     () =>
@@ -1706,7 +2086,8 @@ chatForm
 
 
             /*
-             * Render the user bubble immediately.
+             * Render immediately so the UI responds without waiting
+             * for persistence or retrieval.
              */
 
             appendUserMessageWithActions({
@@ -1725,10 +2106,7 @@ chatForm
 
 
             /*
-             * Save the user message to history.
-             *
-             * A temporary History failure should not prevent
-             * the actual AI request from continuing.
+             * History failure should not stop the actual AI request.
              */
 
             try {
@@ -1739,7 +2117,7 @@ chatForm
                     );
 
             } catch (
-            historyError
+                historyError
             ) {
 
                 if (

@@ -1813,6 +1813,55 @@ body.has-source-panel .sidebar--right {
     gap: 10px;
 }
 
+/*
+ * Effort toggle (TENISE-68). Reuses the .toggle-group/.toggle-group__button
+ * naming already established by the telemetry dashboard (see telemetry.css)
+ * for the same visual idea -- a pill-shaped segmented control -- recoloured
+ * to this page's green composer palette instead of telemetry's purple.
+ *
+ * "Standard" (no value, the default) sends no `effort` field at all, so a
+ * coach who never touches this gets byte-identical behaviour to before this
+ * control existed. Fast/Thorough are explicit opt-ins, never required.
+ */
+.composer__effort {
+    align-self: flex-start;
+    margin-bottom: 8px;
+}
+
+.toggle-group {
+    display: inline-flex;
+    padding: 3px;
+    gap: 3px;
+    border: 1px solid rgba(39, 87, 59, 0.18);
+    border-radius: 999px;
+    background: rgba(255, 255, 252, 0.9);
+}
+
+.toggle-group__button {
+    padding: 5px 14px;
+    border: 0;
+    border-radius: 999px;
+    color: #2f5d44;
+    font-size: 0.78rem;
+    font-weight: 600;
+    background: transparent;
+    cursor: pointer;
+    transition: color 0.15s ease, background 0.15s ease;
+}
+
+    .toggle-group__button:hover {
+        background: #eef3e9;
+    }
+
+.toggle-group__button--active {
+    color: #ffffff;
+    background: linear-gradient(135deg, #397b5d, #286249);
+}
+
+    .toggle-group__button--active:hover {
+        background: linear-gradient(135deg, #397b5d, #286249);
+    }
+
 .composer__input,
 #question {
     flex: 1;
