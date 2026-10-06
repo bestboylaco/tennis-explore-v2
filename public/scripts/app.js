@@ -664,10 +664,10 @@ function showError(
     message,
     {
         title =
-            "Something went wrong",
+        "Something went wrong",
 
         retry =
-            null,
+        null,
     } = {},
 ) {
 
@@ -991,8 +991,8 @@ function prefillSavedQuestionEditor(
 
                     const row =
                         rows[
-                            rows.length -
-                            1
+                        rows.length -
+                        1
                         ];
 
 
@@ -1932,7 +1932,7 @@ async function requestAssistantAnswer(
                 );
 
         } catch (
-            historyError
+        historyError
         ) {
 
             if (
@@ -1983,7 +1983,7 @@ async function requestAssistantAnswer(
         return true;
 
     } catch (
-        error
+    error
     ) {
 
         if (
@@ -2117,7 +2117,7 @@ chatForm
                     );
 
             } catch (
-                historyError
+            historyError
             ) {
 
                 if (
