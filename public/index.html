@@ -797,7 +797,32 @@
 
                 </section>
 
+                <button id="quick-questions-collapse-handle"
+                        class="quick-questions-collapse-handle"
+                        type="button"
+                        aria-label="Hide saved questions"
+                        title="Hide saved questions">
+                    <span aria-hidden="true">&lt;</span>
+                </button>
+
             </aside>
+
+            <!-- Adjacent grid tab: remains available when Saved Questions closes -->
+            <button id="quick-questions-reopen-button"
+                    class="quick-questions-reopen"
+                    type="button"
+                    aria-label="Show saved questions"
+                    title="Show saved questions">
+
+                <span>
+                    Saved Questions
+                </span>
+
+                <strong aria-hidden="true">
+                    >
+                </strong>
+
+            </button>
 
         </main>
 
@@ -815,27 +840,6 @@
             <span aria-hidden="true">
                 &gt;
             </span>
-
-        </button>
-
-
-        <!-- =====================================================
-             SAVED QUESTIONS REOPEN
-             ===================================================== -->
-
-        <button id="quick-questions-reopen-button"
-                class="quick-questions-reopen"
-                type="button"
-                aria-label="Show saved questions"
-                title="Show saved questions">
-
-            <span>
-                Saved Questions
-            </span>
-
-            <strong aria-hidden="true">
-                &lt;
-            </strong>
 
         </button>
 
@@ -950,8 +954,7 @@
 
 
     <script type="module"
-            src="/scripts/app.js">
-    </script>
+            src="/scripts/app.js"></script>
 
 </body>
 

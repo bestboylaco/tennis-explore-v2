@@ -382,6 +382,30 @@ quickQuestionsReopen
     );
 
 
+/* Inline collapse control uses the existing stateful sidebar toggle. */
+getOptionalElement("#quick-questions-collapse-handle")
+    ?.addEventListener("click", () => {
+        if (!document.body.classList.contains("sidebar-collapsed-right")) {
+            quickQuestionsToggle?.click();
+        }
+    });
+
+/* In compact rail mode, open the full left sidebar before revealing history.
+   This removes the small flyout but keeps History accessible. */
+getOptionalElement("#chat-history-toggle")
+    ?.addEventListener("click", (event) => {
+        if (!document.body.classList.contains("sidebar-collapsed") ||
+            window.matchMedia("(max-width: 69.99rem)").matches) {
+            return;
+        }
+        event.preventDefault();
+        event.stopImmediatePropagation();
+        sidebarToggleButton?.click();
+        queueMicrotask(() => {
+            getOptionalElement("#chat-history-toggle")?.click();
+        });
+    }, true);
+
 /* ==========================================================================
    QUICK QUESTIONS ELEMENTS
    ========================================================================== */

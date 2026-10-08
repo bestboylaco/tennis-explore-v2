@@ -943,3 +943,631 @@ body.chat-page {
         transition: none !important;
     }
 }
+
+/* ==========================================================================
+   LAYOUT CORRECTIONS — 2026-10-08
+   Keeps the existing visual theme and all JavaScript hooks unchanged.
+   ========================================================================== */
+
+/* Restore the original 96rem desktop workspace width. Keep all three
+   columns in the SAME grid so Saved Questions always sits next to the chat
+   panel instead of remaining at the far edge of the viewport. */
+@media (min-width: 62.01rem) {
+    .chat-page .chat-application {
+        box-sizing: border-box;
+        width: 100%;
+        max-width: none;
+    }
+
+    .chat-page .chat-topbar,
+    .chat-page .workspace {
+        box-sizing: border-box;
+        width: min(100%, 96rem);
+        max-width: 96rem;
+        margin-left: 0;
+        margin-right: auto;
+    }
+
+    .chat-page .workspace {
+        min-width: 0;
+    }
+
+    .chat-page .chat-panel {
+        box-sizing: border-box;
+        min-width: 0;
+        width: 100%;
+    }
+
+    /* The collapsed-right state must override the two-column combination too.
+       Keep the third track at zero; do not reserve an invisible sidebar. */
+    .chat-page.sidebar-collapsed-right .workspace {
+        grid-template-columns: var(--left-sidebar-width) minmax(0, 1fr) 0px !important;
+        column-gap: var(--space-5) !important;
+    }
+
+    .chat-page.sidebar-collapsed-right .sidebar--right {
+        box-sizing: border-box;
+        min-width: 0 !important;
+        width: 0 !important;
+        padding: 0 !important;
+        border: 0 !important;
+        overflow: hidden !important;
+        opacity: 0;
+        pointer-events: none;
+    }
+}
+
+@media (min-width: 70rem) {
+    .chat-page.sidebar-collapsed {
+        --left-sidebar-width: 4.7rem;
+    }
+
+        .chat-page.sidebar-collapsed .workspace {
+            grid-template-columns: var(--left-sidebar-width) minmax(0, 1fr) var(--right-sidebar-width) !important;
+            column-gap: var(--space-5) !important;
+        }
+
+        .chat-page.sidebar-collapsed.sidebar-collapsed-right .workspace {
+            grid-template-columns: var(--left-sidebar-width) minmax(0, 1fr) 0px !important;
+            column-gap: var(--space-5) !important;
+        }
+
+        /* All rail controls share a single horizontal centreline. Do not let the
+       absolute-positioned history badge affect the icon's layout position. */
+        .chat-page.sidebar-collapsed .sidebar--left {
+            align-items: stretch !important;
+            padding-right: 0.48rem;
+            padding-left: 0.48rem;
+            position: relative;
+            z-index: 30;
+            overflow: visible !important; /* Allow history flyout and tooltips. */
+        }
+
+            .chat-page.sidebar-collapsed .sidebar--left .navigation,
+            .chat-page.sidebar-collapsed .sidebar--left .chat-history,
+            .chat-page.sidebar-collapsed .sidebar--left .chat-history__controls {
+                box-sizing: border-box;
+                width: 100% !important;
+                min-width: 0;
+                margin-right: 0 !important;
+                margin-left: 0 !important;
+                padding-right: 0 !important;
+                padding-left: 0 !important;
+                align-items: center !important;
+            }
+
+            .chat-page.sidebar-collapsed .sidebar--left .navigation__item,
+            .chat-page.sidebar-collapsed .sidebar--left .chat-history__toggle,
+            .chat-page.sidebar-collapsed .sidebar--left .chat-history__new {
+                box-sizing: border-box;
+                position: relative;
+                width: 3.2rem !important;
+                min-width: 3.2rem !important;
+                max-width: 3.2rem !important;
+                height: 3.2rem !important;
+                min-height: 3.2rem !important;
+                padding: 0 !important;
+                margin: 0 auto !important;
+                flex: 0 0 3.2rem;
+                display: flex !important;
+                align-items: center !important;
+                justify-content: center !important;
+                text-align: center;
+            }
+
+                .chat-page.sidebar-collapsed .sidebar--left .navigation__item::before,
+                .chat-page.sidebar-collapsed .sidebar--left .chat-history__toggle::before,
+                .chat-page.sidebar-collapsed .sidebar--left .chat-history__new::before {
+                    position: static !important;
+                    box-sizing: border-box;
+                    display: block;
+                    width: 1.42rem !important;
+                    min-width: 1.42rem;
+                    height: 1.42rem !important;
+                    flex: 0 0 1.42rem !important;
+                    margin: 0 !important;
+                    transform: none !important;
+                }
+
+        .chat-page.sidebar-collapsed #chat-history-count.chat-history__count {
+            position: absolute !important;
+            top: 0.04rem !important;
+            right: 0.04rem !important;
+            width: auto;
+            min-width: 1.12rem;
+            height: 1.12rem;
+            min-height: 1.12rem;
+            padding: 0 0.22rem;
+            display: inline-flex !important;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid #f8faf4;
+            border-radius: 999px;
+            color: #fff;
+            background: #327457;
+            font-size: 0.59rem !important;
+            font-weight: 700;
+            line-height: 1;
+            pointer-events: none;
+        }
+}
+
+/* Between 62rem and 70rem the legacy CSS fully hides the left sidebar;
+   prevent the collapsed-right fix above from accidentally restoring its width. */
+@media (min-width: 62.01rem) and (max-width: 69.99rem) {
+    .chat-page.sidebar-collapsed.sidebar-collapsed-right .workspace {
+        grid-template-columns: 0px minmax(0, 1fr) 0px !important;
+        column-gap: 0 !important;
+    }
+}
+
+/* Position the mode selector and input as a single bottom composer stack.
+   The input remains inside the main chat surface in all sidebar states. */
+.chat-page .chat-panel > .composer__effort {
+    box-sizing: border-box;
+    align-self: flex-start;
+    flex: 0 0 auto;
+    width: max-content;
+    max-width: calc(100% - 2 * var(--space-5));
+    margin: 0 var(--space-5) 0.45rem !important;
+}
+
+.chat-page .chat-panel > .composer {
+    box-sizing: border-box;
+    align-self: stretch;
+    flex: 0 0 auto;
+    min-width: 0;
+    max-width: calc(100% - 2 * var(--space-5));
+    margin: 0 var(--space-5) var(--space-4) !important;
+    display: grid !important;
+    grid-template-columns: minmax(0, 1fr) auto auto !important;
+    align-items: center;
+}
+
+    .chat-page .chat-panel > .composer #question {
+        min-width: 0;
+        width: 100%;
+    }
+
+@media (max-width: 44rem) {
+    .chat-page .chat-panel > .composer__effort {
+        max-width: calc(100% - 2 * var(--space-3));
+        margin-left: var(--space-3) !important;
+        margin-right: var(--space-3) !important;
+    }
+
+    .chat-page .chat-panel > .composer {
+        max-width: calc(100% - 2 * var(--space-3));
+        margin-left: var(--space-3) !important;
+        margin-right: var(--space-3) !important;
+    }
+}
+
+/* Keep the Saved Questions panel close to the chat panel on desktop.
+   No independent right-edge positioning; both stay in the workspace grid. */
+@media (min-width: 70rem) {
+    .chat-page .workspace,
+    .chat-page.sidebar-collapsed .workspace,
+    .chat-page.sidebar-collapsed-right .workspace,
+    .chat-page.sidebar-collapsed.sidebar-collapsed-right .workspace {
+        column-gap: 0.8rem !important;
+    }
+}
+
+/* ==========================================================================
+   STABLE THREE-COLUMN WORKSPACE — left rail | chat | Saved Questions
+   The collapsed control lives IN .workspace, not at the window edge.
+   Do not add an independent absolute layout for the three panels.
+   ========================================================================== */
+
+.chat-page {
+    --te-rail-width: 13rem;
+    --te-chat-max-width: 80rem;
+    --te-saved-width: 15.5rem;
+    --te-tab-width: 2.8rem;
+    --te-right-track: var(--te-saved-width);
+}
+
+    .chat-page.sidebar-collapsed {
+        --te-rail-width: 4.7rem;
+    }
+
+    .chat-page.sidebar-collapsed-right {
+        --te-right-track: var(--te-tab-width);
+    }
+
+@media (min-width: 70rem) {
+    /* Every state uses exactly the same 3 tracks. No spacer tracks. */
+    .chat-page .workspace,
+    .chat-page.sidebar-collapsed .workspace,
+    .chat-page.sidebar-collapsed-right .workspace,
+    .chat-page.sidebar-collapsed.sidebar-collapsed-right .workspace {
+        box-sizing: border-box;
+        position: relative;
+        width: min( calc(var(--te-rail-width) + var(--te-chat-max-width) + var(--te-right-track)), calc(100% - 1rem) ) !important;
+        max-width: none !important;
+        min-width: 0 !important;
+        margin-inline: auto !important;
+        padding: 0 !important;
+        display: grid !important;
+        grid-template-columns: var(--te-rail-width) minmax(0, 1fr) var(--te-right-track) !important;
+        column-gap: 0 !important;
+        row-gap: 0 !important;
+        justify-content: stretch !important;
+        align-items: stretch;
+    }
+
+        .chat-page .workspace > #left-sidebar {
+            box-sizing: border-box;
+            grid-column: 1 !important;
+            grid-row: 1 !important;
+            width: 100% !important;
+            min-width: 0;
+            margin: 0 !important;
+            border-top-right-radius: 0 !important;
+            border-bottom-right-radius: 0 !important;
+        }
+
+        .chat-page .workspace > .chat-panel {
+            box-sizing: border-box;
+            grid-column: 2 !important;
+            grid-row: 1 !important;
+            width: 100% !important;
+            min-width: 0;
+            max-width: none !important;
+            margin: 0 !important;
+            justify-self: stretch !important;
+            border-top-left-radius: 0 !important;
+            border-bottom-left-radius: 0 !important;
+        }
+
+        .chat-page .workspace > #right-sidebar {
+            box-sizing: border-box;
+            grid-column: 3 !important;
+            grid-row: 1 !important;
+            position: relative !important;
+            top: auto !important;
+            right: auto !important;
+            bottom: auto !important;
+            left: auto !important;
+            width: 100% !important;
+            max-height: 100%;
+            min-width: 0 !important;
+            margin: 0 !important;
+            padding: 0 !important;
+            overflow: visible !important;
+            opacity: 1 !important;
+            transform: none !important;
+            pointer-events: auto !important;
+        }
+
+        .chat-page.sidebar-collapsed-right .workspace > #right-sidebar {
+            display: none !important;
+        }
+
+    /* Same centered outer width as the three workspace columns. */
+    .chat-page .chat-topbar {
+        box-sizing: border-box;
+        width: min( calc(var(--te-rail-width) + var(--te-chat-max-width) + var(--te-right-track)), calc(100% - 1rem) ) !important;
+        max-width: none !important;
+        margin-inline: auto !important;
+    }
+
+    /* Put the hamburger exactly above the icon rail's centreline.
+       The brand starts at the chat panel's left edge. */
+    .chat-page .chat-topbar__start {
+        display: grid;
+        grid-template-columns: var(--te-rail-width) max-content;
+        column-gap: 0;
+        align-items: center;
+        min-width: 0;
+    }
+
+        .chat-page .chat-topbar__start > #sidebar-toggle-button {
+            grid-column: 1;
+            justify-self: center;
+            margin: 0;
+        }
+
+        .chat-page .chat-topbar__start > .chat-brand {
+            grid-column: 2;
+            justify-self: start;
+            margin-left: 0.65rem;
+        }
+}
+
+/* Right collapsed button — always anchored to the grid adjacent to chat. */
+.chat-page .workspace > #quick-questions-reopen-button {
+    box-sizing: border-box;
+    grid-column: 3 !important;
+    grid-row: 1 !important;
+    position: relative !important;
+    top: auto !important;
+    left: auto !important;
+    right: auto !important;
+    bottom: auto !important;
+    align-self: center !important;
+    justify-self: start !important;
+    width: 2.8rem !important;
+    height: auto !important;
+    min-height: 9rem;
+    margin: 0 !important;
+    padding: 0.75rem 0.35rem !important;
+    display: none !important;
+    flex-direction: column !important;
+    justify-content: center;
+    align-items: center;
+    gap: 0.55rem;
+    border: 1px solid rgba(39, 88, 59, 0.14);
+    border-left: 0;
+    border-radius: 0 0.9rem 0.9rem 0;
+    color: #355d4c;
+    background: #fcfdf9;
+    box-shadow: 0.5rem 0.6rem 1.4rem rgba(39, 74, 49, 0.07);
+    writing-mode: horizontal-tb;
+    opacity: 1 !important;
+    transform: none !important;
+    pointer-events: auto !important;
+}
+
+.chat-page.sidebar-collapsed-right .workspace > #quick-questions-reopen-button {
+    display: flex !important;
+}
+
+.chat-page .workspace > #quick-questions-reopen-button span {
+    display: block !important;
+    writing-mode: vertical-rl;
+    text-orientation: mixed;
+    white-space: nowrap;
+    font-size: 0.75rem;
+    font-weight: 700;
+}
+
+.chat-page .workspace > #quick-questions-reopen-button strong {
+    display: block;
+    font-size: 1rem;
+    line-height: 1;
+    writing-mode: horizontal-tb;
+}
+
+/* Expanded right-panel close control. */
+#quick-start-toggle-button {
+    display: none !important;
+}
+
+.chat-page .workspace > #right-sidebar .explore-panel {
+    box-sizing: border-box;
+    width: 100%;
+    max-height: 100%;
+    overflow-y: auto;
+}
+
+.chat-page .quick-questions-collapse-handle {
+    position: absolute;
+    z-index: 6;
+    /* Centre the collapse arrow vertically on the entire sidebar,
+       not beside the "Edit" button at the top of the card. */
+    top: 50%;
+    right: -0.6rem;
+    transform: translateY(-50%);
+    width: 1.85rem;
+    height: 1.85rem;
+    padding: 0;
+    display: grid;
+    place-items: center;
+    border-radius: 50%;
+    border: 1px solid rgba(39, 88, 59, 0.14);
+    background: #fff;
+    box-shadow: 0 0.25rem 0.8rem rgba(39, 74, 49, 0.08);
+    color: #315947;
+    cursor: pointer;
+    font-size: 1rem;
+}
+
+.chat-page.sidebar-collapsed-right .quick-questions-collapse-handle {
+    display: none !important;
+}
+
+/* Do not show the temporary history flyout on the compact icon rail. */
+@media (min-width: 70rem) {
+    .chat-page.sidebar-collapsed .chat-history__panel,
+    .chat-page.sidebar-collapsed .chat-history__panel:not([hidden]) {
+        display: none !important;
+    }
+}
+
+/* Tablets: retain a fluid chat surface; Saved Questions opens as an overlay. */
+@media (max-width: 69.99rem) {
+    .chat-page .workspace,
+    .chat-page.sidebar-collapsed .workspace,
+    .chat-page.sidebar-collapsed-right .workspace,
+    .chat-page.sidebar-collapsed.sidebar-collapsed-right .workspace {
+        position: relative;
+        width: 100% !important;
+        max-width: none !important;
+        grid-template-columns: minmax(0, 1fr) !important;
+        gap: 0 !important;
+    }
+
+        .chat-page .workspace > .chat-panel {
+            grid-column: 1 !important;
+            width: 100% !important;
+            max-width: none !important;
+        }
+
+        .chat-page .workspace > #right-sidebar {
+            position: absolute !important;
+            z-index: 30;
+            top: 0;
+            right: 0;
+            left: auto !important;
+            width: min(16rem, 80vw) !important;
+            height: auto;
+            max-height: 95%;
+        }
+
+        .chat-page.sidebar-collapsed-right .workspace > #right-sidebar {
+            display: none !important;
+        }
+
+        .chat-page .workspace > #quick-questions-reopen-button {
+            position: absolute !important;
+            right: 0 !important;
+            top: 40% !important;
+            z-index: 30;
+            width: 2.6rem !important;
+            display: none !important;
+        }
+
+        .chat-page.sidebar-collapsed-right .workspace > #quick-questions-reopen-button {
+            display: flex !important;
+        }
+}
+
+/* At tablet widths, the sidebars become overlay drawers rather than taking
+   implicit grid rows away from the chat. */
+@media (max-width: 69.99rem) {
+    .chat-page .workspace > #left-sidebar {
+        position: absolute !important;
+        z-index: 35;
+        top: 0;
+        left: 0;
+        width: min(13rem, 80vw) !important;
+        height: 100%;
+        grid-row: 1 !important;
+        display: flex;
+        opacity: 1 !important;
+        transform: none !important;
+        pointer-events: auto !important;
+    }
+
+    .chat-page.sidebar-collapsed .workspace > #left-sidebar {
+        display: none !important;
+    }
+
+    .chat-page .workspace > .chat-panel {
+        grid-column: 1 !important;
+        grid-row: 1 !important;
+        width: 100% !important;
+        min-width: 0;
+        justify-self: stretch !important;
+    }
+
+    .chat-page .workspace > #right-sidebar {
+        grid-column: 1 !important;
+        grid-row: 1 !important;
+        display: flex;
+        opacity: 1 !important;
+        pointer-events: auto !important;
+        transform: none !important;
+    }
+
+    .chat-page .workspace > #quick-questions-reopen-button {
+        grid-column: 1 !important;
+        grid-row: 1 !important;
+    }
+}
+
+/* Preserve the light Courtside design even if an older chat.css is loaded. */
+.chat-page .sidebar--right .explore-panel {
+    border: 1px solid rgba(43, 89, 60, 0.10) !important;
+    border-radius: 1.05rem;
+    background: rgba(249, 251, 245, 0.95) !important;
+    box-shadow: 0 0.9rem 2.3rem rgba(34, 67, 42, 0.06);
+    color: #294b3c;
+}
+
+.chat-page .sidebar--right .explore-panel__heading h2 {
+    color: #213e30;
+}
+
+.chat-page .sidebar--right .explore-panel__description {
+    color: #77867a;
+}
+
+.chat-page .sidebar--right .section-eyebrow {
+    color: #6b7b70;
+}
+
+
+/* ==========================================================================
+   SAVED QUESTIONS CARD HEIGHT & INNER SCROLLING
+   Adjust only the right card; preserve the working three-column grid.
+   ========================================================================== */
+
+/* The sidebar track spans the height of the chat panel. Make its card
+   approximately half as tall, instead of shrinking to its content. */
+.chat-page .workspace > #right-sidebar .explore-panel {
+    height: 50% !important;
+    min-height: 0 !important;
+    max-height: 50% !important;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden !important;
+}
+
+/* Keep the heading and helper text visible while saved questions scroll. */
+.chat-page .workspace > #right-sidebar .explore-panel__top,
+.chat-page .workspace > #right-sidebar .explore-panel__description {
+    flex: 0 0 auto;
+}
+
+/* Normal mode: the questions list takes the available space and scrolls. */
+.chat-page .workspace > #right-sidebar #quick-questions-list {
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow-x: hidden;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    scrollbar-width: thin;
+    padding-right: 0.25rem;
+}
+
+/* Edit mode: give the editor the same bounded space. Its controls stay
+   accessible while the editable question rows scroll separately. */
+.chat-page .workspace > #right-sidebar #quick-questions-editor:not([hidden]) {
+    flex: 1 1 auto;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+    overflow: hidden;
+}
+
+.chat-page .workspace > #right-sidebar #quick-questions-editor-list {
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow-x: hidden;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    scrollbar-width: thin;
+    padding-right: 0.25rem;
+}
+
+.chat-page .workspace > #right-sidebar .quick-question-add,
+.chat-page .workspace > #right-sidebar .quick-questions-editor__actions {
+    flex-shrink: 0;
+}
+
+/* The saved list should not compete for height while its editor is open. */
+.chat-page .workspace > #right-sidebar .explore-panel:has(#quick-questions-editor:not([hidden])) #quick-questions-list {
+    display: none !important;
+}
+
+/* The collapse arrow now aligns to the centre of the half-height card,
+   rather than to the bottom edge of that card. */
+.chat-page .workspace > #right-sidebar .quick-questions-collapse-handle {
+    top: 25% !important;
+}
+
+/* On tablet/mobile the sidebar becomes an overlay with auto height,
+   so use a viewport-relative card height instead of a percentage. */
+@media (max-width: 69.99rem) {
+    .chat-page .workspace > #right-sidebar .explore-panel {
+        height: min(50vh, 28rem) !important;
+        max-height: min(50vh, 28rem) !important;
+    }
+
+    .chat-page .workspace > #right-sidebar .quick-questions-collapse-handle {
+        top: min(25vh, 14rem) !important;
+    }
+}
