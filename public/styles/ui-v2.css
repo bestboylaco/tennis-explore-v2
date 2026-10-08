@@ -1162,7 +1162,7 @@ body.chat-page {
 
 .chat-page {
     --te-rail-width: 13rem;
-    --te-chat-max-width: 80rem;
+    --te-chat-max-width: 75rem;
     --te-saved-width: 15.5rem;
     --te-tab-width: 2.8rem;
     --te-right-track: var(--te-saved-width);
