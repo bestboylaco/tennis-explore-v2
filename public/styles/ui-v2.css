@@ -1,0 +1,1573 @@
+/*
+ * TennisExplore UI V2
+ *
+ * Current version:
+ * - compact icon rail
+ * - static page tennis background
+ * - new-chat landing
+ * - Saved Questions panel
+ * - product-style error state
+ * - Save Question actions
+ */
+
+
+/* ==========================================================================
+   PAGE
+   ========================================================================== */
+
+html {
+    min-height: 100%;
+}
+
+
+body.chat-page {
+    position: relative;
+    min-height: 100vh;
+    overflow-x: hidden;
+    isolation: isolate;
+    background: radial-gradient( circle at 86% 10%, rgba(185, 221, 105, 0.16), transparent 30rem ), radial-gradient( circle at 9% 84%, rgba(52, 119, 83, 0.08), transparent 32rem ), linear-gradient( 145deg, #f7f9f3 0%, #f4f7ef 45%, #f8faf5 100% ) !important;
+}
+
+
+/* ==========================================================================
+   STATIC TENNIS BACKGROUND
+   ========================================================================== */
+
+.page-tennis-background {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    overflow: hidden;
+    pointer-events: none;
+}
+
+
+.page-tennis-court {
+    position: absolute;
+    left: 50%;
+    top: 58%;
+    width: min(83vw, 88rem);
+    height: min(55vh, 35rem);
+    transform: translate(-50%, -50%) perspective(72rem) rotateX(58deg);
+    transform-origin: center;
+    border: 1px solid rgba(44, 104, 75, 0.055);
+    border-radius: 0.4rem;
+    opacity: 0.58;
+    background: linear-gradient( to right, transparent 49.9%, rgba(44, 104, 75, 0.045) 49.9%, rgba(44, 104, 75, 0.045) 50.1%, transparent 50.1% ), linear-gradient( to bottom, transparent 29.9%, rgba(44, 104, 75, 0.04) 29.9%, rgba(44, 104, 75, 0.04) 30.1%, transparent 30.1% ), linear-gradient( to bottom, transparent 49.9%, rgba(44, 104, 75, 0.055) 49.9%, rgba(44, 104, 75, 0.055) 50.1%, transparent 50.1% ), linear-gradient( to bottom, transparent 69.9%, rgba(44, 104, 75, 0.04) 69.9%, rgba(44, 104, 75, 0.04) 70.1%, transparent 70.1% );
+    box-shadow: 0 4rem 7rem rgba(41, 85, 58, 0.035);
+}
+
+
+/* ==========================================================================
+   LAYERING
+   ========================================================================== */
+
+.chat-application {
+    position: relative;
+    z-index: 10;
+}
+
+
+.source-panel {
+    z-index: 200 !important;
+}
+
+
+/* ==========================================================================
+   GLASS PANELS
+   ========================================================================== */
+
+.chat-page .chat-panel {
+    background: rgba(255, 255, 252, 0.94) !important;
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    box-shadow: 0 1.1rem 3rem rgba(37, 69, 47, 0.065) !important;
+}
+
+
+.chat-page .sidebar.sidebar--left,
+.chat-page .sidebar.sidebar--right {
+    background: rgba(248, 250, 244, 0.94) !important;
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+}
+
+
+.chat-page .sidebar.sidebar--left {
+    border: 1px solid rgba(39, 88, 59, 0.10) !important;
+    border-radius: 1rem;
+    box-shadow: 0 1rem 2.8rem rgba(39, 74, 49, 0.04);
+}
+
+
+/* ==========================================================================
+   LEFT SIDEBAR
+   ========================================================================== */
+
+.chat-page .sidebar--left {
+    padding: 0.8rem 0.55rem;
+    transition: opacity 180ms ease, transform 240ms cubic-bezier(0.22, 1, 0.36, 1), width 240ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+
+    .chat-page .sidebar--left .navigation {
+        gap: 0.38rem;
+    }
+
+
+    .chat-page .sidebar--left .navigation__item {
+        position: relative;
+        min-height: 2.85rem;
+        justify-content: flex-start;
+        gap: 0.75rem;
+        padding: 0 0.78rem;
+        border-radius: 0.78rem;
+        overflow: visible;
+    }
+
+
+        .chat-page .sidebar--left
+        .navigation__item small {
+            margin-left: auto;
+        }
+
+
+        /* ==========================================================================
+   NAVIGATION ICONS
+   ========================================================================== */
+
+        .chat-page .sidebar--left
+        .navigation__item::before {
+            content: "";
+            width: 1.35rem;
+            height: 1.35rem;
+            flex: 0 0 1.35rem;
+            display: block;
+            background: currentColor;
+            opacity: 0.94;
+            -webkit-mask-image: var(--nav-icon);
+            mask-image: var(--nav-icon);
+            -webkit-mask-position: center;
+            mask-position: center;
+            -webkit-mask-repeat: no-repeat;
+            mask-repeat: no-repeat;
+            -webkit-mask-size: contain;
+            mask-size: contain;
+        }
+
+
+.navigation__item[href="/"] {
+    --nav-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M21 12a8 8 0 0 1-8 8H7l-4 2 1.4-4.2A8 8 0 1 1 21 12Z'/%3E%3Cpath d='M14.8 6.3l.55 1.45 1.45.55-1.45.55-.55 1.45-.55-1.45-1.45-.55 1.45-.55.55-1.45Z'/%3E%3C/svg%3E");
+}
+
+
+.navigation__item[href*="smartabase"] {
+    --nav-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cellipse cx='12' cy='5' rx='8' ry='3'/%3E%3Cpath d='M4 5v6c0 1.7 3.6 3 8 3s8-1.3 8-3V5'/%3E%3Cpath d='M4 11v6c0 1.7 3.6 3 8 3s8-1.3 8-3v-6'/%3E%3C/svg%3E");
+}
+
+
+.navigation__item[href*="teambuildr"] {
+    --nav-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 8v8M3.5 9.5v5M18 8v8M20.5 9.5v5M6 12h12'/%3E%3C/svg%3E");
+}
+
+
+.navigation__item[href*="teamworksapp"] {
+    --nav-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='9' cy='8' r='3'/%3E%3Ccircle cx='17' cy='9' r='2.5'/%3E%3Cpath d='M3.5 19c.7-3.4 2.5-5 5.5-5s4.8 1.6 5.5 5M14.5 14.5c2.8-.8 5.3.5 6 3.5'/%3E%3C/svg%3E");
+}
+
+
+.navigation__item[href*="tennismove"] {
+    --nav-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='12' r='8'/%3E%3Cpath d='M6.4 6.4c3.1 1.1 4.7 3 5 5.8M17.6 17.6c-3.1-1.1-4.7-3-5-5.8'/%3E%3C/svg%3E");
+}
+
+
+.navigation__item[href="/telemetry.html"] {
+    --nav-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4 19V11M10 19V5M16 19v-8M22 19V8'/%3E%3C/svg%3E");
+}
+
+
+/* ==========================================================================
+   NAVIGATION STATES
+   ========================================================================== */
+
+.chat-page .sidebar--left
+.navigation__item--active {
+    color: #285f4d !important;
+    background: linear-gradient( 135deg, rgba(177, 218, 87, 0.24), rgba(65, 134, 90, 0.09) ) !important;
+    border-color: rgba(54, 112, 72, 0.12) !important;
+    box-shadow: none !important;
+}
+
+
+.chat-page .sidebar--left
+.navigation__item:hover:not(.navigation__item--active) {
+    color: #285f4d !important;
+    background: rgba(59, 118, 78, 0.065) !important;
+    border-color: transparent !important;
+}
+
+
+/* ==========================================================================
+   DESKTOP ICON RAIL
+   ========================================================================== */
+
+@media (min-width: 70rem) {
+
+    .chat-page.sidebar-collapsed {
+        --left-sidebar-width: 4.7rem;
+    }
+
+
+        .chat-page.sidebar-collapsed
+        .workspace {
+            grid-template-columns: var(--left-sidebar-width) minmax(30rem, 1fr) var(--right-sidebar-width) !important;
+            gap: var(--space-5) !important;
+        }
+
+
+        .chat-page.sidebar-collapsed.sidebar-collapsed-right
+        .workspace {
+            grid-template-columns: var(--left-sidebar-width) minmax(30rem, 1fr) 0rem !important;
+            gap: var(--space-5) 0 !important;
+        }
+
+
+        .chat-page.sidebar-collapsed
+        .sidebar--left {
+            opacity: 1 !important;
+            transform: none !important;
+            pointer-events: auto !important;
+            align-items: center;
+            padding: 0.8rem 0.48rem;
+        }
+
+
+    .chat-page
+    .sidebar-reopen {
+        display: none !important;
+    }
+
+
+    .chat-page.sidebar-collapsed
+    .sidebar__heading,
+    .chat-page.sidebar-collapsed
+    .navigation__group-label,
+    .chat-page.sidebar-collapsed
+    .sidebar__footer {
+        display: none !important;
+    }
+
+
+    .chat-page.sidebar-collapsed
+    .navigation {
+        width: 100%;
+        align-items: center;
+        gap: 0.48rem;
+    }
+
+
+    .chat-page.sidebar-collapsed
+    .navigation__item {
+        width: 3.2rem;
+        min-height: 3.2rem;
+        margin: 0 auto;
+        padding: 0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        border-radius: 0.82rem;
+    }
+
+
+        .chat-page.sidebar-collapsed
+        .navigation__item > span,
+        .chat-page.sidebar-collapsed
+        .navigation__item > small {
+            display: none;
+        }
+
+
+        .chat-page.sidebar-collapsed
+        .navigation__item::before {
+            width: 1.42rem;
+            height: 1.42rem;
+            flex-basis: 1.42rem;
+        }
+
+
+        .chat-page.sidebar-collapsed
+        .navigation__item[href*="smartabase"] {
+            margin-top: 0.62rem;
+        }
+
+
+        .chat-page.sidebar-collapsed
+        .navigation__item[href="/telemetry.html"] {
+            margin-top: 0.62rem;
+        }
+
+
+        /* Navigation tooltips */
+
+        .chat-page.sidebar-collapsed
+        .navigation__item::after {
+            content: attr(data-nav-label);
+            position: absolute;
+            z-index: 80;
+            left: calc(100% + 0.72rem);
+            top: 50%;
+            transform: translate(-0.25rem, -50%);
+            padding: 0.45rem 0.65rem;
+            border: 1px solid rgba(35, 79, 55, 0.1);
+            border-radius: 0.55rem;
+            color: #24382c;
+            background: rgba(255, 255, 252, 0.97);
+            box-shadow: 0 0.65rem 1.6rem rgba(34, 65, 44, 0.1);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            font-size: 0.72rem;
+            font-weight: 600;
+            white-space: nowrap;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 140ms ease, transform 140ms ease;
+        }
+
+
+        .chat-page.sidebar-collapsed
+        .navigation__item:hover::after,
+        .chat-page.sidebar-collapsed
+        .navigation__item:focus-visible::after {
+            opacity: 1;
+            transform: translate(0, -50%);
+        }
+
+
+    /* ==============================================================
+       CHAT HISTORY
+       ============================================================== */
+
+    .chat-page.sidebar-collapsed
+    .chat-history {
+        position: relative;
+        width: 100%;
+        margin-top: 0.48rem;
+        padding-top: 0;
+        border-top: 0 !important;
+    }
+
+
+    .chat-page.sidebar-collapsed
+    .chat-history__controls {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 0.38rem;
+    }
+
+
+    .chat-page.sidebar-collapsed
+    .chat-history__new {
+        order: -1;
+    }
+
+
+    .chat-page.sidebar-collapsed
+    .chat-history__toggle,
+    .chat-page.sidebar-collapsed
+    .chat-history__new {
+        position: relative;
+        width: 3rem;
+        height: 3rem;
+        min-height: 3rem;
+        padding: 0;
+        display: grid;
+        place-items: center;
+        border: 0 !important;
+        border-radius: 0.75rem;
+        color: #58675e !important;
+        background: transparent !important;
+        box-shadow: none !important;
+        font-size: 0;
+        overflow: visible;
+        transition: background 150ms ease, color 150ms ease, transform 150ms ease;
+    }
+
+
+        .chat-page.sidebar-collapsed
+        .chat-history__toggle:hover,
+        .chat-page.sidebar-collapsed
+        .chat-history__new:hover {
+            color: #285f4d !important;
+            background: rgba(53, 111, 75, 0.075) !important;
+            transform: translateY(-1px);
+        }
+
+
+    .chat-page.sidebar-collapsed
+    #chat-history-title {
+        display: none;
+    }
+
+
+    .chat-page.sidebar-collapsed
+    .chat-history__count {
+        display: none !important;
+    }
+
+
+    .chat-page.sidebar-collapsed
+    .chat-history__toggle::before {
+        content: "";
+        width: 1.4rem;
+        height: 1.4rem;
+        background: currentColor;
+        -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M21 12a8 8 0 0 1-8 8H7l-4 2 1.4-4.2A8 8 0 1 1 21 12Z'/%3E%3C/svg%3E") center / contain no-repeat;
+        mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M21 12a8 8 0 0 1-8 8H7l-4 2 1.4-4.2A8 8 0 1 1 21 12Z'/%3E%3C/svg%3E") center / contain no-repeat;
+    }
+
+
+    .chat-page.sidebar-collapsed
+    .chat-history__new::before {
+        content: "";
+        width: 1.4rem;
+        height: 1.4rem;
+        background: currentColor;
+        -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 20H5a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h7'/%3E%3Cpath d='M16.5 3.5a2.1 2.1 0 0 1 3 3L11 15l-4 1 1-4 8.5-8.5Z'/%3E%3C/svg%3E") center / contain no-repeat;
+        mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 20H5a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h7'/%3E%3Cpath d='M16.5 3.5a2.1 2.1 0 0 1 3 3L11 15l-4 1 1-4 8.5-8.5Z'/%3E%3C/svg%3E") center / contain no-repeat;
+    }
+
+
+    .chat-page.sidebar-collapsed
+    .chat-history__panel:not([hidden]) {
+        position: absolute;
+        z-index: 90;
+        left: calc(100% + 0.85rem);
+        bottom: 0;
+        width: 19rem;
+        max-height: 22rem;
+        margin: 0;
+        padding: 0.7rem;
+        overflow-y: auto;
+        border: 1px solid rgba(40, 91, 61, 0.11);
+        border-radius: 0.9rem;
+        background: rgba(255, 255, 252, 0.98);
+        box-shadow: 0 1rem 2.8rem rgba(33, 67, 44, 0.13);
+        backdrop-filter: blur(18px);
+        -webkit-backdrop-filter: blur(18px);
+    }
+
+
+    .chat-page.sidebar-collapsed
+    .chat-history__toggle::after,
+    .chat-page.sidebar-collapsed
+    .chat-history__new::after {
+        content: attr(data-nav-label);
+        position: absolute;
+        z-index: 100;
+        left: calc(100% + 0.72rem);
+        top: 50%;
+        transform: translate(-0.25rem, -50%);
+        padding: 0.45rem 0.65rem;
+        border: 1px solid rgba(35, 79, 55, 0.1);
+        border-radius: 0.55rem;
+        color: #24382c;
+        background: rgba(255, 255, 252, 0.97);
+        box-shadow: 0 0.65rem 1.6rem rgba(34, 65, 44, 0.1);
+        font-size: 0.72rem;
+        font-weight: 600;
+        white-space: nowrap;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 140ms ease, transform 140ms ease;
+    }
+
+
+    .chat-page.sidebar-collapsed
+    .chat-history__toggle:hover::after,
+    .chat-page.sidebar-collapsed
+    .chat-history__new:hover::after {
+        opacity: 1;
+        transform: translate(0, -50%);
+    }
+}
+
+
+/* ==========================================================================
+   EMPTY CHAT LANDING
+   ========================================================================== */
+
+.conversation__empty.conversation-welcome {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 0 !important;
+    grid-template-columns: none !important;
+    width: min(46rem, 90%) !important;
+    max-width: 46rem !important;
+    margin: auto !important;
+    padding: 3rem 1rem 6rem !important;
+    text-align: center !important;
+}
+
+
+.conversation-welcome[hidden] {
+    display: none !important;
+}
+
+
+.conversation-welcome__mark {
+    width: 3.3rem;
+    height: 3.3rem;
+    margin: 0 auto 1.1rem !important;
+    display: grid;
+    place-items: center;
+    border: 1px solid rgba(63, 118, 78, 0.10);
+    border-radius: 1rem;
+    background: linear-gradient( 145deg, rgba(230, 246, 199, 0.88), rgba(248, 251, 241, 0.95) );
+    box-shadow: 0 0.8rem 2rem rgba(47, 85, 56, 0.07);
+}
+
+
+.conversation-welcome__ball {
+    width: 1.45rem;
+    height: 1.45rem;
+    display: block;
+    border-radius: 50%;
+    background: radial-gradient( circle at 30% 25%, #f9ffb8, #cce55d 55%, #a5c63d );
+}
+
+
+.conversation-welcome__eyebrow {
+    width: 100%;
+    margin: 0 0 0.45rem !important;
+    color: #738078;
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.09em;
+    text-align: center;
+    text-transform: uppercase;
+}
+
+
+.conversation-welcome__title {
+    width: 100%;
+    max-width: 40rem;
+    margin: 0 auto !important;
+    color: #173c29;
+    font-size: clamp( 1.55rem, 2.1vw, 2.15rem );
+    font-weight: 650;
+    letter-spacing: -0.035em;
+    text-align: center;
+}
+
+
+.conversation-welcome__description {
+    display: block;
+    width: 100% !important;
+    max-width: 35rem !important;
+    margin: 0.85rem auto 0 !important;
+    color: #69766e;
+    font-size: 0.88rem;
+    line-height: 1.6;
+    text-align: center !important;
+}
+
+
+#welcome-source-count {
+    display: block;
+    margin-top: 0.35rem;
+    color: #6f8376;
+    font-size: 0.76rem;
+    font-weight: 500;
+    text-align: center;
+}
+
+
+.conversation-welcome__suggestions {
+    width: 100%;
+    max-width: 42rem;
+    margin: 2rem auto 0 !important;
+    display: grid;
+    grid-template-columns: repeat( 2, minmax(0, 1fr) );
+    gap: 0.75rem;
+}
+
+
+.welcome-suggestion {
+    min-height: 5.4rem;
+    padding: 0.9rem;
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    text-align: left;
+    border: 1px solid rgba(48, 91, 62, 0.095);
+    border-radius: 0.9rem;
+    color: #334238;
+    background: rgba(255, 255, 252, 0.78);
+    box-shadow: 0 0.45rem 1.4rem rgba(45, 74, 52, 0.035);
+    cursor: pointer;
+    transition: transform 150ms ease, border-color 150ms ease, background 150ms ease, box-shadow 150ms ease;
+}
+
+
+    .welcome-suggestion:hover {
+        transform: translateY(-2px);
+        border-color: rgba(55, 116, 77, 0.20);
+        background: rgba(250, 253, 245, 0.98);
+        box-shadow: 0 0.8rem 1.8rem rgba(45, 74, 52, 0.07);
+    }
+
+
+.welcome-suggestion__icon {
+    width: 2.15rem;
+    height: 2.15rem;
+    flex: 0 0 2.15rem;
+    display: grid;
+    place-items: center;
+    border-radius: 0.65rem;
+    color: #32634f;
+    background: rgba(208, 233, 165, 0.36);
+    font-size: 0.7rem;
+    font-weight: 800;
+}
+
+
+.welcome-suggestion__content {
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+}
+
+
+    .welcome-suggestion__content strong {
+        color: #314037;
+        font-size: 0.83rem;
+    }
+
+
+    .welcome-suggestion__content small {
+        color: #7a867e;
+        font-size: 0.69rem;
+        line-height: 1.35;
+    }
+
+
+/* ==========================================================================
+   USER MESSAGE SAVE ACTION
+   ========================================================================== */
+
+.message--user {
+    position: relative;
+}
+
+
+.user-message-actions {
+    min-height: 1.55rem;
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    opacity: 0;
+    transform: translateY(-0.15rem);
+    pointer-events: none;
+    transition: opacity 140ms ease, transform 140ms ease;
+}
+
+
+.message--user:hover
+.user-message-actions,
+.message--user:focus-within
+.user-message-actions {
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: auto;
+}
+
+
+.user-message-save {
+    padding: 0.26rem 0.58rem;
+    border: 1px solid rgba(44, 93, 63, 0.12);
+    border-radius: 999px;
+    color: #637169;
+    background: rgba(250, 252, 247, 0.90);
+    font-family: inherit;
+    font-size: 0.64rem;
+    font-weight: 600;
+    cursor: pointer;
+    box-shadow: 0 0.3rem 0.8rem rgba(42, 69, 49, 0.035);
+    transition: color 140ms ease, border-color 140ms ease, background 140ms ease;
+}
+
+
+    .user-message-save:hover {
+        color: #285f4d;
+        border-color: rgba(44, 104, 75, 0.20);
+        background: #f0f6e9;
+    }
+
+
+    .user-message-save:disabled {
+        color: #6f8075;
+        background: #f4f7ef;
+        cursor: default;
+        opacity: 0.8;
+    }
+
+
+/* ==========================================================================
+   PRODUCT ERROR STATE
+   ========================================================================== */
+
+.error-banner.error-banner--product {
+    margin: 0 var(--space-5) var(--space-3);
+    padding: 0.8rem 0.9rem;
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 0.8rem;
+    border: 1px solid rgba(182, 95, 71, 0.18) !important;
+    border-radius: 0.9rem;
+    color: #42342f !important;
+    background: linear-gradient( 135deg, rgba(255, 248, 243, 0.98), rgba(255, 252, 248, 0.96) ) !important;
+    box-shadow: 0 0.65rem 1.8rem rgba(88, 52, 37, 0.055);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+}
+
+
+.error-banner--product[hidden] {
+    display: none !important;
+}
+
+
+.error-banner__icon {
+    width: 2rem;
+    height: 2rem;
+    display: grid;
+    place-items: center;
+    border-radius: 0.62rem;
+    color: #a65b45;
+    background: rgba(222, 125, 91, 0.10);
+    font-size: 0.8rem;
+    font-weight: 800;
+}
+
+
+.error-banner__content {
+    min-width: 0;
+}
+
+
+.error-banner--product
+#error-title {
+    display: block;
+    color: #44332d;
+    font-size: 0.78rem;
+    font-weight: 700;
+}
+
+
+.error-banner--product
+#error-message {
+    margin: 0.2rem 0 0;
+    color: #77665f;
+    font-size: 0.70rem;
+    line-height: 1.45;
+}
+
+
+.error-banner__actions {
+    display: flex;
+    align-items: center;
+    gap: 0.45rem;
+}
+
+
+.error-banner__retry,
+.error-banner__dismiss {
+    min-height: 2rem;
+    padding: 0.38rem 0.7rem;
+    border-radius: 999px;
+    font-family: inherit;
+    font-size: 0.67rem;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+
+.error-banner__retry {
+    border: 0;
+    color: #ffffff;
+    background: linear-gradient( 135deg, #397b5d, #286249 );
+    box-shadow: 0 0.3rem 0.8rem rgba(38, 100, 71, 0.12);
+}
+
+
+    .error-banner__retry:hover {
+        filter: brightness(1.05);
+    }
+
+
+.error-banner__dismiss {
+    border: 1px solid rgba(69, 84, 74, 0.13);
+    color: #69756e;
+    background: rgba(255, 255, 255, 0.58);
+}
+
+
+    .error-banner__dismiss:hover {
+        color: #34463b;
+        background: rgba(255, 255, 255, 0.90);
+    }
+
+
+/* ==========================================================================
+   SAVED QUESTIONS REOPEN TAB
+   ========================================================================== */
+
+.quick-questions-reopen {
+    position: fixed;
+    z-index: 40;
+    right: 0;
+    top: 50%;
+    display: flex;
+    align-items: center;
+    gap: 0.45rem;
+    padding: 0.65rem 0.45rem 0.65rem 0.7rem;
+    border: 1px solid rgba(39, 88, 59, 0.11);
+    border-right: 0;
+    border-radius: 0.8rem 0 0 0.8rem;
+    color: #496358;
+    background: rgba(251, 252, 247, 0.97);
+    box-shadow: -0.4rem 0.6rem 1.6rem rgba(38, 67, 45, 0.07);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    cursor: pointer;
+    opacity: 0;
+    pointer-events: none;
+    transform: translate(100%, -50%);
+    transition: opacity 180ms ease, transform 220ms ease, background 150ms ease;
+}
+
+
+    .quick-questions-reopen:hover {
+        background: #f5f9ef;
+    }
+
+
+    .quick-questions-reopen span {
+        font-size: 0.68rem;
+        font-weight: 650;
+    }
+
+
+    .quick-questions-reopen strong {
+        font-size: 0.9rem;
+    }
+
+
+.chat-page.sidebar-collapsed-right
+.quick-questions-reopen {
+    opacity: 1;
+    pointer-events: auto;
+    transform: translate(0, -50%);
+}
+
+
+/* ==========================================================================
+   RESPONSIVE
+   ========================================================================== */
+
+@media (max-width: 69.99rem) {
+
+    .page-tennis-court {
+        width: 94vw;
+        height: 48vh;
+        opacity: 0.42;
+    }
+}
+
+
+@media (max-width: 50rem) {
+
+    .conversation__empty.conversation-welcome {
+        width: 94% !important;
+        padding-bottom: 5rem !important;
+    }
+
+
+    .conversation-welcome__suggestions {
+        grid-template-columns: 1fr;
+    }
+
+
+    .quick-questions-reopen span {
+        display: none;
+    }
+
+
+    .error-banner.error-banner--product {
+        grid-template-columns: auto minmax(0, 1fr);
+    }
+
+
+    .error-banner__actions {
+        grid-column: 1 / -1;
+        justify-content: flex-end;
+    }
+
+
+    .user-message-actions {
+        opacity: 1;
+        transform: none;
+        pointer-events: auto;
+    }
+}
+
+
+/* ==========================================================================
+   REDUCED MOTION
+   ========================================================================== */
+
+@media (prefers-reduced-motion: reduce) {
+
+    .chat-page .workspace,
+    .chat-page .sidebar--left,
+    .chat-page .navigation__item,
+    .welcome-suggestion,
+    .quick-questions-reopen,
+    .user-message-actions,
+    .user-message-save {
+        transition: none !important;
+    }
+}
+
+/* ==========================================================================
+   LAYOUT CORRECTIONS — 2026-10-08
+   Keeps the existing visual theme and all JavaScript hooks unchanged.
+   ========================================================================== */
+
+/* Restore the original 96rem desktop workspace width. Keep all three
+   columns in the SAME grid so Saved Questions always sits next to the chat
+   panel instead of remaining at the far edge of the viewport. */
+@media (min-width: 62.01rem) {
+    .chat-page .chat-application {
+        box-sizing: border-box;
+        width: 100%;
+        max-width: none;
+    }
+
+    .chat-page .chat-topbar,
+    .chat-page .workspace {
+        box-sizing: border-box;
+        width: min(100%, 96rem);
+        max-width: 96rem;
+        margin-left: 0;
+        margin-right: auto;
+    }
+
+    .chat-page .workspace {
+        min-width: 0;
+    }
+
+    .chat-page .chat-panel {
+        box-sizing: border-box;
+        min-width: 0;
+        width: 100%;
+    }
+
+    /* The collapsed-right state must override the two-column combination too.
+       Keep the third track at zero; do not reserve an invisible sidebar. */
+    .chat-page.sidebar-collapsed-right .workspace {
+        grid-template-columns: var(--left-sidebar-width) minmax(0, 1fr) 0px !important;
+        column-gap: var(--space-5) !important;
+    }
+
+    .chat-page.sidebar-collapsed-right .sidebar--right {
+        box-sizing: border-box;
+        min-width: 0 !important;
+        width: 0 !important;
+        padding: 0 !important;
+        border: 0 !important;
+        overflow: hidden !important;
+        opacity: 0;
+        pointer-events: none;
+    }
+}
+
+@media (min-width: 70rem) {
+    .chat-page.sidebar-collapsed {
+        --left-sidebar-width: 4.7rem;
+    }
+
+        .chat-page.sidebar-collapsed .workspace {
+            grid-template-columns: var(--left-sidebar-width) minmax(0, 1fr) var(--right-sidebar-width) !important;
+            column-gap: var(--space-5) !important;
+        }
+
+        .chat-page.sidebar-collapsed.sidebar-collapsed-right .workspace {
+            grid-template-columns: var(--left-sidebar-width) minmax(0, 1fr) 0px !important;
+            column-gap: var(--space-5) !important;
+        }
+
+        /* All rail controls share a single horizontal centreline. Do not let the
+       absolute-positioned history badge affect the icon's layout position. */
+        .chat-page.sidebar-collapsed .sidebar--left {
+            align-items: stretch !important;
+            padding-right: 0.48rem;
+            padding-left: 0.48rem;
+            position: relative;
+            z-index: 30;
+            overflow: visible !important; /* Allow history flyout and tooltips. */
+        }
+
+            .chat-page.sidebar-collapsed .sidebar--left .navigation,
+            .chat-page.sidebar-collapsed .sidebar--left .chat-history,
+            .chat-page.sidebar-collapsed .sidebar--left .chat-history__controls {
+                box-sizing: border-box;
+                width: 100% !important;
+                min-width: 0;
+                margin-right: 0 !important;
+                margin-left: 0 !important;
+                padding-right: 0 !important;
+                padding-left: 0 !important;
+                align-items: center !important;
+            }
+
+            .chat-page.sidebar-collapsed .sidebar--left .navigation__item,
+            .chat-page.sidebar-collapsed .sidebar--left .chat-history__toggle,
+            .chat-page.sidebar-collapsed .sidebar--left .chat-history__new {
+                box-sizing: border-box;
+                position: relative;
+                width: 3.2rem !important;
+                min-width: 3.2rem !important;
+                max-width: 3.2rem !important;
+                height: 3.2rem !important;
+                min-height: 3.2rem !important;
+                padding: 0 !important;
+                margin: 0 auto !important;
+                flex: 0 0 3.2rem;
+                display: flex !important;
+                align-items: center !important;
+                justify-content: center !important;
+                text-align: center;
+            }
+
+                .chat-page.sidebar-collapsed .sidebar--left .navigation__item::before,
+                .chat-page.sidebar-collapsed .sidebar--left .chat-history__toggle::before,
+                .chat-page.sidebar-collapsed .sidebar--left .chat-history__new::before {
+                    position: static !important;
+                    box-sizing: border-box;
+                    display: block;
+                    width: 1.42rem !important;
+                    min-width: 1.42rem;
+                    height: 1.42rem !important;
+                    flex: 0 0 1.42rem !important;
+                    margin: 0 !important;
+                    transform: none !important;
+                }
+
+        .chat-page.sidebar-collapsed #chat-history-count.chat-history__count {
+            position: absolute !important;
+            top: 0.04rem !important;
+            right: 0.04rem !important;
+            width: auto;
+            min-width: 1.12rem;
+            height: 1.12rem;
+            min-height: 1.12rem;
+            padding: 0 0.22rem;
+            display: inline-flex !important;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid #f8faf4;
+            border-radius: 999px;
+            color: #fff;
+            background: #327457;
+            font-size: 0.59rem !important;
+            font-weight: 700;
+            line-height: 1;
+            pointer-events: none;
+        }
+}
+
+/* Between 62rem and 70rem the legacy CSS fully hides the left sidebar;
+   prevent the collapsed-right fix above from accidentally restoring its width. */
+@media (min-width: 62.01rem) and (max-width: 69.99rem) {
+    .chat-page.sidebar-collapsed.sidebar-collapsed-right .workspace {
+        grid-template-columns: 0px minmax(0, 1fr) 0px !important;
+        column-gap: 0 !important;
+    }
+}
+
+/* Position the mode selector and input as a single bottom composer stack.
+   The input remains inside the main chat surface in all sidebar states. */
+.chat-page .chat-panel > .composer__effort {
+    box-sizing: border-box;
+    align-self: flex-start;
+    flex: 0 0 auto;
+    width: max-content;
+    max-width: calc(100% - 2 * var(--space-5));
+    margin: 0 var(--space-5) 0.45rem !important;
+}
+
+.chat-page .chat-panel > .composer {
+    box-sizing: border-box;
+    align-self: stretch;
+    flex: 0 0 auto;
+    min-width: 0;
+    max-width: calc(100% - 2 * var(--space-5));
+    margin: 0 var(--space-5) var(--space-4) !important;
+    display: grid !important;
+    grid-template-columns: minmax(0, 1fr) auto auto !important;
+    align-items: center;
+}
+
+    .chat-page .chat-panel > .composer #question {
+        min-width: 0;
+        width: 100%;
+    }
+
+@media (max-width: 44rem) {
+    .chat-page .chat-panel > .composer__effort {
+        max-width: calc(100% - 2 * var(--space-3));
+        margin-left: var(--space-3) !important;
+        margin-right: var(--space-3) !important;
+    }
+
+    .chat-page .chat-panel > .composer {
+        max-width: calc(100% - 2 * var(--space-3));
+        margin-left: var(--space-3) !important;
+        margin-right: var(--space-3) !important;
+    }
+}
+
+/* Keep the Saved Questions panel close to the chat panel on desktop.
+   No independent right-edge positioning; both stay in the workspace grid. */
+@media (min-width: 70rem) {
+    .chat-page .workspace,
+    .chat-page.sidebar-collapsed .workspace,
+    .chat-page.sidebar-collapsed-right .workspace,
+    .chat-page.sidebar-collapsed.sidebar-collapsed-right .workspace {
+        column-gap: 0.8rem !important;
+    }
+}
+
+/* ==========================================================================
+   STABLE THREE-COLUMN WORKSPACE — left rail | chat | Saved Questions
+   The collapsed control lives IN .workspace, not at the window edge.
+   Do not add an independent absolute layout for the three panels.
+   ========================================================================== */
+
+.chat-page {
+    --te-rail-width: 13rem;
+    --te-chat-max-width: 80rem;
+    --te-saved-width: 15.5rem;
+    --te-tab-width: 2.8rem;
+    --te-right-track: var(--te-saved-width);
+}
+
+    .chat-page.sidebar-collapsed {
+        --te-rail-width: 4.7rem;
+    }
+
+    .chat-page.sidebar-collapsed-right {
+        --te-right-track: var(--te-tab-width);
+    }
+
+@media (min-width: 70rem) {
+    /* Every state uses exactly the same 3 tracks. No spacer tracks. */
+    .chat-page .workspace,
+    .chat-page.sidebar-collapsed .workspace,
+    .chat-page.sidebar-collapsed-right .workspace,
+    .chat-page.sidebar-collapsed.sidebar-collapsed-right .workspace {
+        box-sizing: border-box;
+        position: relative;
+        width: min( calc(var(--te-rail-width) + var(--te-chat-max-width) + var(--te-right-track)), calc(100% - 1rem) ) !important;
+        max-width: none !important;
+        min-width: 0 !important;
+        margin-inline: auto !important;
+        padding: 0 !important;
+        display: grid !important;
+        grid-template-columns: var(--te-rail-width) minmax(0, 1fr) var(--te-right-track) !important;
+        column-gap: 0 !important;
+        row-gap: 0 !important;
+        justify-content: stretch !important;
+        align-items: stretch;
+    }
+
+        .chat-page .workspace > #left-sidebar {
+            box-sizing: border-box;
+            grid-column: 1 !important;
+            grid-row: 1 !important;
+            width: 100% !important;
+            min-width: 0;
+            margin: 0 !important;
+            border-top-right-radius: 0 !important;
+            border-bottom-right-radius: 0 !important;
+        }
+
+        .chat-page .workspace > .chat-panel {
+            box-sizing: border-box;
+            grid-column: 2 !important;
+            grid-row: 1 !important;
+            width: 100% !important;
+            min-width: 0;
+            max-width: none !important;
+            margin: 0 !important;
+            justify-self: stretch !important;
+            border-top-left-radius: 0 !important;
+            border-bottom-left-radius: 0 !important;
+        }
+
+        .chat-page .workspace > #right-sidebar {
+            box-sizing: border-box;
+            grid-column: 3 !important;
+            grid-row: 1 !important;
+            position: relative !important;
+            top: auto !important;
+            right: auto !important;
+            bottom: auto !important;
+            left: auto !important;
+            width: 100% !important;
+            max-height: 100%;
+            min-width: 0 !important;
+            margin: 0 !important;
+            padding: 0 !important;
+            overflow: visible !important;
+            opacity: 1 !important;
+            transform: none !important;
+            pointer-events: auto !important;
+        }
+
+        .chat-page.sidebar-collapsed-right .workspace > #right-sidebar {
+            display: none !important;
+        }
+
+    /* Same centered outer width as the three workspace columns. */
+    .chat-page .chat-topbar {
+        box-sizing: border-box;
+        width: min( calc(var(--te-rail-width) + var(--te-chat-max-width) + var(--te-right-track)), calc(100% - 1rem) ) !important;
+        max-width: none !important;
+        margin-inline: auto !important;
+    }
+
+    /* Put the hamburger exactly above the icon rail's centreline.
+       The brand starts at the chat panel's left edge. */
+    .chat-page .chat-topbar__start {
+        display: grid;
+        grid-template-columns: var(--te-rail-width) max-content;
+        column-gap: 0;
+        align-items: center;
+        min-width: 0;
+    }
+
+        .chat-page .chat-topbar__start > #sidebar-toggle-button {
+            grid-column: 1;
+            justify-self: center;
+            margin: 0;
+        }
+
+        .chat-page .chat-topbar__start > .chat-brand {
+            grid-column: 2;
+            justify-self: start;
+            margin-left: 0.65rem;
+        }
+}
+
+/* Right collapsed button — always anchored to the grid adjacent to chat. */
+.chat-page .workspace > #quick-questions-reopen-button {
+    box-sizing: border-box;
+    grid-column: 3 !important;
+    grid-row: 1 !important;
+    position: relative !important;
+    top: auto !important;
+    left: auto !important;
+    right: auto !important;
+    bottom: auto !important;
+    align-self: center !important;
+    justify-self: start !important;
+    width: 2.8rem !important;
+    height: auto !important;
+    min-height: 9rem;
+    margin: 0 !important;
+    padding: 0.75rem 0.35rem !important;
+    display: none !important;
+    flex-direction: column !important;
+    justify-content: center;
+    align-items: center;
+    gap: 0.55rem;
+    border: 1px solid rgba(39, 88, 59, 0.14);
+    border-left: 0;
+    border-radius: 0 0.9rem 0.9rem 0;
+    color: #355d4c;
+    background: #fcfdf9;
+    box-shadow: 0.5rem 0.6rem 1.4rem rgba(39, 74, 49, 0.07);
+    writing-mode: horizontal-tb;
+    opacity: 1 !important;
+    transform: none !important;
+    pointer-events: auto !important;
+}
+
+.chat-page.sidebar-collapsed-right .workspace > #quick-questions-reopen-button {
+    display: flex !important;
+}
+
+.chat-page .workspace > #quick-questions-reopen-button span {
+    display: block !important;
+    writing-mode: vertical-rl;
+    text-orientation: mixed;
+    white-space: nowrap;
+    font-size: 0.75rem;
+    font-weight: 700;
+}
+
+.chat-page .workspace > #quick-questions-reopen-button strong {
+    display: block;
+    font-size: 1rem;
+    line-height: 1;
+    writing-mode: horizontal-tb;
+}
+
+/* Expanded right-panel close control. */
+#quick-start-toggle-button {
+    display: none !important;
+}
+
+.chat-page .workspace > #right-sidebar .explore-panel {
+    box-sizing: border-box;
+    width: 100%;
+    max-height: 100%;
+    overflow-y: auto;
+}
+
+.chat-page .quick-questions-collapse-handle {
+    position: absolute;
+    z-index: 6;
+    /* Centre the collapse arrow vertically on the entire sidebar,
+       not beside the "Edit" button at the top of the card. */
+    top: 50%;
+    right: -0.6rem;
+    transform: translateY(-50%);
+    width: 1.85rem;
+    height: 1.85rem;
+    padding: 0;
+    display: grid;
+    place-items: center;
+    border-radius: 50%;
+    border: 1px solid rgba(39, 88, 59, 0.14);
+    background: #fff;
+    box-shadow: 0 0.25rem 0.8rem rgba(39, 74, 49, 0.08);
+    color: #315947;
+    cursor: pointer;
+    font-size: 1rem;
+}
+
+.chat-page.sidebar-collapsed-right .quick-questions-collapse-handle {
+    display: none !important;
+}
+
+/* Do not show the temporary history flyout on the compact icon rail. */
+@media (min-width: 70rem) {
+    .chat-page.sidebar-collapsed .chat-history__panel,
+    .chat-page.sidebar-collapsed .chat-history__panel:not([hidden]) {
+        display: none !important;
+    }
+}
+
+/* Tablets: retain a fluid chat surface; Saved Questions opens as an overlay. */
+@media (max-width: 69.99rem) {
+    .chat-page .workspace,
+    .chat-page.sidebar-collapsed .workspace,
+    .chat-page.sidebar-collapsed-right .workspace,
+    .chat-page.sidebar-collapsed.sidebar-collapsed-right .workspace {
+        position: relative;
+        width: 100% !important;
+        max-width: none !important;
+        grid-template-columns: minmax(0, 1fr) !important;
+        gap: 0 !important;
+    }
+
+        .chat-page .workspace > .chat-panel {
+            grid-column: 1 !important;
+            width: 100% !important;
+            max-width: none !important;
+        }
+
+        .chat-page .workspace > #right-sidebar {
+            position: absolute !important;
+            z-index: 30;
+            top: 0;
+            right: 0;
+            left: auto !important;
+            width: min(16rem, 80vw) !important;
+            height: auto;
+            max-height: 95%;
+        }
+
+        .chat-page.sidebar-collapsed-right .workspace > #right-sidebar {
+            display: none !important;
+        }
+
+        .chat-page .workspace > #quick-questions-reopen-button {
+            position: absolute !important;
+            right: 0 !important;
+            top: 40% !important;
+            z-index: 30;
+            width: 2.6rem !important;
+            display: none !important;
+        }
+
+        .chat-page.sidebar-collapsed-right .workspace > #quick-questions-reopen-button {
+            display: flex !important;
+        }
+}
+
+/* At tablet widths, the sidebars become overlay drawers rather than taking
+   implicit grid rows away from the chat. */
+@media (max-width: 69.99rem) {
+    .chat-page .workspace > #left-sidebar {
+        position: absolute !important;
+        z-index: 35;
+        top: 0;
+        left: 0;
+        width: min(13rem, 80vw) !important;
+        height: 100%;
+        grid-row: 1 !important;
+        display: flex;
+        opacity: 1 !important;
+        transform: none !important;
+        pointer-events: auto !important;
+    }
+
+    .chat-page.sidebar-collapsed .workspace > #left-sidebar {
+        display: none !important;
+    }
+
+    .chat-page .workspace > .chat-panel {
+        grid-column: 1 !important;
+        grid-row: 1 !important;
+        width: 100% !important;
+        min-width: 0;
+        justify-self: stretch !important;
+    }
+
+    .chat-page .workspace > #right-sidebar {
+        grid-column: 1 !important;
+        grid-row: 1 !important;
+        display: flex;
+        opacity: 1 !important;
+        pointer-events: auto !important;
+        transform: none !important;
+    }
+
+    .chat-page .workspace > #quick-questions-reopen-button {
+        grid-column: 1 !important;
+        grid-row: 1 !important;
+    }
+}
+
+/* Preserve the light Courtside design even if an older chat.css is loaded. */
+.chat-page .sidebar--right .explore-panel {
+    border: 1px solid rgba(43, 89, 60, 0.10) !important;
+    border-radius: 1.05rem;
+    background: rgba(249, 251, 245, 0.95) !important;
+    box-shadow: 0 0.9rem 2.3rem rgba(34, 67, 42, 0.06);
+    color: #294b3c;
+}
+
+.chat-page .sidebar--right .explore-panel__heading h2 {
+    color: #213e30;
+}
+
+.chat-page .sidebar--right .explore-panel__description {
+    color: #77867a;
+}
+
+.chat-page .sidebar--right .section-eyebrow {
+    color: #6b7b70;
+}
+
+
+/* ==========================================================================
+   SAVED QUESTIONS CARD HEIGHT & INNER SCROLLING
+   Adjust only the right card; preserve the working three-column grid.
+   ========================================================================== */
+
+/* The sidebar track spans the height of the chat panel. Make its card
+   approximately half as tall, instead of shrinking to its content. */
+.chat-page .workspace > #right-sidebar .explore-panel {
+    height: 50% !important;
+    min-height: 0 !important;
+    max-height: 50% !important;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden !important;
+}
+
+/* Keep the heading and helper text visible while saved questions scroll. */
+.chat-page .workspace > #right-sidebar .explore-panel__top,
+.chat-page .workspace > #right-sidebar .explore-panel__description {
+    flex: 0 0 auto;
+}
+
+/* Normal mode: the questions list takes the available space and scrolls. */
+.chat-page .workspace > #right-sidebar #quick-questions-list {
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow-x: hidden;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    scrollbar-width: thin;
+    padding-right: 0.25rem;
+}
+
+/* Edit mode: give the editor the same bounded space. Its controls stay
+   accessible while the editable question rows scroll separately. */
+.chat-page .workspace > #right-sidebar #quick-questions-editor:not([hidden]) {
+    flex: 1 1 auto;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+    overflow: hidden;
+}
+
+.chat-page .workspace > #right-sidebar #quick-questions-editor-list {
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow-x: hidden;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    scrollbar-width: thin;
+    padding-right: 0.25rem;
+}
+
+.chat-page .workspace > #right-sidebar .quick-question-add,
+.chat-page .workspace > #right-sidebar .quick-questions-editor__actions {
+    flex-shrink: 0;
+}
+
+/* The saved list should not compete for height while its editor is open. */
+.chat-page .workspace > #right-sidebar .explore-panel:has(#quick-questions-editor:not([hidden])) #quick-questions-list {
+    display: none !important;
+}
+
+/* The collapse arrow now aligns to the centre of the half-height card,
+   rather than to the bottom edge of that card. */
+.chat-page .workspace > #right-sidebar .quick-questions-collapse-handle {
+    top: 25% !important;
+}
+
+/* On tablet/mobile the sidebar becomes an overlay with auto height,
+   so use a viewport-relative card height instead of a percentage. */
+@media (max-width: 69.99rem) {
+    .chat-page .workspace > #right-sidebar .explore-panel {
+        height: min(50vh, 28rem) !important;
+        max-height: min(50vh, 28rem) !important;
+    }
+
+    .chat-page .workspace > #right-sidebar .quick-questions-collapse-handle {
+        top: min(25vh, 14rem) !important;
+    }
+}

@@ -1,157 +1,466 @@
-import { getChatInfo, submitChatQuestion } from "./api/chatApi.js";
-import { getCurrentUser, logout } from "./api/authApi.js";
+import {
+    getChatInfo,
+    submitChatQuestion,
+} from "./api/chatApi.js";
+
+import {
+    getCurrentUser,
+    logout,
+} from "./api/authApi.js";
 
 import {
     appendAssistantMessage,
     appendUserMessage,
 } from "./ui/messageRenderer.js";
 
-import { createProcessingStatus } from "./ui/processingStatus.js";
-import { createSourcePanel } from "./ui/sourcePanel.js";
-import { createChatHistory } from "./ui/chatHistory.js";
-import { createQuickQuestions } from "./ui/quickQuestions.js";
-import { createPdfUpload } from "./ui/pdfUpload.js";
+import {
+    createProcessingStatus,
+} from "./ui/processingStatus.js";
+
+import {
+    createSourcePanel,
+} from "./ui/sourcePanel.js";
+
+import {
+    createChatHistory,
+} from "./ui/chatHistory.js";
+
+import {
+    createQuickQuestions,
+} from "./ui/quickQuestions.js";
+
+import {
+    createPdfUpload,
+} from "./ui/pdfUpload.js";
 
 
-/*
- * A role can no longer be picked in this interface -- it is a fact about
- * the signed-in account (req.user.roleId, set at login from the session).
- *
- * An unauthenticated visitor is redirected before the rest of the workspace
- * is initialised.
- */
-const currentUser = await getCurrentUser();
+/* ==========================================================================
+   AUTH
+   ========================================================================== */
+
+const currentUser =
+    await getCurrentUser();
+
 
 if (!currentUser) {
-    window.location.replace("/login");
+
+    window.location.replace(
+        "/login",
+    );
 
     throw new Error(
         "Redirecting to sign in.",
     );
+
 }
 
 
-/**
- * Returns a required page element, or throws a clear startup error.
- *
- * Failing here is much easier to diagnose than allowing a missing
- * interface element to cause an unrelated error later.
- */
-function getRequiredElement(selector) {
+/* ==========================================================================
+   DOM HELPERS
+   ========================================================================== */
+
+function getRequiredElement(
+    selector,
+) {
+
     const element =
-        document.querySelector(selector);
+        document.querySelector(
+            selector,
+        );
+
 
     if (!element) {
+
         throw new Error(
             `Required interface element was not found: ${selector}`,
         );
+
     }
+
 
     return element;
+
 }
 
 
-// --------------------------------------------------------------------------
-// Main workspace elements
-// --------------------------------------------------------------------------
+function getOptionalElement(
+    selector,
+) {
+
+    return document.querySelector(
+        selector,
+    );
+
+}
+
+
+/* ==========================================================================
+   MAIN WORKSPACE
+   ========================================================================== */
 
 const chatForm =
-    getRequiredElement("#chat-form");
+    getRequiredElement(
+        "#chat-form",
+    );
+
 
 const questionInput =
-    getRequiredElement("#question");
+    getRequiredElement(
+        "#question",
+    );
+
 
 const sendButton =
-    getRequiredElement("#send-button");
+    getRequiredElement(
+        "#send-button",
+    );
+
 
 const conversation =
-    getRequiredElement("#conversation");
+    getRequiredElement(
+        "#conversation",
+    );
+
+
+/*
+ * New UI landing page.
+ */
+
+const conversationEmpty =
+    getOptionalElement(
+        "#conversation-empty",
+    );
+
+
+const welcomeSourceCount =
+    getOptionalElement(
+        "#welcome-source-count",
+    );
+
+
+const welcomeSuggestions =
+    document.querySelectorAll(
+        ".welcome-suggestion",
+    );
+
+
+/*
+ * TENISE-68.
+ *
+ * Optional here so this branch does not crash if an older
+ * index.html is temporarily used during a merge.
+ */
 
 const effortToggle =
-    getRequiredElement("#effort-toggle");
+    getOptionalElement(
+        "#effort-toggle",
+    );
 
 
-// --------------------------------------------------------------------------
-// Sidebars, foldable -- left (workspace nav) and right (quick start)
-// --------------------------------------------------------------------------
-//
-// Purely a display preference, remembered per browser -- not something the
-// backend needs to know or that should follow the account to another
-// device, so localStorage rather than a server round trip. Wrapped in
-// try/catch because a private window or blocked site data can make storage
-// throw rather than just return null.
+/* ==========================================================================
+   SIDEBAR CONTROLLER
+   ========================================================================== */
 
-/**
- * Wires one foldable-sidebar toggle button: applies/removes `bodyClass` on
- * <body>, remembers the state under `storageKey`, and keeps the button's
- * aria-expanded/label/title in sync. Both sidebars use the same shape, so
- * this is built once and called twice rather than duplicated.
- */
-function createSidebarToggle({ buttonSelector, bodyClass, storageKey, showLabel, hideLabel }) {
-    const button = getRequiredElement(buttonSelector);
+function createSidebarToggle({
+    buttonSelector,
+    bodyClass,
+    storageKey,
+    showLabel,
+    hideLabel,
+}) {
+
+    const button =
+        getOptionalElement(
+            buttonSelector,
+        );
+
+
+    if (!button) {
+
+        return null;
+
+    }
+
 
     function readStored() {
+
         try {
-            return window.localStorage.getItem(storageKey) === "true";
+
+            return (
+                window.localStorage
+                    .getItem(
+                        storageKey,
+                    ) === "true"
+            );
+
         } catch {
+
             return false;
+
         }
+
     }
 
-    function storePreference(collapsed) {
+
+    function storePreference(
+        collapsed,
+    ) {
+
         try {
-            window.localStorage.setItem(storageKey, String(collapsed));
+
+            window.localStorage
+                .setItem(
+                    storageKey,
+                    String(
+                        collapsed,
+                    ),
+                );
+
         } catch {
-            // per-viewer convenience only -- nothing downstream depends on
-            // this persisting, so blocked or full storage is not an error to
-            // surface.
+
+            // Display preference only.
+
         }
+
     }
 
-    function apply(collapsed) {
-        document.body.classList.toggle(bodyClass, collapsed);
 
-        button.setAttribute("aria-expanded", String(!collapsed));
-        button.setAttribute("aria-label", collapsed ? showLabel : hideLabel);
-        button.title = collapsed ? showLabel : hideLabel;
+    function apply(
+        collapsed,
+    ) {
+
+        document.body
+            .classList
+            .toggle(
+                bodyClass,
+                collapsed,
+            );
+
+
+        button.setAttribute(
+            "aria-expanded",
+            String(
+                !collapsed,
+            ),
+        );
+
+
+        button.setAttribute(
+            "aria-label",
+            collapsed
+                ? showLabel
+                : hideLabel,
+        );
+
+
+        button.title =
+            collapsed
+                ? showLabel
+                : hideLabel;
+
     }
 
-    apply(readStored());
 
-    button.addEventListener("click", () => {
-        const collapsed = !document.body.classList.contains(bodyClass);
+    apply(
+        readStored(),
+    );
 
-        apply(collapsed);
-        storePreference(collapsed);
-    });
+
+    button.addEventListener(
+        "click",
+        () => {
+
+            const collapsed =
+                !document.body
+                    .classList
+                    .contains(
+                        bodyClass,
+                    );
+
+
+            apply(
+                collapsed,
+            );
+
+
+            storePreference(
+                collapsed,
+            );
+
+        },
+    );
+
+
+    return button;
+
 }
 
-createSidebarToggle({
-    buttonSelector: "#sidebar-toggle-button",
-    bodyClass: "sidebar-collapsed",
-    storageKey: "tennisexplore.sidebarCollapsed",
-    showLabel: "Show sidebar",
-    hideLabel: "Hide sidebar",
-});
 
-createSidebarToggle({
-    buttonSelector: "#quick-start-toggle-button",
-    bodyClass: "sidebar-collapsed-right",
-    storageKey: "tennisexplore.quickStartCollapsed",
-    showLabel: "Show quick start",
-    hideLabel: "Hide quick start",
-});
+/* Left navigation */
+
+const sidebarToggleButton =
+    createSidebarToggle({
+
+        buttonSelector:
+            "#sidebar-toggle-button",
+
+        bodyClass:
+            "sidebar-collapsed",
+
+        storageKey:
+            "tennisexplore.sidebarCollapsed",
+
+        showLabel:
+            "Show sidebar",
+
+        hideLabel:
+            "Hide sidebar",
+
+    });
 
 
-// --------------------------------------------------------------------------
-// Error state
-// --------------------------------------------------------------------------
+/* Saved Questions */
+
+const quickQuestionsToggle =
+    createSidebarToggle({
+
+        buttonSelector:
+            "#quick-start-toggle-button",
+
+        bodyClass:
+            "sidebar-collapsed-right",
+
+        storageKey:
+            "tennisexplore.quickStartCollapsed",
+
+        showLabel:
+            "Show saved questions",
+
+        hideLabel:
+            "Hide saved questions",
+
+    });
+
+
+/* Legacy left-side reopen button */
+
+const sidebarReopenButton =
+    getOptionalElement(
+        "#sidebar-reopen-button",
+    );
+
+
+sidebarReopenButton
+    ?.addEventListener(
+        "click",
+        () => {
+
+            sidebarToggleButton
+                ?.click();
+
+        },
+    );
+
+
+/* Saved Questions collapsed tab */
+
+const quickQuestionsReopen =
+    getOptionalElement(
+        "#quick-questions-reopen-button",
+    );
+
+
+quickQuestionsReopen
+    ?.addEventListener(
+        "click",
+        () => {
+
+            quickQuestionsToggle
+                ?.click();
+
+        },
+    );
+
+
+/* Inline collapse control uses the existing stateful sidebar toggle. */
+getOptionalElement("#quick-questions-collapse-handle")
+    ?.addEventListener("click", () => {
+        if (!document.body.classList.contains("sidebar-collapsed-right")) {
+            quickQuestionsToggle?.click();
+        }
+    });
+
+/* In compact rail mode, open the full left sidebar before revealing history.
+   This removes the small flyout but keeps History accessible. */
+getOptionalElement("#chat-history-toggle")
+    ?.addEventListener("click", (event) => {
+        if (!document.body.classList.contains("sidebar-collapsed") ||
+            window.matchMedia("(max-width: 69.99rem)").matches) {
+            return;
+        }
+        event.preventDefault();
+        event.stopImmediatePropagation();
+        sidebarToggleButton?.click();
+        queueMicrotask(() => {
+            getOptionalElement("#chat-history-toggle")?.click();
+        });
+    }, true);
+
+/* ==========================================================================
+   QUICK QUESTIONS ELEMENTS
+   ========================================================================== */
+
+const quickQuestionsEditButton =
+    getRequiredElement(
+        "#quick-questions-edit",
+    );
+
+
+const quickQuestionsEditor =
+    getRequiredElement(
+        "#quick-questions-editor",
+    );
+
+
+const quickQuestionsEditorList =
+    getRequiredElement(
+        "#quick-questions-editor-list",
+    );
+
+
+const quickQuestionAddButton =
+    getRequiredElement(
+        "#quick-question-add",
+    );
+
+
+const quickQuestionsSaveButton =
+    getRequiredElement(
+        "#quick-questions-save",
+    );
+
+
+const quickQuestionsCancelButton =
+    getRequiredElement(
+        "#quick-questions-cancel",
+    );
+
+
+/* ==========================================================================
+   ERROR STATE
+   ========================================================================== */
 
 const errorBanner =
-    getRequiredElement("#error-banner");
+    getRequiredElement(
+        "#error-banner",
+    );
+
 
 const errorMessage =
-    getRequiredElement("#error-message");
+    getRequiredElement(
+        "#error-message",
+    );
+
 
 const dismissErrorButton =
     getRequiredElement(
@@ -159,66 +468,372 @@ const dismissErrorButton =
     );
 
 
-function showError(message) {
-    errorMessage.textContent = message;
+/*
+ * Support both:
+ *
+ * 1. the newer index.html containing #error-title
+ *    and #retry-error-button;
+ *
+ * 2. the older index.html with only a <strong> and Dismiss.
+ */
 
-    errorBanner.hidden = false;
+let errorTitle =
+    getOptionalElement(
+        "#error-title",
+    );
+
+
+if (!errorTitle) {
+
+    errorTitle =
+        errorBanner.querySelector(
+            "strong",
+        );
+
+
+    if (errorTitle) {
+
+        errorTitle.id =
+            "error-title";
+
+    }
+
+}
+
+
+let errorActions =
+    errorBanner.querySelector(
+        ".error-banner__actions",
+    );
+
+
+if (!errorActions) {
+
+    errorActions =
+        document.createElement(
+            "div",
+        );
+
+
+    errorActions.className =
+        "error-banner__actions";
+
+
+    dismissErrorButton
+        .before(
+            errorActions,
+        );
+
+
+    errorActions.append(
+        dismissErrorButton,
+    );
+
+}
+
+
+let retryErrorButton =
+    getOptionalElement(
+        "#retry-error-button",
+    );
+
+
+if (!retryErrorButton) {
+
+    retryErrorButton =
+        document.createElement(
+            "button",
+        );
+
+
+    retryErrorButton.id =
+        "retry-error-button";
+
+
+    retryErrorButton.type =
+        "button";
+
+
+    retryErrorButton.className =
+        "text-button error-banner__retry";
+
+
+    retryErrorButton.textContent =
+        "Try again";
+
+
+    retryErrorButton.hidden =
+        true;
+
+
+    errorActions.prepend(
+        retryErrorButton,
+    );
+
+}
+
+
+let retryAction =
+    null;
+
+
+/* ==========================================================================
+   FRIENDLY ERROR MESSAGES
+   ========================================================================== */
+
+function friendlyErrorMessage(
+    error,
+    fallback,
+) {
+
+    const raw =
+        String(
+            error?.message ??
+            "",
+        );
+
+
+    if (
+        error?.status ===
+        429
+    ) {
+
+        return (
+            "TennisExplore is receiving a lot of requests right now. " +
+            "Please wait a moment and try again."
+        );
+
+    }
+
+
+    if (
+        error?.status >=
+        500
+    ) {
+
+        return (
+            "The AI service is temporarily unavailable. " +
+            "Please try again in a moment."
+        );
+
+    }
+
+
+    if (
+        error?.name ===
+        "AbortError" ||
+        error?.status ===
+        408 ||
+        /timeout|timed out/i
+            .test(
+                raw,
+            )
+    ) {
+
+        return (
+            "This request took longer than expected. " +
+            "Please try again."
+        );
+
+    }
+
+
+    if (
+        /failed to fetch|network|fetch failed|networkerror/i
+            .test(
+                raw,
+            )
+    ) {
+
+        return (
+            "TennisExplore could not reach the AI service. " +
+            "Please check the connection and try again."
+        );
+
+    }
+
+
+    if (
+        fallback
+    ) {
+
+        return fallback;
+
+    }
+
+
+    if (
+        raw.trim() !==
+        ""
+    ) {
+
+        return raw;
+
+    }
+
+
+    return (
+        "TennisExplore could not complete this request. " +
+        "Please try again."
+    );
+
+}
+
+
+/* ==========================================================================
+   ERROR CONTROLS
+   ========================================================================== */
+
+function showError(
+    message,
+    {
+        title =
+        "Something went wrong",
+
+        retry =
+        null,
+    } = {},
+) {
+
+    if (errorTitle) {
+
+        errorTitle.textContent =
+            title;
+
+    }
+
+
+    errorMessage.textContent =
+        message;
+
+
+    retryAction =
+        retry;
+
+
+    retryErrorButton.hidden =
+        typeof retry !==
+        "function";
+
+
+    errorBanner.hidden =
+        false;
+
 }
 
 
 function clearError() {
-    errorBanner.hidden = true;
 
-    errorMessage.textContent = "";
+    errorBanner.hidden =
+        true;
+
+
+    errorMessage.textContent =
+        "";
+
+
+    retryAction =
+        null;
+
+
+    retryErrorButton.hidden =
+        true;
+
 }
 
 
-dismissErrorButton.addEventListener(
-    "click",
-    clearError,
-);
+dismissErrorButton
+    .addEventListener(
+        "click",
+        clearError,
+    );
 
 
-// --------------------------------------------------------------------------
-// Signed-in user
-// --------------------------------------------------------------------------
+retryErrorButton
+    .addEventListener(
+        "click",
+        async () => {
+
+            if (
+                typeof retryAction !==
+                "function"
+            ) {
+
+                return;
+
+            }
+
+
+            const action =
+                retryAction;
+
+
+            clearError();
+
+
+            await action();
+
+        },
+    );
+
+
+/* ==========================================================================
+   USER BADGE
+   ========================================================================== */
 
 const userBadge =
-    getRequiredElement("#user-badge");
+    getRequiredElement(
+        "#user-badge",
+    );
+
 
 const userBadgeRole =
-    getRequiredElement("#user-badge-role");
+    getRequiredElement(
+        "#user-badge-role",
+    );
+
 
 const logoutButton =
-    getRequiredElement("#logout-button");
+    getRequiredElement(
+        "#logout-button",
+    );
 
 
 userBadgeRole.textContent =
     currentUser.displayName;
 
-userBadge.hidden = false;
+
+userBadge.hidden =
+    false;
 
 
-logoutButton.addEventListener(
-    "click",
-    async () => {
-        logoutButton.disabled = true;
+logoutButton
+    .addEventListener(
+        "click",
+        async () => {
 
-        await logout();
-
-        window.location.assign(
-            "/login",
-        );
-    },
-);
+            logoutButton.disabled =
+                true;
 
 
-// --------------------------------------------------------------------------
-// Processing status
-// --------------------------------------------------------------------------
+            await logout();
+
+
+            window.location.assign(
+                "/login",
+            );
+
+        },
+    );
+
+
+/* ==========================================================================
+   PROCESSING STATUS
+   ========================================================================== */
 
 const status =
     createProcessingStatus({
+
         statusIndicator:
             getRequiredElement(
                 "#processing-status",
@@ -235,19 +850,17 @@ const status =
             ),
 
         conversation,
+
     });
 
 
-// --------------------------------------------------------------------------
-// Citation source panel
-// --------------------------------------------------------------------------
+/* ==========================================================================
+   SOURCE PANEL
+   ========================================================================== */
 
-/*
- * Cited sources open beside the conversation instead of replacing the
- * workspace, so a coach can review evidence without losing their place.
- */
 const sourcePanel =
     createSourcePanel({
+
         panel:
             getRequiredElement(
                 "#source-panel",
@@ -277,54 +890,350 @@ const sourcePanel =
             getRequiredElement(
                 "#source-panel-download",
             ),
+
     });
 
 
-// --------------------------------------------------------------------------
-// Conversation rendering
-// --------------------------------------------------------------------------
+/* ==========================================================================
+   EMPTY CONVERSATION
+   ========================================================================== */
 
-/**
- * Rebuilds the visible transcript when a history item is selected.
- *
- * Only user/assistant message rows are removed. The processing status remains
- * mounted because its controller keeps references to its own DOM elements.
+function setConversationEmpty(
+    isEmpty,
+) {
+
+    if (!conversationEmpty) {
+
+        return;
+
+    }
+
+
+    conversationEmpty.hidden =
+        !isEmpty;
+
+}
+
+
+/* ==========================================================================
+   SAVE USER QUESTION
+   ========================================================================== */
+
+function makeQuickQuestionTitle(
+    question,
+) {
+
+    const clean =
+        question
+            .replace(
+                /\s+/g,
+                " ",
+            )
+            .trim();
+
+
+    if (
+        clean.length <=
+        34
+    ) {
+
+        return clean;
+
+    }
+
+
+    return (
+        clean
+            .slice(
+                0,
+                31,
+            )
+            .trimEnd() +
+        "..."
+    );
+
+}
+
+
+function prefillSavedQuestionEditor(
+    question,
+) {
+
+    /*
+     * Open Saved Questions if collapsed.
+     */
+
+    if (
+        document.body
+            .classList
+            .contains(
+                "sidebar-collapsed-right",
+            )
+    ) {
+
+        quickQuestionsToggle
+            ?.click();
+
+    }
+
+
+    /*
+     * Enter Edit mode.
+     */
+
+    if (
+        quickQuestionsEditor.hidden
+    ) {
+
+        quickQuestionsEditButton
+            .click();
+
+    }
+
+
+    /*
+     * Allow Quick Questions to render the editor before
+     * inserting a new row.
+     */
+
+    requestAnimationFrame(
+        () => {
+
+            quickQuestionAddButton
+                .click();
+
+
+            requestAnimationFrame(
+                () => {
+
+                    const rows =
+                        quickQuestionsEditorList
+                            .querySelectorAll(
+                                ".quick-question-editor-row",
+                            );
+
+
+                    const row =
+                        rows[
+                        rows.length -
+                        1
+                        ];
+
+
+                    if (!row) {
+
+                        return;
+
+                    }
+
+
+                    const titleInput =
+                        row.querySelector(
+                            "input",
+                        );
+
+
+                    const questionTextarea =
+                        row.querySelector(
+                            "textarea",
+                        );
+
+
+                    if (
+                        titleInput &&
+                        titleInput.value
+                            .trim() ===
+                        ""
+                    ) {
+
+                        titleInput.value =
+                            makeQuickQuestionTitle(
+                                question,
+                            );
+
+                    }
+
+
+                    if (
+                        questionTextarea
+                    ) {
+
+                        questionTextarea.value =
+                            question;
+
+
+                        questionTextarea.focus();
+
+                    }
+
+                },
+            );
+
+        },
+    );
+
+}
+
+
+/*
+ * Keep messageRenderer.js responsible for the message itself.
+ * This function adds only a small UI action beneath user messages.
  */
-function renderConversation(messages) {
+
+function appendUserMessageWithActions({
+    content,
+}) {
+
+    const row =
+        appendUserMessage({
+
+            conversation,
+
+            content,
+
+        });
+
+
+    const actions =
+        document.createElement(
+            "div",
+        );
+
+
+    actions.className =
+        "user-message-actions";
+
+
+    const saveButton =
+        document.createElement(
+            "button",
+        );
+
+
+    saveButton.type =
+        "button";
+
+
+    saveButton.className =
+        "user-message-save";
+
+
+    saveButton.textContent =
+        "Save question";
+
+
+    saveButton.setAttribute(
+        "aria-label",
+        "Add this question to Saved Questions",
+    );
+
+
+    saveButton.addEventListener(
+        "click",
+        () => {
+
+            prefillSavedQuestionEditor(
+                content,
+            );
+
+
+            saveButton.textContent =
+                "Added to editor";
+
+
+            saveButton.disabled =
+                true;
+
+        },
+    );
+
+
+    actions.append(
+        saveButton,
+    );
+
+
+    row.append(
+        actions,
+    );
+
+
+    return row;
+
+}
+
+
+/* ==========================================================================
+   CONVERSATION RENDERING
+   ========================================================================== */
+
+function renderConversation(
+    messages,
+) {
+
     sourcePanel.close();
+
 
     clearError();
 
+
+    setConversationEmpty(
+        messages.length ===
+        0,
+    );
+
+
     for (
         const message
-        of conversation.querySelectorAll(
-            ".message",
-        )
+        of conversation
+            .querySelectorAll(
+                ".message",
+            )
     ) {
+
         message.remove();
+
     }
 
-    for (const message of messages) {
-        if (message.role === "user") {
-            appendUserMessage({
-                conversation,
+
+    for (
+        const message
+        of messages
+    ) {
+
+        if (
+            message.role ===
+            "user"
+        ) {
+
+            appendUserMessageWithActions({
 
                 content:
                     message.content,
+
             });
 
+
             continue;
+
         }
+
 
         if (
             message.role ===
             "assistant"
         ) {
+
             appendAssistantMessage({
+
                 conversation,
 
                 content:
                     message.content,
+
+                sections:
+                    message.sections ??
+                    [],
 
                 citations:
                     message.citations ??
@@ -348,29 +1257,30 @@ function renderConversation(messages) {
 
                 openCitation:
                     sourcePanel.open,
+
             });
+
         }
+
     }
+
 
     conversation.scrollTop =
         conversation.scrollHeight;
 
+
     questionInput.focus();
+
 }
 
 
-// --------------------------------------------------------------------------
-// Account-scoped Chat History
-// --------------------------------------------------------------------------
+/* ==========================================================================
+   CHAT HISTORY
+   ========================================================================== */
 
-/*
- * Conversation history is persisted by the backend and scoped to the
- * authenticated account.
- *
- * Reloading the page or signing in again restores the same account's history.
- */
 const chatHistory =
     await createChatHistory({
+
         toggleButton:
             getRequiredElement(
                 "#chat-history-toggle",
@@ -402,232 +1312,327 @@ const chatHistory =
             ),
 
         onSelectConversation:
-            ({ messages }) => {
+            ({
+                messages,
+            }) => {
+
                 status.ready();
+
 
                 renderConversation(
                     messages,
                 );
+
             },
 
         onError:
-            (error) => {
+            (
+                error,
+            ) => {
+
                 if (
                     error?.status ===
                     401
                 ) {
+
                     window.location.assign(
                         "/login",
                     );
 
+
                     return;
+
                 }
 
+
                 showError(
-                    error?.message ??
-                    "Chat history could not be loaded or saved.",
+
+                    friendlyErrorMessage(
+                        error,
+                        "Chat history could not be loaded or saved.",
+                    ),
+
+                    {
+                        title:
+                            "Chat history unavailable",
+                    },
+
                 );
+
             },
+
     });
 
 
-// --------------------------------------------------------------------------
-// Greeting
-// --------------------------------------------------------------------------
-//
-// Shown once, only into a genuinely empty conversation -- createChatHistory
-// never auto-selects a saved conversation on load, so an empty transcript
-// here means a fresh session, not one still loading. Best-effort: a failed
-// /api/chat/info fetch still shows the greeting, just without a source
-// count, rather than showing nothing at all.
+/* ==========================================================================
+   WELCOME INFORMATION
+   ========================================================================== */
 
-async function showGreeting() {
-    if (conversation.querySelector(".message")) {
+async function loadWelcomeInfo() {
+
+    if (!welcomeSourceCount) {
+
         return;
+
     }
 
-    let sourceCount = null;
+
+    let sourceCount =
+        null;
+
 
     try {
-        ({ sourceCount } = await getChatInfo());
+
+        ({
+            sourceCount,
+        } = await getChatInfo());
+
     } catch {
-        // greeting still shows without the count.
+
+        return;
+
     }
 
-    const coverage =
-        typeof sourceCount === "number"
-            ? `I have access to ${sourceCount.toLocaleString()} sources`
-            : "I have access to a large library of sources";
 
-    appendAssistantMessage({
-        conversation,
+    if (
+        typeof sourceCount !==
+        "number"
+    ) {
 
-        content:
-            `Hey! I'm TennisExplore's knowledge assistant. ${coverage} covering research papers, ` +
-            "match analysis, coaching resources and video, and I can answer questions across all of " +
-            "them with citations back to where each fact came from. Ask me anything tennis-related to get started.",
+        return;
 
-        openCitation:
-            sourcePanel.open,
-    });
+    }
+
+
+    welcomeSourceCount.textContent =
+        `Currently connected to ${sourceCount.toLocaleString()} indexed sources.`;
+
 }
 
-void showGreeting();
+
+void loadWelcomeInfo();
 
 
-// --------------------------------------------------------------------------
-// Composer
-// --------------------------------------------------------------------------
+/* ==========================================================================
+   COMPOSER
+   ========================================================================== */
 
-/**
- * Grows the textarea with its content up to the CSS maximum height.
- */
 function resizeInput() {
+
     questionInput.style.height =
         "auto";
 
+
     questionInput.style.height =
         `${questionInput.scrollHeight}px`;
+
 }
 
 
-questionInput.addEventListener(
-    "input",
-    resizeInput,
-);
+questionInput
+    .addEventListener(
+        "input",
+        resizeInput,
+    );
 
 
-// --------------------------------------------------------------------------
-// Account-scoped Quick Questions
-// --------------------------------------------------------------------------
+/* ==========================================================================
+   LANDING SUGGESTIONS
+   ========================================================================== */
 
-/*
- * Quick Questions are loaded from /api/quickquestions.
- *
- * The backend derives the account from req.user, so every signed-in user
- * receives and edits only their own saved Quick Questions.
- */
+for (
+    const suggestion
+    of welcomeSuggestions
+) {
+
+    suggestion
+        .addEventListener(
+            "click",
+            () => {
+
+                const prompt =
+                    suggestion
+                        .dataset
+                        .prompt ??
+                    "";
+
+
+                questionInput.value =
+                    prompt;
+
+
+                resizeInput();
+
+
+                questionInput.focus();
+
+            },
+        );
+
+}
+
+
+/* ==========================================================================
+   QUICK QUESTIONS
+   ========================================================================== */
+
 await createQuickQuestions({
+
     list:
         getRequiredElement(
             "#quick-questions-list",
         ),
 
     editButton:
-        getRequiredElement(
-            "#quick-questions-edit",
-        ),
+        quickQuestionsEditButton,
 
     editor:
-        getRequiredElement(
-            "#quick-questions-editor",
-        ),
+        quickQuestionsEditor,
 
     editorList:
-        getRequiredElement(
-            "#quick-questions-editor-list",
-        ),
+        quickQuestionsEditorList,
 
     addButton:
-        getRequiredElement(
-            "#quick-question-add",
-        ),
+        quickQuestionAddButton,
 
     saveButton:
-        getRequiredElement(
-            "#quick-questions-save",
-        ),
+        quickQuestionsSaveButton,
 
     cancelButton:
-        getRequiredElement(
-            "#quick-questions-cancel",
-        ),
+        quickQuestionsCancelButton,
 
-    /*
-     * Selecting a Quick Question only fills the normal chat input.
-     *
-     * It still goes through exactly the same backend query pipeline as
-     * manually typed natural-language questions.
-     */
-    onSelectQuestion(question) {
+
+    onSelectQuestion(
+        question,
+    ) {
+
         questionInput.value =
             question;
 
+
         resizeInput();
 
+
         questionInput.focus();
+
     },
 
-        onError(error) {
-        /*
-         * If the session has expired, there is no useful reason to keep
-         * retrying the preferences endpoint.
-         */
+
+    onError(
+        error,
+    ) {
+
         if (
             error?.status ===
             401
         ) {
+
             window.location.assign(
                 "/login",
             );
 
+
             return;
+
         }
 
+
         showError(
-            error?.message ??
-            "Quick Questions could not be loaded or saved.",
+
+            friendlyErrorMessage(
+                error,
+                "Saved Questions could not be loaded or saved.",
+            ),
+
+            {
+                title:
+                    "Saved Questions unavailable",
+            },
+
         );
+
     },
+
 });
 
 
-// --------------------------------------------------------------------------
-// Keyboard submit
-// --------------------------------------------------------------------------
+/* ==========================================================================
+   KEYBOARD SUBMIT
+   ========================================================================== */
 
-/*
- * Enter sends.
- * Shift + Enter creates a new line.
- */
-questionInput.addEventListener(
-    "keydown",
-    (event) => {
-        if (
-            event.key ===
-            "Enter" &&
-            !event.shiftKey
-        ) {
-            event.preventDefault();
+questionInput
+    .addEventListener(
+        "keydown",
+        (
+            event,
+        ) => {
 
-            chatForm.requestSubmit();
-        }
-    },
-);
+            if (
+                event.key ===
+                "Enter" &&
+                !event.shiftKey
+            ) {
+
+                event.preventDefault();
 
 
-// --------------------------------------------------------------------------
-// Busy state
-// --------------------------------------------------------------------------
+                chatForm.requestSubmit();
 
-function setBusy(busy) {
+            }
+
+        },
+    );
+
+
+/* ==========================================================================
+   BUSY STATE
+   ========================================================================== */
+
+function setBusy(
+    busy,
+) {
+
     sendButton.disabled =
         busy;
+
 
     questionInput.disabled =
         busy;
 
+
     chatHistory.setBusy(
         busy,
     );
+
+
+    if (
+        effortToggle
+    ) {
+
+        for (
+            const button
+            of effortToggle
+                .querySelectorAll(
+                    ".toggle-group__button",
+                )
+        ) {
+
+            button.disabled =
+                busy;
+
+        }
+
+    }
+
 }
 
 
-// --------------------------------------------------------------------------
-// Private PDF upload
-// --------------------------------------------------------------------------
+/* ==========================================================================
+   PDF UPLOAD
+   ========================================================================== */
 
 createPdfUpload({
+
     button:
         getRequiredElement(
             "#composer-plus-button",
@@ -639,242 +1644,541 @@ createPdfUpload({
     onBusyChange:
         setBusy,
 
-    onError(error) {
+
+    onError(
+        error,
+    ) {
+
         if (
             error?.status ===
             401
         ) {
+
             window.location.assign(
                 "/login",
             );
 
+
             return;
+
         }
 
+
         showError(
-            error?.message ??
-            "The PDF could not be uploaded.",
+
+            friendlyErrorMessage(
+                error,
+                "The PDF could not be uploaded.",
+            ),
+
+            {
+                title:
+                    "Upload failed",
+            },
+
         );
+
     },
+
 });
 
 
-// --------------------------------------------------------------------------
-// Effort toggle (TENISE-68)
-// --------------------------------------------------------------------------
+/* ==========================================================================
+   EFFORT TOGGLE - TENISE-68
+   ========================================================================== */
 
-/*
- * "" (Standard, the default) means "send no effort field at all" -- the
- * coach gets exactly today's behaviour unless they deliberately pick
- * Fast or Thorough. Remembered per browser via localStorage so the choice
- * survives a reload, same convenience as the quick-questions editor's
- * local persistence; never sent anywhere but this client.
- */
-const EFFORT_STORAGE_KEY = "tennisexplore.effort";
+const EFFORT_STORAGE_KEY =
+    "tennisexplore.effort";
+
 
 function readStoredEffort() {
-    try {
-        const stored = window.localStorage.getItem(EFFORT_STORAGE_KEY);
 
-        return stored === "fast" || stored === "thorough" ? stored : "";
+    try {
+
+        const stored =
+            window.localStorage
+                .getItem(
+                    EFFORT_STORAGE_KEY,
+                );
+
+
+        return (
+            stored === "fast" ||
+            stored === "thorough"
+        )
+            ? stored
+            : "";
+
     } catch {
-        // Private browsing / storage disabled: fall back to Standard.
+
         return "";
+
     }
+
 }
 
-function writeStoredEffort(effort) {
+
+function writeStoredEffort(
+    effort,
+) {
+
     try {
-        window.localStorage.setItem(EFFORT_STORAGE_KEY, effort);
+
+        window.localStorage
+            .setItem(
+                EFFORT_STORAGE_KEY,
+                effort,
+            );
+
     } catch {
-        // Nothing to do -- the toggle still works for this page view.
+
+        // Storage is optional.
+
     }
+
 }
 
-let selectedEffort = readStoredEffort();
+
+let selectedEffort =
+    readStoredEffort();
+
 
 function applyEffortButtonStates() {
-    for (const button of effortToggle.querySelectorAll(".toggle-group__button")) {
-        const isActive = button.dataset.effortValue === selectedEffort;
 
-        button.classList.toggle("toggle-group__button--active", isActive);
-        button.setAttribute("aria-checked", String(isActive));
+    if (!effortToggle) {
+
+        return;
+
     }
+
+
+    for (
+        const button
+        of effortToggle
+            .querySelectorAll(
+                ".toggle-group__button",
+            )
+    ) {
+
+        const isActive =
+            (
+                button.dataset
+                    .effortValue ??
+                ""
+            ) ===
+            selectedEffort;
+
+
+        button.classList
+            .toggle(
+                "toggle-group__button--active",
+                isActive,
+            );
+
+
+        button.setAttribute(
+            "aria-checked",
+            String(
+                isActive,
+            ),
+        );
+
+    }
+
 }
 
-effortToggle.addEventListener("click", (event) => {
-    const button = event.target.closest(".toggle-group__button");
 
-    if (!button) {
-        return;
-    }
+effortToggle
+    ?.addEventListener(
+        "click",
+        (
+            event,
+        ) => {
 
-    selectedEffort = button.dataset.effortValue ?? "";
+            const button =
+                event.target
+                    .closest(
+                        ".toggle-group__button",
+                    );
 
-    writeStoredEffort(selectedEffort);
-    applyEffortButtonStates();
-});
+
+            if (!button) {
+
+                return;
+
+            }
+
+
+            selectedEffort =
+                button.dataset
+                    .effortValue ??
+                "";
+
+
+            writeStoredEffort(
+                selectedEffort,
+            );
+
+
+            applyEffortButtonStates();
+
+        },
+    );
+
 
 applyEffortButtonStates();
 
 
-// --------------------------------------------------------------------------
-// Send question
-// --------------------------------------------------------------------------
+/* ==========================================================================
+   ACTIVE CONVERSATION
+   ========================================================================== */
 
-chatForm.addEventListener(
-    "submit",
-    async (event) => {
-        event.preventDefault();
+function getActiveConversationId() {
 
-        clearError();
+    if (
+        typeof chatHistory
+            .getActiveConversation !==
+        "function"
+    ) {
 
-        const question =
-            questionInput.value.trim();
+        return null;
 
-        if (question === "") {
-            return;
-        }
+    }
+
+
+    return (
+        chatHistory
+            .getActiveConversation()
+            ?.id ??
+        null
+    );
+
+}
+
+
+/* ==========================================================================
+   ASSISTANT REQUEST
+   ========================================================================== */
+
+async function requestAssistantAnswer(
+    question,
+) {
+
+    clearError();
+
+
+    setBusy(
+        true,
+    );
+
+
+    status.start();
+
+
+    try {
+
+        const conversationId =
+            getActiveConversationId();
 
 
         /*
-         * Render the user's message immediately so the interface feels
-         * responsive while retrieval and generation are running.
+         * This call is compatible with the main TENISE-68 API shape:
+         *
+         * question
+         * conversationId
+         * selectedEffort
+         *
+         * If chatApi.js is still the older single-argument version,
+         * JavaScript safely ignores the additional arguments.
          */
-        appendUserMessage({
-            conversation,
+
+        const result =
+            await submitChatQuestion(
+
+                question,
+
+                conversationId,
+
+                selectedEffort,
+
+            );
+
+
+        const response =
+            result?.response ??
+            {};
+
+
+        const assistantMessage = {
 
             content:
-                question,
-        });
+                response.answerApa ??
+                response.answer ??
+                "No answer was returned.",
+
+            sections:
+                response.sections ??
+                [],
+
+            citations:
+                result?.citations ??
+                [],
+
+            references:
+                response.references ??
+                [],
+
+            table:
+                response.table ??
+                null,
+
+            sql:
+                response.sql ??
+                null,
+
+            grounding:
+                response.grounding ??
+                null,
+
+        };
 
 
-        questionInput.value = "";
-
-        resizeInput();
-
-        setBusy(true);
-
-        status.start();
-
+        /*
+         * History persistence should not prevent an otherwise
+         * successful AI response from being displayed.
+         */
 
         try {
-            await chatHistory
-                .recordUserMessage(
-                    question,
-                );
 
-
-            /*
-             * E1-02 sends only the opaque conversation id.
-             *
-             * Chat history itself remains server/account persisted, but conversation
-             * context used by the follow-up rewriter lives only in the authenticated
-             * session.
-             */
-            const conversationId =
-                chatHistory
-                    .getActiveConversation()
-                    .id;
-
-
-            const result =
-                await submitChatQuestion(
-                    question,
-                    conversationId,
-                    selectedEffort,
-                );
-
-            const response =
-                result?.response ?? {};
-
-
-            const assistantMessage = {
-                // APA-style rendering -- "(Author, Year)" in-text citations
-                // instead of raw [n] markers, so the coach can see where a
-                // claim came from without opening the sources panel. Falls
-                // back to the raw answer if the backend did not supply one
-                // (e.g. an older cached response).
-                content:
-                    response.answerApa ??
-                    response.answer ??
-                    "No answer was returned.",
-
-                citations:
-                    result?.citations ??
-                    [],
-
-                references:
-                    response.references ??
-                    [],
-
-                /*
-                 * Present only when the question was answered using
-                 * structured tabular data.
-                 */
-                table:
-                    response.table ??
-                    null,
-
-                sql:
-                    response.sql ??
-                    null,
-
-                grounding:
-                    response.grounding ??
-                    null,
-            };
-
-
-            /*
-             * Store the complete assistant response so reopening a previous
-             * conversation can restore citations and structured results too.
-             */
             await chatHistory
                 .recordAssistantMessage(
                     assistantMessage,
                 );
 
+        } catch (
+        historyError
+        ) {
 
-            appendAssistantMessage({
-                conversation,
-
-                ...assistantMessage,
-
-                openCitation:
-                    sourcePanel.open,
-            });
-        } catch (error) {
-            /*
-             * A session may have expired or been ended elsewhere.
-             *
-             * Redirect instead of repeatedly sending requests that will
-             * continue to return 401.
-             */
             if (
-                error?.status ===
+                historyError?.status ===
                 401
             ) {
+
                 window.location.assign(
                     "/login",
                 );
 
-                return;
+
+                return false;
+
             }
 
+
             showError(
-                error?.message ??
-                "The request could not be completed.",
+
+                "The answer was generated, but it could not be saved to Chat History.",
+
+                {
+                    title:
+                        "History was not saved",
+                },
+
             );
-        } finally {
-            setBusy(false);
 
-            status.ready();
-
-            questionInput.focus();
         }
-    },
-);
+
+
+        appendAssistantMessage({
+
+            conversation,
+
+            ...assistantMessage,
+
+            openCitation:
+                sourcePanel.open,
+
+        });
+
+
+        conversation.scrollTop =
+            conversation.scrollHeight;
+
+
+        return true;
+
+    } catch (
+    error
+    ) {
+
+        if (
+            error?.status ===
+            401
+        ) {
+
+            window.location.assign(
+                "/login",
+            );
+
+
+            return false;
+
+        }
+
+
+        showError(
+
+            friendlyErrorMessage(
+                error,
+                "TennisExplore could not complete this request. Please try again.",
+            ),
+
+            {
+                title:
+                    "Something went wrong",
+
+                /*
+                 * Retry repeats only the assistant request.
+                 *
+                 * It does not add another user bubble
+                 * and does not save the user turn again.
+                 */
+                retry:
+                    () =>
+                        requestAssistantAnswer(
+                            question,
+                        ),
+            },
+
+        );
+
+
+        return false;
+
+    } finally {
+
+        setBusy(
+            false,
+        );
+
+
+        status.ready();
+
+
+        questionInput.focus();
+
+    }
+
+}
+
+
+/* ==========================================================================
+   SEND QUESTION
+   ========================================================================== */
+
+chatForm
+    .addEventListener(
+        "submit",
+        async (
+            event,
+        ) => {
+
+            event.preventDefault();
+
+
+            clearError();
+
+
+            const question =
+                questionInput
+                    .value
+                    .trim();
+
+
+            if (
+                question ===
+                ""
+            ) {
+
+                return;
+
+            }
+
+
+            setConversationEmpty(
+                false,
+            );
+
+
+            /*
+             * Render immediately so the UI responds without waiting
+             * for persistence or retrieval.
+             */
+
+            appendUserMessageWithActions({
+
+                content:
+                    question,
+
+            });
+
+
+            questionInput.value =
+                "";
+
+
+            resizeInput();
+
+
+            /*
+             * History failure should not stop the actual AI request.
+             */
+
+            try {
+
+                await chatHistory
+                    .recordUserMessage(
+                        question,
+                    );
+
+            } catch (
+            historyError
+            ) {
+
+                if (
+                    historyError?.status ===
+                    401
+                ) {
+
+                    window.location.assign(
+                        "/login",
+                    );
+
+
+                    return;
+
+                }
+
+
+                showError(
+
+                    "Your question can still be answered, but this turn could not be saved to Chat History.",
+
+                    {
+                        title:
+                            "History was not saved",
+                    },
+
+                );
+
+            }
+
+
+            await requestAssistantAnswer(
+                question,
+            );
+
+        },
+    );
 
 
 questionInput.focus();
