@@ -36,10 +36,12 @@ export async function submitChatQuestion(
         roleId,
         telemetryRun = null,
         sessionId = null,
-        // TENISE-68: "fast" | "thorough" | undefined. Only reaches
+        // TENISE-68: "low" | "high" | undefined. Only reaches
         // answerQuestion() -- the supplied-evidence path below never runs
         // retrieval, decomposition, expansion or reranking, so there is
-        // nothing there for effort to change.
+        // nothing there for effort to change. answerQuestion() itself
+        // defaults an undefined effort to "low", so there is no need to
+        // repeat that default here too.
         effort,
     } = {},
 ) {

@@ -72,9 +72,14 @@
 // topN, which already varies by question and effort level together. two
 // levels covers what was asked without adding a choice nobody asked for.
 
+// renamed from "fast"/"thorough" to "low"/"high" (direct product feedback,
+// 2026-09-xx: "Fast"/"Thorough" read as a speed claim rather than a
+// resource-tradeoff choice -- "Low Effort"/"High Effort" says plainly what
+// the coach is actually choosing). the mechanism and profiles below are
+// unchanged from the original ticket; only the label changed.
 export const EFFORT_LEVELS = Object.freeze({
-  FAST: "fast",
-  THOROUGH: "thorough",
+  LOW: "low",
+  HIGH: "high",
 });
 
 export const ALL_EFFORT_LEVELS = Object.freeze(Object.values(EFFORT_LEVELS));
@@ -84,7 +89,7 @@ const EFFORT_PROFILES = Object.freeze({
   // evidence window. the floor is retrieval-plus-generation only: bm25 +
   // dense + fusion always run (hybrid retrieval itself is not a toggle this
   // ticket touches), nothing else.
-  [EFFORT_LEVELS.FAST]: Object.freeze({
+  [EFFORT_LEVELS.LOW]: Object.freeze({
     decompositionEnabled: false,
     expansionEnabled: false,
     rerankEnabled: false,
@@ -97,7 +102,7 @@ const EFFORT_PROFILES = Object.freeze({
   // (see retrieval.config.js), so the visible difference against the
   // default is almost entirely topN; the visible difference against "fast"
   // is all four.
-  [EFFORT_LEVELS.THOROUGH]: Object.freeze({
+  [EFFORT_LEVELS.HIGH]: Object.freeze({
     decompositionEnabled: true,
     expansionEnabled: true,
     rerankEnabled: true,
@@ -109,7 +114,7 @@ const EFFORT_PROFILES = Object.freeze({
  * resolves the overrides for one request.
  *
  * returns `{}` -- not null, not a partially-filled object -- for anything
- * that is not exactly "fast" or "thorough", including undefined. every call
+ * that is not exactly "low" or "high", including undefined. every call
  * site reads a field off the returned object with `?? retrievalConfig...`,
  * so an empty object means "nothing overridden", which is exactly what a
  * request that never mentions effort should get.

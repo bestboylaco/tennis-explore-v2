@@ -754,12 +754,9 @@
 }
 
 .conversation__empty {
-    max-width: 39rem;
+    max-width: 34rem;
     margin: auto;
-    display: grid;
-    grid-template-columns: auto 1fr;
-    gap: var(--space-4);
-    align-items: start;
+    text-align: center;
 }
 
     .conversation__empty h2 {
@@ -778,25 +775,37 @@
     color: #c3b0ff;
 }
 
-.welcome-avatar,
 .message--assistant::before {
     width: 2.4rem;
     height: 2.4rem;
-    display: grid;
-    place-items: center;
     flex-shrink: 0;
     border: 1px solid rgba(83, 181, 255, 0.35);
     border-radius: 50%;
-    color: #89d2ff;
-    font-size: 0.7rem;
-    font-weight: 700;
-    letter-spacing: 0.04em;
-    background: linear-gradient(145deg, rgba(56, 128, 221, 0.42), rgba(50, 24, 106, 0.7));
+    background-color: #fdfdf0;
+    background-image: url("/images/ai-icon.jpg");
+    background-size: cover;
+    background-position: center;
     box-shadow: 0 0 1.6rem rgba(60, 139, 255, 0.25);
 }
 
 .conversation:has(.message) .conversation__empty {
     display: none;
+}
+
+/* ChatGPT-style landing: while the conversation is empty, the conversation
+   area shrinks to its own content instead of filling all available height,
+   so the greeting and the composer centre together as one group below the
+   header rather than the composer sitting pinned far below an empty
+   scrollable area (reported directly, 2026-10-01). Once a message exists,
+   #conversation's flex: 1 (declared above, unconditionally) takes back
+   over and the composer returns to its normal pinned-bottom position. */
+.chat-panel:has(#conversation:not(:has(.message))) {
+    justify-content: center;
+}
+
+.chat-panel:has(#conversation:not(:has(.message))) #conversation {
+    flex: 0 1 auto;
+    overflow: visible;
 }
 
 /* --------------------------------------------------------------------------
@@ -814,18 +823,22 @@
     align-items: flex-end;
 }
 
-    .message--user .message__bubble {
-        max-width: min(72%, 34rem);
-        padding: 0.9rem 1rem;
-        border: 1px solid var(--border-glass);
-        border-radius: var(--radius-md) var(--radius-md) 0.3rem var(--radius-md);
-        color: var(--colour-text-primary);
-        background: var(--surface-dark);
-        box-shadow: 0 0.75rem 2rem rgba(5, 1, 12, 0.18);
-        line-height: 1.6;
-        white-space: pre-wrap;
-        overflow-wrap: anywhere;
-    }
+.message--user .message__bubble {
+    max-width: min(72%, 34rem);
+    padding: 0.9rem 1rem;
+    border: 1px solid var(--border-glass);
+    border-radius: var(--radius-md) var(--radius-md) 0.3rem var(--radius-md);
+    color: var(--colour-text-primary);
+    background: var(--surface-dark);
+    box-shadow: 0 0.75rem 2rem rgba(5, 1, 12, 0.18);
+    /* matches the assistant bubble's base size below -- the question you
+       typed and the answer you get back should read as the same size
+       (reported directly: query text and response text should match). */
+    font-size: 1rem;
+    line-height: 1.6;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+}
 
 .message--assistant {
     position: relative;
@@ -833,26 +846,38 @@
     align-items: flex-start;
 }
 
-    .message--assistant::before {
-        content: "AI";
-        position: absolute;
-        top: 0.35rem;
-        left: 0;
-    }
+.message--assistant::before {
+    /* empty on purpose -- the circle, border and the tennis-ball icon image
+       itself are already fully styled once, above, in the shared
+       ".welcome-avatar, .message--assistant::before" rule. this rule exists
+       only to override ITS "content" (no "AI" text glyph sitting under the
+       icon image) and position the pseudo-element against the bubble. */
+    content: "";
+    position: absolute;
+    top: 0.35rem;
+    left: 0;
+}
 
-    .message--assistant .message__bubble {
-        width: min(100%, 44rem);
-        max-width: 100%;
-        padding: var(--space-4);
-        border: 1px solid var(--border-glass);
-        border-radius: var(--radius-md) var(--radius-md) var(--radius-md) 0.3rem;
-        color: var(--colour-text-secondary);
-        background: rgba(255, 255, 255, 0.07);
-        box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06);
-        line-height: 1.65;
-        white-space: pre-wrap;
-        overflow-wrap: anywhere;
-    }
+.message--assistant .message__bubble {
+    width: min(100%, 44rem);
+    max-width: 100%;
+    padding: var(--space-4);
+    border: 1px solid var(--border-glass);
+    border-radius: var(--radius-md) var(--radius-md) var(--radius-md) 0.3rem;
+    color: var(--colour-text-secondary);
+    background: rgba(255, 255, 255, 0.07);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06);
+    /* the smallest tier of the type hierarchy below -- plain response text.
+       headings, top-level numbered items and a bullet's own bold lead-in
+       all size up from this base rather than down from a larger default.
+       raised from an earlier, too-small 0.75rem pass to match both a
+       standard chat app's body text size and the user bubble above
+       (reported directly: "too small... go like 3 sizes up"). */
+    font-size: 1rem;
+    line-height: 1.65;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+}
 
         .message--assistant .message__bubble p:last-child,
         .message--assistant .message__bubble ul:last-child,
@@ -871,24 +896,21 @@
             line-height: 1.3;
         }
 
-        /* the model almost always writes ## or ### rather than a single #, so these
-   two sizes carry most real headings -- kept close to the surrounding body
-   text rather than browser-default heading sizes, which would read as
-   shouting inside a chat bubble. */
-        .message--assistant .message__bubble h1,
-        .message--assistant .message__bubble h2 {
-            font-size: 1.05rem;
-        }
-
-        .message--assistant .message__bubble h3,
-        .message--assistant .message__bubble h4 {
-            font-size: 0.95rem;
-        }
-
-        .message--assistant .message__bubble h5,
-        .message--assistant .message__bubble h6 {
-            font-size: 0.88rem;
-        }
+/* three explicit tiers, scaled up from the bubble's 1rem (16px) base in a
+   clean, even 4px step per tier: 20px, 24px, 28px. the model almost always
+   writes ## or ### rather than a single #, so h2-h4 carry most real
+   headings. widened 2026-10-02 (direct industry feedback: wanted clearer
+   distinction between headings and body text), then widened further the
+   same day ("make it bigger difference"), then evened out to an exact 4px
+   step between every tier ("make the diff 4px"). h1/h2 and h3/h4 both stay
+   700 weight so the top two tiers read as unambiguously headings, not just
+   bigger text. */
+.message--assistant .message__bubble h1,
+.message--assistant .message__bubble h2 { font-size: 1.75rem; font-weight: 700; }
+.message--assistant .message__bubble h3,
+.message--assistant .message__bubble h4 { font-size: 1.5rem; font-weight: 700; }
+.message--assistant .message__bubble h5,
+.message--assistant .message__bubble h6 { font-size: 1.25rem; font-weight: 600; }
 
             .message--assistant .message__bubble h1:first-child,
             .message--assistant .message__bubble h2:first-child,
@@ -899,19 +921,31 @@
                 margin-top: 0;
             }
 
-        .message--assistant .message__bubble ul,
-        .message--assistant .message__bubble ol {
-            margin: 0 0 var(--space-3);
-            padding-left: 1.3rem;
-        }
+/* Deliberately NOT sized by position (top-level numbered item, first bold
+   word in a bullet, etc.) -- that tied a bold run's size to where it
+   happened to sit in the DOM, so identical **bold** text read at different
+   sizes depending on whether the model put it first in a bullet, inside a
+   top-level numbered item, or just mid-sentence (reported directly,
+   2026-10-01: "bold text is larger sometimes and smaller other times").
+   Only a real heading (#/##/### -- h1-h6 below) is ever larger than body
+   text; bold anywhere in the bubble means weight, consistently, not size. */
+.message--assistant .message__bubble strong {
+    font-weight: 700;
+}
 
-        .message--assistant .message__bubble li {
-            margin-bottom: var(--space-1);
-        }
+.message--assistant .message__bubble ul,
+.message--assistant .message__bubble ol {
+    margin: 0 0 var(--space-3);
+    padding-left: 1.3rem;
+}
 
-            .message--assistant .message__bubble li:last-child {
-                margin-bottom: 0;
-            }
+.message--assistant .message__bubble li {
+    margin-bottom: var(--space-1);
+}
+
+.message--assistant .message__bubble li:last-child {
+    margin-bottom: 0;
+}
 
 .answer-table {
     width: min(100%, 44rem);
@@ -940,7 +974,9 @@
     }
 
 /* --------------------------------------------------------------------------
-   Citations
+   Citations -- in-text, not a dropdown (reported directly, 2026-09-28: a
+   reader should click the citation itself, where the claim is, and land in
+   the same side panel a "Sources" list used to open).
    -------------------------------------------------------------------------- */
 
 /*
@@ -968,19 +1004,6 @@
     cursor: pointer;
     transition: color 140ms ease, background 140ms ease, text-decoration-color 140ms ease;
 }
-
-    .in-text-citation:hover {
-        color: #2f6b57;
-        background: transparent;
-        text-decoration-style: dotted;
-    }
-
-    .in-text-citation:focus-visible {
-        outline: 2px solid rgba(47, 107, 87, 0.45);
-        outline-offset: 2px;
-        color: #1f4f3f;
-        background: rgba(47, 107, 87, 0.08);
-    }
 
     .in-text-citation:hover {
         color: #ffffff;
@@ -1075,20 +1098,17 @@
     width: 100%;
     padding: 0.6rem 0.7rem;
     border: 0;
-    border-radius: 0.55rem;
+    border-radius: 0.25rem;
     color: var(--colour-text-secondary);
     background: transparent;
-    font-family: inherit;
-    font-size: 0.72rem;
-    text-align: left;
+    font: inherit;
+    font-size: inherit;
+    text-decoration: underline;
+    text-decoration-color: rgba(255, 255, 255, 0.35);
+    text-underline-offset: 0.15em;
     cursor: pointer;
-    transition: color 160ms ease, background 160ms ease;
+    transition: color 160ms ease, background 160ms ease, text-decoration-color 160ms ease;
 }
-
-    .citation-button:hover {
-        color: #ffffff;
-        background: rgba(255, 255, 255, 0.07);
-    }
 
 /* --------------------------------------------------------------------------
    Processing and errors
@@ -1200,7 +1220,11 @@
    -------------------------------------------------------------------------- */
 
 .composer {
-    margin: 0 var(--space-5);
+    /* was flush against the panel's bottom edge -- the panel itself has no
+       bottom padding, so the composer's own box border was the only thing
+       between it and the outer edge (reported directly: "touching the
+       outer box which it shouldn't"). */
+    margin: 0 var(--space-5) var(--space-4);
     padding: 0.5rem;
     display: grid;
     grid-template-columns: minmax(0, 1fr) auto;
@@ -1814,20 +1838,13 @@ body.has-source-panel .sidebar--right {
 }
 
 /*
- * Effort toggle (TENISE-68). Reuses the .toggle-group/.toggle-group__button
- * naming already established by the telemetry dashboard (see telemetry.css)
- * for the same visual idea -- a pill-shaped segmented control -- recoloured
- * to this page's green composer palette instead of telemetry's purple.
- *
- * "Standard" (no value, the default) sends no `effort` field at all, so a
- * coach who never touches this gets byte-identical behaviour to before this
- * control existed. Fast/Thorough are explicit opt-ins, never required.
+ * .toggle-group/.toggle-group__button -- a pill-shaped segmented control,
+ * the same naming/pattern the telemetry dashboard uses (see telemetry.css),
+ * recoloured to this page's green composer palette instead of telemetry's
+ * purple. Not used by the composer's own effort control (that's the plain
+ * .effort-select dropdown above) -- kept here as the shared definition in
+ * case another control on this page adopts the same pattern.
  */
-.composer__effort {
-    align-self: flex-start;
-    margin-bottom: 8px;
-}
-
 .toggle-group {
     display: inline-flex;
     padding: 3px;
@@ -1908,6 +1925,31 @@ body.has-source-panel .sidebar--right {
 }
 
     .composer__plus:hover {
+        background: #eef3e9;
+        color: #173c29;
+    }
+
+/* Low Effort/High Effort -- the one choice a coach makes about how a
+   question is answered (see answer.service.js's `effort` option). Styled to
+   sit quietly among the composer's other controls rather than look like a
+   prominent setting, since the low-effort default should need no attention
+   most of the time. */
+.effort-select {
+    flex: 0 0 auto;
+    height: 40px;
+    padding: 0 0.6rem;
+    border: 1px solid rgba(39, 87, 59, 0.18);
+    border-radius: 999px;
+    background: rgba(255, 255, 252, 0.9);
+    color: #2f5d44;
+    font: inherit;
+    font-size: 0.8rem;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+    .effort-select:hover,
+    .effort-select:focus-visible {
         background: #eef3e9;
         color: #173c29;
     }

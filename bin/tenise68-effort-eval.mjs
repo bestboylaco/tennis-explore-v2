@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// TENISE-68: does "fast" actually cost less than "thorough", on the SAME
+// TENISE-68: does "low" actually cost less than "high", on the SAME
 // question, through the real pipeline (ollama + the real built index)?
 //
 //   npm run eval:effort
@@ -43,7 +43,7 @@
 //                                          rather than assuming the control
 //                                          held.
 //
-// each question runs twice, back to back, "fast" then "thorough", and this
+// each question runs twice, back to back, "low" then "high", and this
 // prints + saves the telemetry retrieve() itself already produces --
 // reranked, subQueries, itemsOut -- rather than inferring anything indirect.
 // requires a running ollama with the models in .env.example pulled, and the
@@ -72,7 +72,7 @@ const testCases = WANTED_IDS.map((id) => {
   return found;
 });
 
-const LEVELS = ["fast", "thorough"];
+const LEVELS = ["low", "high"];
 
 const runs = [];
 
@@ -132,8 +132,8 @@ for (const testCase of testCases) {
 // did it actually do something -- per question, fast vs thorough.
 // ---------------------------------------------------------------------------
 const comparisons = testCases.map((testCase) => {
-  const fast = runs.find((row) => row.id === testCase.id && row.effort === "fast");
-  const thorough = runs.find((row) => row.id === testCase.id && row.effort === "thorough");
+  const fast = runs.find((row) => row.id === testCase.id && row.effort === "low");
+  const thorough = runs.find((row) => row.id === testCase.id && row.effort === "high");
 
   // true only if BOTH runs actually stayed on the table path. if either one
   // fell through to answerFromDocuments (no table data loaded in this

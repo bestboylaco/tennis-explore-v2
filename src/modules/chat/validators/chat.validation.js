@@ -35,7 +35,7 @@ export function validateChatQuestion(req, res, next) {
         effort,
     } = req.body ?? {};
 
-    // Optional. Case-insensitive so "Fast"/"FAST" from a hand-typed query
+    // Optional. Case-insensitive so "Low"/"LOW" from a hand-typed query
     // string (the frontend's debug override, see public/scripts/config.js)
     // is not rejected on a technicality the server can resolve itself.
     let normalisedEffort;
@@ -52,7 +52,6 @@ export function validateChatQuestion(req, res, next) {
             });
         }
     }
-
 
     if (
         conversationId !== undefined &&

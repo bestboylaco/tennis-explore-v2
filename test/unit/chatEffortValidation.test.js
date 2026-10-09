@@ -42,31 +42,31 @@ describe("chat.validation.js -- effort parameter (TENISE-68)", () => {
     assert.equal(req.body.effort, undefined);
   });
 
-  it("accepts \"fast\"", () => {
-    const { nextCalled, req } = runValidation({ question: "what is the score", effort: "fast" });
+  it("accepts \"low\"", () => {
+    const { nextCalled, req } = runValidation({ question: "what is the score", effort: "low" });
 
     assert.equal(nextCalled, true);
-    assert.equal(req.body.effort, "fast");
+    assert.equal(req.body.effort, "low");
   });
 
-  it("accepts \"thorough\"", () => {
-    const { nextCalled, req } = runValidation({ question: "summarise the recovery research", effort: "thorough" });
+  it("accepts \"high\"", () => {
+    const { nextCalled, req } = runValidation({ question: "summarise the recovery research", effort: "high" });
 
     assert.equal(nextCalled, true);
-    assert.equal(req.body.effort, "thorough");
+    assert.equal(req.body.effort, "high");
   });
 
   it("normalises case and surrounding whitespace rather than rejecting them", () => {
     // the frontend's debug override (public/scripts/config.js) reads a raw
     // URL query parameter, so the server doing its own normalisation is what
-    // keeps "?effort=Fast" from becoming a confusing 400.
-    const { nextCalled, req } = runValidation({ question: "what is the score", effort: "  FAST  " });
+    // keeps "?effort=Low" from becoming a confusing 400.
+    const { nextCalled, req } = runValidation({ question: "what is the score", effort: "  LOW  " });
 
     assert.equal(nextCalled, true);
-    assert.equal(req.body.effort, "fast");
+    assert.equal(req.body.effort, "low");
   });
 
-  it("rejects an effort level that is not fast or thorough", () => {
+  it("rejects an effort level that is not low or high", () => {
     const { nextCalled, statusCode, jsonBody } = runValidation({
       question: "what is the score",
       effort: "maximum",

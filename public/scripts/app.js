@@ -116,10 +116,40 @@ const sendButton =
     );
 
 
+const effortSelect =
+    getRequiredElement("#effort-select");
+
+const processingMessageText =
+    getRequiredElement("#processing-message-text");
+
 const conversation =
     getRequiredElement(
         "#conversation",
     );
+
+/*
+ * Remembered per browser, the same way the sidebar collapse state is --
+ * a coach who prefers thorough answers shouldn't have to reselect it
+ * every time they open the page. Falls back to "low" (the element's own
+ * default) if storage is unavailable or holds something unexpected.
+ */
+try {
+    const storedEffort = window.localStorage.getItem("effort");
+
+    if (storedEffort === "low" || storedEffort === "high") {
+        effortSelect.value = storedEffort;
+    }
+} catch {
+    // keep the element's own default.
+}
+
+effortSelect.addEventListener("change", () => {
+    try {
+        window.localStorage.setItem("effort", effortSelect.value);
+    } catch {
+        // the choice still applies to this request; it just won't be remembered.
+    }
+});
 
 
 /*
@@ -141,19 +171,6 @@ const welcomeSourceCount =
 const welcomeSuggestions =
     document.querySelectorAll(
         ".welcome-suggestion",
-    );
-
-
-/*
- * TENISE-68.
- *
- * Optional here so this branch does not crash if an older
- * index.html is temporarily used during a merge.
- */
-
-const effortToggle =
-    getOptionalElement(
-        "#effort-toggle",
     );
 
 
@@ -1476,8 +1493,13 @@ for (
    QUICK QUESTIONS
    ========================================================================== */
 
+/*
+ * Quick Questions are loaded from /api/quickquestions.
+ *
+ * The backend derives the account from req.user, so every signed-in user
+ * receives and edits only their own saved Quick Questions.
+ */
 await createQuickQuestions({
-
     list:
         getRequiredElement(
             "#quick-questions-list",
@@ -1605,24 +1627,8 @@ function setBusy(
     );
 
 
-    if (
-        effortToggle
-    ) {
-
-        for (
-            const button
-            of effortToggle
-                .querySelectorAll(
-                    ".toggle-group__button",
-                )
-        ) {
-
-            button.disabled =
-                busy;
-
-        }
-
-    }
+    effortSelect.disabled =
+        busy;
 
 }
 
@@ -1684,152 +1690,6 @@ createPdfUpload({
 
 
 /* ==========================================================================
-   EFFORT TOGGLE - TENISE-68
-   ========================================================================== */
-
-const EFFORT_STORAGE_KEY =
-    "tennisexplore.effort";
-
-
-function readStoredEffort() {
-
-    try {
-
-        const stored =
-            window.localStorage
-                .getItem(
-                    EFFORT_STORAGE_KEY,
-                );
-
-
-        return (
-            stored === "fast" ||
-            stored === "thorough"
-        )
-            ? stored
-            : "";
-
-    } catch {
-
-        return "";
-
-    }
-
-}
-
-
-function writeStoredEffort(
-    effort,
-) {
-
-    try {
-
-        window.localStorage
-            .setItem(
-                EFFORT_STORAGE_KEY,
-                effort,
-            );
-
-    } catch {
-
-        // Storage is optional.
-
-    }
-
-}
-
-
-let selectedEffort =
-    readStoredEffort();
-
-
-function applyEffortButtonStates() {
-
-    if (!effortToggle) {
-
-        return;
-
-    }
-
-
-    for (
-        const button
-        of effortToggle
-            .querySelectorAll(
-                ".toggle-group__button",
-            )
-    ) {
-
-        const isActive =
-            (
-                button.dataset
-                    .effortValue ??
-                ""
-            ) ===
-            selectedEffort;
-
-
-        button.classList
-            .toggle(
-                "toggle-group__button--active",
-                isActive,
-            );
-
-
-        button.setAttribute(
-            "aria-checked",
-            String(
-                isActive,
-            ),
-        );
-
-    }
-
-}
-
-
-effortToggle
-    ?.addEventListener(
-        "click",
-        (
-            event,
-        ) => {
-
-            const button =
-                event.target
-                    .closest(
-                        ".toggle-group__button",
-                    );
-
-
-            if (!button) {
-
-                return;
-
-            }
-
-
-            selectedEffort =
-                button.dataset
-                    .effortValue ??
-                "";
-
-
-            writeStoredEffort(
-                selectedEffort,
-            );
-
-
-            applyEffortButtonStates();
-
-        },
-    );
-
-
-applyEffortButtonStates();
-
-
-/* ==========================================================================
    ACTIVE CONVERSATION
    ========================================================================== */
 
@@ -1871,6 +1731,15 @@ async function requestAssistantAnswer(
         true,
     );
 
+    // sets expectations honestly before the wait starts -- the citation
+    // check always runs now, on both levels, so neither is a quick
+    // guarantee any more, and a spinner with no indication of that reads
+    // as the app having stalled.
+    processingMessageText.textContent =
+        effortSelect.value === "high"
+            ? "Thinking it through with extra sources -- this can take several minutes..."
+            : "Analysing your question -- checking citations can take a little while...";
+
 
     status.start();
 
@@ -1881,17 +1750,6 @@ async function requestAssistantAnswer(
             getActiveConversationId();
 
 
-        /*
-         * This call is compatible with the main TENISE-68 API shape:
-         *
-         * question
-         * conversationId
-         * selectedEffort
-         *
-         * If chatApi.js is still the older single-argument version,
-         * JavaScript safely ignores the additional arguments.
-         */
-
         const result =
             await submitChatQuestion(
 
@@ -1899,7 +1757,7 @@ async function requestAssistantAnswer(
 
                 conversationId,
 
-                selectedEffort,
+                effortSelect.value,
 
             );
 

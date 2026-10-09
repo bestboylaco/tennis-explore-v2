@@ -14,6 +14,8 @@
 
 import path from "node:path";
 
+import { cleanTitle } from "./citation.service.js";
+
 // how each kind of source is addressed. the fragment syntaxes here are the ones
 // browsers and embedded viewers already understand, so the frontend does not
 // need bespoke handling per type.
@@ -127,7 +129,7 @@ function buildLabel(chunk, kind, locator) {
             ? `row ${locator.rowId}`
             : null;
 
-  return [chunk.title, where].filter(Boolean).join(", ");
+  return [cleanTitle(chunk.title), where].filter(Boolean).join(", ");
 }
 
 /** the filename, for showing under a citation label. */

@@ -13,36 +13,36 @@ describe("effort levels (TENISE-68)", () => {
     // the ticket asks for a tradeoff between speed and thoroughness, not a
     // choice among several -- see effort.config.js's comment on why a third
     // "balanced" tier was not added.
-    assert.deepEqual([...ALL_EFFORT_LEVELS].sort(), ["fast", "thorough"]);
-    assert.equal(EFFORT_LEVELS.FAST, "fast");
-    assert.equal(EFFORT_LEVELS.THOROUGH, "thorough");
+    assert.deepEqual([...ALL_EFFORT_LEVELS].sort(), ["high", "low"]);
+    assert.equal(EFFORT_LEVELS.LOW, "low");
+    assert.equal(EFFORT_LEVELS.HIGH, "high");
   });
 });
 
 describe("resolveEffortOverrides", () => {
-  it("fast turns off every optional model-call stage", () => {
-    const overrides = resolveEffortOverrides("fast");
+  it("low turns off every optional model-call stage", () => {
+    const overrides = resolveEffortOverrides("low");
 
     assert.equal(overrides.decompositionEnabled, false);
     assert.equal(overrides.expansionEnabled, false);
     assert.equal(overrides.rerankEnabled, false);
-    assert.ok(overrides.topNScale < 1, "fast must narrow the evidence window");
+    assert.ok(overrides.topNScale < 1, "low must narrow the evidence window");
   });
 
-  it("thorough turns on every optional stage and widens the window", () => {
-    const overrides = resolveEffortOverrides("thorough");
+  it("high turns on every optional stage and widens the window", () => {
+    const overrides = resolveEffortOverrides("high");
 
     assert.equal(overrides.decompositionEnabled, true);
     assert.equal(overrides.expansionEnabled, true);
     assert.equal(overrides.rerankEnabled, true);
-    assert.ok(overrides.topNScale > 1, "thorough must widen the evidence window");
+    assert.ok(overrides.topNScale > 1, "high must widen the evidence window");
   });
 
-  it("fast is strictly cheaper than thorough on every shared knob", () => {
-    const fast = resolveEffortOverrides("fast");
-    const thorough = resolveEffortOverrides("thorough");
+  it("low is strictly cheaper than high on every shared knob", () => {
+    const low = resolveEffortOverrides("low");
+    const high = resolveEffortOverrides("high");
 
-    assert.ok(fast.topNScale < thorough.topNScale);
+    assert.ok(low.topNScale < high.topNScale);
   });
 
   // backward compatibility (point 2 of the ticket's "done" list): omitting
@@ -63,7 +63,7 @@ describe("resolveEffortOverrides", () => {
   });
 
   it("is case-sensitive -- normalisation is chat.validation.js's job, not this one's", () => {
-    assert.deepEqual(resolveEffortOverrides("FAST"), {});
+    assert.deepEqual(resolveEffortOverrides("LOW"), {});
   });
 });
 
@@ -73,14 +73,14 @@ describe("applyEffortToTopN", () => {
     assert.equal(applyEffortToTopN(20, undefined), 20);
   });
 
-  it("narrows topN under fast", () => {
-    const overrides = resolveEffortOverrides("fast");
+  it("narrows topN under low", () => {
+    const overrides = resolveEffortOverrides("low");
 
     assert.ok(applyEffortToTopN(10, overrides) < 10);
   });
 
-  it("widens topN under thorough", () => {
-    const overrides = resolveEffortOverrides("thorough");
+  it("widens topN under high", () => {
+    const overrides = resolveEffortOverrides("high");
 
     assert.ok(applyEffortToTopN(10, overrides) > 10);
   });
@@ -91,7 +91,7 @@ describe("applyEffortToTopN", () => {
   });
 
   it("ignores a non-numeric scale rather than producing NaN", () => {
-    assert.equal(applyEffortToTopN(10, { topNScale: "fast" }), 10);
+    assert.equal(applyEffortToTopN(10, { topNScale: "low" }), 10);
     assert.equal(applyEffortToTopN(10, { topNScale: Number.NaN }), 10);
   });
 });

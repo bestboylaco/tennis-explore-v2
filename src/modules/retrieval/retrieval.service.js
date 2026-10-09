@@ -188,8 +188,16 @@ export async function retrieve(
   assertAccessInvariant(hydrated, filter);
 
   // ---- rerank and cut ----------------------------------------------------
+  // the rerank window must never be narrower than what the caller actually
+  // asked to retrieve -- otherwise a caller requesting a wide topN (e.g.
+  // "high" effort scaling plan.topN up via effort.config.js) silently gets
+  // capped back down at the rerank stage regardless, before topN is ever
+  // applied. floored at the configured default so a narrow topN request
+  // doesn't shrink the window below its normal size either.
+  const rerankInput = Math.max(retrievalConfig.retrieval.rerankInput, topN);
   const { candidates, reranked, reason } = await rerankCandidates(query, hydrated, {
     signal,
+    rerankInput,
     enabled: effortOverrides.rerankEnabled,
   });
 

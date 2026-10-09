@@ -1,7 +1,7 @@
 import {
     getChatEndpoint,
     getEffortOverride,
-    REQUEST_TIMEOUT_MS,
+    REQUEST_TIMEOUT_MS_BY_EFFORT,
 } from "../config.js";
 
 /**
@@ -74,21 +74,21 @@ async function readResponseBody(response) {
  * client sends.
  *
  * `effort` (TENISE-68) is the one exception to "no mode is offered": the
- * composer's Standard/Fast/Thorough toggle (app.js) passes its current
- * selection as `effort`, defaulting to "" (Standard), which omits the field
- * entirely so an untouched toggle changes nothing server-side. The
- * `?effort=` query-string override from getEffortOverride() still works too
- * (useful for acceptance testing without clicking the toggle) and is used
- * only when the caller does not pass `effort` explicitly.
+ * composer's Low Effort / High Effort select (app.js) passes its current
+ * selection directly. The `?effort=` query-string override from
+ * getEffortOverride() still works too (useful for acceptance testing
+ * without touching the select) and is used only when the caller does not
+ * pass `effort` explicitly.
  */
 export async function submitChatQuestion(question,
     conversationId = null,
     effort = null,) {
+    const resolvedEffort = effort ?? getEffortOverride() ?? "low";
     const abortController = new AbortController();
 
     const timeoutId = window.setTimeout(() => {
         abortController.abort();
-    }, REQUEST_TIMEOUT_MS);
+    }, REQUEST_TIMEOUT_MS_BY_EFFORT[resolvedEffort] ?? REQUEST_TIMEOUT_MS_BY_EFFORT.low);
 
     try {
         const response = await fetch(getChatEndpoint(), {
@@ -116,6 +116,7 @@ export async function submitChatQuestion(question,
 
             body: JSON.stringify({
                 question,
+                effort: resolvedEffort,
 
                 ...(
                     typeof conversationId === "string" &&
@@ -126,17 +127,6 @@ export async function submitChatQuestion(question,
                         }
                         : {}
                 ),
-
-                ...(() => {
-                    const resolvedEffort =
-                        (effort === "fast" || effort === "thorough")
-                            ? effort
-                            : getEffortOverride();
-
-                    return resolvedEffort
-                        ? { effort: resolvedEffort }
-                        : {};
-                })(),
             }),
 
             signal: abortController.signal,

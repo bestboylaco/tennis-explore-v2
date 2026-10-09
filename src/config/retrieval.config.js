@@ -232,7 +232,7 @@ export const retrievalConfig = Object.freeze({
     // pipeline after hybrid itself.
     //
     // this is also the global default TENISE-68's per-request effort levels
-    // override ("fast" skips it, "thorough" keeps it) -- see
+    // override ("low" skips it, "high" keeps it) -- see
     // src/config/effort.config.js. unchanged here either way: a request
     // with no effort opinion gets exactly this value.
     enabled: bool(process.env.RERANK_ENABLED, true),
@@ -288,7 +288,7 @@ export const retrievalConfig = Object.freeze({
   //
   // decompositionEnabled, expansionEnabled (below) and rerank.enabled (its
   // own block further down) are also overridable PER REQUEST -- TENISE-68's
-  // "fast" vs "thorough" effort levels -- see src/config/effort.config.js.
+  // "low" vs "high" effort levels -- see src/config/effort.config.js.
   // these fields stay the GLOBAL default: a request that does not opt into
   // an effort level reads exactly these values, unchanged.
   // ---------------------------------------------------------------------
@@ -325,8 +325,8 @@ export const retrievalConfig = Object.freeze({
     // generating from whatever turned up. off by default per query -- it only
     // fires when grading says the evidence is insufficient or partial.
     //
-    // the global default for TENISE-68's effort override too ("fast" skips
-    // this whole stage, "thorough" leaves it able to fire) -- see
+    // the global default for TENISE-68's effort override too ("low" skips
+    // this whole stage, "high" leaves it able to fire) -- see
     // src/config/effort.config.js.
     expansionEnabled: bool(process.env.EXPANSION_ENABLED, true),
     expansionModel: process.env.EXPANSION_MODEL || process.env.OLLAMA_GENERATION_MODEL || "llama3.1:8b",
@@ -334,7 +334,7 @@ export const retrievalConfig = Object.freeze({
     // NOT overridable per request by TENISE-68's effort levels -- see
     // effort.config.js's comment on why: this is what lets a structured
     // (table) question extract its entities at all, so turning it off for
-    // "fast" would trade latency for a wrong answer, not a thinner one.
+    // "low" would trade latency for a wrong answer, not a thinner one.
     plannerEnabled: bool(process.env.PLANNER_ENABLED, true),
     plannerModel: process.env.PLANNER_MODEL || "llama3.1:8b",
     // below this rule-confidence we pay for a model call. above it the rules are

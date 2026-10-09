@@ -397,8 +397,19 @@ async function rerankViaLlm(query, candidates, { signal, fetchImpl = fetch }) {
  * TENISE-68's per-request effort control (see effort.config.js). undefined
  * (every caller before TENISE-68, and any call where `effort` was not
  * passed) falls back to the configured value, unchanged.
+ *
+ * `rerankInput` overrides retrievalConfig.retrieval.rerankInput the same
+ * way -- a fixed global window silently capped a caller's wider topN
+ * request regardless of how much it actually asked retrieve() for
+ * (reported directly, 2026-10-01); retrieve() floors this at the caller's
+ * own topN so a wide request is never scored on a window narrower than
+ * what it asked to see.
  */
-export async function rerankCandidates(query, candidates, { signal, enabled, fetchImpl = fetch } = {}) {
+export async function rerankCandidates(
+  query,
+  candidates,
+  { signal, enabled, rerankInput = retrievalConfig.retrieval.rerankInput, fetchImpl = fetch } = {},
+) {
   const { strategy } = retrievalConfig.rerank;
   const effectiveEnabled = enabled ?? retrievalConfig.rerank.enabled;
 
@@ -406,8 +417,8 @@ export async function rerankCandidates(query, candidates, { signal, enabled, fet
     return { candidates, reranked: false, reason: "disabled" };
   }
 
-  const window = candidates.slice(0, retrievalConfig.retrieval.rerankInput);
-  const tail = candidates.slice(retrievalConfig.retrieval.rerankInput);
+  const window = candidates.slice(0, rerankInput);
+  const tail = candidates.slice(rerankInput);
 
   let scores;
 

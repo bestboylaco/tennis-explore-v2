@@ -12,17 +12,15 @@
 
     <title>TennisExplore | AI Coach</title>
 
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="stylesheet"
-          href="/styles/tokens.css">
+          href="https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap">
 
-    <link rel="stylesheet"
-          href="/styles/base.css">
-
-    <link rel="stylesheet"
-          href="/styles/chat.css">
-
-    <link rel="stylesheet"
-          href="/styles/auth.css">
+    <link rel="stylesheet" href="/styles/tokens.css">
+    <link rel="stylesheet" href="/styles/base.css">
+    <link rel="stylesheet" href="/styles/chat.css">
+    <link rel="stylesheet" href="/styles/auth.css">
 
     <link rel="stylesheet"
           href="/styles/theme-courtside-light.css">
@@ -259,6 +257,8 @@
 
                     <a class="navigation__item"
                        href="/telemetry.html"
+                       target="_blank"
+                       rel="noopener"
                        aria-label="Telemetry"
                        data-nav-label="Telemetry">
 
@@ -400,8 +400,6 @@
                      role="log"
                      aria-live="polite"
                      aria-relevant="additions">
-
-
                     <!-- =============================================
                          NEW CHAT LANDING
                          ============================================= -->
@@ -567,11 +565,7 @@
                             <span></span>
 
                         </span>
-
-                        <span>
-                            Analysing your question...
-                        </span>
-
+                        <span id="processing-message-text">Analysing your question...</span>
                     </div>
 
                 </div>
@@ -630,33 +624,6 @@
 
                 </div>
 
-                <div id="effort-toggle"
-                     class="toggle-group composer__effort"
-                     role="radiogroup"
-                     aria-label="Response effort">
-                    <button type="button"
-                            class="toggle-group__button toggle-group__button--active"
-                            data-effort-value=""
-                            role="radio"
-                            aria-checked="true">
-                        Standard
-                    </button>
-                    <button type="button"
-                            class="toggle-group__button"
-                            data-effort-value="fast"
-                            role="radio"
-                            aria-checked="false">
-                        Fast
-                    </button>
-                    <button type="button"
-                            class="toggle-group__button"
-                            data-effort-value="thorough"
-                            role="radio"
-                            aria-checked="false">
-                        Thorough
-                    </button>
-                </div>
-
                 <form id="chat-form"
                       class="composer">
 
@@ -675,17 +642,12 @@
                               placeholder="Ask a question..."
                               autocomplete="off"
                               required></textarea>
-
-
-                    <button id="send-button"
-                            class="send-button"
-                            type="submit">
-
-                        Send
-
-                    </button>
-
-
+                    <label for="effort-select" class="visually-hidden">Response effort</label>
+                    <select id="effort-select" class="effort-select" title="How much effort to spend on this answer">
+                        <option value="low" selected>Low Effort</option>
+                        <option value="high">High Effort</option>
+                    </select>
+                    <button id="send-button" class="send-button" type="submit">Send</button>
                     <button id="composer-plus-button"
                             class="composer__plus"
                             type="button"
