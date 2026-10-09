@@ -393,6 +393,17 @@ async function rerankViaLlm(query, candidates, { signal, fetchImpl = fetch }) {
 }
 
 /**
+ * Whether rerankCandidates would actually score anything for this call. Split
+ * out so retrieve() can tell a disabled rerank (recorded as skipped) from one
+ * that ran, without timing a no-op and reporting it as a ~0 ms rerank.
+ */
+export function rerankWillRun({ enabled, candidateCount }) {
+  const effectiveEnabled = enabled ?? retrievalConfig.rerank.enabled;
+
+  return Boolean(effectiveEnabled) && retrievalConfig.rerank.strategy !== "none" && candidateCount > 0;
+}
+
+/**
  * `enabled` overrides retrievalConfig.rerank.enabled for one call -- this is
  * TENISE-68's per-request effort control (see effort.config.js). undefined
  * (every caller before TENISE-68, and any call where `effort` was not
@@ -411,9 +422,8 @@ export async function rerankCandidates(
   { signal, enabled, rerankInput = retrievalConfig.retrieval.rerankInput, fetchImpl = fetch } = {},
 ) {
   const { strategy } = retrievalConfig.rerank;
-  const effectiveEnabled = enabled ?? retrievalConfig.rerank.enabled;
 
-  if (!effectiveEnabled || strategy === "none" || candidates.length === 0) {
+  if (!rerankWillRun({ enabled, candidateCount: candidates.length })) {
     return { candidates, reranked: false, reason: "disabled" };
   }
 
