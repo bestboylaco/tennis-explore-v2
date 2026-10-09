@@ -328,6 +328,26 @@ describe("consolidating repeated citations within one paragraph", () => {
     );
   });
 
+  it("removes the marker's own comma separator too, rather than leaving a dangling ', '", () => {
+    // live case, 2026-10-02: the model listed two same-document markers
+    // together in one shared paren, comma-separated -- "forearm pronation
+    // ([2], [3])." ([2] and [3] being page-chunks of one 1989 paper).
+    // collapsing the repeated first occurrence used to remove only the
+    // "[2]" inside, leaving "(, [3])" -- a dangling leading comma -- sitting
+    // in the sentence, same root problem as the hollow "()" case above, one
+    // shape over (a shared list instead of a marker with its own parens).
+    const answer = "...wrist flexion/extension, and forearm pronation ([2], [3]).";
+    const citations = [
+      { number: 2, docId: "ellenbecker1989" },
+      { number: 3, docId: "ellenbecker1989" },
+    ];
+
+    assert.equal(
+      consolidateRepeatedCitations(answer, citations),
+      "...wrist flexion/extension, and forearm pronation ([3]).",
+    );
+  });
+
   it("collapses the same reference repeated across sentences in one paragraph", () => {
     // the live case this widened from sentence- to paragraph-scope to fix:
     // one source, restated three times across three consecutive sentences.

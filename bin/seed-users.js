@@ -13,9 +13,13 @@ import process from "node:process";
 
 import bcrypt from "bcryptjs";
 
-import { connectMongoDB, disconnectMongoDB } from "../src/infrastructure/database/mongodb.service.js";
 import { ROLES } from "../src/shared/constants/accessControl.js";
-import User from "../src/modules/auth/models/user.model.js";
+import { upsertUserByEmail } from "../src/modules/auth/models/user.model.js";
+
+// TENISE-63: accounts moved off MongoDB onto the partner's DynamoDB table, so
+// this script no longer needs connectMongoDB/disconnectMongoDB at all --
+// upsertUserByEmail talks to DynamoDB directly (DynamoDB Local by default;
+// point DYNAMODB_ENDPOINT/credentials at the real table to seed it instead).
 
 const args = process.argv.slice(2);
 let password = "TennisExplore2026Demo!";
@@ -28,25 +32,19 @@ for (let i = 0; i < args.length; i += 1) {
 }
 
 async function main() {
-  await connectMongoDB();
-
   const passwordHash = await bcrypt.hash(password, 12);
   const results = [];
 
   for (const role of Object.values(ROLES)) {
     const email = `${role.roleId}@demo.tennisexplore.local`;
 
-    const user = await User.findOneAndUpdate(
-      { email },
-      {
-        email,
-        passwordHash,
-        displayName: role.displayName,
-        roleId: role.roleId,
-        isActive: true,
-      },
-      { upsert: true, returnDocument: "after", setDefaultsOnInsert: true },
-    );
+    const user = await upsertUserByEmail({
+      email,
+      passwordHash,
+      displayName: role.displayName,
+      roleId: role.roleId,
+      isActive: true,
+    });
 
     results.push(user.email);
   }
@@ -56,8 +54,6 @@ async function main() {
   for (const email of results) {
     console.log(`  ${email}`);
   }
-
-  await disconnectMongoDB();
 }
 
 main().catch((error) => {

@@ -8,13 +8,11 @@
  *
  * An assistant turn can carry four things, and only the answer is always there:
  *
- *   answer     prose, with [n] citation markers -- rendered as clickable
- *              in-text citations (see appendCitationRun), not a separate
- *              list: a reader checks a claim at the claim.
+ *   answer     prose, with [n] citation markers
  *   table      a computed result, when the question was answered from records
- *   citations  the data each in-text citation resolves against, and (for a
- *              table answer) where the SQL behind it is shown beside the
- *              conversation when a reader clicks through.
+ *   citations  resolved source objects used to turn citations inside the
+ *              answer text into direct source links. No separate Sources
+ *              dropdown is rendered.
  */
 
 function element(doc, tag, className, text) {
@@ -26,56 +24,618 @@ function element(doc, tag, className, text) {
     return node;
 }
 
-const INLINE_TOKEN = /\*\*(.+?)\*\*|((?:\[\d+\])+)/g;
+/**
+ * Returns the citation number used by the backend for one citation object.
+ */
+function citationNumber(citation, index) {
+    if (
+        citation &&
+        typeof citation === "object" &&
+        Number.isInteger(citation.number)
+    ) {
+        return citation.number;
+    }
+
+    return index + 1;
+}
+
 
 /**
- * Appends `**bold**` runs as real <strong> elements and citation marker runs
- * as clickable in-text citations (see appendCitationRun), everything else as
- * plain text nodes.
+ * Finds the backend reference line for a citation.
  *
- * Still never treats the model's output as markup: every piece either goes
- * into textContent/createTextNode, or -- for a citation -- is built from
- * data this file already trusts (the citations array), never from the
- * model's own text. A model that writes literal "<" or a stray "**" with no
- * closing pair renders as inert text either way.
+ * Example:
+ *   [3] Thomas Perri. (2022). Serve Kinematics Study. [research_paper]
  */
-// a bold span whose ENTIRE content is citation markers -- "**[4]**", not
-// "**bold text** [4]" -- which the model does sometimes, emphasising the
-// marker itself rather than placing it after emphasised text. Matched
-// before building a <strong>, so this renders as a citation like any other
-// [4], not as literal bold text containing the characters "[4]" (reported
-// directly, 2026-10-01: the raw bracket was still showing because this
-// exact shape fell through as bold text instead).
-const BOLD_CITATION_ONLY = /^(?:\[\d+\])+$/;
+function referenceForCitation(citation, index, references = []) {
+    const number = citationNumber(citation, index);
 
-function appendInlineFormatting(doc, parent, text, citationsByNumber = null, openCitation = null) {
-    const value = String(text);
-    let lastIndex = 0;
+    return references.find(
+        (line) =>
+            typeof line === "string" &&
+            line.startsWith(`[${number}]`),
+    ) ?? null;
+}
 
-    for (const match of value.matchAll(INLINE_TOKEN)) {
-        if (match.index > lastIndex) {
-            parent.append(doc.createTextNode(value.slice(lastIndex, match.index)));
+
+/**
+ * Normalises a short author/title fragment for conservative text matching.
+ */
+function normaliseCitationText(value) {
+    return String(value ?? "")
+        .toLowerCase()
+        .replace(/[’']/g, "'")
+        .replace(/[^\p{L}\p{N}'-]+/gu, " ")
+        .replace(/\s+/g, " ")
+        .trim();
+}
+
+
+/**
+ * Returns likely author keys for matching an APA in-text citation back to the
+ * existing citation object.
+ *
+ * The backend already resolved each [n] marker to a source. The UI only needs
+ * enough information to recognise the visible "(Author, Year)" text and call
+ * that same resolver.
+ */
+function authorKeysForCitation(citation, reference) {
+    const keys = new Set();
+
+    const metadataAuthors =
+        citation?.authors ??
+        citation?.metadata?.authors ??
+        citation?.source?.authors ??
+        null;
+
+    const authorValues =
+        Array.isArray(metadataAuthors)
+            ? metadataAuthors
+            : typeof metadataAuthors === "string"
+              ? metadataAuthors
+                  .split(/\s*(?:;|,|\band\b|&)\s*/i)
+                  .filter(Boolean)
+              : citation?.author
+                ? [citation.author]
+                : [];
+
+    function addAuthor(value) {
+        const cleaned =
+            String(value ?? "")
+                .replace(/[.;:,]+$/g, "")
+                .trim();
+
+        if (!cleaned) return;
+
+        const normalised = normaliseCitationText(cleaned);
+
+        if (normalised) keys.add(normalised);
+
+        const words = cleaned
+            .split(/\s+/)
+            .map((word) => word.replace(/[^\p{L}\p{N}'’-]/gu, ""))
+            .filter(Boolean);
+
+        const surname = words.at(-1);
+
+        if (surname) keys.add(normaliseCitationText(surname));
+    }
+
+    for (const author of authorValues) {
+        addAuthor(author);
+    }
+
+    if (reference) {
+        const withoutNumber =
+            reference.replace(/^\[\d+\]\s*/, "");
+
+        const yearMatch =
+            withoutNumber.match(
+                /\((?:19|20)\d{2}[a-z]?\)|\(n\.d\.\)/i,
+            );
+
+        const authorBlock =
+            yearMatch
+                ? withoutNumber.slice(0, yearMatch.index)
+                : "";
+
+        if (authorBlock) {
+            const etAlMatch =
+                authorBlock.match(
+                    /^\s*(.+?)\s+et\s+al\.?\s*$/i,
+                );
+
+            const firstAuthor =
+                etAlMatch
+                    ? etAlMatch[1]
+                    : authorBlock
+                        .split(/\s*(?:;|,|\band\b|&)\s*/i)
+                        .find(Boolean);
+
+            addAuthor(firstAuthor);
+        }
+    }
+
+    return [...keys]
+        .filter(Boolean)
+        .sort((left, right) => right.length - left.length);
+}
+
+
+/**
+ * Returns the year token that should identify the citation in APA prose.
+ */
+function yearForCitation(citation, reference) {
+    const direct =
+        citation?.year ??
+        citation?.metadata?.year ??
+        null;
+
+    if (direct) {
+        return String(direct)
+            .trim()
+            .toLowerCase();
+    }
+
+    const date =
+        citation?.eventDate ??
+        citation?.date ??
+        citation?.metadata?.eventDate ??
+        citation?.metadata?.date ??
+        null;
+
+    if (date) {
+        const match =
+            String(date).match(
+                /\b((?:19|20)\d{2}[a-z]?)\b/i,
+            );
+
+        if (match) return match[1].toLowerCase();
+    }
+
+    const match =
+        String(reference ?? "").match(
+            /\(((?:19|20)\d{2}[a-z]?|n\.d\.)\)/i,
+        );
+
+    return match
+        ? match[1].toLowerCase()
+        : null;
+}
+
+
+/**
+ * Builds a small lookup description for each already-resolved citation.
+ */
+function buildCitationTargets(citations = [], references = []) {
+    return citations.map((citation, index) => {
+        const reference =
+            referenceForCitation(
+                citation,
+                index,
+                references,
+            );
+
+        const titleValues = [
+            citation?.title,
+            citation?.link?.label,
+            citation?.metadata?.title,
+            citation?.source?.title,
+        ]
+            .filter(Boolean)
+            .map(
+                (value) =>
+                    normaliseCitationText(
+                        value,
+                    ),
+            )
+            .filter(Boolean);
+
+        return {
+            citation,
+            number:
+                citationNumber(
+                    citation,
+                    index,
+                ),
+            year:
+                yearForCitation(
+                    citation,
+                    reference,
+                ),
+            authorKeys:
+                authorKeysForCitation(
+                    citation,
+                    reference,
+                ),
+            titleKeys:
+                [
+                    ...new Set(
+                        titleValues,
+                    ),
+                ],
+        };
+    });
+}
+
+
+/**
+ * Finds which existing citation an APA fragment refers to.
+ *
+ * Examples:
+ *   Perri, 2022
+ *   Perri et al., 2022
+ *   Perri & Reid, 2022
+ */
+function citationForApaFragment(fragment, targets) {
+    const normalised =
+        normaliseCitationText(fragment);
+
+    for (const target of targets) {
+        if (
+            !target.year ||
+            !normalised.includes(
+                target.year,
+            )
+        ) {
+            continue;
         }
 
-        if (match[1] !== undefined && citationsByNumber && BOLD_CITATION_ONLY.test(match[1])) {
-            appendCitationRun(doc, parent, match[1], citationsByNumber, openCitation);
-        } else if (match[1] !== undefined) {
-            const strong = doc.createElement("strong");
+        const identity =
+            normalised
+                .replace(
+                    new RegExp(
+                        `\\b${target.year.replace(".", "\\.")}\\b`,
+                        "i",
+                    ),
+                    "",
+                )
+                .replace(
+                    /\bet\s+al\.?\b/gi,
+                    "",
+                )
+                .replace(
+                    /\s+/g,
+                    " ",
+                )
+                .trim();
 
-            strong.textContent = match[1];
-            parent.append(strong);
-        } else if (citationsByNumber) {
-            appendCitationRun(doc, parent, match[2], citationsByNumber, openCitation);
+        if (
+            target.authorKeys.some(
+                (key) =>
+                    key &&
+                    (
+                        normalised.includes(key) ||
+                        identity.includes(key)
+                    ),
+            )
+        ) {
+            return target.citation;
+        }
+
+        /*
+         * Some source documents do not have usable author metadata.
+         * answerApa then falls back to a shortened title, e.g.
+         * ("Opponent Note Details Report Good pace...", 2020).
+         *
+         * Match that visible title fragment to the already-resolved citation
+         * rather than requiring an author that does not exist.
+         */
+        if (
+            identity.length >= 8 &&
+            target.titleKeys.some(
+                (key) =>
+                    key &&
+                    (
+                        key.includes(identity) ||
+                        identity.includes(key)
+                    ),
+            )
+        ) {
+            return target.citation;
+        }
+    }
+
+    return null;
+}
+
+
+/**
+ * Appends one clickable in-text citation.
+ *
+ * It deliberately calls the same openCitation callback used by the Sources
+ * popover. No source URL or access rule is recreated in the browser.
+ */
+function appendCitationButton(
+    doc,
+    parent,
+    label,
+    citation,
+    openCitation,
+) {
+    const button =
+        element(
+            doc,
+            "button",
+            "in-text-citation",
+            label,
+        );
+
+    button.type = "button";
+    button.title = "Open cited source";
+    button.setAttribute(
+        "aria-label",
+        `Open cited source: ${label}`,
+    );
+
+    button.addEventListener(
+        "click",
+        () => {
+            openCitation(
+                citation,
+                button,
+            );
+        },
+    );
+
+    parent.append(button);
+}
+
+
+/**
+ * Appends ordinary text while converting recognised citations into buttons.
+ *
+ * Supports both:
+ *   - APA text already produced by answerApa, e.g. "(Perri et al., 2022)"
+ *   - raw numeric fallback markers, e.g. "[3]"
+ *
+ * Unmatched text stays inert textContent. The renderer still never parses model
+ * output as HTML.
+ */
+function appendTextWithCitationLinks(
+    doc,
+    parent,
+    text,
+    citationContext,
+) {
+    const value =
+        String(text ?? "");
+
+    if (
+        !citationContext ||
+        !citationContext.openCitation ||
+        !Array.isArray(
+            citationContext.targets,
+        ) ||
+        citationContext.targets.length === 0
+    ) {
+        parent.append(
+            doc.createTextNode(
+                value,
+            ),
+        );
+
+        return;
+    }
+
+    const tokenPattern =
+        /\(([^()]*?(?:(?:19|20)\d{2}[a-z]?|n\.d\.)[^()]*)\)|\[(\d+)\]/gi;
+
+    let cursor = 0;
+
+    for (
+        const match
+        of value.matchAll(
+            tokenPattern,
+        )
+    ) {
+        const start =
+            match.index ?? 0;
+
+        if (start > cursor) {
+            parent.append(
+                doc.createTextNode(
+                    value.slice(
+                        cursor,
+                        start,
+                    ),
+                ),
+            );
+        }
+
+        const whole =
+            match[0];
+
+        const apaGroup =
+            match[1];
+
+        const numeric =
+            match[2];
+
+        if (numeric) {
+            const number =
+                Number(numeric);
+
+            const target =
+                citationContext.targets.find(
+                    (item) =>
+                        item.number === number,
+                );
+
+            if (target) {
+                appendCitationButton(
+                    doc,
+                    parent,
+                    whole,
+                    target.citation,
+                    citationContext.openCitation,
+                );
+            } else {
+                parent.append(
+                    doc.createTextNode(
+                        whole,
+                    ),
+                );
+            }
+
+            cursor =
+                start +
+                whole.length;
+
+            continue;
+        }
+
+        const fragments =
+            String(apaGroup)
+                .split(
+                    /\s*;\s*/,
+                );
+
+        const resolved =
+            fragments.map(
+                (fragment) => ({
+                    fragment,
+                    citation:
+                        citationForApaFragment(
+                            fragment,
+                            citationContext.targets,
+                        ),
+                }),
+            );
+
+        if (
+            resolved.every(
+                (item) =>
+                    !item.citation,
+            )
+        ) {
+            parent.append(
+                doc.createTextNode(
+                    whole,
+                ),
+            );
         } else {
-            parent.append(doc.createTextNode(match[2]));
+            parent.append(
+                doc.createTextNode(
+                    "(",
+                ),
+            );
+
+            resolved.forEach(
+                (
+                    item,
+                    index,
+                ) => {
+                    if (index > 0) {
+                        parent.append(
+                            doc.createTextNode(
+                                "; ",
+                            ),
+                        );
+                    }
+
+                    if (item.citation) {
+                        appendCitationButton(
+                            doc,
+                            parent,
+                            item.fragment,
+                            item.citation,
+                            citationContext.openCitation,
+                        );
+                    } else {
+                        parent.append(
+                            doc.createTextNode(
+                                item.fragment,
+                            ),
+                        );
+                    }
+                },
+            );
+
+            parent.append(
+                doc.createTextNode(
+                    ")",
+                ),
+            );
         }
 
-        lastIndex = match.index + match[0].length;
+        cursor =
+            start +
+            whole.length;
     }
 
-    if (lastIndex < value.length) {
-        parent.append(doc.createTextNode(value.slice(lastIndex)));
+    if (
+        cursor <
+        value.length
+    ) {
+        parent.append(
+            doc.createTextNode(
+                value.slice(cursor),
+            ),
+        );
     }
+}
+
+
+/**
+ * Appends `**bold**` runs as real <strong> elements, everything else as
+ * plain text nodes. Recognised citations inside either form become inline
+ * buttons that call the existing citation resolver.
+ *
+ * Still never treats the model's output as markup: split() on a capturing
+ * regex can only ever produce strings. No model-supplied HTML is inserted.
+ */
+function appendInlineFormatting(
+    doc,
+    parent,
+    text,
+    citationContext = null,
+) {
+    const parts =
+        String(text)
+            .split(
+                /\*\*(.+?)\*\*/g,
+            );
+
+    parts.forEach(
+        (
+            part,
+            index,
+        ) => {
+            if (
+                part === ""
+            ) {
+                return;
+            }
+
+            if (
+                index % 2 ===
+                1
+            ) {
+                const strong =
+                    doc.createElement(
+                        "strong",
+                    );
+
+                appendTextWithCitationLinks(
+                    doc,
+                    strong,
+                    part,
+                    citationContext,
+                );
+
+                parent.append(
+                    strong,
+                );
+            } else {
+                appendTextWithCitationLinks(
+                    doc,
+                    parent,
+                    part,
+                    citationContext,
+                );
+            }
+        },
+    );
 }
 
 /**
@@ -100,7 +660,7 @@ function appendInlineFormatting(doc, parent, text, citationsByNumber = null, ope
  * HTML, so a model that writes a stray "#" or "-" with no real structure
  * around it just renders as the literal character it is.
  */
-function appendBlock(doc, wrapper, block, orderedState, citationsByNumber, openCitation) {
+function appendBlock(doc, wrapper, block, orderedState, citationContext = null) {
     let currentList = null;
     let currentListTag = null;
 
@@ -120,7 +680,7 @@ function appendBlock(doc, wrapper, block, orderedState, citationsByNumber, openC
             const level = Math.min(heading[1].length + 1, 6);
             const node = doc.createElement(`h${level}`);
 
-            appendInlineFormatting(doc, node, heading[2], citationsByNumber, openCitation);
+            appendInlineFormatting(doc, node, heading[2], citationContext);
             wrapper.append(node);
             continue;
         }
@@ -142,7 +702,7 @@ function appendBlock(doc, wrapper, block, orderedState, citationsByNumber, openC
 
             const li = doc.createElement("li");
 
-            appendInlineFormatting(doc, li, listMatch[1], citationsByNumber, openCitation);
+            appendInlineFormatting(doc, li, listMatch[1], citationContext);
             currentList.append(li);
 
             if (listTag === "ol") orderedState.count += 1;
@@ -155,7 +715,7 @@ function appendBlock(doc, wrapper, block, orderedState, citationsByNumber, openC
 
         const p = element(doc, "p");
 
-        appendInlineFormatting(doc, p, line, citationsByNumber, openCitation);
+        appendInlineFormatting(doc, p, line, citationContext);
         wrapper.append(p);
     }
 }
@@ -169,19 +729,18 @@ function appendBlock(doc, wrapper, block, orderedState, citationsByNumber, openC
  * from the model is ever inserted; see appendInlineFormatting/appendBlock
  * above.
  */
-function renderAnswer(doc, text, citations = [], openCitation = null) {
+function renderAnswer(doc, text, citationContext = null) {
     const wrapper = element(doc, "div", "message__bubble");
     const orderedState = { count: 0 };
-    const citationsByNumber = new Map(citations.map((citation) => [citation.number, citation]));
 
     for (const block of String(text).split(/\n{2,}/)) {
         if (block.trim() === "") continue;
 
-        appendBlock(doc, wrapper, block, orderedState, citationsByNumber, openCitation);
+        appendBlock(doc, wrapper, block, orderedState, citationContext);
     }
 
     if (wrapper.children.length === 0) {
-        appendBlock(doc, wrapper, String(text), orderedState, citationsByNumber, openCitation);
+        appendBlock(doc, wrapper, String(text), orderedState, citationContext);
     }
 
     return wrapper;
@@ -235,91 +794,6 @@ function renderTable(doc, table) {
     node.append(head, body);
 
     return node;
-}
-
-/**
- * In-text citations, not a "Sources" dropdown.
- *
- * Every [n] marker (or consecutive run, "[2][5]") in the answer renders as a
- * clickable span of real text -- "(Author, Year)" -- that opens the same
- * side panel a Sources button used to. A reader checks a claim at the claim,
- * not in a separate list they have to go find (reported directly,
- * 2026-09-28: replace the dropdown with in-text hyperlinks on the citations
- * themselves). A marker with no matching citation (dangling -- see
- * bindCitations) is left as the bare "[n]" text rather than a dead link.
- *
- * This mirrors apaInText/apaShortAuthor/apaYear/apaShortTitle in
- * citation.service.js exactly, on purpose -- the backend's `references` list
- * (CLI, history exports) and this inline rendering need to describe the same
- * citation the same way. Duplicated rather than imported because this file
- * ships to the browser as a plain script with no bundler, and citation
- * titles already arrive pre-cleaned (see cleanTitle server-side) so this
- * copy does not need that part.
- */
-function apaYear(date) {
-    const match = String(date ?? "").match(/\b(1[89]|20)\d{2}\b/);
-
-    return match ? match[0] : "n.d.";
-}
-
-function apaShortAuthor(authors) {
-    if (!Array.isArray(authors) || authors.length === 0) return null;
-    if (authors.length === 1) return authors[0];
-    if (authors.length === 2) return `${authors[0]} & ${authors[1]}`;
-
-    return `${authors[0]} et al.`;
-}
-
-function apaShortTitle(citation, maxWords = 6) {
-    const title = citation.title || citation.fileName || citation.docId || "untitled source";
-    const words = String(title).trim().split(/\s+/);
-    const short = words.slice(0, maxWords).join(" ");
-
-    return words.length > maxWords ? `${short}...` : short;
-}
-
-function apaInText(citation) {
-    const author = apaShortAuthor(citation.authors);
-    const year = apaYear(citation.date);
-
-    if (author) return `${author}, ${year}`;
-
-    return `"${apaShortTitle(citation)}," ${year}`;
-}
-
-/**
- * Appends one run of consecutive "[n]" markers as a single clickable
- * citation, grouping multiple sources the way APA does ("(Author, 2021;
- * Other, 2019)") the same way toApaText does server-side. Clicking opens the
- * first known source in the group -- there is one panel, so a grouped
- * citation has to pick one, and the first is the one the marker run leads
- * with.
- *
- * A run where none of the numbers match a real citation renders as plain
- * text, not a dead button -- an invented citation number should stay
- * visible as what it is, not disappear or look clickable when it is not.
- *
- * Always renders in full, even for a source repeated right next to its own
- * previous citation -- a shorter "p.6"-only form was tried and dropped per
- * direct feedback (reported directly, 2026-10-01: it read as an unclear
- * abbreviation, not a citation). Citing the same source several times in
- * one answer is fine; every occurrence names it the same, complete way.
- */
-function appendCitationRun(doc, parent, run, citationsByNumber, openCitation) {
-    const numbers = [...run.matchAll(/\[(\d+)\]/g)].map((match) => Number(match[1]));
-    const known = numbers.map((number) => citationsByNumber.get(number)).filter(Boolean);
-
-    if (known.length === 0 || !openCitation) {
-        parent.append(doc.createTextNode(run));
-        return;
-    }
-
-    const button = element(doc, "button", "citation-inline", `(${known.map(apaInText).join("; ")})`);
-
-    button.type = "button";
-    button.addEventListener("click", () => openCitation(known[0], button));
-
-    parent.append(button);
 }
 
 /**
@@ -409,6 +883,7 @@ export function appendUserMessage({ conversation, content }) {
 function renderResponseSections(
     doc,
     sections,
+    citationContext = null,
 ) {
     if (
         !Array.isArray(sections) ||
@@ -464,13 +939,22 @@ function renderResponseSections(
                 continue;
             }
 
-            sectionNode.append(
+            const paragraphNode =
                 element(
                     doc,
                     "p",
                     "intelligence-response__content",
-                    paragraph.trim(),
-                ),
+                );
+
+            appendInlineFormatting(
+                doc,
+                paragraphNode,
+                paragraph.trim(),
+                citationContext,
+            );
+
+            sectionNode.append(
+                paragraphNode,
             );
         }
 
@@ -492,6 +976,7 @@ export function appendAssistantMessage({
     content,
     sections = [],
     citations = [],
+    references = [],
     table = null,
     grounding = null,
     openCitation,
@@ -499,10 +984,33 @@ export function appendAssistantMessage({
     const doc = conversation.ownerDocument;
     const row = element(doc, "div", "message message--assistant");
 
+    /*
+     * TENISE in-text source links:
+     *
+     * The backend has already resolved citations to trusted source objects.
+     * The renderer only maps visible citation text back to those objects and
+     * delegates opening to the existing sourcePanel.open callback.
+     */
+    const citationContext =
+        Array.isArray(citations) &&
+        citations.length > 0 &&
+        typeof openCitation === "function"
+            ? {
+                targets:
+                    buildCitationTargets(
+                        citations,
+                        references,
+                    ),
+
+                openCitation,
+            }
+            : null;
+
     const sectionsNode =
         renderResponseSections(
             doc,
             sections,
+            citationContext,
         );
 
     if (sectionsNode) {
@@ -514,8 +1022,7 @@ export function appendAssistantMessage({
             renderAnswer(
                 doc,
                 content,
-                citations,
-                openCitation,
+                citationContext,
             ),
         );
     }

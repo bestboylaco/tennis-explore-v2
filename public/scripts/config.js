@@ -68,6 +68,36 @@ export function getChatEndpoint() {
 }
 
 /**
+ * A query-string override for the per-request effort level (TENISE-68).
+ *
+ * The composer has a visible Low Effort / High Effort select (app.js) -- a
+ * deliberate product decision to offer this choice, unlike `endpoint`
+ * above. This function stays as a secondary path: useful for acceptance
+ * testing or sharing a link pre-set to a level without touching the
+ * select. `chatApi.js`'s `submitChatQuestion` only falls back to this when
+ * its caller does not pass an explicit `effort` argument, so the select
+ * always wins when both are present.
+ *
+ * Example:
+ * http://localhost:3000/?effort=high
+ */
+export function getEffortOverride() {
+    const searchParameters = new URLSearchParams(
+        window.location.search,
+    );
+
+    const effortOverride =
+        searchParameters.get("effort");
+
+    return (
+        effortOverride === "low" ||
+        effortOverride === "high"
+    )
+        ? effortOverride
+        : null;
+}
+
+/**
  * Read-only telemetry API backing the debugging dashboard.
  *
  * GET /api/telemetry             list of records

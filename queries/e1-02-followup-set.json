@@ -1,0 +1,49 @@
+[
+	{
+		"id": 1,
+		"type": "pronoun_person",
+		"firstQuestion": "What did Nat Deegan present about female athletes?",
+		"followUp": "What did she recommend for training load?",
+		"requiredTerms": [
+			"Deegan"
+		]
+	},
+	{
+		"id": 2,
+		"type": "pronoun_paper",
+		"firstQuestion": "Summarise Whiteside et al. 2013 kinematic comparison",
+		"followUp": "How many players were in it?",
+		"requiredTerms": [
+			"Whiteside"
+		]
+	},
+	{
+		"id": 3,
+		"type": "ellipsis",
+		"firstQuestion": "What does research say about lumbar bone stress in juniors?",
+		"followUp": "And in adults?",
+		"requiredTerms": [
+			"lumbar",
+			"adult"
+		]
+	},
+	{
+		"id": 4,
+		"type": "ellipsis_comparison",
+		"firstQuestion": "How does serve load differ between training and tournaments?",
+		"followUp": "What about groundstrokes?",
+		"requiredTerms": [
+			"groundstroke",
+			"tournament"
+		]
+	},
+	{
+		"id": 5,
+		"type": "pronoun_thing",
+		"firstQuestion": "Who published the first Cardio Tennis paper?",
+		"followUp": "When was that published?",
+		"requiredTerms": [
+			"Cardio Tennis"
+		]
+	}
+]

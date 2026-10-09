@@ -200,6 +200,23 @@ function collapseRepeatedMarkers(unit, docIdByNumber) {
       end += 1;
     }
 
+    // the model sometimes lists several same-document markers together
+    // inside one shared paren, comma-separated -- "([2], [3])" -- rather
+    // than placing each in parens of its own. removing one marker without
+    // also eating its separator leaves a dangling ", " behind: "([2],
+    // [3])" minus "[2]" is "(, [3])", not "([3])" (reported directly live,
+    // 2026-10-02). guarded to only match a ", " sitting directly between
+    // two bracket markers -- not just any comma that happens to follow a
+    // citation, which is ordinary sentence punctuation far more often than
+    // it is a marker-list separator (an earlier version of this fix matched
+    // too broadly and ate real prose commas, e.g. "...times [4], reduced
+    // grip..." losing its list punctuation entirely).
+    if (/^, \[\d+\]/.test(result.slice(end))) {
+      end += 2;
+    } else if (/\], $/.test(result.slice(0, start))) {
+      start -= 2;
+    }
+
     // absorb one preceding space, so removing "[4]" from "fact A [4], fact
     // B" leaves "fact A, fact B" rather than "fact A , fact B".
     if (start > 0 && result[start - 1] === " ") start -= 1;

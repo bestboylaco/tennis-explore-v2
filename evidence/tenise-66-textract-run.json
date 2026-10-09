@@ -1,0 +1,61 @@
+{
+  "ranAt": "2026-10-01T13:24:04.102Z",
+  "region": "ap-southeast-2",
+  "dpi": 300,
+  "api": "AnalyzeDocument (synchronous, Bytes)",
+  "featureTypes": [
+    "TABLES"
+  ],
+  "twoPass": false,
+  "tableThreshold": null,
+  "documents": [
+    {
+      "file": "quantifying-change-of-direction-movement-demands-in-professional-tennis-matchplay-an-analysis-from-the-australian-open-grand-slam.pdf",
+      "pageCount": 9,
+      "pagesSent": 9,
+      "apiCalls": 9,
+      "detectPages": 0,
+      "pageModes": [
+        "tables",
+        "tables",
+        "tables",
+        "tables",
+        "tables",
+        "tables",
+        "tables",
+        "tables",
+        "tables"
+      ],
+      "tables": 5,
+      "lowConfidenceCells": 79,
+      "failures": [],
+      "complete": true,
+      "cached": true,
+      "modelVersion": "1.0",
+      "detectModelVersion": null
+    }
+  ],
+  "totals": {
+    "documents": 1,
+    "pagesSent": 9,
+    "apiCalls": 9,
+    "detectPages": 0,
+    "tablePagesSaved": 0,
+    "tables": 5,
+    "durationMs": 43738
+  },
+  "budget": {
+    "month": "2026-10",
+    "used": 9,
+    "budget": 100,
+    "remaining": 91,
+    "detectUsed": 0,
+    "detectBudget": 1000,
+    "detectRemaining": 1000
+  },
+  "telemetry": {
+    "recordId": "451e6627-c79d-4fbe-92be-e775595090ce",
+    "persisted": true,
+    "textractPages": 9
+  }
+}

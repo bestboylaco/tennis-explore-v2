@@ -1,5 +1,6 @@
 import {
     getChatEndpoint,
+    getEffortOverride,
     REQUEST_TIMEOUT_MS_BY_EFFORT,
 } from "../config.js";
 
@@ -66,19 +67,28 @@ async function readResponseBody(response) {
 /**
  * Sends one natural-language question to the backend.
  *
- * The body carries the question and, optionally, an effort level -- the one
- * deliberate exception to "no mode, source, command, model or route is
- * submitted": a speed-vs-thoroughness preference the coach chose for this
- * question, not a routing or access decision. The role the query runs as
- * still comes off the authenticated session server-side (requireAuth,
- * req.user.roleId), never from anything this client sends.
+ * The body carries the question, plus conversationId when there is one, and
+ * effort when one is selected. No source, backend route, or role is
+ * submitted; the role the query runs as comes off the authenticated session
+ * server-side (requireAuth, req.user.roleId), never from anything this
+ * client sends.
+ *
+ * `effort` (TENISE-68) is the one exception to "no mode is offered": the
+ * composer's Low Effort / High Effort select (app.js) passes its current
+ * selection directly. The `?effort=` query-string override from
+ * getEffortOverride() still works too (useful for acceptance testing
+ * without touching the select) and is used only when the caller does not
+ * pass `effort` explicitly.
  */
-export async function submitChatQuestion(question, { effort = "low" } = {}) {
+export async function submitChatQuestion(question,
+    conversationId = null,
+    effort = null,) {
+    const resolvedEffort = effort ?? getEffortOverride() ?? "low";
     const abortController = new AbortController();
 
     const timeoutId = window.setTimeout(() => {
         abortController.abort();
-    }, REQUEST_TIMEOUT_MS_BY_EFFORT[effort] ?? REQUEST_TIMEOUT_MS_BY_EFFORT.low);
+    }, REQUEST_TIMEOUT_MS_BY_EFFORT[resolvedEffort] ?? REQUEST_TIMEOUT_MS_BY_EFFORT.low);
 
     try {
         const response = await fetch(getChatEndpoint(), {
@@ -104,7 +114,20 @@ export async function submitChatQuestion(question, { effort = "low" } = {}) {
 
             credentials: "same-origin",
 
-            body: JSON.stringify({ question, effort }),
+            body: JSON.stringify({
+                question,
+                effort: resolvedEffort,
+
+                ...(
+                    typeof conversationId === "string" &&
+                        conversationId.trim()
+                        ? {
+                            conversationId:
+                                conversationId.trim(),
+                        }
+                        : {}
+                ),
+            }),
 
             signal: abortController.signal,
         });

@@ -186,6 +186,78 @@ latency is worth it.
 
 ---
 
+## Effort levels: fast vs. thorough (TENISE-68)
+
+Every toggle above -- routing, decomposition, expansion, reranking, `TOP_N` --
+was global: set once from `.env` at process startup, applied to every question
+the process ever answers. That is the right question for "how good should
+this deployment be", and the wrong one for "how much should *this* question
+cost". A coach asking "what was the score against Kumasaka" and a coach asking
+"compare our return positioning research across both papers" do not deserve
+the same machinery, and before this ticket they got it anyway.
+
+`effort` is an optional field on the `/api/chat` request body: `"fast"`,
+`"thorough"`, or omitted. Omitted is not a third level with its own
+behaviour -- it means *no override*, so a caller that has never heard of this
+parameter (every caller before TENISE-68) gets exactly what `.env` already
+says, unchanged. That is what makes this backward compatible rather than a
+second place the same decision gets made.
+
+| | fast | thorough | omitted |
+|---|---|---|---|
+| decomposition | off | on | whatever `.env` says |
+| expansion (corrective retry) | off | on | whatever `.env` says |
+| reranking | off | on | whatever `.env` says |
+| evidence window (`topN`) | x0.6 | x1.5 | unscaled |
+
+Only four knobs, and three flags from `retrieval.config.js` were deliberately
+left alone:
+
+- **`PLANNER_ENABLED`** -- turning this off for "fast" would save a model
+  call, but it is also what extracts the entities a structured (table)
+  question needs to run at all. Disabling it trades latency for a *wrong*
+  answer on exactly the questions that need it most, not for a thinner one.
+- **`CONTEXTUAL_ENABLED`** -- this governs whether a chunk was written with a
+  situating header when the index was *built*. By the time a chat request
+  exists, every chunk already has its header or it does not; there is
+  nothing left at query time to switch.
+- **`HYDE_ENABLED`** -- stays off under both levels. It is already off
+  globally because the benchmarks found it scores *below* plain dense
+  retrieval (see `retrieval.config.js`). "Thorough" means spend more on the
+  techniques that help, not re-enable the one technique measured to hurt.
+
+Two levels, not three: the ticket asks for a speed/thoroughness tradeoff, and
+every flag here is binary (a stage either runs or it does not) -- the only
+place a third, intermediate level could live is `topN`, which already scales
+with the question (`TOP_N_FOR_INTENT_ROUTE`, `queryTaxonomy.js`) before effort
+is even applied. Nothing in this investigation argued for a value in between.
+
+The design lives in [`src/config/effort.config.js`](../src/config/effort.config.js);
+the wiring threads through `chat.validation.js` (validates and normalises the
+field) → `chat.service.js` → `answer.service.js` (resolves the overrides once
+and scales `plan.topN`) → `retrieval.service.js` / `ranking.service.js`
+(actually skip or run decomposition and reranking). `npm run eval:effort`
+runs the same four knobs against the real pipeline on a shared slice of the
+gold set and checks that `fast` and `thorough` genuinely produce different
+stage telemetry on every *document* question, and -- as a deliberate negative
+control -- produce *no* difference on a structured (table) question, since
+`answerFromTables` never calls `retrieve()` at all.
+
+Note: only `/api/chat` (`answer.service.js`) honours `effort`. `/api/chat/v2`
+(`agentOrchestrator.service.js`) is a separate Actions-based architecture that
+does not call `retrieve()`, `planRetrieval()` or `rerankCandidates()` at all,
+so there is no equivalent pipeline stage to switch there yet -- and per
+`public/scripts/config.js`, the live interface already defaults to `/api/chat`
+for unrelated reasons (v2's routing agent is not yet at parity).
+
+**UI:** the composer has a Standard / Fast / Thorough toggle above the
+message box (`#effort-toggle` in `public/index.html`, wired in `app.js`).
+Standard sends no `effort` field, so it is byte-identical to a request from
+before this toggle existed. The selection is remembered per browser via
+`localStorage` and is never required to send a question.
+
+---
+
 ## Trying it
 
 ```bash

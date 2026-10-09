@@ -8,6 +8,11 @@ import {
   submitAgentChatQuestion,
 } from "../services/agentChat.service.js";
 
+import {
+    recordTurn,
+    resolveFollowUp,
+} from "../services/conversationContext.service.js";
+
 import { retrievalConfig } from "../../../config/retrieval.config.js";
 
 /**
@@ -90,10 +95,13 @@ export async function submitChatQuestionController(req, res) {
             sessionId: req.sessionID ?? req.session?.id ?? null,
 
             /*
-             * The one deliberate exception to "no mode/route/model from the
-             * client" (see chat.validation.js) -- a speed-vs-thoroughness
-             * preference the coach chose for this question, not a routing or
-             * access decision. Validated to "low"/"high" before this point.
+             * TENISE-68: the one deliberate exception to "no mode/route/model
+             * from the client" (see chat.validation.js) -- a
+             * speed-vs-thoroughness preference the coach chose for this
+             * question, not a routing or access decision. Already validated
+             * and normalised to "low"/"high"/undefined by
+             * validateChatQuestion -- undefined here means the caller never
+             * mentioned it, and answerQuestion treats that as "no override".
              */
             effort: req.body.effort,
         },
@@ -131,46 +139,122 @@ export function deliberatelyFailChatController(req, res) {
  * from the server-side session.
  */
 export async function submitAgentChatQuestionController(
-  req,
-  res,
+    req,
+    res,
 ) {
-  const correlationId =
-    `agent-query:${randomUUID()}`;
+    const correlationId =
+        `agent-query:${randomUUID()}`;
 
-
-  req.telemetry?.setCorrelationId(
-    correlationId,
-  );
-
-
-  const result =
-    await submitAgentChatQuestion(
-      req.body.question,
-      {
-        roleId:
-          req.user.roleId,
-
+    req.telemetry?.setCorrelationId(
         correlationId,
-
-        /*
-         * Presentation-only information.
-         * The client cannot use this to alter routing,
-         * permissions or evidence access.
-         */
-        responseTimeZone:
-          req.get("X-Time-Zone") ??
-          "UTC",
-      },
     );
 
 
-  return res
-    .status(200)
-    .json({
-      success:
-        true,
+    const originalQuestion =
+        req.body.question;
 
-      data:
-        result,
+    const conversationId =
+        req.body.conversationId ??
+        null;
+
+
+    /*
+     * Resolve conversation-dependent wording BEFORE routing/retrieval.
+     *
+     * The browser sends only conversationId. Previous turns are read from the
+     * authenticated server-side session and are never reconstructed client-side.
+     */
+    const resolution =
+        await resolveFollowUp({
+            session:
+                req.session,
+
+            conversationId,
+
+            question:
+                originalQuestion,
+        });
+
+
+    /*
+     * The Agent receives the resolved standalone question.
+     *
+     * Everything after this point -- routing, actions, retrieval, synthesis and
+     * verification -- continues through the existing pipeline unchanged.
+     */
+    const result =
+        await submitAgentChatQuestion(
+            resolution.resolvedQuestion,
+            {
+                roleId:
+                    req.user.roleId,
+
+                correlationId,
+
+                responseTimeZone:
+                    req.get("X-Time-Zone") ??
+                    "UTC",
+            },
+        );
+
+
+    /*
+     * Keep only the resolved question plus a short assistant-answer excerpt in
+     * the authenticated session.
+     */
+    const answer =
+        result?.response?.answerApa ??
+        result?.response?.answer ??
+        result?.answer ??
+        "";
+
+
+    recordTurn({
+        session:
+            req.session,
+
+        conversationId,
+
+        resolvedQuestion:
+            resolution.resolvedQuestion,
+
+        answer,
     });
+
+
+    /*
+     * Acceptance evidence is returned explicitly so tests can verify whether
+     * context was used without inspecting session internals.
+     */
+    const metadata = {
+        ...(result?.metadata ?? {}),
+
+        originalQuestion:
+            resolution.originalQuestion,
+
+        resolvedQuestion:
+            resolution.resolvedQuestion,
+
+        contextTurnsUsed:
+            resolution.contextTurnsUsed,
+
+        rewriteApplied:
+            resolution.rewriteApplied,
+
+        rewriteReason:
+            resolution.rewriteReason,
+    };
+
+
+    return res
+        .status(200)
+        .json({
+            success:
+                true,
+
+            data: {
+                ...result,
+                metadata,
+            },
+        });
 }
