@@ -17,16 +17,28 @@
 // restarting it skips every (question, effort) pair already completed.
 
 import fsp from "node:fs/promises";
+import path from "node:path";
 import process from "node:process";
 import XLSX from "xlsx";
 
 import { answerQuestion } from "../src/modules/chat/services/answer.service.js";
 
 const queriesPath = process.argv[2] || "queries/overnight_batch_2026-10-01.json";
+
+// output names derive from the query file's own name, not a fixed date --
+// a run against a differently-named question set must never resume from,
+// or overwrite, a previous run's progress/output under the old hardcoded
+// name (reported directly, 2026-10-10: "where do I edit questions for next
+// time" implies there IS a next time, with a different file).
+const runName = path.basename(queriesPath, path.extname(queriesPath));
 const outDir = "eval-runs";
-const promptsDir = `${outDir}/prompts`;
-const xlsxPath = `${outDir}/overnight_batch_2026-10-01.xlsx`;
-const progressPath = `${outDir}/overnight_batch_2026-10-01.progress.json`;
+// scoped per run, not a shared folder -- two runs against different
+// question sets used to both start numbering their prompt files at 0001
+// in the same eval-runs/prompts/ directory, so the smaller/later run
+// silently overwrote the larger/earlier one's files.
+const promptsDir = `${outDir}/prompts/${runName}`;
+const xlsxPath = `${outDir}/${runName}.xlsx`;
+const progressPath = `${outDir}/${runName}.progress.json`;
 
 const PER_QUERY_TIMEOUT_MS = 5 * 60 * 1000;
 // an Excel cell hard-caps at 32,767 characters (XLSX.writeFile throws past
