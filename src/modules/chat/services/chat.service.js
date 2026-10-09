@@ -89,15 +89,52 @@ export async function submitChatQuestion(
      */
     const history = getTurns(sessionId);
 
-    const result = await answerQuestion(
-        question,
-        {
-            roleId,
+    /*
+     * The query record for this question (TENISE-30). The HTTP middleware
+     * already writes an api_request record for the same request; the shared
+     * correlationId is what joins the two. answerQuestion() fills in the
+     * stages, this function owns opening and finishing the run.
+     */
+    const run =
+        telemetryRun ||
+        startTelemetryRun({
+            runType: TELEMETRY_RUN_TYPES.QUERY,
             correlationId,
-            history,
-            effort,
-        },
-    );
+        });
+
+    let result;
+
+    try {
+        result = await answerQuestion(
+            question,
+            {
+                roleId,
+                correlationId,
+                history,
+                effort,
+                telemetryRun: run,
+            },
+        );
+    } catch (error) {
+        run.fail(error);
+
+        await run.finish(
+            RUN_STATUSES.FAILED,
+        );
+
+        throw error;
+    }
+
+    /*
+     * No explicit status: a stage marked failed along the way (a reranker
+     * that was down, say) still produced an answer, and finish() reports
+     * that as partial rather than success.
+     */
+    run
+        .note("answered", result.answered)
+        .note("cause", result.cause ?? null);
+
+    await run.finish();
 
     /*
      * Recorded after the answer, and only on this success path, so a failed
@@ -146,6 +183,10 @@ export async function submitChatQuestion(
         },
 
         citations: result.citations,
+
+        telemetry: {
+            recordId: run.recordId,
+        },
     };
 }
 

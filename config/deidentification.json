@@ -1,0 +1,18 @@
+{
+  "fields": [
+    {
+      "name": "athlete_name",
+      "prefix": "ATHLETE",
+      "columns": ["opponent_name", "partner_name", "player name"],
+      "compositeColumns": [["playerGivenName", "playerFamilyName"]],
+      "freeText": true,
+      "familyNameAlone": true,
+      "familyNameMinLength": 4,
+      "familyNameIgnore": [
+        "Bounds", "Court", "Date", "Drag", "East", "Fielding", "Games", "Going", "Golden",
+        "Ground", "Held", "Hill", "House", "Keys", "Lung", "Mass", "Minor", "Page", "Real",
+        "Rise", "Sales", "Smart", "Topic", "Tuck", "Urban", "Western"
+      ]
+    }
+  ]
+}

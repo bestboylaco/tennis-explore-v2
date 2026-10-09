@@ -19,7 +19,9 @@ import {
   hydrateFusedCandidates,
   reciprocalRankFusion,
   rerankCandidates,
+  rerankWillRun,
 } from "./ranking.service.js";
+import { PIPELINE_STAGES, STAGE_STATUSES } from "../../shared/constants/telemetry.js";
 import {
   decomposeQuery,
   generateHypotheticalDocument,
@@ -107,10 +109,23 @@ async function runArms(queryText, { index, filter, plan, queryVector = null, sig
  * / `rerankEnabled`, read by planRetrieval and rerankCandidates below. the
  * default `{}` means neither field is present, so both fall back to
  * retrievalConfig exactly as they did before this parameter existed.
+ *
+ * `recorder` is an optional telemetry run (TENISE-30). When given, the rerank
+ * step is measured as its own `rerank` stage; it is nested inside whatever
+ * retrieval stage the caller is timing, not additional to it. Pass it on one
+ * retrieve() call per question only -- a second measured call would overwrite
+ * the first one's stage duration.
  */
 export async function retrieve(
   query,
-  { roleId, topN = retrievalConfig.retrieval.topN, signal = null, subQueries = null, effortOverrides = {} } = {},
+  {
+    roleId,
+    topN = retrievalConfig.retrieval.topN,
+    signal = null,
+    subQueries = null,
+    effortOverrides = {},
+    recorder = null,
+  } = {},
 ) {
   if (typeof query !== "string" || query.trim() === "") {
     throw new Error("retrieve requires a non-empty query.");
@@ -195,11 +210,33 @@ export async function retrieve(
   // applied. floored at the configured default so a narrow topN request
   // doesn't shrink the window below its normal size either.
   const rerankInput = Math.max(retrievalConfig.retrieval.rerankInput, topN);
-  const { candidates, reranked, reason } = await rerankCandidates(query, hydrated, {
-    signal,
-    rerankInput,
-    enabled: effortOverrides.rerankEnabled,
-  });
+  const rerankOptions = { signal, rerankInput, enabled: effortOverrides.rerankEnabled };
+  const measureRerank =
+    recorder && rerankWillRun({ enabled: rerankOptions.enabled, candidateCount: hydrated.length });
+
+  if (recorder && !measureRerank) recorder.skipStage(PIPELINE_STAGES.RERANK, "disabled");
+
+  const { candidates, reranked, reason } = measureRerank
+    ? await recorder.measureStage(
+        PIPELINE_STAGES.RERANK,
+        async () => {
+          const outcome = await rerankCandidates(query, hydrated, rerankOptions);
+
+          return {
+            ...outcome,
+            // rerankCandidates swallows a reranker failure and returns the
+            // fused order instead, so the stage has to be marked failed here
+            // rather than by measureStage's catch. The answer still goes out;
+            // the run finishes as partial.
+            telemetry: {
+              ...(outcome.reranked ? {} : { status: STAGE_STATUSES.FAILED, reason: outcome.reason }),
+              attributes: { strategy: retrievalConfig.rerank.strategy },
+            },
+          };
+        },
+        { itemsIn: Math.min(hydrated.length, rerankInput) },
+      )
+    : await rerankCandidates(query, hydrated, rerankOptions);
 
   if (!reranked && reason && reason !== "disabled") notes.push(reason);
 
