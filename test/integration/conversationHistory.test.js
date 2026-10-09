@@ -92,13 +92,21 @@ async function request(path, { method = "GET", body, cookie } = {}) {
 }
 
 async function login(email) {
-  const response = await request("/api/auth/login", {
-    method: "POST",
-    body: { email, password },
-  });
+    const response = await request("/api/auth/login", {
+        method: "POST",
+        body: { email, password },
+    });
 
-  assert.equal(response.status, 200);
-  return cookieFrom(response);
+    assert.equal(response.status, 200);
+
+    const cookie = cookieFrom(response);
+
+    assert.ok(
+        cookie,
+        "Login returned 200 but no session cookie was set",
+    );
+
+    return cookie;
 }
 
 describe("conversation history", { skip: skipReason }, () => {
@@ -158,10 +166,23 @@ describe("conversation history", { skip: skipReason }, () => {
     assert.equal(createResponse.status, 201);
     const created = (await createResponse.json()).data;
 
-    const secondCookie = await login(emailA);
-    const listResponse = await request("/api/conversations", {
-      cookie: secondCookie,
-    });
+      const secondCookie = await login(emailA);
+
+      // Check whether the new session is authenticated
+      const meResponse = await request("/api/auth/me", {
+          cookie: secondCookie,
+      });
+
+      assert.equal(
+          meResponse.status,
+          200,
+          "New login session is not authenticated",
+      );
+
+      // Check whether conversation history is accessible
+      const listResponse = await request("/api/conversations", {
+          cookie: secondCookie,
+      });
     const listBody = await listResponse.json();
 
     assert.equal(listResponse.status, 200);
