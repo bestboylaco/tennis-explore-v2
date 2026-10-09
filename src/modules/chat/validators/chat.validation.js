@@ -1,3 +1,5 @@
+import { ALL_EFFORT_LEVELS } from "../../../config/effort.config.js";
+
 const MAX_QUESTION_LENGTH = 4000;
 const MAX_CONVERSATION_ID_LENGTH = 200;
 
@@ -6,6 +8,10 @@ const MAX_CONVERSATION_ID_LENGTH = 200;
  *
  * The interface must send only a question. Users must not be required
  * to select a mode, source, command, model, agent, or backend route.
+ *
+ * `effort` (TENISE-68) does not change that: it is OPTIONAL and defaults to
+ * today's behaviour when omitted, same as `evidence` and `conversationId`
+ * below. Nothing here requires a caller to pick anything.
  */
 export function validateChatQuestion(req, res, next) {
     const question = req.body?.question;
@@ -26,8 +32,26 @@ export function validateChatQuestion(req, res, next) {
     const {
         evidence,
         conversationId,
+        effort,
     } = req.body ?? {};
 
+    // Optional. Case-insensitive so "Low"/"LOW" from a hand-typed query
+    // string (the frontend's debug override, see public/scripts/config.js)
+    // is not rejected on a technicality the server can resolve itself.
+    let normalisedEffort;
+
+    if (effort !== undefined) {
+        const candidate = typeof effort === "string" ? effort.trim().toLowerCase() : "";
+
+        if (candidate && ALL_EFFORT_LEVELS.includes(candidate)) {
+            normalisedEffort = candidate;
+        } else {
+            errors.push({
+                field: "effort",
+                message: `Effort, when provided, must be one of: ${ALL_EFFORT_LEVELS.join(", ")}.`,
+            });
+        }
+    }
 
     if (
         conversationId !== undefined &&
@@ -79,6 +103,10 @@ export function validateChatQuestion(req, res, next) {
     ) {
         req.body.conversationId =
             conversationId.trim();
+    }
+
+    if (normalisedEffort !== undefined) {
+        req.body.effort = normalisedEffort;
     }
 
     return next();

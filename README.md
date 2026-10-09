@@ -6,18 +6,21 @@ TennisExplore V2 is a modular AI-powered tennis intelligence platform that combi
 
 ### Completed
 
-- Modular Express backend architecture with MongoDB integration
+- Modular Express backend architecture with DynamoDB and MongoDB integration
 - Unified AI Coach web interface at `/`
 - Platforms page at `/platforms` with navigation back to the AI Coach
 - Single natural-language chat endpoint with no user-selected query mode, source, model, or backend route
+- Per-question effort control in the chat composer: Standard / Fast / Thorough (TENISE-68)
 - Visible processing, completed, and error states, including a deliberate failure endpoint for UI testing
-- Session-based authentication with MongoDB-backed sessions
+- Session-based authentication, with users and sessions stored in DynamoDB (TENISE-63)
 - Role-based access control for chat retrieval and protected telemetry/audit routes
 - Access-audit recording for document access decisions
 - Source Registry with create, read, ingest-trigger, and soft-delete APIs
-- Telemetry records for API requests, query stages, ingestion runs, latency, volume, and cold starts
+- Telemetry records, stored in DynamoDB, for API requests, query stages, ingestion runs, latency, volume, and cold starts
 - Local indexing pipeline for PDF, CSV, XLS/XLSX, PPTX, TXT, MD, and JSON video manifests
+- Adding files to, or removing files from, the committed index without a full rebuild
 - Optional OCR sidecar support for scanned PDFs
+- AWS Textract table extraction, cached in the repo, for scanned PDFs (TENISE-12) and for tables in born-digital PDFs (TENISE-66)
 - Contextual chunking, metadata extraction, embedding generation, and sharded vector index storage
 - Index schema v2 with access-control metadata, dates, authors, source location, and citation fields
 - Hybrid retrieval using BM25 + dense vectors with Reciprocal Rank Fusion (RRF)
@@ -37,10 +40,12 @@ TennisExplore V2 is a modular AI-powered tennis intelligence platform that combi
 - Player intelligence extensions
 - Coaching intelligence extensions
 - Replacing temporary platform links with the real platform URLs
+- Automatic expiry (DynamoDB TTL) of old sessions and telemetry: waiting on the `UpdateTimeToLive` permission on the partner's table, so nothing expires on its own yet
+- Conversations, access-audit records, quick questions, and the Source Registry are still stored in MongoDB, so `MONGODB_URI` is still required
 
 Cross-machine availability of original source assets used by citation previews is now available, opt-in, via S3 storage — see [Asset Storage (S3)](#asset-storage-s3) below. Off by default; the local-disk behaviour described above is unchanged unless `STORAGE_PROVIDER=s3` is set.
 
-> **Development note:** non-production runs currently create a temporary Admin session automatically so the protected chat flow can be tested without manual sign-in. This must be removed or disabled before production deployment.
+> **Development note:** a developer can skip manual sign-in locally by setting `ENABLE_DEV_AUTO_LOGIN=true` in their own `.env`, which signs every visitor in as a seeded Admin account. It is off by default and must stay off in any shared or production deployment.
 
 ---
 
@@ -53,8 +58,9 @@ Install:
 - Node.js 20+
 - [Ollama](https://ollama.com/download)
 - MongoDB access for the web/API application
+- Docker, to run DynamoDB Local (users, sessions, telemetry) and MinIO on your machine
 
-The command-line retrieval tools (`search`, `ask`, and evaluation commands) use the committed local index and do not require MongoDB.
+The command-line retrieval tools (`search`, `ask`, and evaluation commands) use the committed local index and do not require MongoDB or DynamoDB.
 
 ### Setup
 
@@ -83,6 +89,15 @@ SESSION_SECRET=your_local_session_secret
 ```
 
 `SESSION_SECRET` is strongly recommended. If it is omitted, the app creates a random per-process secret and all sessions are invalidated whenever the server restarts.
+
+Start DynamoDB Local and create its table. The `DYNAMODB_*` defaults in `.env.example` already point at it, so no further `.env` changes are needed:
+
+```bash
+docker compose up -d   # DynamoDB Local on port 8800 (table created automatically), plus MinIO
+npm run seed:users -- --password "YourDemoPassword"
+```
+
+To use the partner's real table instead, see [Switching to the partner's DynamoDB table](#switching-to-the-partners-dynamodb-table) below.
 
 Pull the local models:
 
@@ -151,6 +166,26 @@ The local indexer currently supports:
 
 Raw video files such as `.mp4` are not directly parsed by the indexer; video evidence is represented through indexed segment metadata/manifests. Scanned PDFs can use optional OCR sidecar text.
 
+### Add or Remove Files Without a Full Rebuild
+
+A full rebuild takes hours of GPU time. To change only a few files in the committed index:
+
+```bash
+# Add: the folder must contain ONLY files that are not already indexed
+node bin/append-to-index.mjs "path/to/folder-of-new-files"
+
+# Remove: drops every chunk whose source path contains the given text
+node bin/remove-from-index.mjs "file-name-or-path-fragment"
+```
+
+Only new files are embedded; existing vectors are carried over unchanged. Both scripts leave a backup at `data/index.backup-<timestamp>/` (gitignored). Delete it once the result has been checked. To re-embed one changed file, remove it, then add it again.
+
+### Tables from AWS Textract
+
+Text read straight from a PDF often loses which number belongs to which row and column of a table. For selected PDFs, AWS Textract reads the tables cell by cell. Each table is then indexed as its own chunk, alongside the normal text of the document. This works for scanned PDFs and for tables in born-digital PDFs.
+
+Textract output is cached in `data/textract-cache/` and committed, so index builds read the cache and never call AWS. Running Textract on more files needs an AWS account with Textract enabled and `TEXTRACT_ENABLED=true`, and it counts against a 100-page monthly budget. See [`docs/TEXTRACT.md`](docs/TEXTRACT.md).
+
 ---
 
 ## Access Control
@@ -198,6 +233,12 @@ It supports:
 - a side source panel that keeps the conversation visible
 - page, slide, row, and video timestamp citation locations
 - direct links to original indexed assets when available locally
+- an effort toggle above the composer (remembered between visits):
+  - **Standard**: the default pipeline, unchanged
+  - **Fast**: skips query decomposition, query expansion, and reranking, and uses about 60% of the usual evidence. Quicker answers for simple questions.
+  - **Thorough**: runs every stage and uses about 150% of the usual evidence. Slower, for complex questions.
+
+API callers can send the same choice as `"effort": "fast"` or `"effort": "thorough"` in the `POST /api/chat` request body. Leaving it out means Standard. The experimental `POST /api/chat/v2` agent pipeline accepts the field but does not act on it yet.
 
 If an index was built on another machine and the original source file is not present locally, `/api/assets/:docId` returns an explicit `ASSET_NOT_LOCAL` response. The indexed text and citation metadata remain available even when the raw file is missing. Enabling S3 storage (below) removes this limitation — every machine reads citation files from the same bucket instead of local disk.
 
@@ -240,6 +281,34 @@ Going back to local disk at any point is just unsetting `STORAGE_PROVIDER` — n
 
 ---
 
+## User Data (DynamoDB)
+
+Users, login sessions, and telemetry are stored in DynamoDB (TENISE-63). They were moved off MongoDB Atlas to keep this data in the partner's AWS account. DynamoDB was chosen over RDS because it is billed per request rather than per running hour.
+
+All three live in one table, separated by key prefix (`USER#…`, `SESSION#…`, `TELEMETRY#…`). For local development, `docker compose up -d` runs DynamoDB Local on port 8800 and creates that table (see [Quick Start](#setup)). To recreate the table by hand:
+
+```bash
+npm run dynamodb:init
+```
+
+### Switching to the partner's DynamoDB table
+
+The partner's table is `tennis-explore-g2` in `ap-southeast-2`, with key attributes `primary_key` / `sort_key`. These are already the defaults. No code changes are needed, only `.env`:
+
+```bash
+DYNAMODB_ENDPOINT=                 # blank = real AWS
+# remove DYNAMODB_ACCESS_KEY_ID / DYNAMODB_SECRET_ACCESS_KEY (the "local" values)
+DYNAMODB_PROFILE=<your AWS profile with access to the table>
+```
+
+Use `DYNAMODB_PROFILE`, never `AWS_PROFILE`. Setting `AWS_PROFILE` makes the AWS SDK ignore `AWS_ACCESS_KEY_ID` for every client, which would break Textract.
+
+**Known gap:** automatic expiry (TTL) is not yet enabled on the partner's table, because we do not have the permission to turn it on. The app works without it, but old sessions and telemetry accumulate until the partner enables TTL on the `ttl` attribute.
+
+See [`docs/DYNAMODB-MIGRATION.md`](docs/DYNAMODB-MIGRATION.md) for the full design and what was verified against the real table.
+
+---
+
 ## API Endpoints
 
 | Method | Endpoint | Purpose | Access |
@@ -248,7 +317,8 @@ Going back to local disk at any point is just unsetting `STORAGE_PROVIDER` — n
 | POST | `/api/auth/login` | Create authenticated session | Public |
 | POST | `/api/auth/logout` | Destroy authenticated session | Session |
 | GET | `/api/auth/me` | Read current session user | Public/session-aware |
-| POST | `/api/chat` | Submit a natural-language question | Authenticated |
+| POST | `/api/chat` | Submit a natural-language question (optional `effort`: `fast` / `thorough`); used by the web UI | Authenticated |
+| POST | `/api/chat/v2` | Experimental agent-based pipeline | Authenticated |
 | POST | `/api/chat/fail` | Deliberate failure endpoint for UI testing | Authenticated |
 | GET | `/api/sources` | List active sources | Current implementation |
 | POST | `/api/sources` | Create source metadata | Current implementation |
@@ -290,6 +360,8 @@ src/
 ├── config/
 ├── infrastructure/
 │   ├── database/
+│   ├── dynamodb/
+│   ├── sessionStore/
 │   ├── storage/
 │   └── vector/
 ├── middleware/
@@ -315,13 +387,17 @@ public/
 └── styles/
 
 bin/
+├── append-to-index.mjs
 ├── ask.js
 ├── build-index.js
 ├── check-models.js
+├── dynamodb-init.js
 ├── eval.js
 ├── eval-answers.js
+├── remove-from-index.mjs
 ├── search.js
-└── seed-users.js
+├── seed-users.js
+└── textract-extract.js
 ```
 
 ---
@@ -339,7 +415,11 @@ npm run search -- "..." # retrieval only
 npm run ask -- "..."    # full answer
 npm run eval             # retrieval evaluation
 npm run eval:answers     # end-to-end answer evaluation
+npm run eval:effort      # compare Fast vs Thorough on the same questions
 npm run seed:users       # create demo users
+npm run dynamodb:init    # create the DynamoDB table (DynamoDB Local)
+npm run test:rbac-matrix # role-by-document access matrix (TENISE-36)
+npm run textract         # run Textract on selected PDFs (needs TEXTRACT_ENABLED=true)
 ```
 
 ---
@@ -360,6 +440,9 @@ npm run seed:users       # create demo users
 | [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) | System architecture |
 | [`docs/QUERY-HANDLING.md`](docs/QUERY-HANDLING.md) | Query classification, planning, and routing |
 | [`docs/SHARING-THE-INDEX.md`](docs/SHARING-THE-INDEX.md) | Sharing the committed retrieval index |
+| [`docs/DYNAMODB-MIGRATION.md`](docs/DYNAMODB-MIGRATION.md) | Users/sessions/telemetry on DynamoDB, and switching to the partner's table |
+| [`docs/TEXTRACT.md`](docs/TEXTRACT.md) | Textract table extraction, its cache, and the page budget |
+| [`docs/rbac-roles-and-permissions.md`](docs/rbac-roles-and-permissions.md) | The eight roles and what each can access |
 | [`docs/CORPUS-AND-COVERAGE.md`](docs/CORPUS-AND-COVERAGE.md) | Corpus contents and answer coverage |
 | [`docs/ASSET-GAP-REPORT.md`](docs/ASSET-GAP-REPORT.md) | Missing/local source asset analysis |
 | [`docs/source-registry-design.md`](docs/source-registry-design.md) | Source Registry design |

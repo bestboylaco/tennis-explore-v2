@@ -708,9 +708,10 @@ async function chunkExtracted(extracted, filePath, problems) {
   });
 
   // prose and tables are chunked by different rules and then finalised
-  // identically. tables only ever appear on scanned documents that have been
-  // through Textract (TENISE-12); every other document contributes an empty
-  // array here and the behaviour is unchanged.
+  // identically. tables only appear on documents that have been through
+  // Textract -- scanned ones (TENISE-12) and born-digital ones whose tables a
+  // text layer flattens (TENISE-66); every other document contributes an
+  // empty array here and the behaviour is unchanged.
   const documentChunks = [
     ...chunkDocument(extracted, { authors, eventDate }),
     ...chunkTables(extracted, { authors, eventDate }),

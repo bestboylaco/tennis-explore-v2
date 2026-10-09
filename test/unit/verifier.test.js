@@ -297,3 +297,66 @@ describe("per-citation number grounding", () => {
     assert.deepEqual(verification.numberCitationMismatches, []);
   });
 });
+
+describe("headings and section labels are not claims", () => {
+  const evidence = [
+    {
+      citationNumber: 3,
+      chunk_id: "reid2016#p5",
+      doc_id: "reid2016",
+      title: "Matchplay characteristics",
+      text: "Male players contact the ball at higher impact heights with greater net clearance.",
+      source_type: "research_paper",
+      sensitivity: "public",
+    },
+    {
+      citationNumber: 4,
+      chunk_id: "reid2016#p4",
+      doc_id: "reid2016",
+      title: "Matchplay characteristics",
+      text: "Female players contact the ball closer to the net due to shorter reach.",
+      source_type: "research_paper",
+      sensitivity: "public",
+    },
+  ];
+
+  it("does not treat a markdown heading as an uncited claim needing its own citation", () => {
+    // the live case this was built to fix: the repair pass trying, and
+    // failing, to find evidence for the literal heading text as if it were
+    // a claim (reported directly, 2026-10-01).
+    const answer =
+      "### **1. Contact Position During Serve Returns**\n" +
+      "- **Female players** contact the ball closer to the net [4].\n" +
+      "- **Male players** contact the ball at higher impact heights [3].";
+
+    const verification = verifyAnswer(answer, evidence);
+
+    assert.equal(verification.citedFraction, 1);
+    assert.deepEqual(verification.numberCitationMismatches, []);
+  });
+
+  it("does not treat a bold-only section label as an uncited claim", () => {
+    const answer =
+      "**Key Takeaways:**\n" +
+      "- Female players contact the ball closer to the net [4].\n" +
+      "1. **Spin and Technique Adaptation:**\n" +
+      "- Male players contact the ball at higher impact heights [3].";
+
+    const verification = verifyAnswer(answer, evidence);
+
+    assert.equal(verification.citedFraction, 1);
+  });
+
+  it("still treats a bullet that leads with a bold phrase but continues with real content as a claim", () => {
+    // only a line that is ENTIRELY a bold label is excluded -- a bullet
+    // that leads with emphasis and then states a real fact must still be
+    // checked for a citation.
+    const answer =
+      "- **Gender-Specific Adjustments:** women benefit from net play and spin control, unlike men.";
+
+    const verification = verifyAnswer(answer, evidence);
+
+    assert.equal(verification.claimCount, 1);
+    assert.equal(verification.citedFraction, 0);
+  });
+});

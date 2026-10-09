@@ -162,16 +162,48 @@ function findNumberCitationMismatches(claims, evidence, question) {
 
   return mismatches;
 }
+// a real markdown heading ("### Contact Position"), or a line that is
+// nothing but a bold section label ("1. **Spin and Technique
+// Adaptation:**", "**Key Takeaways:**") -- a structural label, not a
+// sentence making a claim. matched and dropped line-by-line, BEFORE
+// sentence-splitting, because once split by punctuation alone a heading
+// like "### **1. Contact Position During Serve Returns**" is
+// indistinguishable from a real short claim: it has capitalised words
+// (hasProperNoun) and no reliable way to tell it apart after the fact
+// (reported directly, 2026-10-01: the citation-repair pass trying, and
+// failing, to find evidence for the literal heading text "Contact Position
+// During Serve Returns" as if it were a claim).
+//
+// requires the ENTIRE line to be the label (optional leading number/bullet,
+// then one bold span, then an optional colon, nothing else) -- a bullet
+// that leads with a bold phrase but continues with real sentence content
+// after it, e.g. "- **Gender-Specific Adjustments:** Women benefit from
+// net play...", is a genuine claim and must not be dropped.
+const HEADING_LINE = /^#{1,6}\s+.*$/;
+const LABEL_LINE = /^\s*(?:(?:\d+[.)]|[-*])\s*)?\*\*[^*]+\*\*:?\s*$/;
+
+function stripStructuralLines(answer) {
+  return String(answer)
+    .split("\n")
+    .filter((line) => {
+      const trimmed = line.trim();
+
+      return !HEADING_LINE.test(trimmed) && !LABEL_LINE.test(trimmed);
+    })
+    .join("\n");
+}
+
 /**
  * splits an answer into sentences that make factual claims.
  *
  * a sentence with no digits, no proper nouns and no comparative wording is
  * usually framing ("This is worth considering in context") rather than a claim,
  * and demanding a citation on those produces noise that trains everyone to
- * ignore the warnings.
+ * ignore the warnings. headings and section labels are excluded before the
+ * split even runs -- see stripStructuralLines.
  */
 function claimSentences(answer) {
-  return String(answer)
+  return stripStructuralLines(answer)
     .split(/(?<=[.!?])\s+/)
     .map((sentence) => sentence.trim())
     .filter((sentence) => {

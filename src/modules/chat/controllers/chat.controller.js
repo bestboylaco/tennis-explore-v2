@@ -93,6 +93,17 @@ export async function submitChatQuestionController(req, res) {
              * session id could read someone else's conversation.
              */
             sessionId: req.sessionID ?? req.session?.id ?? null,
+
+            /*
+             * TENISE-68: the one deliberate exception to "no mode/route/model
+             * from the client" (see chat.validation.js) -- a
+             * speed-vs-thoroughness preference the coach chose for this
+             * question, not a routing or access decision. Already validated
+             * and normalised to "low"/"high"/undefined by
+             * validateChatQuestion -- undefined here means the caller never
+             * mentioned it, and answerQuestion treats that as "no override".
+             */
+            effort: req.body.effort,
         },
     );
 

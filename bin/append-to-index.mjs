@@ -179,6 +179,14 @@ async function main() {
   console.log(`preparing working copy at ${scratchDir}`);
   await fs.cp(REAL_INDEX_DIR, scratchDir, { recursive: true });
 
+  // the copy brought the OLD build-report.json with it, and buildIndex only
+  // overwrites that file when this run itself skips or fails something. left in
+  // place, a clean run would leave the old report sitting where the merge below
+  // reads "this run's report", and every list in it would be appended to
+  // itself -- each clean append doubled build-report.json's skipped and
+  // uploadFailures lists (observed: 189 skipped became 756 after two runs).
+  await fs.rm(path.join(scratchDir, "build-report.json"), { force: true });
+
   // ---- synthesize the resume checkpoint --------------------------------------
   const fingerprint = configFingerprint();
 

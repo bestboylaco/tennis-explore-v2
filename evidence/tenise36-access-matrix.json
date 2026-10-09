@@ -1,0 +1,683 @@
+{
+  "summary": {
+    "totalExecutions": 24,
+    "negativeDirection": {
+      "total": 12,
+      "leaks": 0,
+      "passed": true,
+      "note": "this is the security-critical property -- must be 0 leaks"
+    },
+    "positiveDirection": {
+      "total": 12,
+      "undemonstrated": 2,
+      "passed": false,
+      "note": "a miss here can be a retrieval/routing gap, not necessarily an ACL bug -- inspect docIdsShown before concluding a defect"
+    }
+  },
+  "rows": [
+    {
+      "roleId": "tour_coach",
+      "docId": "2018-paris-joao-sousa-pre-match-analysis",
+      "expectedAcl": "performance:confidential:pro-tour",
+      "question": "In the 2018 Paris pre-match scouting analysis, what was the score by which Sousa defeated Cecchinato in Round 1?",
+      "correlationId": "rbac-matrix:tour_coach:2018-paris-joao-sousa-pre-match-analysis:0",
+      "durationMs": 27544,
+      "auditOutcomes": [
+        "granted",
+        "granted",
+        "granted",
+        "granted",
+        "granted",
+        "granted"
+      ],
+      "docIdsShown": [
+        "2018-paris-joao-sousa-pre-match-analysis",
+        "foundations-of-sport-and-exercise-psychology-6th-edition",
+        "jmst-june2012",
+        "leaders-performance-journal-edition-10",
+        "leaders-performance-journal-edition-2",
+        "frank_giampaolo_-_beyond_technique__1080p_.video",
+        "choke-or-shine-quantifying-soccer-players-abilities-to-perform-under-mental-pressure",
+        "ijspp-2016c"
+      ],
+      "aclTagsShown": [
+        "performance:confidential:pro-tour",
+        "research:public:*",
+        "performance:internal:*"
+      ],
+      "targetDocShown": true,
+      "category": "coach-only",
+      "expected": "granted",
+      "pass": true
+    },
+    {
+      "roleId": "tour_coach",
+      "docId": "2018-paris-joao-sousa-pre-match-analysis",
+      "expectedAcl": "performance:confidential:pro-tour",
+      "question": "According to the Sousa scouting presentation slides for the 2018 Paris match, what forehand and backhand return error counts are recorded against Sousa?",
+      "correlationId": "rbac-matrix:tour_coach:2018-paris-joao-sousa-pre-match-analysis:1",
+      "durationMs": 12689,
+      "auditOutcomes": [
+        "granted",
+        "granted",
+        "granted",
+        "granted",
+        "granted",
+        "granted"
+      ],
+      "docIdsShown": [
+        "2018-paris-joao-sousa-pre-match-analysis",
+        "2018-us-open-joao-sousa-pre-match-analysis",
+        "analysis-of-the-distances-covered-and-technical-actions-performed-by-professional-tennis-players-during-official-matches",
+        "determining-stroke-and-movement-profiles-in-43-2",
+        "genevois-et-al-2015-performance-factors-related-to-the-different-tennis-backhand-groundstrokes-a-review"
+      ],
+      "aclTagsShown": [
+        "performance:confidential:pro-tour",
+        "research:public:*"
+      ],
+      "targetDocShown": true,
+      "category": "coach-only",
+      "expected": "granted",
+      "pass": true
+    },
+    {
+      "roleId": "tour_coach",
+      "docId": "2018-us-open-joao-sousa-pre-match-analysis",
+      "expectedAcl": "performance:confidential:pro-tour",
+      "question": "What was the score of the 2018 US Open match where Sousa defeated Pouille, according to the Sousa scouting analysis?",
+      "correlationId": "rbac-matrix:tour_coach:2018-us-open-joao-sousa-pre-match-analysis:0",
+      "durationMs": 26345,
+      "auditOutcomes": [
+        "granted",
+        "granted",
+        "granted",
+        "denied",
+        "granted",
+        "denied",
+        "granted",
+        "denied",
+        "granted"
+      ],
+      "docIdsShown": [
+        "2018-us-open-joao-sousa-pre-match-analysis",
+        "itf-sport-science-review-2005",
+        "jmst-june2012",
+        "ma-et-al-2013-winning-matches-in-grand-slam-mens-singles-an-analysis-of-player-performance-related-variables-from-1991-to-2008",
+        "murphy-a-2014-load-monitoring-in-high-performance-youth-tennis-players-preparation-for-competition-readiness",
+        "leaders-performance-journal-edition-2",
+        "atp-singles-shadow-rankings-sorted-by-atp-24-12-2018",
+        "2018-paris-joao-sousa-pre-match-analysis",
+        "2018-atp-challenger-calendar-6-december-17"
+      ],
+      "aclTagsShown": [
+        "performance:confidential:pro-tour",
+        "research:public:*",
+        "performance:internal:*"
+      ],
+      "targetDocShown": true,
+      "category": "coach-only",
+      "expected": "granted",
+      "pass": true
+    },
+    {
+      "roleId": "tour_coach",
+      "docId": "2018-us-open-joao-sousa-pre-match-analysis",
+      "expectedAcl": "performance:confidential:pro-tour",
+      "question": "In that same Sousa scouting report, what percentage of Sousa's first serves went in during the 2018 US Open match against Pouille, and how many times was he broken?",
+      "correlationId": "rbac-matrix:tour_coach:2018-us-open-joao-sousa-pre-match-analysis:1",
+      "durationMs": 28307,
+      "auditOutcomes": [
+        "granted",
+        "granted",
+        "granted",
+        "granted",
+        "granted",
+        "granted"
+      ],
+      "docIdsShown": [
+        "2018-us-open-joao-sousa-pre-match-analysis",
+        "johnson-et-al-2006-performance-demands-of-professional-male-tennis-players-bjsm-408",
+        "ma-et-al-2013-winning-matches-in-grand-slam-mens-singles-an-analysis-of-player-performance-related-variables-from-1991-to-2008",
+        "myers-et-al-2016-volume-based-interval-training-programs-for-elite-tennis-players",
+        "screenshot-2025-08-17-at-8-34-40-pm",
+        "vaverka-cernosek-et-al-association-between-body-height-and-serve-speed-in-elite-tennis-players",
+        "wei-et-al-2015-predicting-serves-in-tennis-using-style-priors",
+        "tennisbook",
+        "guillot-et-al-2013-motor-imagery-and-tennis-serve-performance-the-external-focus-efficacy",
+        "jmst-june2012",
+        "mcrae-et-al-2012-carbohydrate-electrolyte-drink-ingestion-and-skill-performance-during-and-after-2-hr-or-indoor-tennis-match-play",
+        "grandslams",
+        "matchplay-characteristics-of-grand-slam-tennis-implications-for-training-and-conditioning",
+        "itf-sport-science-review-2005",
+        "golden-analytics",
+        "leaders-performance-journal-edition-5",
+        "sports-science-may-10-to-jan-12"
+      ],
+      "aclTagsShown": [
+        "performance:confidential:pro-tour",
+        "research:public:*"
+      ],
+      "targetDocShown": true,
+      "category": "coach-only",
+      "expected": "granted",
+      "pass": true
+    },
+    {
+      "roleId": "tour_coach",
+      "docId": "novak-djokovic-match-intelligence-report-wimbledon-2019",
+      "expectedAcl": "performance:confidential:pro-tour",
+      "question": "According to the Djokovic Wimbledon 2019 match intelligence report slides, what percentage of points were 0-4 shot rallies?",
+      "correlationId": "rbac-matrix:tour_coach:novak-djokovic-match-intelligence-report-wimbledon-2019:0",
+      "durationMs": 35060,
+      "auditOutcomes": [
+        "denied",
+        "denied",
+        "denied",
+        "denied",
+        "denied",
+        "denied"
+      ],
+      "docIdsShown": [],
+      "aclTagsShown": [],
+      "targetDocShown": false,
+      "category": "coach-only",
+      "expected": "granted",
+      "pass": false
+    },
+    {
+      "roleId": "tour_coach",
+      "docId": "novak-djokovic-match-intelligence-report-wimbledon-2019",
+      "expectedAcl": "performance:confidential:pro-tour",
+      "question": "According to that Djokovic Wimbledon 2019 match intelligence report, what was his net points won ratio?",
+      "correlationId": "rbac-matrix:tour_coach:novak-djokovic-match-intelligence-report-wimbledon-2019:1",
+      "durationMs": 26187,
+      "auditOutcomes": [
+        "denied",
+        "denied"
+      ],
+      "docIdsShown": [],
+      "aclTagsShown": [],
+      "targetDocShown": false,
+      "category": "coach-only",
+      "expected": "granted",
+      "pass": false
+    },
+    {
+      "roleId": "tour_coach",
+      "docId": "231211-service-provision-talent-athlete-services-murphy",
+      "expectedAcl": "physiological:internal:national-academy",
+      "question": "According to the National Academy athlete services document, how many times per year are Physical Competency Screens (PCS) obtained for NDS squad athletes?",
+      "correlationId": "rbac-matrix:tour_coach:231211-service-provision-talent-athlete-services-murphy:0",
+      "durationMs": 26473,
+      "auditOutcomes": [
+        "granted",
+        "granted",
+        "granted",
+        "granted",
+        "granted",
+        "granted"
+      ],
+      "docIdsShown": [
+        "national-development-squads-position-stand-and-benchmarking-document",
+        "pe-21-013-nds-program-a5-v1-am-comments",
+        "pe-21-013-nds-program-a5-v2-am2",
+        "pe-21-013-nds-program-a5-v444"
+      ],
+      "aclTagsShown": [
+        "research:public:*"
+      ],
+      "targetDocShown": false,
+      "category": "athlete-visible",
+      "expected": "denied",
+      "pass": true
+    },
+    {
+      "roleId": "tour_coach",
+      "docId": "231211-service-provision-talent-athlete-services-murphy",
+      "expectedAcl": "physiological:internal:national-academy",
+      "question": "At what age do athletes get an in-person musculoskeletal screen according to that athlete services document, and how often is it done?",
+      "correlationId": "rbac-matrix:tour_coach:231211-service-provision-talent-athlete-services-murphy:1",
+      "durationMs": 27306,
+      "auditOutcomes": [
+        "granted",
+        "granted",
+        "granted",
+        "granted",
+        "granted",
+        "granted"
+      ],
+      "docIdsShown": [
+        "accountability-matrix-checklist-220911",
+        "best-of-performance-1-8-reduced-new",
+        "booras-2001-the-relationship-of-mental-skills-to-performance-on-a-tennis-accuracy-task-under-fatigued-and-non-fatigued-conditions",
+        "jasc-193",
+        "junior-athletes-jasc-21-1-march",
+        "canadian-sport-for-life-article-summary-monitoring-growth-monitoring-peak-height-velocity-phv",
+        "body-2013-development-implementation-and-practical-application-of-a-nutritional-questionnaire-for-tennis-athletes",
+        "accountability-matrix-checklist-2014",
+        "6-shoulder-kovacs-tennis-recovery-a-compreh-rev-of-research-2010",
+        "kelvin-giles-2005-a-guide-to-developing-physical-qualities-in-young-athletes",
+        "30-interview-prep-questions-122019",
+        "screenshot-2025-08-17-at-8-34-40-pm",
+        "piggott-2008-thesis-the-relationship-between-training-load-and-incidence-of-injury-and-illness-over-a-pre-season-at-an-australian-football-league-club",
+        "malina-et-al-2011"
+      ],
+      "aclTagsShown": [
+        "research:public:*"
+      ],
+      "targetDocShown": false,
+      "category": "athlete-visible",
+      "expected": "denied",
+      "pass": true
+    },
+    {
+      "roleId": "tour_coach",
+      "docId": "aisworkload",
+      "expectedAcl": "physiological:internal:national-academy",
+      "question": "According to the load monitoring and injury prevention presentation, what did the Hulin et al. BJSM 2013 study find about doubling weekly workload?",
+      "correlationId": "rbac-matrix:tour_coach:aisworkload:0",
+      "durationMs": 31249,
+      "auditOutcomes": [
+        "denied",
+        "denied",
+        "denied",
+        "denied",
+        "denied",
+        "denied"
+      ],
+      "docIdsShown": [],
+      "aclTagsShown": [],
+      "targetDocShown": false,
+      "category": "athlete-visible",
+      "expected": "denied",
+      "pass": true
+    },
+    {
+      "roleId": "tour_coach",
+      "docId": "aisworkload",
+      "expectedAcl": "physiological:internal:national-academy",
+      "question": "In that same load monitoring presentation, what threshold of overs bowled in a first-class match was linked to significantly higher bowling injury rates in the AJSM 2009 study?",
+      "correlationId": "rbac-matrix:tour_coach:aisworkload:1",
+      "durationMs": 28901,
+      "auditOutcomes": [
+        "granted",
+        "granted",
+        "granted",
+        "granted",
+        "granted",
+        "granted"
+      ],
+      "docIdsShown": [
+        "fast-bowlers-in-cricket-demonstrate-up-to-3-4-week-delay-between-high-workloads-and-increased-risk-of-injury",
+        "dennis-honours-thesis-risk-factors-for-repetitive-microtrauma-injury-to-adolescent-and-adult-cricket-fast-bowlers",
+        "the-relationship-between-fast-bowling-workload-and-injury-in-first-class-cricketers-a-pilot-study"
+      ],
+      "aclTagsShown": [
+        "research:public:*"
+      ],
+      "targetDocShown": false,
+      "category": "athlete-visible",
+      "expected": "denied",
+      "pass": true
+    },
+    {
+      "roleId": "tour_coach",
+      "docId": "ams-admin-audit-mar25",
+      "expectedAcl": "physiological:internal:national-academy",
+      "question": "According to the March 2025 AMS Admin Site Audit presentation slides, which staff member's name appears next to the Massage Consult Form and Compliance Form data permissions?",
+      "correlationId": "rbac-matrix:tour_coach:ams-admin-audit-mar25:0",
+      "durationMs": 33383,
+      "auditOutcomes": [
+        "denied",
+        "denied",
+        "denied",
+        "denied",
+        "denied",
+        "denied"
+      ],
+      "docIdsShown": [],
+      "aclTagsShown": [],
+      "targetDocShown": false,
+      "category": "athlete-visible",
+      "expected": "denied",
+      "pass": true
+    },
+    {
+      "roleId": "tour_coach",
+      "docId": "ams-admin-audit-mar25",
+      "expectedAcl": "physiological:internal:national-academy",
+      "question": "According to the March 2025 AMS Admin Site Audit presentation slides, which staff members' names appear next to the Catapult Data Permissions for Alex De Minaur?",
+      "correlationId": "rbac-matrix:tour_coach:ams-admin-audit-mar25:1",
+      "durationMs": 33534,
+      "auditOutcomes": [
+        "denied",
+        "denied",
+        "denied",
+        "denied",
+        "denied",
+        "denied"
+      ],
+      "docIdsShown": [],
+      "aclTagsShown": [],
+      "targetDocShown": false,
+      "category": "athlete-visible",
+      "expected": "denied",
+      "pass": true
+    },
+    {
+      "roleId": "athlete",
+      "docId": "2018-paris-joao-sousa-pre-match-analysis",
+      "expectedAcl": "performance:confidential:pro-tour",
+      "question": "In the 2018 Paris pre-match scouting analysis, what was the score by which Sousa defeated Cecchinato in Round 1?",
+      "correlationId": "rbac-matrix:athlete:2018-paris-joao-sousa-pre-match-analysis:0",
+      "durationMs": 19743,
+      "auditOutcomes": [
+        "denied",
+        "denied",
+        "denied",
+        "denied",
+        "denied",
+        "denied"
+      ],
+      "docIdsShown": [],
+      "aclTagsShown": [],
+      "targetDocShown": false,
+      "category": "coach-only",
+      "expected": "denied",
+      "pass": true
+    },
+    {
+      "roleId": "athlete",
+      "docId": "2018-paris-joao-sousa-pre-match-analysis",
+      "expectedAcl": "performance:confidential:pro-tour",
+      "question": "According to the Sousa scouting presentation slides for the 2018 Paris match, what forehand and backhand return error counts are recorded against Sousa?",
+      "correlationId": "rbac-matrix:athlete:2018-paris-joao-sousa-pre-match-analysis:1",
+      "durationMs": 30095,
+      "auditOutcomes": [
+        "denied",
+        "denied",
+        "denied",
+        "denied",
+        "denied",
+        "denied"
+      ],
+      "docIdsShown": [],
+      "aclTagsShown": [],
+      "targetDocShown": false,
+      "category": "coach-only",
+      "expected": "denied",
+      "pass": true
+    },
+    {
+      "roleId": "athlete",
+      "docId": "2018-us-open-joao-sousa-pre-match-analysis",
+      "expectedAcl": "performance:confidential:pro-tour",
+      "question": "What was the score of the 2018 US Open match where Sousa defeated Pouille, according to the Sousa scouting analysis?",
+      "correlationId": "rbac-matrix:athlete:2018-us-open-joao-sousa-pre-match-analysis:0",
+      "durationMs": 33461,
+      "auditOutcomes": [
+        "denied",
+        "denied",
+        "denied",
+        "denied",
+        "denied",
+        "denied"
+      ],
+      "docIdsShown": [],
+      "aclTagsShown": [],
+      "targetDocShown": false,
+      "category": "coach-only",
+      "expected": "denied",
+      "pass": true
+    },
+    {
+      "roleId": "athlete",
+      "docId": "2018-us-open-joao-sousa-pre-match-analysis",
+      "expectedAcl": "performance:confidential:pro-tour",
+      "question": "In that same Sousa scouting report, what percentage of Sousa's first serves went in during the 2018 US Open match against Pouille, and how many times was he broken?",
+      "correlationId": "rbac-matrix:athlete:2018-us-open-joao-sousa-pre-match-analysis:1",
+      "durationMs": 37756,
+      "auditOutcomes": [
+        "denied",
+        "denied",
+        "denied",
+        "denied",
+        "denied",
+        "denied"
+      ],
+      "docIdsShown": [],
+      "aclTagsShown": [],
+      "targetDocShown": false,
+      "category": "coach-only",
+      "expected": "denied",
+      "pass": true
+    },
+    {
+      "roleId": "athlete",
+      "docId": "novak-djokovic-match-intelligence-report-wimbledon-2019",
+      "expectedAcl": "performance:confidential:pro-tour",
+      "question": "According to the Djokovic Wimbledon 2019 match intelligence report slides, what percentage of points were 0-4 shot rallies?",
+      "correlationId": "rbac-matrix:athlete:novak-djokovic-match-intelligence-report-wimbledon-2019:0",
+      "durationMs": 33376,
+      "auditOutcomes": [
+        "denied",
+        "denied",
+        "denied",
+        "denied",
+        "denied",
+        "denied"
+      ],
+      "docIdsShown": [],
+      "aclTagsShown": [],
+      "targetDocShown": false,
+      "category": "coach-only",
+      "expected": "denied",
+      "pass": true
+    },
+    {
+      "roleId": "athlete",
+      "docId": "novak-djokovic-match-intelligence-report-wimbledon-2019",
+      "expectedAcl": "performance:confidential:pro-tour",
+      "question": "According to that Djokovic Wimbledon 2019 match intelligence report, what was his net points won ratio?",
+      "correlationId": "rbac-matrix:athlete:novak-djokovic-match-intelligence-report-wimbledon-2019:1",
+      "durationMs": 29127,
+      "auditOutcomes": [
+        "denied",
+        "denied",
+        "denied",
+        "denied",
+        "denied",
+        "denied"
+      ],
+      "docIdsShown": [],
+      "aclTagsShown": [],
+      "targetDocShown": false,
+      "category": "coach-only",
+      "expected": "denied",
+      "pass": true
+    },
+    {
+      "roleId": "athlete",
+      "docId": "231211-service-provision-talent-athlete-services-murphy",
+      "expectedAcl": "physiological:internal:national-academy",
+      "question": "According to the National Academy athlete services document, how many times per year are Physical Competency Screens (PCS) obtained for NDS squad athletes?",
+      "correlationId": "rbac-matrix:athlete:231211-service-provision-talent-athlete-services-murphy:0",
+      "durationMs": 13922,
+      "auditOutcomes": [
+        "granted",
+        "granted",
+        "granted",
+        "granted",
+        "granted",
+        "granted"
+      ],
+      "docIdsShown": [
+        "nds-sc-priority-player-access",
+        "231211-service-provision-talent-athlete-services-murphy",
+        "nds-guide-landscape",
+        "pe-21-013-nds-program-a5-print",
+        "national-development-squads-position-stand-and-benchmarking-document",
+        "220304-overall-goals-athlete-services"
+      ],
+      "aclTagsShown": [
+        "performance:internal:national-academy",
+        "physiological:internal:national-academy",
+        "research:public:*"
+      ],
+      "targetDocShown": true,
+      "category": "athlete-visible",
+      "expected": "granted",
+      "pass": true
+    },
+    {
+      "roleId": "athlete",
+      "docId": "231211-service-provision-talent-athlete-services-murphy",
+      "expectedAcl": "physiological:internal:national-academy",
+      "question": "At what age do athletes get an in-person musculoskeletal screen according to that athlete services document, and how often is it done?",
+      "correlationId": "rbac-matrix:athlete:231211-service-provision-talent-athlete-services-murphy:1",
+      "durationMs": 25963,
+      "auditOutcomes": [
+        "granted",
+        "granted",
+        "granted",
+        "granted",
+        "granted",
+        "granted"
+      ],
+      "docIdsShown": [
+        "accountability-matrix-checklist-220911",
+        "jasc-193",
+        "231211-service-provision-talent-athlete-services-murphy",
+        "accountability-matrix-checklist-2014",
+        "best-of-performance-1-8-reduced-new",
+        "6-shoulder-kovacs-tennis-recovery-a-compreh-rev-of-research-2010",
+        "canadian-sport-for-life-article-summary-monitoring-growth-monitoring-peak-height-velocity-phv",
+        "booras-2001-the-relationship-of-mental-skills-to-performance-on-a-tennis-accuracy-task-under-fatigued-and-non-fatigued-conditions",
+        "body-2013-development-implementation-and-practical-application-of-a-nutritional-questionnaire-for-tennis-athletes",
+        "30-interview-prep-questions-122019"
+      ],
+      "aclTagsShown": [
+        "research:public:*",
+        "physiological:internal:national-academy"
+      ],
+      "targetDocShown": true,
+      "category": "athlete-visible",
+      "expected": "granted",
+      "pass": true
+    },
+    {
+      "roleId": "athlete",
+      "docId": "aisworkload",
+      "expectedAcl": "physiological:internal:national-academy",
+      "question": "According to the load monitoring and injury prevention presentation, what did the Hulin et al. BJSM 2013 study find about doubling weekly workload?",
+      "correlationId": "rbac-matrix:athlete:aisworkload:0",
+      "durationMs": 26574,
+      "auditOutcomes": [
+        "granted",
+        "granted",
+        "granted",
+        "granted",
+        "granted",
+        "granted"
+      ],
+      "docIdsShown": [
+        "aisworkload",
+        "blanch-gabbett-2015-has-the-athlete-done-enough-training-to-rtp-safely-bjsm",
+        "gabbett-2016-the-training-injury-paradox-should-athletes-be-training-smarter-and-harder",
+        "hulin-et-al-2015-the-acute-chronic-workload-ratio-predicts-injury-high-chronic-workload-may-decrease-injury-risk-in-elite-rugby-league-players",
+        "bowling-workloads",
+        "association-between-spikes-in-external-training-lo",
+        "hulin-reflections-on-workload-injury-relationships-in-team-sport"
+      ],
+      "aclTagsShown": [
+        "physiological:internal:national-academy",
+        "research:public:*"
+      ],
+      "targetDocShown": true,
+      "category": "athlete-visible",
+      "expected": "granted",
+      "pass": true
+    },
+    {
+      "roleId": "athlete",
+      "docId": "aisworkload",
+      "expectedAcl": "physiological:internal:national-academy",
+      "question": "In that same load monitoring presentation, what threshold of overs bowled in a first-class match was linked to significantly higher bowling injury rates in the AJSM 2009 study?",
+      "correlationId": "rbac-matrix:athlete:aisworkload:1",
+      "durationMs": 15216,
+      "auditOutcomes": [
+        "granted",
+        "granted",
+        "granted",
+        "granted",
+        "granted"
+      ],
+      "docIdsShown": [
+        "aisworkload",
+        "fast-bowlers-in-cricket-demonstrate-up-to-3-4-week-delay-between-high-workloads-and-increased-risk-of-injury",
+        "dennis-honours-thesis-risk-factors-for-repetitive-microtrauma-injury-to-adolescent-and-adult-cricket-fast-bowlers",
+        "br-j-sports-med-2016-mcnamara-bjsports-2015-095935",
+        "the-relationship-between-fast-bowling-workload-and-injury-in-first-class-cricketers-a-pilot-study"
+      ],
+      "aclTagsShown": [
+        "physiological:internal:national-academy",
+        "research:public:*"
+      ],
+      "targetDocShown": true,
+      "category": "athlete-visible",
+      "expected": "granted",
+      "pass": true
+    },
+    {
+      "roleId": "athlete",
+      "docId": "ams-admin-audit-mar25",
+      "expectedAcl": "physiological:internal:national-academy",
+      "question": "According to the March 2025 AMS Admin Site Audit presentation slides, which staff member's name appears next to the Massage Consult Form and Compliance Form data permissions?",
+      "correlationId": "rbac-matrix:athlete:ams-admin-audit-mar25:0",
+      "durationMs": 25524,
+      "auditOutcomes": [
+        "granted",
+        "granted",
+        "granted",
+        "granted",
+        "granted"
+      ],
+      "docIdsShown": [
+        "ams-admin-audit-mar25"
+      ],
+      "aclTagsShown": [
+        "physiological:internal:national-academy"
+      ],
+      "targetDocShown": true,
+      "category": "athlete-visible",
+      "expected": "granted",
+      "pass": true
+    },
+    {
+      "roleId": "athlete",
+      "docId": "ams-admin-audit-mar25",
+      "expectedAcl": "physiological:internal:national-academy",
+      "question": "According to the March 2025 AMS Admin Site Audit presentation slides, which staff members' names appear next to the Catapult Data Permissions for Alex De Minaur?",
+      "correlationId": "rbac-matrix:athlete:ams-admin-audit-mar25:1",
+      "durationMs": 24993,
+      "auditOutcomes": [
+        "granted",
+        "granted",
+        "granted",
+        "granted",
+        "granted"
+      ],
+      "docIdsShown": [
+        "ams-admin-audit-mar25"
+      ],
+      "aclTagsShown": [
+        "physiological:internal:national-academy"
+      ],
+      "targetDocShown": true,
+      "category": "athlete-visible",
+      "expected": "granted",
+      "pass": true
+    }
+  ]
+}

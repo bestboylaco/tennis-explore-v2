@@ -16,12 +16,29 @@ export const DEFAULT_CHAT_ENDPOINT = "/api/chat";
 /**
  * Stops the interface from displaying an endless processing state
  * when the backend does not respond.
+ *
+ * Keyed by effort (see the composer's effort control) rather than one flat
+ * number. A local 8b model doing retrieval, grading, reranking and
+ * generation takes tens of seconds on consumer hardware, measured at
+ * 20-130s on an 8 GB card depending on question complexity, and the old
+ * 15s ceiling aborted every real request, which surfaced as "failed to
+ * complete request" and looked like a backend fault when the backend was
+ * fine.
+ *
+ * The backend's citation-repair pass now always runs when something needs
+ * fixing, on both effort levels -- it used to be skippable past a time
+ * budget, which meant the one check that exists to catch an uncited answer
+ * was the thing most likely to be skipped on exactly the slow, complex
+ * questions that needed it (reported directly, 2026-10-01, "no citations
+ * at all" reaching the user twice this way). Both ceilings here are sized
+ * with that in mind: generous ceilings that should rarely be hit, not
+ * numbers tuned to the common case, since this is now the only thing
+ * standing between a slow answer and the repair pass actually finishing.
  */
-// A local 8b model doing retrieval, grading, reranking and generation takes
-// tens of seconds on consumer hardware -- measured at 20-56s on an 8 GB card.
-// The old 15s ceiling aborted every real request, which surfaced as "failed to
-// complete request" and looked like a backend fault when the backend was fine.
-export const REQUEST_TIMEOUT_MS = 180_000;
+export const REQUEST_TIMEOUT_MS_BY_EFFORT = Object.freeze({
+    low: 240_000,
+    high: 600_000,
+});
 
 /**
  * A query-string override is provided only for acceptance testing.
@@ -51,6 +68,36 @@ export function getChatEndpoint() {
 }
 
 /**
+ * A query-string override for the per-request effort level (TENISE-68).
+ *
+ * The composer has a visible Low Effort / High Effort select (app.js) -- a
+ * deliberate product decision to offer this choice, unlike `endpoint`
+ * above. This function stays as a secondary path: useful for acceptance
+ * testing or sharing a link pre-set to a level without touching the
+ * select. `chatApi.js`'s `submitChatQuestion` only falls back to this when
+ * its caller does not pass an explicit `effort` argument, so the select
+ * always wins when both are present.
+ *
+ * Example:
+ * http://localhost:3000/?effort=high
+ */
+export function getEffortOverride() {
+    const searchParameters = new URLSearchParams(
+        window.location.search,
+    );
+
+    const effortOverride =
+        searchParameters.get("effort");
+
+    return (
+        effortOverride === "low" ||
+        effortOverride === "high"
+    )
+        ? effortOverride
+        : null;
+}
+
+/**
  * Read-only telemetry API backing the debugging dashboard.
  *
  * GET /api/telemetry             list of records
@@ -63,7 +110,7 @@ export const TELEMETRY_ENDPOINT = "/api/telemetry";
  * The summary endpoint runs seven aggregations, so it is given its own budget
  * rather than sharing the chat request's.
  *
- * That budget is now much shorter than REQUEST_TIMEOUT_MS, not longer: chat
+ * That budget is now much shorter than REQUEST_TIMEOUT_MS_BY_EFFORT, not longer: chat
  * waits on a local model doing retrieval and generation, while these are
  * database aggregations. Twenty seconds is generous for them, and a dashboard
  * that hangs for three minutes on a slow query is worse than one that fails.

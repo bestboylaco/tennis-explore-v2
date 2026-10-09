@@ -101,8 +101,17 @@ async function runArms(queryText, { index, filter, plan, queryVector = null, sig
  * forgets to pass a role still gets results, and the role they would silently
  * get is whichever one we picked -- that is how access control quietly stops
  * working.
+ *
+ * `effortOverrides` is TENISE-68's per-request effort control (see
+ * effort.config.js) -- an object with zero or more of `decompositionEnabled`
+ * / `rerankEnabled`, read by planRetrieval and rerankCandidates below. the
+ * default `{}` means neither field is present, so both fall back to
+ * retrievalConfig exactly as they did before this parameter existed.
  */
-export async function retrieve(query, { roleId, topN = retrievalConfig.retrieval.topN, signal = null, subQueries = null } = {}) {
+export async function retrieve(
+  query,
+  { roleId, topN = retrievalConfig.retrieval.topN, signal = null, subQueries = null, effortOverrides = {} } = {},
+) {
   if (typeof query !== "string" || query.trim() === "") {
     throw new Error("retrieve requires a non-empty query.");
   }
@@ -117,7 +126,7 @@ export async function retrieve(query, { roleId, topN = retrievalConfig.retrieval
   const startedAt = Date.now();
   const index = await loadIndex();
   const filter = buildAccessFilter(roleId);
-  const plan = planRetrieval(query);
+  const plan = planRetrieval(query, { decompositionEnabled: effortOverrides.decompositionEnabled });
 
   const notes = [];
 
@@ -179,7 +188,18 @@ export async function retrieve(query, { roleId, topN = retrievalConfig.retrieval
   assertAccessInvariant(hydrated, filter);
 
   // ---- rerank and cut ----------------------------------------------------
-  const { candidates, reranked, reason } = await rerankCandidates(query, hydrated, { signal });
+  // the rerank window must never be narrower than what the caller actually
+  // asked to retrieve -- otherwise a caller requesting a wide topN (e.g.
+  // "high" effort scaling plan.topN up via effort.config.js) silently gets
+  // capped back down at the rerank stage regardless, before topN is ever
+  // applied. floored at the configured default so a narrow topN request
+  // doesn't shrink the window below its normal size either.
+  const rerankInput = Math.max(retrievalConfig.retrieval.rerankInput, topN);
+  const { candidates, reranked, reason } = await rerankCandidates(query, hydrated, {
+    signal,
+    rerankInput,
+    enabled: effortOverrides.rerankEnabled,
+  });
 
   if (!reranked && reason && reason !== "disabled") notes.push(reason);
 

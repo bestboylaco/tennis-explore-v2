@@ -1,6 +1,7 @@
 import {
     getChatEndpoint,
-    REQUEST_TIMEOUT_MS,
+    getEffortOverride,
+    REQUEST_TIMEOUT_MS_BY_EFFORT,
 } from "../config.js";
 
 /**
@@ -66,18 +67,28 @@ async function readResponseBody(response) {
 /**
  * Sends one natural-language question to the backend.
  *
- * The body carries only the question. No mode, source, command, model,
- * route -- or role -- is submitted; the role the query runs as comes off
- * the authenticated session server-side (requireAuth, req.user.roleId),
- * never from anything this client sends.
+ * The body carries the question, plus conversationId when there is one, and
+ * effort when one is selected. No source, backend route, or role is
+ * submitted; the role the query runs as comes off the authenticated session
+ * server-side (requireAuth, req.user.roleId), never from anything this
+ * client sends.
+ *
+ * `effort` (TENISE-68) is the one exception to "no mode is offered": the
+ * composer's Low Effort / High Effort select (app.js) passes its current
+ * selection directly. The `?effort=` query-string override from
+ * getEffortOverride() still works too (useful for acceptance testing
+ * without touching the select) and is used only when the caller does not
+ * pass `effort` explicitly.
  */
 export async function submitChatQuestion(question,
-    conversationId = null,) {
+    conversationId = null,
+    effort = null,) {
+    const resolvedEffort = effort ?? getEffortOverride() ?? "low";
     const abortController = new AbortController();
 
     const timeoutId = window.setTimeout(() => {
         abortController.abort();
-    }, REQUEST_TIMEOUT_MS);
+    }, REQUEST_TIMEOUT_MS_BY_EFFORT[resolvedEffort] ?? REQUEST_TIMEOUT_MS_BY_EFFORT.low);
 
     try {
         const response = await fetch(getChatEndpoint(), {
@@ -105,6 +116,7 @@ export async function submitChatQuestion(question,
 
             body: JSON.stringify({
                 question,
+                effort: resolvedEffort,
 
                 ...(
                     typeof conversationId === "string" &&

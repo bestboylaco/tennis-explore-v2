@@ -19,4 +19,8 @@ export {
   getTelemetrySummary,
 } from "./services/telemetryAggregation.service.js";
 export { getOcuRate, telemetryConfig } from "./telemetry.config.js";
-export { default as TelemetryRecord } from "./models/telemetryRecord.model.js";
+export {
+  createDefaultStages,
+  createTelemetryRecord,
+  getTelemetryRecordByRecordId,
+} from "./models/telemetryRecord.model.js";

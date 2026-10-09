@@ -315,7 +315,7 @@ const SCORE_SCHEMA = {
  * a passage in almost every case, and sending 50 x 1600 characters through an
  * 8k context window does not fit anyway.
  */
-async function rerankViaLlm(query, candidates, { signal }) {
+async function rerankViaLlm(query, candidates, { signal, fetchImpl = fetch }) {
   const { baseUrl, llmModel, batchSize } = retrievalConfig.rerank;
 
   const batches = [];
@@ -329,7 +329,7 @@ async function rerankViaLlm(query, candidates, { signal }) {
       .map((candidate, index) => `[${index}] ${(candidate.text ?? "").replace(/\s+/g, " ").slice(0, 500)}`)
       .join("\n\n");
 
-    const response = await fetch(`${baseUrl}/api/chat`, {
+    const response = await fetchImpl(`${baseUrl}/api/chat`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
@@ -392,15 +392,33 @@ async function rerankViaLlm(query, candidates, { signal }) {
   return all;
 }
 
-export async function rerankCandidates(query, candidates, { signal } = {}) {
-  const { enabled, strategy } = retrievalConfig.rerank;
+/**
+ * `enabled` overrides retrievalConfig.rerank.enabled for one call -- this is
+ * TENISE-68's per-request effort control (see effort.config.js). undefined
+ * (every caller before TENISE-68, and any call where `effort` was not
+ * passed) falls back to the configured value, unchanged.
+ *
+ * `rerankInput` overrides retrievalConfig.retrieval.rerankInput the same
+ * way -- a fixed global window silently capped a caller's wider topN
+ * request regardless of how much it actually asked retrieve() for
+ * (reported directly, 2026-10-01); retrieve() floors this at the caller's
+ * own topN so a wide request is never scored on a window narrower than
+ * what it asked to see.
+ */
+export async function rerankCandidates(
+  query,
+  candidates,
+  { signal, enabled, rerankInput = retrievalConfig.retrieval.rerankInput, fetchImpl = fetch } = {},
+) {
+  const { strategy } = retrievalConfig.rerank;
+  const effectiveEnabled = enabled ?? retrievalConfig.rerank.enabled;
 
-  if (!enabled || strategy === "none" || candidates.length === 0) {
+  if (!effectiveEnabled || strategy === "none" || candidates.length === 0) {
     return { candidates, reranked: false, reason: "disabled" };
   }
 
-  const window = candidates.slice(0, retrievalConfig.retrieval.rerankInput);
-  const tail = candidates.slice(retrievalConfig.retrieval.rerankInput);
+  const window = candidates.slice(0, rerankInput);
+  const tail = candidates.slice(rerankInput);
 
   let scores;
 
@@ -410,7 +428,7 @@ export async function rerankCandidates(query, candidates, { signal } = {}) {
     } else if (strategy === "cross-encoder") {
       scores = await rerankViaCrossEncoder(query, window);
     } else {
-      scores = await rerankViaLlm(query, window, { signal });
+      scores = await rerankViaLlm(query, window, { signal, fetchImpl });
     }
   } catch (error) {
     return { candidates, reranked: false, reason: `reranker_unavailable: ${error.message}` };

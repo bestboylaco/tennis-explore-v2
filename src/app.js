@@ -4,12 +4,12 @@ import { fileURLToPath } from "node:url";
 import express from "express";
 import cors from "cors";
 import session from "express-session";
-import MongoStore from "connect-mongo";
 import agentRoutes from "./modules/agent/agent.routes.js";
 
 import { env } from "./config/env.js";
 import { authConfig } from "./modules/auth/auth.config.js";
-import User from "./modules/auth/models/user.model.js";
+import { findActiveAdminUser } from "./modules/auth/models/user.model.js";
+import { DynamoSessionStore } from "./infrastructure/sessionStore/dynamoSessionStore.js";
 import { getMongoDBStatus } from "./infrastructure/database/mongodb.service.js";
 import { notFoundHandler } from "./middleware/notFoundHandler.js";
 import { errorHandler } from "./middleware/errorHandler.js";
@@ -46,33 +46,16 @@ app.disable("x-powered-by");
 app.use(cors({ origin: env.allowedOrigin }));
 app.use(express.json());
 
-// Atlas's free (M0) tier occasionally serves a session read as "not found"
-// for a few tens of ms right after regenerate() on login writes it -- the
-// write is already durable (confirmed against the sessions collection
-// directly), the store's own read path just hasn't caught up yet. One short
-// retry before treating it as "not signed in" avoids spurious 401s on the
-// request immediately following login.
-class ResilientMongoStore extends MongoStore {
-    get(sid, callback) {
-        super.get(sid, (err, session) => {
-            if (err || session) return callback(err, session);
-
-            setTimeout(
-                () =>
-                    super.get(
-                        sid,
-                        callback,
-                    ),
-                75,
-            );
-        });
-    }
-}
-
-// Sessions back onto the same MongoDB Atlas cluster everything else uses, so
-// there is no second datastore to run or fail independently. A session
-// becomes req.session.user only at login (auth.controller.js) -- nothing
-// upstream of that point is trusted with a role (threat model T-01).
+// TENISE-63: sessions moved off the MongoDB Atlas cluster onto the partner's
+// DynamoDB table (DynamoSessionStore). Atlas's free (M0) tier occasionally
+// served a session read as "not found" for a few tens of ms right after
+// regenerate() on login wrote it, which is why this used to carry a
+// ResilientMongoStore retry-on-read subclass. That workaround is NOT carried
+// over here -- DynamoSessionStore's get() uses ConsistentRead instead, which
+// removes the class of bug the retry was papering over rather than just
+// retrying around it. See dynamoSessionStore.js's module comment for why that
+// holds, and test/integration/dynamoSessionStore.test.js for the test that
+// verifies it rather than assumes it.
 app.use(
     session({
         secret:
@@ -84,12 +67,10 @@ app.use(
         saveUninitialized:
             false,
 
-        // connect-mongo's static create() hardcodes `new MongoStore(...)`, so a
-        // subclass must be constructed directly to actually be used.
         store:
-            new ResilientMongoStore({
-                mongoUrl:
-                    env.mongodbUri,
+            new DynamoSessionStore({
+                ttlSeconds:
+                    authConfig.sessionMaxAgeMs / 1000,
             }),
 
         cookie: {
@@ -134,13 +115,7 @@ app.use(
             // history, audit records and access checks attached to the same identity
             // shape produced by the normal login flow.
             const admin =
-                await User.findOne({
-                    roleId:
-                        "admin",
-
-                    isActive:
-                        true,
-                });
+                await findActiveAdminUser();
 
             if (!admin) {
                 const error =
@@ -251,11 +226,17 @@ app.get(
         req,
         res,
     ) => {
+        // `root` matters, not just style: without it, `send` checks every
+        // segment of the full absolute path for a leading dot, starting from
+        // the filesystem root -- not just relative to publicDirectory. Any
+        // checkout living under a dot-directory (e.g. a `.claude/worktrees/`
+        // agent sandbox) then 404s here even though the file exists, while
+        // `express.static(publicDirectory)` above is unaffected because it
+        // already passes `root` internally. Observed live during TENISE-68
+        // verification (2026-10-01).
         res.sendFile(
-            path.join(
-                publicDirectory,
-                "platforms.html",
-            ),
+            "platforms.html",
+            { root: publicDirectory },
         );
     },
 );
@@ -267,10 +248,8 @@ app.get(
         res,
     ) => {
         res.sendFile(
-            path.join(
-                publicDirectory,
-                "login.html",
-            ),
+            "login.html",
+            { root: publicDirectory },
         );
     },
 );

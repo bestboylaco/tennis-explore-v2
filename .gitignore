@@ -27,6 +27,13 @@ npm-debug.log*
 # scratch output for `npm run build:index:test` -- never the real index.
 data/index-test/
 
+# safety copies and working dirs left by bin/append-to-index.mjs and
+# bin/remove-from-index.mjs. each backup is a full ~400 MB copy of data/index;
+# delete them once the result is checked, and never commit them.
+data/index.backup-*/
+data/index-merge-scratch/
+data/index-remove-scratch/
+
 # per-cell indexes built by `npm run eval:chunking -- --build` (E2-07). one
 # folder per chunking recipe, e.g. data/index-eval/t1600-o200-r1/, rebuilt on
 # demand from the partner corpus. what IS committed is the ground truth

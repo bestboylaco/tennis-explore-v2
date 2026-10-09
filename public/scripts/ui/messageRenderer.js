@@ -361,7 +361,6 @@ function appendCitationButton(
         );
 
     button.type = "button";
-    button.title = "Open cited source";
     button.setAttribute(
         "aria-label",
         `Open cited source: ${label}`,
@@ -797,43 +796,28 @@ function renderTable(doc, table) {
 }
 
 /**
- * Surfaces the grounding checks rather than hiding them.
+ * Surfaces the grounding checks rather than hiding them -- except coverage
+ * ("how much of this did you cite at all") which is deliberately NOT shown
+ * here any more (direct instruction, 2026-10-09): a coach-facing "most of
+ * this answer is uncited" disclaimer undermines trust in an answer that may
+ * well be correct, just imperfectly attributed by an 8b model. The
+ * underlying computation (verifyAnswer, citedFraction, the "ungrounded" and
+ * "weak_attribution" warning kinds) is untouched and still returned from
+ * the API -- this only stops ungrounded/weak_attribution specifically from
+ * reaching the chat bubble, since the overnight eval corpus and any other
+ * caller still reads them straight off the response, never through this
+ * renderer.
  *
- * An answer with a flagged figure is still useful if the reader knows which
- * figure to check. An answer that quietly cited nothing is not.
+ * What stays visible: a citation that points at nothing (dangling), a
+ * figure with no source at all, or a figure attributed to the wrong one.
+ * Those are a different, stronger concern than "didn't cite everything" --
+ * an actively unverifiable or misattributed number, which is exactly what
+ * must never be surfaced as settled fact without a flag.
  */
 function renderWarnings(doc, grounding) {
     if (!grounding) return null;
 
     const messages = [];
-
-    // the comment above this function has always said this ("an answer that
-    // quietly cited nothing is not [useful]"), but nothing actually checked
-    // for it -- danglingCitations, unsupportedNumbers and
-    // numberCitationMismatches all require at least one [n] marker to exist
-    // in the first place, so an answer using "document 6" prose instead of
-    // real citations sailed through with no warning shown at all (observed
-    // live, 2026-09-17).
-    //
-    // the message shown is whatever the backend actually determined
-    // (verifier.service.js), not a fixed string here -- it reads differently
-    // depending on whether the answer named a real author/year in prose
-    // (a materially smaller problem) or cited nothing recognisable at all.
-    const ungrounded = grounding.warnings?.find((warning) => warning.kind === "ungrounded");
-
-    if (ungrounded) {
-        messages.push(
-            ungrounded.severity === "high"
-                ? "The model did not cite any source for this answer -- treat every figure in it as unverified."
-                : `Sources are named in this answer but not as clickable citations (${ungrounded.detail}).`,
-        );
-    }
-
-    const weakAttribution = grounding.warnings?.find((warning) => warning.kind === "weak_attribution");
-
-    if (weakAttribution) {
-        messages.push(`Most of this answer is uncited (${weakAttribution.detail}).`);
-    }
 
     if (grounding.danglingCitations?.length > 0) {
         messages.push(

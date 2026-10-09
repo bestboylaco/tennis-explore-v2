@@ -374,5 +374,102 @@ describe(
                 );
             },
         );
+
+
+        it(
+            "does not show the 'uncited' coverage disclaimer, even when citedFraction is low",
+
+            () => {
+                // direct instruction, 2026-10-09: a coach-facing "most of this
+                // answer is uncited" banner undermines trust in an answer that
+                // may be correct, just imperfectly attributed. the underlying
+                // computation stays untouched for the eval corpus (this test
+                // only covers the renderer never showing it to begin with).
+                const {
+                    conversation,
+                } =
+                    createConversation();
+
+                appendAssistantMessage({
+                    conversation,
+
+                    content:
+                        "Evidence is available (Perri, 2022).",
+
+                    citations,
+
+                    references,
+
+                    grounding: {
+                        grounded: false,
+
+                        warnings: [
+                            {
+                                kind: "weak_attribution",
+                                severity: "medium",
+                                detail: "3 of 6 factual sentences carry no citation",
+                            },
+                        ],
+                    },
+
+                    openCitation:
+                        () => {},
+                });
+
+                assert.equal(
+                    conversation.querySelector(
+                        ".composer-status",
+                    ),
+                    null,
+                    "the coverage disclaimer must not reach the chat bubble",
+                );
+            },
+        );
+
+
+        it(
+            "still shows a dangling-citation warning -- a different, stronger concern than coverage",
+
+            () => {
+                const {
+                    conversation,
+                } =
+                    createConversation();
+
+                appendAssistantMessage({
+                    conversation,
+
+                    content:
+                        "Evidence is available (Perri, 2022) [9].",
+
+                    citations,
+
+                    references,
+
+                    grounding: {
+                        grounded: false,
+                        danglingCitations: [9],
+                    },
+
+                    openCitation:
+                        () => {},
+                });
+
+                const warning =
+                    conversation.querySelector(
+                        ".composer-status",
+                    );
+
+                assert.ok(
+                    warning,
+                    "a citation pointing at nothing must still be flagged",
+                );
+
+                assert.match(
+                    warning.textContent,
+                    /\[9\]/,
+                );
+            },
+        );
     },
 );

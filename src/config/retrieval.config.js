@@ -335,6 +335,13 @@ export const retrievalConfig = Object.freeze({
     // that ~20 beats 5 or 10 for answer quality, but 20 chunks of 1600 chars
     // is ~8k tokens of prompt, which is slow on a local 8b model. 10 is the
     // compromise; raise it if your machine can take the latency.
+    //
+    // in normal use this is not actually the number that reaches the model --
+    // answerQuestion (answer.service.js) asks a per-intent/route table instead
+    // (TOP_N_FOR_INTENT_ROUTE, queryTaxonomy.js) and only TENISE-68's effort
+    // levels SCALE that number (x0.6 fast, x1.5 thorough -- effort.config.js).
+    // this field remains the default for a direct retrieve() call that passes
+    // no topN of its own, e.g. `npm run search`.
     topN: num(process.env.TOP_N, 10),
   }),
 
@@ -359,6 +366,11 @@ export const retrievalConfig = Object.freeze({
     // embedding model it can tell that a chunk shares a keyword with the query
     // for an irrelevant reason. it is the largest precision gain in the
     // pipeline after hybrid itself.
+    //
+    // this is also the global default TENISE-68's per-request effort levels
+    // override ("low" skips it, "high" keeps it) -- see
+    // src/config/effort.config.js. unchanged here either way: a request
+    // with no effort opinion gets exactly this value.
     enabled: bool(process.env.RERANK_ENABLED, true),
 
     // three strategies.
@@ -409,6 +421,12 @@ export const retrievalConfig = Object.freeze({
 
   // ---------------------------------------------------------------------
   // query understanding
+  //
+  // decompositionEnabled, expansionEnabled (below) and rerank.enabled (its
+  // own block further down) are also overridable PER REQUEST -- TENISE-68's
+  // "low" vs "high" effort levels -- see src/config/effort.config.js.
+  // these fields stay the GLOBAL default: a request that does not opt into
+  // an effort level reads exactly these values, unchanged.
   // ---------------------------------------------------------------------
   query: Object.freeze({
     // routing decides how much machinery a question deserves. an entity lookup
@@ -442,9 +460,17 @@ export const retrievalConfig = Object.freeze({
     // when evidence is weak, do something about it rather than refusing or
     // generating from whatever turned up. off by default per query -- it only
     // fires when grading says the evidence is insufficient or partial.
+    //
+    // the global default for TENISE-68's effort override too ("low" skips
+    // this whole stage, "high" leaves it able to fire) -- see
+    // src/config/effort.config.js.
     expansionEnabled: bool(process.env.EXPANSION_ENABLED, true),
     expansionModel: process.env.EXPANSION_MODEL || process.env.OLLAMA_GENERATION_MODEL || "llama3.1:8b",
 
+    // NOT overridable per request by TENISE-68's effort levels -- see
+    // effort.config.js's comment on why: this is what lets a structured
+    // (table) question extract its entities at all, so turning it off for
+    // "low" would trade latency for a wrong answer, not a thinner one.
     plannerEnabled: bool(process.env.PLANNER_ENABLED, true),
     plannerModel: process.env.PLANNER_MODEL || "llama3.1:8b",
     // below this rule-confidence we pay for a model call. above it the rules are
