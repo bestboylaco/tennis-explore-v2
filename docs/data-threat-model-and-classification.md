@@ -290,6 +290,26 @@ than leaving them permanently aspirational.
 
 Until every box is checked, the corpus (TENISE-34) must remain synthetic,
 public, or anonymised, which matches TENISE-34's own acceptance criteria.
+
+**E2-08 note (de-identification).** The "anonymised" route above now has an
+implementation. Ingestion can replace athlete names with keyed one-way HMAC
+pseudonyms before indexing, in both the retrieval index and the structured table
+store ([docs/DEIDENTIFICATION.md](DEIDENTIFICATION.md)). On the demo index built
+by `npm run eval:deid`, 10 of 10 probed names had 0 raw-scan and 0 BM25 hits
+(`evidence/e2-08_deidentification.json`).
+
+This checks **no** box. It is off by default until the production rebuild of
+`data/index`, and the committed index and git history still hold real names.
+
+It is pseudonymisation, not anonymisation:
+
+- whoever holds `DEID_SECRET` can confirm a known name;
+- quasi-identifiers (player ID, birth year, nationality, ranking) are untouched;
+- a name that appears only in free text is not found;
+- `/api/assets` still serves the original files.
+
+Treat the secret as restricted data, under the same retention and
+authorisation decisions as the boxes above.
 This document is the tracking point for that gate — do not check a box
 here without linking the Jira ticket that closed it. (v0.4 note: one box
 closed with a linked ticket. The remaining three are unrelated to access

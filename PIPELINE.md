@@ -133,12 +133,20 @@ OLLAMA_GENERATION_MODEL   the model that writes answers
 EMBEDDING_MODEL / EMBEDDING_DIMENSION
 CHUNK_TARGET_CHARS / CHUNK_OVERLAP_CHARS
 CONTEXTUAL_ENABLED / CONTEXTUAL_MODE
+DEID_ENABLED / DEID_SECRET / the fields in DEID_CONFIG_PATH
 the index schema
 ```
 
 The build refuses to resume if you change one of the second group, because
 mixing vectors from two embedding spaces produces an index that loads without
 error and returns quiet nonsense.
+
+De-identification (E2-08, [docs/DEIDENTIFICATION.md](docs/DEIDENTIFICATION.md))
+is in the second group for a different reason. De-identified chunks next to raw
+ones put real names beside their own pseudonyms, and two secrets give one
+athlete two unrelated pseudonyms. The resume fingerprint and the `--append`
+guard both refuse the mix. It is off by default; the production rebuild is the
+point at which to turn it on.
 
 **Adding new material is not a rebuild.** Prepare it, re-run the same build
 command, and only the new files are embedded.

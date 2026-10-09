@@ -40,7 +40,15 @@ import {
 import { prepareVisualEvidence } from "./visualEvidencePreparation.service.js";
 import { prepareVideoVisualEvidence } from "./videoVisualEvidence.service.js";
 import { embedTexts } from "./embedding.service.js";
-import { docIdFor, extractFile, listIngestableFiles } from "./extraction.service.js";
+import { docIdFor, listIngestableFiles } from "./extraction.service.js";
+import {
+  buildDictionary,
+  canonicalDeidentification,
+  deidentifyChunk,
+  extractForIngestion,
+  keyIdFor,
+  replaceNames,
+} from "./deidentification.service.js";
 import {
   SCHEMA_VERSION,
   classifyDocument,
@@ -198,15 +206,46 @@ function finalise(chunk, classification, problems) {
   return valid ? complete : null;
 }
 
+/**
+ * one file -> finished chunks.
+ *
+ * `dictionary` is the de-identification dictionary (E2-08), required when
+ * DEID_ENABLED=true and ignored otherwise. with it, extraction output is
+ * de-identified before chunking, and every finished chunk gets a last pass for
+ * what was produced after extraction -- see deidentifyChunk.
+ */
 export async function prepareFile(
   filePath,
   problems = [],
+  dictionary = null,
 ) {
-  const extracted = await extractFile(filePath);
+  const extracted = await extractForIngestion(filePath, dictionary);
 
   if (!extracted) return [];
 
+  const chunks = await chunkExtracted(extracted, filePath, problems);
+
+  if (!retrievalConfig.deidentification.enabled) return chunks;
+
+  return chunks.map((chunk) => {
+    const scrubbed = deidentifyChunk(chunk, dictionary);
+
+    // content_hash was taken in finalise, before this pass. it has to describe
+    // the text actually stored, or near-duplicate removal compares the wrong
+    // thing.
+    return scrubbed.text === chunk.text ? scrubbed : { ...scrubbed, content_hash: contentHash(scrubbed.text) };
+  });
+}
+
+// the chunk metadata below reads `extracted.fileName` and `extracted.sourceUri`
+// rather than `filePath`, because under de-identification only the extracted
+// copies have had names taken out. `filePath` itself is still used for the two
+// things that never reach a chunk's text: classifyDocument's guess from the
+// real file name, and locating files beside the manifest on disk.
+async function chunkExtracted(extracted, filePath, problems) {
   const ingestedAt = new Date().toISOString();
+  const sourceUri = extracted.sourceUri ?? filePath;
+  const fileName = extracted.fileName ?? path.basename(filePath);
 
   if (extracted.kind === "records") {
     const dateColumns = pickDateColumns(extracted.headers);
@@ -234,8 +273,8 @@ export async function prepareFile(
             event_date_span: eventDateSpan(rawDatesByRow),
             publication_year: null,
             entity_ids: [],
-            source_uri: filePath,
-            file_name: extracted.fileName ?? path.basename(filePath),
+            source_uri: sourceUri,
+            file_name: fileName,
             ingested_at: ingestedAt,
           },
           classification,
@@ -328,13 +367,10 @@ export async function prepareFile(
 
               source_uri:
                 chunk.image_path ??
-                filePath,
+                sourceUri,
 
               file_name:
-                extracted.fileName ??
-                path.basename(
-                  filePath,
-                ),
+                fileName,
 
               ingested_at:
                 ingestedAt,
@@ -408,13 +444,10 @@ export async function prepareFile(
                */
               source_uri:
                 chunk.media_path ??
-                filePath,
+                sourceUri,
 
               file_name:
-                extracted.fileName ??
-                path.basename(
-                  filePath,
-                ),
+                fileName,
 
               ingested_at:
                 ingestedAt,
@@ -597,13 +630,10 @@ export async function prepareFile(
                   source_uri:
                     chunk.media_path ??
                     chunk.image_path ??
-                    filePath,
+                    sourceUri,
 
                   file_name:
-                    extracted.fileName ??
-                    path.basename(
-                      filePath,
-                    ),
+                    fileName,
 
                   ingested_at:
                     ingestedAt,
@@ -656,8 +686,8 @@ export async function prepareFile(
             event_date: publicationYear ? `${publicationYear}-01-01` : null,
             publication_year: publicationYear,
             entity_ids: [],
-            source_uri: filePath,
-            file_name: extracted.fileName ?? path.basename(filePath),
+            source_uri: sourceUri,
+            file_name: fileName,
             ingested_at: ingestedAt,
           },
           classification,
@@ -698,8 +728,8 @@ export async function prepareFile(
           event_date: eventDate,
           publication_year: publicationYear,
           entity_ids: [],
-          source_uri: filePath,
-          file_name: extracted.fileName ?? path.basename(filePath),
+          source_uri: sourceUri,
+          file_name: fileName,
           ingested_at: ingestedAt,
           // stamped on every chunk of a locally seeded document, prose and
           // tables alike. chunkTables marks its output ocr_engine:"textract",
@@ -777,14 +807,27 @@ export async function uploadSourceFiles(chunks, uploaded, failures) {
  * vectors from two different embedding spaces in one file. the result loads
  * fine, searches fine, and returns quiet nonsense -- so a changed fingerprint
  * refuses to resume rather than trying to cope.
+ *
+ * exported because bin/append-to-index.mjs writes a checkpoint by hand and has
+ * to produce exactly this string. it used to keep its own copy, which had
+ * already fallen behind by the five E2-07 keys.
  */
-function configFingerprint() {
+export function configFingerprint() {
   // the five keys added for E2-07 are appended ONLY when they differ from their
   // default. at the defaults the string is byte-for-byte what it has always
   // been, so a teammate's half-finished .build-state.json still resumes.
   const varied = NEW_CHUNKING_KEYS.filter(
     (key) => retrievalConfig.chunking[key] !== CHUNKING_DEFAULTS[key],
   ).map((key) => `${key}:${retrievalConfig.chunking[key]}`);
+
+  // E2-08, by the same rule: present only when de-identification is on, so
+  // the default fingerprint does not change by a single character. the key id
+  // is in it because pseudonyms made under two secrets do not match -- a
+  // resume across a key change would put the same athlete in the index twice
+  // under two unrelated names.
+  const deid = canonicalDeidentification(currentDeidentification());
+
+  if (deid.enabled) varied.push(`deid:${deid.fields.join(",")}:${deid.keyId}`);
 
   return [
     `schema:${SCHEMA_VERSION}`,
@@ -795,6 +838,43 @@ function configFingerprint() {
     `contextual:${retrievalConfig.contextual.enabled ? retrievalConfig.contextual.mode : "off"}`,
     ...varied,
   ].join("|");
+}
+
+/**
+ * the live de-identification settings, in the shape canonicalDeidentification
+ * and the manifest use. the secret is reduced to its key id here and goes no
+ * further.
+ */
+function currentDeidentification() {
+  const deid = retrievalConfig.deidentification;
+
+  if (!deid.enabled) return { enabled: false };
+
+  return {
+    enabled: true,
+    fields: deid.fields.map((field) => field.name),
+    keyId: keyIdFor(deid.secret),
+  };
+}
+
+/**
+ * the folders the name dictionary is built from.
+ *
+ * more than just this run's sourceDirs. an append or a resume adds a few files
+ * to an index whose names came from the WHOLE corpus, and a dictionary built
+ * from the new folder alone would miss every athlete it does not itself list --
+ * so a name the full build replaced would pass straight through in the new
+ * documents. the manifest's own sourceDirs are folded in for that reason, and
+ * DEID_DICTIONARY_DIRS for athlete lists that are not indexed at all.
+ */
+export function dictionarySourceDirs(sourceDirs, manifest = null) {
+  return [
+    ...new Set([
+      ...sourceDirs,
+      ...(manifest?.sourceDirs ?? []),
+      ...retrievalConfig.deidentification.dictionaryDirs,
+    ]),
+  ];
 }
 
 async function readState(directory) {
@@ -858,6 +938,16 @@ async function assertAppendCompatible(outputDir, existing) {
     "contextual headers",
     existing.contextual,
     retrievalConfig.contextual.enabled ? retrievalConfig.contextual.mode : "off",
+  );
+  // E2-08. an index with no `deidentification` key was built from raw data,
+  // which canonicalises to {enabled:false} -- so the committed index still
+  // appends at the default, and refuses a de-identified append. mixing the two
+  // would leave real names beside their own pseudonyms, which undoes the
+  // whole point; mixing two secrets would split each athlete in two.
+  check(
+    "de-identification",
+    canonicalDeidentification(existing.deidentification),
+    canonicalDeidentification(currentDeidentification()),
   );
 
   if (mismatches.length > 0) {
@@ -1013,6 +1103,38 @@ export async function buildIndex({
     if (appending) onProgress({ phase: "resume", filesDone: done.size, chunks: previous.chunkCount ?? 0 });
   }
 
+  // E2-08, pass one: the name dictionary, built from the csv/xlsx before any
+  // file is chunked. off by default, and then nothing here runs at all.
+  //
+  // a file's display name goes through it too. the name is written into
+  // build-report.json, and that file sits in the index directory beside the
+  // chunks -- a skipped "zorvath-quillane-notes.pdf" would otherwise put the
+  // athlete's real name back into the very folder this is meant to clean.
+  let dictionary = null;
+  let displayName = (file) => path.basename(file);
+  let indexedIdFor = (file) => docIdFor(file);
+
+  if (retrievalConfig.deidentification.enabled) {
+    let manifestForNames = existingManifest;
+
+    if (!manifestForNames && appending) {
+      manifestForNames = await fsp
+        .readFile(path.join(outputDir, "manifest.json"), "utf8")
+        .then((raw) => JSON.parse(raw))
+        .catch(() => null);
+    }
+
+    dictionary = await buildDictionary(dictionarySourceDirs(sourceDirs, manifestForNames));
+    displayName = (file) => replaceNames(path.basename(file), dictionary);
+    // the doc_id a file was written under is docIdFor's output AFTER the same
+    // transform. the HMAC is deterministic, so deriving it again here gives
+    // exactly the id on disk -- comparing the raw id would never match a
+    // de-identified one, and every append would quietly duplicate.
+    indexedIdFor = (file) => replaceNames(docIdFor(file), dictionary);
+
+    onProgress({ phase: "dictionary", persons: dictionary.personCount });
+  }
+
   let pending = files.filter((file) => !done.has(file));
 
   // an append must not re-add what is already there. the shards are append-only
@@ -1020,13 +1142,13 @@ export async function buildIndex({
   // correct action for one already indexed is to leave it alone and say so.
   if (append) {
     const already = await indexedDocIds(outputDir, existingManifest);
-    const duplicates = pending.filter((file) => already.has(docIdFor(file)));
+    const duplicates = pending.filter((file) => already.has(indexedIdFor(file)));
 
     for (const file of duplicates) {
-      onProgress({ phase: "duplicate", file: path.basename(file) });
+      onProgress({ phase: "duplicate", file: displayName(file) });
     }
 
-    pending = pending.filter((file) => !already.has(docIdFor(file)));
+    pending = pending.filter((file) => !already.has(indexedIdFor(file)));
 
     // refusing BEFORE the writer opens matters. going ahead with nothing to add
     // would rebuild bm25 over the whole corpus and rewrite the manifest to
@@ -1035,7 +1157,7 @@ export async function buildIndex({
     if (pending.length === 0) {
       throw new Error(
         `every file under ${sourceDirs.join(", ")} is already in the index at ${outputDir}:\n` +
-          `${duplicates.map((file) => `  ${path.basename(file)}`).join("\n")}\n` +
+          `${duplicates.map((file) => `  ${displayName(file)}`).join("\n")}\n` +
           `nothing was changed.\n` +
           `if one of these documents has CHANGED, --append cannot help -- the shards are ` +
           `append-only, so its old chunks cannot be removed. rebuild the index from scratch ` +
@@ -1062,6 +1184,12 @@ export async function buildIndex({
       // structured query engine falls back to when STRUCTURED_SOURCE_DIRS is
       // unset.
       sourceDirs: [...new Set([...(existingManifest?.sourceDirs ?? []), ...sourceDirs])],
+      // E2-08. only written when on, so a default build's manifest is
+      // byte-for-byte what it was. the key id identifies the secret without
+      // revealing it; the secret itself is never written anywhere.
+      ...(dictionary
+        ? { deidentification: { ...currentDeidentification(), persons: dictionary.personCount } }
+        : {}),
     },
   });
 
@@ -1076,7 +1204,7 @@ export async function buildIndex({
   let chunkCount = writer.count;
 
   for (const filePath of pending) {
-    const name = path.basename(filePath);
+    const name = displayName(filePath);
 
     try {
       const stats = await fsp.stat(filePath);
@@ -1084,7 +1212,7 @@ export async function buildIndex({
       if (stats.size > MAX_FILE_BYTES) {
         skipped.push({ file: name, reason: `${(stats.size / 1048576).toFixed(0)} MB, over the size limit` });
       } else {
-        const chunks = await prepareFile(filePath, problems);
+        const chunks = await prepareFile(filePath, problems, dictionary);
 
         // a locally seeded document. refused by default, and refused HERE
         // rather than warned about, because the shards are append-only: once
@@ -1217,7 +1345,7 @@ export async function buildIndex({
   };
 
   if (append) {
-    const touched = new Set(files.map((file) => path.basename(file)));
+    const touched = new Set(files.map((file) => displayName(file)));
     const earlier = await fsp
       .readFile(path.join(outputDir, "build-report.json"), "utf8")
       .then((raw) => JSON.parse(raw))

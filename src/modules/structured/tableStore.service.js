@@ -17,7 +17,9 @@
 import fsp from "node:fs/promises";
 import path from "node:path";
 
-import { extractFile, listIngestableFiles } from "../ingestion/extraction.service.js";
+import { retrievalConfig } from "../../config/retrieval.config.js";
+import { buildDictionary, extractForIngestion } from "../ingestion/deidentification.service.js";
+import { listIngestableFiles } from "../ingestion/extraction.service.js";
 import { classifyDocument, normaliseDate } from "../ingestion/metadata.service.js";
 import { grantsForDocument, isPermitted } from "../../shared/constants/accessControl.js";
 
@@ -124,13 +126,21 @@ export class Table {
 export async function loadTables(sourceDirs) {
   const tables = [];
 
+  // E2-08. this path reads the raw csv directly and never touches the index,
+  // so de-identifying only the index would leave every statistics answer
+  // quoting real names. same transform, same secret, so a pseudonym in an
+  // answer here matches the one in a retrieved chunk.
+  const dictionary = retrievalConfig.deidentification.enabled
+    ? await buildDictionary([...sourceDirs, ...retrievalConfig.deidentification.dictionaryDirs])
+    : null;
+
   for (const directory of sourceDirs) {
     for (const filePath of await listIngestableFiles(directory)) {
       const extension = path.extname(filePath).toLowerCase();
 
       if (![".csv", ".xlsx", ".xls"].includes(extension)) continue;
 
-      const extracted = await extractFile(filePath);
+      const extracted = await extractForIngestion(filePath, dictionary);
 
       if (!extracted || extracted.kind !== "records" || extracted.records.length === 0) continue;
 
@@ -191,7 +201,7 @@ export async function loadTables(sourceDirs) {
           new Table({
             name: `${extracted.docId}${part.suffix}`,
             title: part.title,
-            sourceUri: filePath,
+            sourceUri: extracted.sourceUri ?? filePath,
             columns,
             rows,
             classification,

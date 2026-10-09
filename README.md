@@ -448,6 +448,7 @@ npm run textract         # run Textract on selected PDFs (needs TEXTRACT_ENABLED
 | [`docs/source-registry-design.md`](docs/source-registry-design.md) | Source Registry design |
 | [`docs/telemetry-record-design.md`](docs/telemetry-record-design.md) | Telemetry record contract |
 | [`docs/data-threat-model-and-classification.md`](docs/data-threat-model-and-classification.md) | Security classification and threat model |
+| [`docs/DEIDENTIFICATION.md`](docs/DEIDENTIFICATION.md) | Athlete-name pseudonymisation before indexing (E2-08): mechanism, secret handling, limits |
 | [`schema/index-schema.json`](schema/index-schema.json) | Retrieval/index schema contract |
 
 ---
